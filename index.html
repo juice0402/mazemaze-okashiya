@@ -65,30 +65,21 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 #shopBtn img{width:20px;height:20px;image-rendering:pixelated}
 #shopBtn.can{background:var(--berry);border-color:var(--berry-dk);color:var(--paper)}
 .panel{background:var(--milk);color:var(--ink);border:4px solid var(--walnut);box-shadow:inset 0 0 0 2px var(--paper)}
-#sheet{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));padding:4px 10px 10px}
-#tray{display:flex;justify-content:space-around;align-items:flex-end;padding:18px 0 0;border-bottom:4px solid var(--walnut-hi)}
-.pick{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;background:none;border:0;padding:0 4px 3px;font:inherit;color:var(--ink);cursor:pointer}
-.pick img{width:36px;height:36px;image-rendering:pixelated;transition:transform .12s steps(2)}
-.pick .nm{font-size:13px}
-.pick .pile{width:76px;height:68px}
-.pick .ptr{position:absolute;top:-16px;left:50%;width:14px;height:8px;margin-left:-7px;image-rendering:pixelated;visibility:hidden}
-.pick.on img{transform:translateY(-6px)}
-.pick.on .ptr{visibility:visible}
-.pick:focus-visible,.step:focus-visible,.btn:focus-visible,.led:focus-visible,.room:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-block:8px 6px}
-.cell{min-width:0}
-.cap{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:18px;margin-bottom:3px}
-.stepper{display:flex;align-items:center;justify-content:space-between}
-.lab{font-size:13px;color:var(--ink-soft)}
+.pop{position:absolute;z-index:5;padding:6px}
+#chooser{display:flex;gap:4px}
+#chooser button{display:flex;align-items:flex-end;justify-content:center;width:66px;height:62px;padding:0 0 3px;background:var(--paper);border:3px solid var(--walnut);border-bottom-width:5px;cursor:pointer}
+#chooser button.on{border-color:var(--berry);border-bottom-color:var(--berry-dk)}
+#chooser button:active{border-bottom-width:3px;transform:translateY(2px)}
+#chooser img{width:57px;height:51px;image-rendering:pixelated}
+#chooser button:focus-visible,.step:focus-visible,.btn:focus-visible,.led:focus-visible,.room:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+.pr-row{display:flex;align-items:center;gap:6px}
 .step{width:36px;height:36px;flex:none;font:inherit;font-size:20px;line-height:1;color:var(--ink);background:var(--milk-2);border:3px solid var(--walnut);border-bottom-width:5px;cursor:pointer;touch-action:none}
 .step:active{border-bottom-width:3px;transform:translateY(2px)}
 .step:disabled{opacity:.35}
-output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.val{font-size:12px;display:flex;align-items:center;gap:1px;white-space:nowrap;color:var(--ink-soft)}
-.val img{width:12px;height:10px;image-rendering:pixelated}
-.note{margin:0 2px 8px;font-size:13px;min-height:1.4em;color:var(--ink-soft)}
-.note.warn{color:var(--berry-dk)}
-.acts{display:flex;gap:10px}
+#pVal{min-width:4.6em;text-align:center;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#pVal.loss{color:var(--berry-dk)}
+.hearts{display:flex;justify-content:center;gap:2px;margin-top:6px}
+.hearts img{width:14px;height:12px;image-rendering:pixelated}
 .btn{flex:1;height:48px;font:inherit;font-size:17px;cursor:pointer}
 .btn.main{background:var(--berry);color:var(--paper);border:3px solid var(--berry-dk);border-bottom-width:6px}
 .btn.main:disabled{opacity:.45}
@@ -137,23 +128,17 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
     <div id="ov"><div id="ov-nyuka"></div><div id="ov-chubo"></div></div>
     <div id="toast" class="panel" hidden></div>
     <div id="hint" class="panel" hidden></div>
+    <div id="chooser" class="pop panel" hidden role="group" aria-label="並べるお菓子"></div>
+    <div id="pricer" class="pop panel" hidden role="group" aria-label="値段">
+      <div class="pr-row"><button class="step" id="pMinus" type="button" aria-label="値下げ">−</button><output id="pVal">0円</output><button class="step" id="pPlus" type="button" aria-label="値上げ">＋</button></div>
+      <div id="hearts" class="hearts" aria-label="売れやすさ"></div>
+    </div>
   </main>
   <footer id="foot">
     <nav id="rooms" aria-label="部屋をえらぶ"></nav>
     <button class="btn sub" id="shopBtn" type="button"><img id="shopIcon" alt="">お店</button>
   </footer>
 
-  <section id="sheet" class="panel" hidden aria-label="棚に並べる">
-    <div id="tray"></div>
-    <div class="grid2">
-      <div class="cell"><div class="cap"><span class="lab">こ数</span><span class="val" id="payVal"></span></div>
-        <div class="stepper"><button class="step" id="nMinus" aria-label="へらす">−</button><output id="nVal">0こ</output><button class="step" id="nPlus" aria-label="ふやす">＋</button></div></div>
-      <div class="cell"><div class="cap"><span class="lab">値段</span><span class="val" id="hearts" aria-label="売れやすさ"></span></div>
-        <div class="stepper"><button class="step" id="pMinus" aria-label="値下げ">−</button><output id="pVal">0円</output><button class="step" id="pPlus" aria-label="値上げ">＋</button></div></div>
-    </div>
-    <p id="note" class="note"></p>
-    <div class="acts"><button class="btn sub" id="cancelBtn">やめる</button><button class="btn main" id="placeBtn">並べる</button></div>
-  </section>
 
   <section id="ledger" class="panel" hidden aria-label="お店の帳面">
     <div class="led-head"><h2>お店の帳面</h2><span class="led-total" id="ledTotal"></span></div>
@@ -913,11 +898,11 @@ function drawSlot(i) {
     if (s.id) tag(r.cx, r.plank + 1, S.prices[s.id]);
     return;
   }
-  const spr = SPR[s.id], shown = Math.min(9, s.n);
+  // 数字は出さない（11/5 しょーくん）。満杯で9つぶ。棚板で1マスが大きくなったら、1つぶが何こ分かをふやす
+  const spr = SPR[s.id], shown = Math.min(9, Math.ceil(s.n / Math.max(1, cap() / 9)));
   for (let row = 2; row >= 0; row--) for (let col = 0; col < 3; col++) {
     if (row * 3 + col < shown) ctx.drawImage(spr, r.x + 2 + col * 11, r.plank - 10 - row * 9);
   }
-  if (s.n > 9) { const t = 'x' + pixNum(s.n); shadowText(ctx, t, r.x + r.w - 3 - textW(t), r.y + 7, '#fbeff2'); }
   tag(r.cx, r.plank + 1, S.prices[s.id]);
 }
 function drawBrackets(x0, y0, x1, y1) {
@@ -1065,12 +1050,13 @@ function showHint() {
   if (view === 'nyuka' && S.tips.order && !S.tips.open && !S.eq.shiire && S.boxes.length) msg = '届いた箱をタップして開ける';
   else if (view === 'chubo' && S.tips.bake && !S.tips.take && !S.eq.pati && S.ovens.some(isDone)) msg = '焼けたらタップで取り出す';
   else if (view === 'reji' && (!atReji() || S.eq.reji)) msg = '';
+  else if (view === 'uriba' && S.tips.place && !S.tips.price && S.slots.some(s => s.id)) msg = '値札をタップすると値段を変えられる';
   else { const [k, m] = TIPS[view]; if (!S.tips[k]) msg = m; }
   const h = $('hint'), ovTop = parseFloat($('ov').style.top) || 0;
   if (h.textContent !== msg) h.textContent = msg;
   // 入荷と厨房は壁に札があるので、ヒントは札の下（入荷は箱の上、厨房は床）に出す
   h.style.top = view === 'nyuka' ? (ovTop + (FL() - 40) * SC) + 'px' : view === 'chubo' ? (ovTop + (HH - 14) * SC) + 'px' : '12px';
-  h.hidden = !msg || !$('sheet').hidden || !$('toast').hidden;   // 知らせ（toast）が出ている間はヒントを休む
+  h.hidden = !msg || !!pop.kind || !$('toast').hidden;   // 知らせ（toast）が出ている間はヒントを休む
 }
 
 /* ---------- 部屋の切りかえ（下の絵） ---------- */
@@ -1117,25 +1103,16 @@ function drawTabs() {
   }
 }
 function setView(id) {
-  if (view !== id) closeSheet();
+  if (view !== id) closePops();
   view = id;
   for (const R of ROOMS) { TAB[R.id].b.classList.toggle('on', R.id === id); TAB[R.id].b.setAttribute('aria-pressed', R.id === id); }
   cv.setAttribute('aria-label', ROOMS.find(R => R.id === id).label);
   refreshOverlay(); showHint();
 }
 
-/* ---------- 棚に並べる（在庫から） ---------- */
-let ed = { slot: -1, id: 'cookie', n: 0, price: 100 };
-const picks = {};
-for (const id of ORDER) {
-  const b = document.createElement('button');
-  b.className = 'pick'; b.type = 'button'; b.id = 'pick-' + id;
-  b.innerHTML = '<img class="ptr" alt=""><img class="pile" alt=""><span class="nm"></span>';
-  b.querySelector('.ptr').src = PTR_URL;
-  b.querySelector('.nm').textContent = SWEETS[id].name;
-  b.addEventListener('click', () => { ed.id = id; ed.price = S.prices[id]; ed.n = Math.min(cap(), avail(id)); drawSheet(); });
-  $('tray').appendChild(b); picks[id] = b;
-}
+/* ---------- 棚に並べる（パネルはなし。11/5 しょーくん「帳票みたいなモーダルは無くそう」）
+   棚をタップ → お菓子の山の絵を3つ出す → えらぶと在庫から満杯まで並ぶ。値札をタップ → 値札の下に −＋ と売れやすさのハート ---------- */
+let pop = { kind: null, slot: -1, id: null };
 const PILE_URL = {};
 function pileURL(id, n) {
   const key = id + ':' + pileDots(n);
@@ -1143,63 +1120,78 @@ function pileURL(id, n) {
   return PILE_URL[key];
 }
 const HEART_ON_URL = big(HEART_ON, 2), HEART_OFF_URL = big(HEART_OFF, 2);
-const avail = id => S.inv[id] + (S.slots[ed.slot].id === id ? S.slots[ed.slot].n : 0);
+const CHOOSE = {};
+for (const id of ORDER) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.setAttribute('aria-label', SWEETS[id].name);
+  b.innerHTML = '<img alt="">';
+  b.addEventListener('click', () => choose(id));
+  $('chooser').appendChild(b); CHOOSE[id] = b;
+}
+const availAt = (i, id) => S.inv[id] + (S.slots[i].id === id ? S.slots[i].n : 0);
 function ease(id, price) {
   let a = 0, w = 0;
   for (const t of TYPES) { a += t.w * t.pref[id] * pf(price / SWEETS[id].value, t.t * tol()); w += t.w; }
   return a / w;
 }
 const priceStep = (p, down) => { const q = down ? p - 1 : p; return q < 1000 ? 10 : q < 10000 ? 100 : 1000; };
-const countStep = () => cap() >= 30 ? 3 : 1;
-function drawSheet() {
-  const s = S.slots[ed.slot], A = avail(ed.id), mx = Math.min(cap(), A);
-  if (ed.n > mx) ed.n = mx;
+// 売り場の絵の座標 (x, y) のそばに出す。below で下、なければ上
+function popAt(el, x, y, below) {
+  const ov = $('ov'), L = parseFloat(ov.style.left) || 0, T = parseFloat(ov.style.top) || 0, st = $('stage');
+  el.hidden = false;
+  const w = el.offsetWidth, h = el.offsetHeight, Y = T + (y + OFF) * SC;
+  el.style.left = Math.max(6, Math.min(st.clientWidth - w - 6, L + x * SC - w / 2)) + 'px';
+  el.style.top = Math.max(4, Math.min(st.clientHeight - h - 4, below ? Y + 4 : Y - h - 4)) + 'px';
+}
+function drawChooser() {
   for (const id of ORDER) {
-    picks[id].classList.toggle('on', id === ed.id); picks[id].setAttribute('aria-pressed', id === ed.id);
-    const im = picks[id].querySelector('.pile'), u = pileURL(id, id === ed.id ? A - ed.n : avail(id));
+    const b = CHOOSE[id], im = b.firstChild, u = pileURL(id, availAt(pop.slot, id));
     if (im.src !== u) im.src = u;
+    b.classList.toggle('on', S.slots[pop.slot].id === id);
   }
-  $('nVal').textContent = ed.n + 'こ';
-  $('nMinus').disabled = ed.n <= 0; $('nPlus').disabled = ed.n >= mx;
-  $('payVal').textContent = '';
-  $('pVal').textContent = fmt(ed.price) + '円';
-  $('pMinus').disabled = ed.price <= 10; $('pPlus').disabled = ed.price >= 99990;
-  const hearts = Math.max(0, Math.min(5, Math.round(ease(ed.id, ed.price) / 0.72 * 5)));
+}
+function openChooser(i) {
+  closePops();
+  pop = { kind: 'choose', slot: i, id: null }; sheetSlot = i;
+  drawChooser();
+  const r = slotRect(i), upper = Math.floor(i / 3) < Math.floor(geo().tiers / 2);
+  popAt($('chooser'), r.cx, upper ? r.plank + 11 : r.y, upper);
+  showHint();
+}
+function choose(id) {
+  const i = pop.slot, s = S.slots[i], A = availAt(i, id), n = Math.min(cap(), A);
+  if (s.id && s.id !== id) S.inv[s.id] += s.n;
+  S.inv[id] = A - n; S.slots[i] = { id, n };
+  S.tips.place = 1;
+  closePops();
+  if (!n) toast('在庫がない。厨房で焼こう');
+}
+function drawPricer() {
+  const id = pop.id, p = S.prices[id], v = $('pVal');
+  v.textContent = fmt(p) + '円';
+  v.classList.toggle('loss', p < SWEETS[id].cost);   // 材料費より安いと赤
+  $('pMinus').disabled = p <= 10; $('pPlus').disabled = p >= 99990;
+  const hearts = Math.max(0, Math.min(5, Math.round(ease(id, p) / 0.72 * 5)));
   const hb = $('hearts'); hb.textContent = '';
   for (let k = 0; k < 5; k++) { const im = new Image(); im.alt = ''; im.src = k < hearts ? HEART_ON_URL : HEART_OFF_URL; hb.appendChild(im); }
   hb.setAttribute('aria-label', '売れやすさ 5のうち' + hearts);
-  const note = $('note'), prof = ed.price - SWEETS[ed.id].cost, none = A <= 0;
-  note.classList.toggle('warn', none);
-  note.textContent = none ? '在庫がない（厨房で焼く）' : prof >= 0 ? '1こ売れると ' + fmt(prof) + '円のもうけ' : '1こ売れるごとに ' + fmt(-prof) + '円の損';
-  $('placeBtn').textContent = (s.id === ed.id && s.n === ed.n) ? '決める' : '並べる';
 }
-function openSheet(i) {
-  closeLedger();
-  const s = S.slots[i];
-  ed.slot = i;
-  ed.id = s.id || ORDER.find(id => S.inv[id] > 0) || ORDER[0];
-  ed.price = S.prices[ed.id];
-  ed.n = Math.min(cap(), avail(ed.id));
-  sheetSlot = i;
-  // 下の段のときはパネルを上に出して、えらんだマスが見えるようにする
-  const sh = $('sheet'), lower = Math.floor(i / 3) >= Math.floor(geo().tiers / 2);
-  if (lower) { sh.style.top = ($('hud').offsetHeight + 4) + 'px'; sh.style.bottom = 'auto'; }
-  else { sh.style.top = 'auto'; sh.style.bottom = '8px'; }
-  sh.hidden = false; syncFoot(); showHint();
-  drawSheet();
+function openPricer(i) {
+  closePops();
+  pop = { kind: 'price', slot: i, id: S.slots[i].id }; sheetSlot = i;
+  S.tips.price = 1;
+  drawPricer();
+  const r = slotRect(i);
+  popAt($('pricer'), r.cx, r.plank + 11, true);
+  showHint();
 }
-function closeSheet() { sheetSlot = -1; $('sheet').hidden = true; syncFoot(); }
-// 帳面と棚のパネルを開いている間は、下の段（部屋とお店のボタン）をかくす
-function syncFoot() { $('foot').style.visibility = ($('sheet').hidden && $('ledger').hidden) ? '' : 'hidden'; }
-function place() {
-  const s = S.slots[ed.slot], A = avail(ed.id), n = Math.min(ed.n, cap(), A);
-  if (s.id && s.id !== ed.id) S.inv[s.id] += s.n;
-  S.inv[ed.id] = A - n;
-  S.prices[ed.id] = ed.price;
-  S.slots[ed.slot] = { id: ed.id, n };
-  S.tips.place = 1;
-  closeSheet(); save();
+function closePops() {
+  if (pop.kind) save();
+  pop = { kind: null, slot: -1, id: null }; sheetSlot = -1;
+  $('chooser').hidden = true; $('pricer').hidden = true;
 }
+// 帳面を開いている間は、下の段（部屋とお店のボタン）をかくす
+function syncFoot() { $('foot').style.visibility = $('ledger').hidden ? '' : 'hidden'; }
 function hold(btn, fn) {
   let t1, t2;
   const stop = () => { clearTimeout(t1); clearInterval(t2); };
@@ -1211,13 +1203,11 @@ function hold(btn, fn) {
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
   btn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!btn.disabled) fn(); } });
 }
-hold($('nMinus'), () => { ed.n = Math.max(0, ed.n - countStep()); drawSheet(); });
-hold($('nPlus'), () => { ed.n = Math.min(cap(), avail(ed.id), ed.n + countStep()); drawSheet(); });
-hold($('pMinus'), () => { ed.price = Math.max(10, ed.price - priceStep(ed.price, true)); drawSheet(); });
-hold($('pPlus'), () => { ed.price = Math.min(99990, ed.price + priceStep(ed.price, false)); drawSheet(); });
-$('cancelBtn').addEventListener('click', closeSheet);
-$('placeBtn').addEventListener('click', place);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheet(); closeLedger(); } });
+hold($('pMinus'), () => { S.prices[pop.id] = Math.max(10, S.prices[pop.id] - priceStep(S.prices[pop.id], true)); drawPricer(); });
+hold($('pPlus'), () => { S.prices[pop.id] = Math.min(99990, S.prices[pop.id] + priceStep(S.prices[pop.id], false)); drawPricer(); });
+// 吹き出しの外をさわったら閉じる（売り場の絵は下のタップの所で）
+document.addEventListener('pointerdown', e => { if (pop.kind && !e.target.closest('.pop') && e.target !== cv) closePops(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePops(); closeLedger(); } });
 
 /* ---------- 焼くお菓子の行（厨房の札） ---------- */
 const MAT_URL = Object.fromEntries(MORDER.map(m => [m, big(MSPR[m], 2)]));
@@ -1268,10 +1258,12 @@ cv.addEventListener('click', e => {
   const b = cv.getBoundingClientRect();
   const x = (e.clientX - b.left) / b.width * W, yy = (e.clientY - b.top) / b.height * HH;
   if (view === 'uriba') {
-    const y = yy - OFF;
+    const y = yy - OFF, was = pop.kind;
+    closePops();
     for (let i = 0; i < S.slots.length; i++) {
-      const r = slotRect(i);
-      if (x >= r.x && x < r.x + r.w && y >= r.y && y < r.plank + 10) { openSheet(i); return; }
+      const r = slotRect(i), s = S.slots[i];
+      if (s.id && Math.abs(x - r.cx) <= (textW(pixNum(S.prices[s.id])) >> 1) + 5 && y >= r.plank - 1 && y < r.plank + 12) { openPricer(i); return; }
+      if (!was && x >= r.x && x < r.x + r.w && y >= r.y && y < r.plank + 10) { openChooser(i); return; }
     }
   } else if (view === 'nyuka') {
     if (S.boxes.length && yy > FL() - 50) tapBox();
@@ -1365,7 +1357,7 @@ function expand() {
   closeLedger(); hud(); save();
   toast(ns.name + 'になった');
 }
-function openLedger() { closeSheet(); refreshLedger(); $('ledger').hidden = false; syncFoot(); }
+function openLedger() { closePops(); refreshLedger(); $('ledger').hidden = false; syncFoot(); }
 function closeLedger() { $('ledger').hidden = true; syncFoot(); }
 $('shopBtn').addEventListener('click', () => { if ($('ledger').hidden) openLedger(); else closeLedger(); });
 $('ledClose').addEventListener('click', closeLedger);
@@ -1434,7 +1426,7 @@ function start(data) {
   const frame = now => {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     blink += dt;
-    if (document.visibilityState === 'visible' && $('ledger').hidden && $('sheet').hidden) tick(dt);   // 帳面・棚に並べるパネルを開いている間は一時停止（11/4・11/5 しょーくん）
+    if (document.visibilityState === 'visible' && $('ledger').hidden && !pop.kind) tick(dt);   // 帳面・お菓子をえらぶ・値段の吹き出しを開いている間は一時停止（11/4・11/5 しょーくん）
     slow += dt;
     if (slow > 0.3) {
       slow = 0;
@@ -1442,7 +1434,6 @@ function start(data) {
       $('moneyVal').textContent = fmt(S.money);
       $('shopBtn').classList.toggle('can', anyAffordable());
       if (!$('ledger').hidden) refreshLedger();
-      if (!$('sheet').hidden) drawSheet();
       drawTabs(); refreshOverlay(); showHint();
     }
     render();
