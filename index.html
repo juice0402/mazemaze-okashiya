@@ -47,6 +47,11 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 #scene{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;box-shadow:0 0 0 3px var(--walnut),0 0 0 6px var(--cocoa);cursor:pointer}
 #toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;font-size:15px;white-space:nowrap;pointer-events:none}
 #hint{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:6px 12px;font-size:14px;white-space:nowrap;pointer-events:none}
+#ov{position:absolute;pointer-events:none}
+#ov>div{position:absolute;inset:0}
+.board{position:absolute;pointer-events:auto;display:flex;flex-direction:column;padding:6px 8px 8px}
+.board .book{margin-block:4px 0}
+.board .led>*{padding-block:4px}
 #foot{flex:none;display:flex;align-items:flex-end;gap:8px;padding-block:18px 8px}
 #rooms{flex:1;min-width:0;display:flex;align-items:flex-end;border-bottom:4px solid var(--walnut-hi)}
 .room{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;background:none;border:0;padding:0 0 3px;font:inherit;color:var(--milk-2);cursor:pointer}
@@ -89,9 +94,8 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
 .btn.main:disabled{opacity:.45}
 .btn.sub{background:transparent;color:var(--ink);border:3px solid var(--walnut);border-bottom-width:6px}
 .btn:active:not(:disabled){border-bottom-width:3px;transform:translateY(3px)}
-#ledger,#bake{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;padding:10px}
+#ledger{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;padding:10px}
 #ledger{bottom:8px;max-height:calc(100% - 86px)}
-#bake .note{margin-bottom:6px}
 .led-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-inline:2px}
 .led-head h2{margin:0;font-size:16px;font-weight:400}
 .led-total{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
@@ -126,6 +130,7 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
   </header>
   <main id="stage">
     <canvas id="scene" width="128" height="176" role="img" aria-label="売り場：棚とお客さん"></canvas>
+    <div id="ov"><div id="ov-nyuka"></div><div id="ov-chubo"></div></div>
     <div id="toast" class="panel" hidden></div>
     <div id="hint" class="panel" hidden></div>
   </main>
@@ -144,13 +149,6 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
     </div>
     <p id="note" class="note"></p>
     <div class="acts"><button class="btn sub" id="cancelBtn">やめる</button><button class="btn main" id="placeBtn">並べる</button></div>
-  </section>
-
-  <section id="bake" class="panel" hidden aria-label="オーブンで焼く">
-    <div class="led-head"><h2>なにを焼く？</h2><span class="led-total" id="bakeInfo"></span></div>
-    <div id="bakeList" class="book"></div>
-    <p id="bakeNote" class="note"></p>
-    <button class="btn sub" id="bakeClose">やめる</button>
   </section>
 
   <section id="ledger" class="panel" hidden aria-label="お店の帳面">
@@ -486,10 +484,10 @@ function buildUriba() {
 
 /* ほかの部屋は、床の上の高さ（F）から上へ描く。画面が高いときは壁がのびる */
 const FL = () => HH - 24;
-const cardRect = k => ({ x: 4 + k * 24, y: FL() - 96, w: 22, h: 36 });
 const boxPos = k => ({ x: 4 + (k % 6) * 15, y: FL() + 4 - Math.floor(k / 6) * 10 });
 const ovenX = k => { const n = S.ovens.length, tot = n * 26 + (n - 1) * 5; return ((W - tot) >> 1) + k * 31; };
 const ovenTop = () => FL() - 26;
+const doorTop = () => FL() - 44;
 const qx = k => 54 + k * 12;
 
 function buildNyuka() {
@@ -498,19 +496,10 @@ function buildNyuka() {
   for (let X = 0; X < W; X += 12) r('#c9a376', X, 0, 1, F);
   for (let X = 6; X < W; X += 12) for (let Y = 14; Y < F; Y += 40) r('#a88252', X, Y, 1, 1);
   r('#8a5a3b', 0, 0, W, 4); r('#6e452c', 0, 4, W, 1);
-  const cy = F - 96;
-  r('#6e452c', 2, cy - 4, 124, 2);
-  for (let k = 0; k < MORDER.length; k++) {
-    const R = cardRect(k), m = MORDER[k];
-    r('#3a2318', R.x, R.y, R.w, R.h); r('#fff7ea', R.x + 1, R.y + 1, R.w - 2, R.h - 2);
-    r(MATS[m].label, R.x + 1, R.y + 1, R.w - 2, 3);
-    x.drawImage(MSPR[m], R.x + 6, R.y + 6);
-  }
-  r('#8a5a3b', 2, cy + 38, 124, 4); r('#b47a4c', 2, cy + 38, 124, 1); r('#5a3420', 2, cy + 42, 124, 1);
-  r('#5a3420', 8, cy + 43, 2, 5); r('#5a3420', 118, cy + 43, 2, 5);
   // 裏口のとびら（届くまでの伝票をはる）
-  r('#5a3420', 97, F - 52, 29, 52); r('#a87248', 99, F - 50, 25, 50); r('#8a5a36', 111, F - 50, 1, 50);
-  r('#f4ead8', 101, F - 48, 21, 34); r('#d9cbb0', 101, F - 48, 21, 1);
+  const D = doorTop();
+  r('#5a3420', 97, D, 29, F - D); r('#a87248', 99, D + 2, 25, F - D - 2); r('#8a5a36', 111, D + 2, 1, F - D - 2);
+  r('#f4ead8', 101, D + 4, 21, F - D - 18); r('#d9cbb0', 101, D + 4, 21, 1);
   r('#f6c94c', 108, F - 9, 2, 2); r('#f6c94c', 113, F - 9, 2, 2);
   r('#a39d94', 0, F, W, 24);
   for (let X = 0; X < W; X += 16) r('#958f87', X, F + 1, 1, 23);
@@ -523,14 +512,6 @@ function buildChubo() {
   r('#f3efe8', 0, 0, W, F);
   for (let Y = F - 8; Y > 0; Y -= 8) r('#e2dad0', 0, Y, W, 1);
   for (let Y = F - 8, k = 0; Y > 0; Y -= 8, k++) for (let X = (k % 2) * 4; X < W; X += 8) r('#e2dad0', X, Y - 7, 1, 7);
-  const my = F - 92;
-  r('#8a5a3b', 2, my + 18, 124, 3); r('#b47a4c', 2, my + 18, 124, 1); r('#5a3420', 2, my + 21, 124, 1);
-  r('#5a3420', 8, my + 22, 2, 4); r('#5a3420', 118, my + 22, 2, 4);
-  MORDER.forEach((m, k) => x.drawImage(MSPR[m], 13 + k * 25 - 5, my));
-  const sy = F - 62;
-  r('#9aa3ad', 4, sy + 11, 120, 2); r('#6b7380', 4, sy + 13, 120, 1);
-  for (const X of [6, 64, 120]) r('#6b7380', X, sy + 14, 1, 4);
-  ORDER.forEach((id, k) => x.drawImage(SPR[id], 22 + k * 42 - 12, sy));
   for (let Y = F, k = 0; Y < HH; Y += 8, k++) for (let X = (k % 2) * 8; X < W; X += 16) { r('#e9e1d6', X, Y, 8, 8); r('#cfc3b3', X + 8 - (k % 2) * 16, Y, 8, 8); }
   r('rgba(43,26,18,.18)', 0, F, W, 2);
   return c;
@@ -619,7 +600,7 @@ function save() {
 }
 
 /* ---------- 遊び ---------- */
-let S, view = 'uriba', cust = [], exits = [], fx = [], spawnT = 3, sheetSlot = -1, bakeOven = -1, blink = 0, P = 1;
+let S, view = 'uriba', cust = [], exits = [], fx = [], spawnT = 3, sheetSlot = -1, blink = 0, P = 1;
 let HH = 176, OFF = 0, BG = {}, runClock = 0, sales = [], staff = [];
 const T = { shiire: 1, pati: 1, tenin: 2, reji: 1 };   // 係ごとの、次に動くまでの秒
 const HELP = { nyuka: { x: 112, tx: 112, hop: 0, walk: 0 }, chubo: { x: 64, tx: 64, hop: 0, walk: 0 }, reji: { x: 8, tx: 8, hop: 0, walk: 0 } };
@@ -746,8 +727,7 @@ function order(m) {
   if (S.money < p) return false;
   S.money -= p;
   S.deliv.push({ m, n: boxN(), t: DELIV_T });
-  const R = cardRect(MORDER.indexOf(m));
-  addFx('nyuka', R.x + 11, R.y + 4, '-' + pixNum(p), '#ffd0dc');
+  addFx('nyuka', 111, doorTop() + 2, '-' + pixNum(p), '#ffd0dc');
   return true;
 }
 function updateDeliv(dt) {
@@ -761,8 +741,8 @@ function openBox() {
   const b = S.boxes.pop();
   if (!b) return false;
   S.stock[b.m] += b.n;
-  const R = cardRect(MORDER.indexOf(b.m));
-  addFx('nyuka', R.x + 11, R.y + 14, '+' + pixNum(b.n), '#bdf2c8');
+  const bp = boxPos(S.boxes.length);
+  addFx('nyuka', bp.x + 7, bp.y, '+' + pixNum(b.n), '#bdf2c8');
   return true;
 }
 
@@ -941,20 +921,16 @@ function renderUriba() {
   if (sheetSlot >= 0 && blink % 0.7 < 0.45) { const r = slotRect(sheetSlot); drawBrackets(r.x + 1, r.y + 1, r.x + r.w - 1, r.plank + 10); }
 }
 function renderNyuka() {
-  const F = FL();
-  MORDER.forEach((m, k) => {
-    const R = cardRect(k), s = pixNum(S.stock[m]);
-    digits(ctx, s, R.x + 11 - (textW(s) >> 1), R.y + 18, S.stock[m] > 0 ? '#3a2318' : '#c8324f');
-    tag(R.x + 11, R.y + 25, boxPrice(m), S.money < boxPrice(m));
-  });
+  const F = FL(), D = doorTop();
   // 届くまで（とびらの伝票）
-  S.deliv.slice(0, 4).forEach((d, k) => {
-    const y = F - 46 + k * 8;
+  const slips = Math.floor((F - D - 18) / 8);
+  S.deliv.slice(0, slips).forEach((d, k) => {
+    const y = D + 6 + k * 8;
     ctx.drawImage(MINIBOX, 102, y);
     rect(MATS[d.m].label, 104, y + 3, 4, 2);
     rect('#d9cbb0', 111, y + 2, 10, 2); rect('#5bb89a', 111, y + 2, Math.round(10 * (1 - d.t / DELIV_T)), 2);
   });
-  if (S.deliv.length > 4) digits(ctx, '+' + (S.deliv.length - 4), 104, F - 13, '#7a5a4a');
+  if (S.deliv.length > slips) digits(ctx, '+' + (S.deliv.length - slips), 104, F - 13, '#7a5a4a');
   // 届いた箱
   const n = Math.min(12, S.boxes.length);
   for (let k = 0; k < n; k++) {
@@ -990,13 +966,10 @@ function drawOven(k) {
   if (done) ctx.drawImage(BUB.excl, x + 8, y - 10 - (blink % 0.8 < 0.4 ? 1 : 0));
 }
 function renderChubo() {
-  const F = FL(), my = F - 92, sy = F - 62, n = batchN();
-  MORDER.forEach((m, k) => { const s = pixNum(S.stock[m]), cx = 13 + k * 25; digits(ctx, s, cx - (textW(s) >> 1), my + 11, S.stock[m] >= n ? '#3a2318' : '#c8324f'); });
-  ORDER.forEach((id, k) => digits(ctx, 'x' + pixNum(S.inv[id]), 22 + k * 42, sy + 3, '#3a2318'));
+
   syncOvens();
   for (let k = 0; k < S.ovens.length; k++) drawOven(k);
   drawHelper('chubo', 'pati', HH - 2);
-  if (bakeOven >= 0 && blink % 0.7 < 0.45) { const x = ovenX(bakeOven), y = ovenTop(); drawBrackets(x - 1, y - 1, x + 26, y + 34); }
 }
 function renderReji() {
   const F = FL();
@@ -1031,14 +1004,20 @@ function render() {
   else renderReji();
   for (const f of fx) if (f.room === view) drawFx(f);
 }
+/* 幅いっぱいに描く。高さが足りないときだけ小さくする。絵は1マスを整数ピクセルで描いてから、ブラウザが少しだけのばす */
+let SC = 2;
 function fit() {
-  const st = $('stage'), dpr = window.devicePixelRatio || 1, HB = geo().HB;
-  P = Math.max(1, Math.floor(Math.min(st.clientWidth * dpr / W, st.clientHeight * dpr / HB)));
-  HH = Math.max(HB, Math.min(HB + 70, Math.floor(st.clientHeight * dpr / P)));
+  const st = $('stage'), dpr = window.devicePixelRatio || 1, HB = geo().HB, sw = st.clientWidth, sh = st.clientHeight;
+  SC = Math.max(0.5, Math.min(sw / W, sh / HB));
+  HH = Math.max(HB, Math.min(HB + 70, Math.floor(sh / SC)));
   OFF = HH - HB;
+  P = Math.max(1, Math.round(SC * dpr));
   cv.width = W * P; cv.height = HH * P;
-  cv.style.width = (W * P / dpr) + 'px'; cv.style.height = (HH * P / dpr) + 'px';
+  const cw = W * SC, ch = HH * SC, ov = $('ov');
+  cv.style.width = cw + 'px'; cv.style.height = ch + 'px';
+  ov.style.width = cw + 'px'; ov.style.height = ch + 'px'; ov.style.left = ((sw - cw) / 2) + 'px'; ov.style.top = ((sh - ch) / 2) + 'px';
   BG = { uriba: buildUriba(), nyuka: buildNyuka(), chubo: buildChubo(), reji: buildReji(), rejiFront: buildRejiFront() };
+  if (OVL.ready) { layoutOverlay(); refreshOverlay(); }
 }
 
 /* ---------- 画面の文字 ---------- */
@@ -1053,16 +1032,18 @@ function hud(bump) {
 }
 let toastT = 0;
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
-const TIPS = { uriba: ['place', '棚をタップすると並べられる'], chubo: ['bake', 'オーブンをタップして焼く'], nyuka: ['order', '材料をタップすると注文できる'], reji: ['pay', 'タップでお会計'] };
+const TIPS = { uriba: ['place', '棚をタップすると並べられる'], chubo: ['bake', ''], nyuka: ['order', ''], reji: ['pay', 'タップでお会計'] };
 function showHint() {
   let msg = '';
   if (view === 'nyuka' && S.tips.order && !S.tips.open && !S.eq.shiire && S.boxes.length) msg = '届いた箱をタップして開ける';
   else if (view === 'chubo' && S.tips.bake && !S.tips.take && !S.eq.pati && S.ovens.some(isDone)) msg = '焼けたらタップで取り出す';
   else if (view === 'reji' && (!S.queue.length || S.eq.reji)) msg = '';
   else { const [k, m] = TIPS[view]; if (!S.tips[k]) msg = m; }
-  const h = $('hint');
+  const h = $('hint'), ovTop = parseFloat($('ov').style.top) || 0;
   if (h.textContent !== msg) h.textContent = msg;
-  h.hidden = !msg || !$('sheet').hidden || !$('bake').hidden || !$('toast').hidden;   // 知らせ（toast）が出ている間はヒントを休む
+  // 入荷と厨房は壁に札があるので、ヒントは札の下（入荷は箱の上、厨房は床）に出す
+  h.style.top = view === 'nyuka' ? (ovTop + (FL() - 40) * SC) + 'px' : view === 'chubo' ? (ovTop + (HH - 14) * SC) + 'px' : '12px';
+  h.hidden = !msg || !$('sheet').hidden || !$('toast').hidden;   // 知らせ（toast）が出ている間はヒントを休む
 }
 
 /* ---------- 部屋の切りかえ（下の絵） ---------- */
@@ -1109,11 +1090,11 @@ function drawTabs() {
   }
 }
 function setView(id) {
-  if (view !== id) { closeSheet(); closeBake(); }
+  if (view !== id) closeSheet();
   view = id;
   for (const R of ROOMS) { TAB[R.id].b.classList.toggle('on', R.id === id); TAB[R.id].b.setAttribute('aria-pressed', R.id === id); }
   cv.setAttribute('aria-label', ROOMS.find(R => R.id === id).label);
-  showHint();
+  refreshOverlay(); showHint();
 }
 
 /* ---------- 棚に並べる（在庫から） ---------- */
@@ -1160,7 +1141,7 @@ function drawSheet() {
   $('placeBtn').textContent = (s.id === ed.id && s.n === ed.n) ? '決める' : '並べる';
 }
 function openSheet(i) {
-  closeLedger(); closeBake();
+  closeLedger();
   const s = S.slots[i];
   ed.slot = i;
   ed.id = s.id || ORDER.find(id => S.inv[id] > 0) || ORDER[0];
@@ -1203,55 +1184,53 @@ hold($('pMinus'), () => { ed.price = Math.max(10, ed.price - priceStep(ed.price,
 hold($('pPlus'), () => { ed.price = Math.min(99990, ed.price + priceStep(ed.price, false)); drawSheet(); });
 $('cancelBtn').addEventListener('click', closeSheet);
 $('placeBtn').addEventListener('click', place);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheet(); closeLedger(); closeBake(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheet(); closeLedger(); } });
 
-/* ---------- オーブンで焼く（なにを焼くかえらぶ） ---------- */
+/* ---------- 焼くお菓子の行（厨房の札） ---------- */
 const MAT_URL = Object.fromEntries(MORDER.map(m => [m, big(MSPR[m], 2)]));
-const BK = {};
-for (const id of ORDER) {
+function recipeRow(id, onClick) {
   const b = document.createElement('button');
   b.className = 'led'; b.type = 'button';
   b.innerHTML = '<img class="ic" alt=""><span><span class="nm"></span><span class="cnt"></span><span class="ef"></span></span><span class="pr"></span>';
   b.querySelector('.ic').src = big(SPR[id], 3);
   b.querySelector('.nm').textContent = SWEETS[id].name;
   for (const m of RECIPE[id]) { const im = new Image(); im.className = 'mt'; im.alt = MATS[m].name; im.src = MAT_URL[m]; im.dataset.m = m; b.querySelector('.pr').appendChild(im); }
-  b.addEventListener('click', () => {
-    if (bakeOven >= 0 && bake(bakeOven, id)) { S.tips.bake = 1; closeBake(); save(); }
-  });
-  $('bakeList').appendChild(b); BK[id] = b;
+  b.addEventListener('click', onClick);
+  return b;
 }
-function drawBake() {
-  const n = batchN();
-  $('bakeInfo').textContent = '1回で' + fmt(n) + 'こ焼ける';
-  for (const id of ORDER) {
-    const b = BK[id], lack = RECIPE[id].filter(m => S.stock[m] < n);
-    b.disabled = lack.length > 0;
-    b.classList.toggle('lack', lack.length > 0);
-    b.querySelector('.cnt').textContent = '在庫' + fmt(S.inv[id]);
-    b.querySelector('.ef').textContent = lack.length ? lack.map(m => MATS[m].name).join('・') + 'がたりない' : RECIPE[id].map(m => MATS[m].name).join('・');
-    b.querySelectorAll('.mt').forEach(im => im.classList.toggle('lack', S.stock[im.dataset.m] < n));
-  }
-  const none = ORDER.every(id => !canBake(id));
-  $('bakeNote').classList.toggle('warn', none);
-  $('bakeNote').textContent = none ? '材料がたりない（入荷で注文する）' : '';
+function paintRecipe(b, id, n) {
+  const lack = RECIPE[id].filter(m => S.stock[m] < n);
+  b.disabled = lack.length > 0;
+  b.classList.toggle('lack', lack.length > 0);
+  b.querySelector('.cnt').textContent = '在庫' + fmt(S.inv[id]);
+  b.querySelector('.ef').textContent = lack.length ? lack.map(m => MATS[m].name).join('・') + 'がたりない' : RECIPE[id].map(m => MATS[m].name).join('・');
+  b.querySelectorAll('.mt').forEach(im => im.classList.toggle('lack', S.stock[im.dataset.m] < n));
 }
-function openBake(k) {
-  closeSheet(); closeLedger();
-  bakeOven = k;
-  const p = $('bake');
-  p.style.top = ($('hud').offsetHeight + 4) + 'px';
-  p.hidden = false; showHint();
-  drawBake();
-}
-function closeBake() { bakeOven = -1; $('bake').hidden = true; }
-$('bakeClose').addEventListener('click', closeBake);
-
 /* ---------- 画面をタップ ---------- */
 function tapOven(k) {
   const o = S.ovens[k];
-  if (isDone(o)) { takeOut(k); S.tips.take = 1; closeBake(); }
-  else if (!o.id) openBake(k);
+  if (isDone(o)) {
+    takeOut(k); S.tips.take = 1;
+    if (!S.tips.t3) { S.tips.t3 = 1; toast('お菓子が在庫に入った。売り場の棚に並べよう'); }
+  } else if (!o.id) toast('上の「お菓子を焼く」からえらぶ');
   else toast('焼いているところ');
+}
+function tapOrder(m) {
+  if (!order(m)) { toast('お金が足りない'); return; }
+  S.tips.order = 1;
+  if (!S.tips.t1) { S.tips.t1 = 1; toast('注文した。少しで箱が届く'); }
+  refreshOverlay();
+}
+function tapBox() {
+  if (!openBox()) return;
+  S.tips.open = 1;
+  if (!S.tips.t2) { S.tips.t2 = 1; toast('材料が倉庫に入った。厨房で焼ける'); }
+  refreshOverlay();
+}
+function bakeNext(id) {
+  const k = S.ovens.findIndex(o => !o.id);
+  if (k < 0) { toast(S.ovens.some(isDone) ? '焼けたオーブンをタップして取り出す' : 'オーブンがあいていない'); return; }
+  if (bake(k, id)) { S.tips.bake = 1; save(); refreshOverlay(); }
 }
 cv.addEventListener('click', e => {
   const b = cv.getBoundingClientRect();
@@ -1263,14 +1242,7 @@ cv.addEventListener('click', e => {
       if (x >= r.x && x < r.x + r.w && y >= r.y && y < r.plank + 10) { openSheet(i); return; }
     }
   } else if (view === 'nyuka') {
-    for (let k = 0; k < MORDER.length; k++) {
-      const R = cardRect(k);
-      if (x >= R.x - 1 && x < R.x + R.w + 1 && yy >= R.y - 2 && yy < R.y + R.h + 2) {
-        if (order(MORDER[k])) S.tips.order = 1; else toast('お金が足りない');
-        return;
-      }
-    }
-    if (S.boxes.length && yy > FL() - 50) { openBox(); S.tips.open = 1; }
+    if (S.boxes.length && yy > FL() - 50) tapBox();
   } else if (view === 'chubo') {
     for (let k = 0; k < S.ovens.length; k++) {
       const X = ovenX(k), Y = ovenTop();
@@ -1361,10 +1333,52 @@ function expand() {
   closeLedger(); hud(); save();
   toast(ns.name + 'になった');
 }
-function openLedger() { closeSheet(); closeBake(); refreshLedger(); $('ledger').hidden = false; syncFoot(); }
+function openLedger() { closeSheet(); refreshLedger(); $('ledger').hidden = false; syncFoot(); }
 function closeLedger() { $('ledger').hidden = true; syncFoot(); }
 $('shopBtn').addEventListener('click', () => { if ($('ledger').hidden) openLedger(); else closeLedger(); });
 $('ledClose').addEventListener('click', closeLedger);
+
+/* ---------- 入荷・厨房の壁の札（行をタップで注文・焼く。11/4 しょーくんが A 案をえらんだ） ---------- */
+const OVL = { ready: false };
+const OV = { nyuka: $('ov-nyuka'), chubo: $('ov-chubo') };
+const USES = Object.fromEntries(MORDER.map(m => [m, ORDER.filter(id => RECIPE[id].includes(m)).map(id => SWEETS[id].name).join('・') + 'に使う']));
+const NROW = {}, CROW = {};
+function makeBoard(room, title) {
+  const d = document.createElement('section');
+  d.className = 'board panel';
+  d.innerHTML = '<div class="led-head"><h2></h2><span class="led-total"></span></div><div class="book"></div>';
+  d.querySelector('h2').textContent = title;
+  OV[room].appendChild(d);
+  return d;
+}
+const NBoard = makeBoard('nyuka', '材料を注文する');
+for (const m of MORDER) {
+  const b = ledRow('n-' + m, MSPR[m]);
+  b.addEventListener('click', () => tapOrder(m));
+  NBoard.querySelector('.book').appendChild(b); NROW[m] = b;
+}
+const CBoard = makeBoard('chubo', 'お菓子を焼く');
+for (const id of ORDER) { CROW[id] = recipeRow(id, () => bakeNext(id)); CBoard.querySelector('.book').appendChild(CROW[id]); }
+OVL.ready = true;
+const placeBox = (el, x, y, w, h) => { el.style.left = x * SC + 'px'; el.style.top = y * SC + 'px'; el.style.width = w * SC + 'px'; el.style.maxHeight = h * SC + 'px'; };
+function layoutOverlay() {
+  placeBox(NBoard, 4, 5, 120, doorTop() - 10); placeBox(CBoard, 4, 5, 120, ovenTop() - 19);
+}
+function refreshOverlay() {
+  if (!S) return;
+  for (const k in OV) OV[k].hidden = view !== k;
+  if (view === 'nyuka') {
+    NBoard.querySelector('.led-total').textContent = 'タップで1箱（' + fmt(boxN()) + 'こ）';
+    for (const m of MORDER) {
+      const p = boxPrice(m), way = S.deliv.filter(d => d.m === m).length, came = S.boxes.filter(x => x.m === m).length;
+      setRow(NROW[m], MATS[m].name, '倉庫 ' + fmt(S.stock[m]) + 'こ', way ? 'とどく途中 ' + way + '箱' : came ? '届いた箱が下に' + came + 'つ' : USES[m], fmt(p), S.money >= p);
+    }
+  } else if (view === 'chubo') {
+    const n = batchN();
+    CBoard.querySelector('.led-total').textContent = ORDER.some(canBake) ? 'タップで1回' + fmt(n) + 'こ' : '材料は入荷で注文';
+    for (const id of ORDER) paintRecipe(CROW[id], id, n);
+  }
+}
 
 /* ---------- 動かす ---------- */
 function start(data) {
@@ -1387,9 +1401,8 @@ function start(data) {
       $('moneyVal').textContent = fmt(S.money);
       $('shopBtn').classList.toggle('can', anyAffordable());
       if (!$('ledger').hidden) refreshLedger();
-      if (!$('bake').hidden) drawBake();
       if (!$('sheet').hidden) drawSheet();
-      drawTabs(); showHint();
+      drawTabs(); refreshOverlay(); showHint();
     }
     render();
     requestAnimationFrame(frame);
