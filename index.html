@@ -87,13 +87,14 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
 .led-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-inline:2px}
 .led-head h2{margin:0;font-size:16px;font-weight:400}
 .led-total{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
-#ledList{flex:1;min-height:0;overflow-y:auto;margin-block:6px 10px;border-top:2px solid var(--ink-soft);border-left:3px double var(--berry);overscroll-behavior:contain}
-.led{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;width:100%;padding:6px 4px 6px 8px;background:none;border:0;border-bottom:2px solid var(--line);font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+#ledList{flex:1;min-height:0;overflow-y:auto;margin-block:6px 10px;border-block:2px solid var(--ink-soft);border-inline:3px double var(--berry);overscroll-behavior:contain}
+.led{display:grid;grid-template-columns:34px 1fr 6.4em;align-items:center;gap:8px;width:100%;padding:0 0 0 8px;background:none;border:0;border-bottom:2px solid var(--line);font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.led>*{padding-block:6px}
 .led .ic{width:30px;height:30px;image-rendering:pixelated}
 .led .nm{font-size:15px}
 .led .cnt{font-size:13px;color:var(--ink-soft);margin-left:6px;font-variant-numeric:tabular-nums}
 .led .ef{display:block;font-size:12px;color:var(--ink-soft)}
-.led .pr{display:flex;align-items:center;gap:3px;font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.led .pr{align-self:stretch;display:flex;align-items:center;justify-content:flex-end;gap:3px;padding-inline:6px;border-left:2px solid var(--line);font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .led .pr img{width:14px;height:14px;image-rendering:pixelated}
 .led:disabled{cursor:default}
 .led:disabled .pr{color:var(--ink-faint)}
@@ -293,8 +294,6 @@ function personSprite(t, frame) {
 }
 const PSPR = {};
 for (const t of TYPES) PSPR[t.id] = [0, 1, 2].map(f => personSprite(t, f));
-const STAFF_SPR = personSprite(STAFF, 0);
-ICONS.tenin = STAFF_SPR;
 
 const DIG = {
   '0': ['111','101','101','101','111'], '1': ['010','110','010','010','111'], '2': ['111','001','111','100','111'],
@@ -442,7 +441,7 @@ function save() {
 
 /* ---------- 遊び ---------- */
 let S, cust = [], fx = [], spawnT = 3, staffT = 2, sheetSlot = -1, blink = 0, P = 1, lastMin = -1;
-let HH = 176, OFF = 0, BG = null, runClock = 0, sales = [], staffHop = [0, 0, 0];
+let HH = 176, OFF = 0, BG = null, runClock = 0, sales = [], staff = [];
 const cv = $('scene'), ctx = cv.getContext('2d');
 const pf = (r, t) => 1 / (1 + Math.exp((r - t) * 7));
 const sround = v => Math.floor(v) + (Math.random() < v - Math.floor(v) ? 1 : 0);
@@ -474,7 +473,7 @@ function spawn() {
   if (cust.length >= 5) return;
   const t = pickType(), d = decide(t), g = geo(), grp = crowd();
   cust.push(Object.assign({
-    t, x: -8, y: g.base + 30 + Math.floor(Math.random() * 12), sp: 15 + Math.random() * 6,
+    t, x: -8, y: g.base + 32 + Math.floor(Math.random() * 11), sp: 15 + Math.random() * 6,
     state: 'in', timer: 0, walk: 0, bubble: null, grp, many: 0,
     tx: d.slot >= 0 ? slotRect(d.slot).cx + Math.round(Math.random() * 6 - 3) : 20 + Math.random() * 88,
   }, d));
@@ -509,19 +508,53 @@ function resolve(c) {
     hud(true);
   } else c.bubble = c.outcome === 'pricey' ? 'drop' : 'dots';
 }
-function restockOne() {
-  const C = cap();
+/* 店員さん：絵に出すのは3人まで。棚の前の奥側を歩いて、補充する棚まで行く（お客さんは手前を通る） */
+const STAFF_SPR = [0, 1, 2].map(f => personSprite(STAFF, f));
+ICONS.tenin = STAFF_SPR[0];
+function syncStaff() {
+  const n = Math.min(3, S.eq.tenin);
+  while (staff.length < n) { const home = 116 - staff.length * 12; staff.push({ x: home, home, state: 'idle', slot: -1, walk: 0, hop: 0, wait: 0 }); }
+  staff.length = n;
+}
+function pickSlot() {
+  const C = cap(), busy = new Set(staff.filter(s => s.state === 'go').map(s => s.slot));
   let best = -1, bestFill = 1;
-  S.slots.forEach((s, i) => { if (s.id && s.n < C && s.n / C < bestFill) { bestFill = s.n / C; best = i; } });
-  if (best < 0) return;
-  const s = S.slots[best], cost = SWEETS[s.id].cost, k = Math.min(C - s.n, Math.floor(S.money / cost));
+  S.slots.forEach((s, i) => { if (s.id && s.n < C && !busy.has(i) && s.n / C < bestFill) { bestFill = s.n / C; best = i; } });
+  return best;
+}
+function fillSlot(i) {
+  const C = cap(), s = S.slots[i];
+  if (!s || !s.id) return;
+  const cost = SWEETS[s.id].cost, k = Math.min(C - s.n, Math.floor(S.money / cost));
   if (k <= 0) return;
   s.n += k; S.money -= k * cost; S.today.spent += k * cost;
-  const r = slotRect(best);
+  const r = slotRect(i);
   fx.push({ x: r.cx, y: r.plank - 14, t: 0, txt: '+' + k, col: '#bdf2c8' });
-  const who = Math.floor(Math.random() * Math.min(3, S.eq.tenin));
-  staffHop[who] = 0.25;
   hud();
+}
+function restockOne() {
+  const i = pickSlot();
+  if (i < 0) return;
+  const st = staff.find(s => s.state === 'idle');
+  if (st) { st.state = 'go'; st.slot = i; }
+  else if (S.eq.tenin > staff.length) fillSlot(i);   // 絵に出ていない店員さんは、その場で並べる
+}
+function updateStaff(dt) {
+  for (const st of staff) {
+    st.hop = Math.max(0, st.hop - dt);
+    if (st.state === 'go' || st.state === 'back') {
+      const tx = st.state === 'go' ? slotRect(st.slot).cx : st.home, d = tx - st.x, step = 40 * dt;
+      st.walk += dt;
+      if (Math.abs(d) <= step) {
+        st.x = tx;
+        if (st.state === 'go') { fillSlot(st.slot); st.hop = 0.25; st.state = 'work'; st.wait = 0.35; }
+        else st.state = 'idle';
+      } else st.x += Math.sign(d) * step;
+    } else if (st.state === 'work') {
+      st.wait -= dt;
+      if (st.wait <= 0) st.state = 'back';
+    }
+  }
 }
 function updateCustomers(dt) {
   for (const c of cust) {
@@ -545,10 +578,11 @@ function tick(dt) {
     if (spawnT <= 0 && S.phase === 'open') { spawn(); spawnT = Math.max(8, 12 / custMul()) * (0.7 + Math.random() * 0.6); }
     if (S.eq.tenin > 0) { staffT -= dt; if (staffT <= 0) { staffT = 5 / S.eq.tenin; restockOne(); } }
   }
+  syncStaff();
+  updateStaff(dt);
   updateCustomers(dt);
   for (const f of fx) f.t += dt;
   fx = fx.filter(f => f.t < 0.9);
-  for (let k = 0; k < 3; k++) staffHop[k] = Math.max(0, staffHop[k] - dt);
   if (S.phase === 'closing' && cust.length === 0) { S.phase = 'receipt'; showReceipt(); save(); }
   const m = Math.floor(S.minute);
   if (m !== lastMin) { lastMin = m; hudTime(); }
@@ -596,10 +630,13 @@ function drawCust(c) {
   }
 }
 function drawStaff() {
-  const n = Math.min(3, S.eq.tenin), g = geo();
-  for (let k = 0; k < n; k++) {
-    const x = 116 - k * 13, y = g.base + 40 - Math.round(Math.sin(Math.min(1, staffHop[k] / 0.25) * Math.PI) * 3);
-    ctx.drawImage(STAFF_SPR, x - 6, y - (STAFF_SPR.height - 2));
+  const g = geo();
+  syncStaff();
+  for (const st of [...staff].sort((a, b) => a.x - b.x)) {
+    const moving = st.state === 'go' || st.state === 'back';
+    const spr = STAFF_SPR[moving ? (Math.floor(st.walk * 6) % 2 ? 1 : 2) : 0];
+    const y = g.base + 21 - Math.round(Math.sin(Math.min(1, st.hop / 0.25) * Math.PI) * 3);
+    ctx.drawImage(spr, Math.round(st.x) - 6, y - (spr.height - 2));
   }
 }
 function drawFx(f) {
