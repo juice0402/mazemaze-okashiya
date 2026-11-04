@@ -34,15 +34,13 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 #money small{font-size:15px}
 #money.bump{animation:bump .22s steps(2)}
 @keyframes bump{50%{transform:scale(1.08)}}
-#clock{text-align:right;line-height:1.15}
-#clock .d{font-size:13px;color:var(--mint)}
-#timeVal{font-size:22px;font-variant-numeric:tabular-nums}
+#rate{text-align:right;font-size:13px;color:var(--mint);line-height:1.15}
+#rate b{font-weight:400;font-size:22px;color:var(--milk);font-variant-numeric:tabular-nums}
 #stage{position:relative;flex:1;min-height:0}
 #scene{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;box-shadow:0 0 0 3px var(--walnut),0 0 0 6px var(--cocoa);cursor:pointer}
 #toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;font-size:15px;white-space:nowrap;pointer-events:none}
 #foot{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding-block:6px;font-size:14px;color:var(--milk-2)}
-#foot b{font-weight:400;color:var(--milk);font-size:17px;font-variant-numeric:tabular-nums}
-#shopBtn{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding-inline:12px;font-size:16px;color:var(--milk);border-color:var(--walnut-hi);background:var(--walnut)}
+#shopBtn{flex:none;margin-left:auto;display:flex;align-items:center;gap:6px;height:40px;padding-inline:12px;font-size:16px;color:var(--milk);border-color:var(--walnut-hi);background:var(--walnut)}
 #shopBtn img{width:20px;height:20px;image-rendering:pixelated}
 #shopBtn.can{background:var(--berry);border-color:var(--berry-dk);color:var(--paper)}
 .panel{background:var(--milk);color:var(--ink);border:4px solid var(--walnut);box-shadow:inset 0 0 0 2px var(--paper)}
@@ -94,26 +92,13 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
 .led.big .nm{color:var(--berry-dk)}
 .led.locked .nm,.led.locked .ef{color:var(--ink-faint)}
 .led.locked .ic{opacity:.25}
-#receipt{position:absolute;inset:0;display:grid;place-items:center;background:rgba(43,26,18,.6);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
-.paper{position:relative;width:min(290px,100%);background:var(--paper);color:var(--ink);padding:18px 18px 22px;font-size:15px;font-variant-numeric:tabular-nums}
-.paper::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0h12v2L6 8 0 2z' fill='%23fff'/%3E%3C/svg%3E") repeat-x}
-.r-head{text-align:center;font-size:16px;letter-spacing:.08em}
-.r-day{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:2px}
-.r-rule{border-top:2px dashed var(--ink-soft);margin-block:10px;opacity:.6}
-.r-line{display:flex;justify-content:space-between;gap:12px;padding-block:2px}
-.r-line.sum{font-size:18px}
-.r-none{color:var(--ink-soft);text-align:center}
-#nextBtn{width:100%;margin-top:16px}
 @media (prefers-reduced-motion:reduce){#money.bump{animation:none}.pick img{transition:none}}
 </style>
 
 <div id="app">
   <header id="hud">
-    <div>
-      <div class="shop" id="shopName">まぜまぜおかし屋</div>
-      <div id="money"><img id="coinImg" alt=""><span id="moneyVal">0</span><small>円</small></div>
-    </div>
-    <div id="clock"><div class="d"><span id="dayVal">1</span>日目</div><div id="timeVal">9:00</div></div>
+    <div id="money"><img id="coinImg" alt=""><span id="moneyVal">0</span><small>円</small></div>
+    <div id="rate">毎秒 <b id="rateVal">0</b>円</div>
   </header>
   <main id="stage">
     <canvas id="scene" width="128" height="176" role="img" aria-label="お店の棚とお客さん"></canvas>
@@ -121,7 +106,6 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
   </main>
   <footer id="foot">
     <span id="hint">棚をタップすると並べられる</span>
-    <span id="rate" hidden>毎秒 <b id="rateVal">0</b>円</span>
     <button class="btn sub" id="shopBtn" type="button"><img id="shopIcon" alt="">お店</button>
   </footer>
 
@@ -143,27 +127,13 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
     <button class="btn sub" id="ledClose">とじる</button>
   </section>
 
-  <section id="receipt" hidden aria-label="きょうのレシート">
-    <div class="paper">
-      <div class="r-head" id="rShop">まぜまぜおかし屋</div>
-      <div class="r-day" id="rDay">1日目</div>
-      <div class="r-rule"></div>
-      <div id="rItems"></div>
-      <div class="r-rule"></div>
-      <div class="r-line sum"><span>売上</span><span id="rRev">0円</span></div>
-      <div class="r-line"><span>材料費</span><span id="rSpent">0円</span></div>
-      <div class="r-line"><span>来たお客さん</span><span id="rVis">0人</span></div>
-      <button class="btn main" id="nextBtn">つぎの日へ</button>
-    </div>
-  </section>
 </div>
 
 <script>
 (() => {
 'use strict';
 const W = 128, KEY = 'mazemaze-okashiya';
-const MPS = 3;          // 1秒でお店の時計が3分すすむ（9:00〜18:00 が3分）
-const DAY_MIN = 540;
+const MPS = 3;          // お客さんの来るペースの単位（1秒＝3）。日数・時計はない
 const $ = id => document.getElementById(id);
 const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
 const clampInt = (v, lo, hi, def) => Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.floor(v))) : def;
@@ -396,7 +366,7 @@ const blankDay = () => ({ visitors: 0, sold: {}, rev: {}, spent: 0 });
 const emptyEq = () => Object.fromEntries(EQUIP.map(e => [e.id, 0]));
 function newGame() {
   return {
-    v: 2, money: 500, day: 1, minute: 0, phase: 'open', stage: 1, eq: emptyEq(),
+    v: 2, money: 500, stage: 1, eq: emptyEq(),
     slots: [{ id: 'cookie', n: 6 }, { id: 'donut', n: 4 }, { id: 'purin', n: 3 }, { id: null, n: 0 }, { id: null, n: 0 }, { id: null, n: 0 }],
     prices: { cookie: 100, donut: 150, purin: 200 },
     today: blankDay(), total: { sold: 0, revenue: 0 }, hintDone: false,
@@ -407,8 +377,7 @@ function sanitize(o) {
   if (!o || (o.v !== 1 && o.v !== 2) || !Array.isArray(o.slots)) return d;
   const num = (v, def) => Number.isFinite(v) ? v : def;
   const s = {
-    v: 2, money: Math.max(0, num(o.money, d.money)), day: clampInt(o.day, 1, 1e9, 1), minute: Math.min(DAY_MIN, Math.max(0, num(o.minute, 0))),
-    phase: ['open', 'closing', 'receipt'].includes(o.phase) ? o.phase : 'open',
+    v: 2, money: Math.max(0, num(o.money, d.money)),
     stage: o.v === 2 ? clampInt(o.stage, 1, STAGES.length - 1, 1) : 1, eq: emptyEq(),
     prices: {}, today: Object.assign(blankDay(), o.today || {}),
     total: Object.assign({ sold: 0, revenue: 0 }, o.total || {}), hintDone: !!o.hintDone,
@@ -431,7 +400,7 @@ function save() {
 }
 
 /* ---------- 遊び ---------- */
-let S, cust = [], fx = [], spawnT = 3, staffT = 2, sheetSlot = -1, blink = 0, P = 1, lastMin = -1;
+let S, cust = [], fx = [], spawnT = 3, staffT = 2, sheetSlot = -1, blink = 0, P = 1;
 let HH = 176, OFF = 0, BG = null, runClock = 0, sales = [], staff = [];
 const cv = $('scene'), ctx = cv.getContext('2d');
 const pf = (r, t) => 1 / (1 + Math.exp((r - t) * 7));
@@ -562,21 +531,14 @@ function updateCustomers(dt) {
 }
 function tick(dt) {
   runClock += dt;
-  if (S.phase === 'open') {
-    S.minute += dt * MPS;
-    if (S.minute >= DAY_MIN) { S.minute = DAY_MIN; S.phase = 'closing'; }
-    spawnT -= dt * MPS;
-    if (spawnT <= 0 && S.phase === 'open') { spawn(); spawnT = Math.max(8, 12 / custMul()) * (0.7 + Math.random() * 0.6); }
-    if (S.eq.tenin > 0) { staffT -= dt; if (staffT <= 0) { staffT = 5 / S.eq.tenin; restockOne(); } }
-  }
+  spawnT -= dt * MPS;
+  if (spawnT <= 0) { spawn(); spawnT = Math.max(8, 12 / custMul()) * (0.7 + Math.random() * 0.6); }
+  if (S.eq.tenin > 0) { staffT -= dt; if (staffT <= 0) { staffT = 5 / S.eq.tenin; restockOne(); } }
   syncStaff();
   updateStaff(dt);
   updateCustomers(dt);
   for (const f of fx) f.t += dt;
   fx = fx.filter(f => f.t < 0.9);
-  if (S.phase === 'closing' && cust.length === 0) { S.phase = 'receipt'; showReceipt(); save(); }
-  const m = Math.floor(S.minute);
-  if (m !== lastMin) { lastMin = m; hudTime(); }
 }
 
 /* ---------- 描く ---------- */
@@ -670,11 +632,6 @@ function fit() {
 }
 
 /* ---------- 画面の文字 ---------- */
-function hudTime() {
-  const m = Math.floor(S.minute) + 540;
-  $('dayVal').textContent = S.day;
-  $('timeVal').textContent = S.phase === 'open' ? Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') : '閉店';
-}
 function rate() {
   sales = sales.filter(e => runClock - e[0] < 20);
   const span = Math.min(20, Math.max(1, runClock));
@@ -683,9 +640,6 @@ function rate() {
 function hud(bump) {
   $('moneyVal').textContent = fmt(S.money);
   $('hint').hidden = S.hintDone;
-  $('rate').hidden = !S.hintDone;
-  $('shopName').textContent = 'まぜまぜおかし屋' + (S.stage > 1 ? '・' + STAGES[S.stage].name : '');
-  hudTime();
   if (bump) { const el = $('money'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
 }
 let toastT = 0;
@@ -787,7 +741,6 @@ $('placeBtn').addEventListener('click', place);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheet(); closeLedger(); } });
 
 cv.addEventListener('click', e => {
-  if (S.phase === 'receipt') return;
   const b = cv.getBoundingClientRect();
   const x = (e.clientX - b.left) / b.width * W, y = (e.clientY - b.top) / b.height * HH - OFF;
   for (let i = 0; i < S.slots.length; i++) {
@@ -875,47 +828,6 @@ function closeLedger() { $('ledger').hidden = true; syncFoot(); }
 $('shopBtn').addEventListener('click', () => { if ($('ledger').hidden) openLedger(); else closeLedger(); });
 $('ledClose').addEventListener('click', closeLedger);
 
-/* ---------- レシート ---------- */
-let rcLeft = 0, rcTimer = 0;
-function showReceipt() {
-  closeSheet(); closeLedger();
-  $('rShop').textContent = 'まぜまぜおかし屋' + (S.stage > 1 ? '・' + STAGES[S.stage].name : '');
-  $('rDay').textContent = S.day + '日目';
-  const box = $('rItems'); box.textContent = '';
-  let rev = 0;
-  for (const id of ORDER) {
-    const n = S.today.sold[id] || 0;
-    if (!n) continue;
-    rev += S.today.rev[id] || 0;
-    const row = document.createElement('div'); row.className = 'r-line';
-    row.innerHTML = '<span></span><span></span>';
-    row.children[0].textContent = SWEETS[id].name + ' ×' + fmt(n);
-    row.children[1].textContent = fmt(S.today.rev[id] || 0);
-    box.appendChild(row);
-  }
-  if (!rev) { const p = document.createElement('div'); p.className = 'r-none'; p.textContent = '売れたものなし'; box.appendChild(p); }
-  $('rRev').textContent = fmt(rev) + '円';
-  $('rSpent').textContent = fmt(S.today.spent) + '円';
-  $('rVis').textContent = fmt(S.today.visitors) + '人';
-  $('receipt').hidden = false;
-  // 見ているだけでも続くように、少したったら自動でつぎの日へ
-  rcLeft = 8; $('nextBtn').textContent = 'つぎの日へ（' + rcLeft + '）';
-  clearInterval(rcTimer);
-  rcTimer = setInterval(() => {
-    if (document.visibilityState !== 'visible') return;
-    rcLeft--;
-    if (rcLeft <= 0) nextDay(); else $('nextBtn').textContent = 'つぎの日へ（' + rcLeft + '）';
-  }, 1000);
-  hud();
-}
-function nextDay() {
-  clearInterval(rcTimer);
-  S.day++; S.minute = 0; S.phase = 'open'; S.today = blankDay(); spawnT = 3; lastMin = -1;
-  $('receipt').hidden = true;
-  hud(); save();
-}
-$('nextBtn').addEventListener('click', nextDay);
-
 /* ---------- 動かす ---------- */
 function start(data) {
   S = sanitize((data && data.state) || load());
@@ -924,12 +836,11 @@ function start(data) {
   fit();
   new ResizeObserver(fit).observe($('stage'));
   hud();
-  if (S.phase === 'receipt') showReceipt();
   let last = performance.now(), slow = 0;
   const frame = now => {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     blink += dt;
-    if (document.visibilityState === 'visible' && sheetSlot < 0 && S.phase !== 'receipt') tick(dt);
+    if (document.visibilityState === 'visible' && sheetSlot < 0) tick(dt);
     slow += dt;
     if (slow > 0.3) {
       slow = 0;
