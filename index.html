@@ -29,7 +29,6 @@
   --gold:#f6c94c;
   --paper:#ffffff;
   --font:"DotGothic16","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
-  --notch:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px);
   color-scheme:dark;
 }
 html{box-sizing:border-box;height:100%}
@@ -54,7 +53,7 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 #shopBtn{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding-inline:12px;font-size:16px;color:var(--milk);border-color:var(--walnut-hi);background:var(--walnut)}
 #shopBtn img{width:20px;height:20px;image-rendering:pixelated}
 #shopBtn.can{background:var(--berry);border-color:var(--berry-dk);color:var(--paper)}
-.panel{background:var(--milk);color:var(--ink);border:4px solid var(--walnut);box-shadow:inset 0 0 0 2px var(--paper);clip-path:var(--notch)}
+.panel{background:var(--milk);color:var(--ink);border:4px solid var(--walnut);box-shadow:inset 0 0 0 2px var(--paper)}
 #sheet{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));padding:4px 10px 10px}
 #tray{display:flex;justify-content:space-around;align-items:flex-end;padding:18px 0 0;border-bottom:4px solid var(--walnut-hi)}
 .pick{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;background:none;border:0;padding:0 4px 3px;font:inherit;color:var(--ink);cursor:pointer}
@@ -70,7 +69,7 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 .cap{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:18px;margin-bottom:3px}
 .stepper{display:flex;align-items:center;justify-content:space-between}
 .lab{font-size:13px;color:var(--ink-soft)}
-.step{width:36px;height:36px;flex:none;font:inherit;font-size:20px;line-height:1;color:var(--ink);background:var(--milk-2);border:3px solid var(--walnut);border-bottom-width:5px;clip-path:var(--notch);cursor:pointer;touch-action:none}
+.step{width:36px;height:36px;flex:none;font:inherit;font-size:20px;line-height:1;color:var(--ink);background:var(--milk-2);border:3px solid var(--walnut);border-bottom-width:5px;cursor:pointer;touch-action:none}
 .step:active{border-bottom-width:3px;transform:translateY(2px)}
 .step:disabled{opacity:.35}
 output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -79,7 +78,7 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
 #note{margin:0 2px 8px;font-size:13px;min-height:1.4em;color:var(--ink-soft)}
 #note.warn{color:var(--berry-dk)}
 .acts{display:flex;gap:10px}
-.btn{flex:1;height:48px;font:inherit;font-size:17px;clip-path:var(--notch);cursor:pointer}
+.btn{flex:1;height:48px;font:inherit;font-size:17px;cursor:pointer}
 .btn.main{background:var(--berry);color:var(--paper);border:3px solid var(--berry-dk);border-bottom-width:6px}
 .btn.main:disabled{opacity:.45}
 .btn.sub{background:transparent;color:var(--ink);border:3px solid var(--walnut);border-bottom-width:6px}
@@ -726,10 +725,12 @@ function openSheet(i) {
   const sh = $('sheet'), lower = Math.floor(i / 3) >= Math.floor(geo().tiers / 2);
   if (lower) { sh.style.top = ($('hud').offsetHeight + 4) + 'px'; sh.style.bottom = 'auto'; }
   else { sh.style.top = 'auto'; sh.style.bottom = '8px'; }
-  sh.hidden = false;
+  sh.hidden = false; syncFoot();
   hud(); drawSheet();
 }
-function closeSheet() { sheetSlot = -1; $('sheet').hidden = true; }
+function closeSheet() { sheetSlot = -1; $('sheet').hidden = true; syncFoot(); }
+// パネルを開いている間は、下の段（毎秒の売上とお店のボタン）をかくす
+function syncFoot() { $('foot').style.visibility = ($('sheet').hidden && $('ledger').hidden) ? '' : 'hidden'; }
 function place() {
   const d = delta();
   if (d > S.money) return;
@@ -841,8 +842,8 @@ function expand() {
   closeLedger(); hud(); save();
   toast(ns.name + 'になった');
 }
-function openLedger() { closeSheet(); refreshLedger(); $('ledger').hidden = false; }
-function closeLedger() { $('ledger').hidden = true; }
+function openLedger() { closeSheet(); refreshLedger(); $('ledger').hidden = false; syncFoot(); }
+function closeLedger() { $('ledger').hidden = true; syncFoot(); }
 $('shopBtn').addEventListener('click', () => { if ($('ledger').hidden) openLedger(); else closeLedger(); });
 $('ledClose').addEventListener('click', closeLedger);
 
