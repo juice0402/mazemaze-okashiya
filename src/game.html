@@ -62,7 +62,7 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 .pick{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;background:none;border:0;padding:0 4px 3px;font:inherit;color:var(--ink);cursor:pointer}
 .pick img{width:36px;height:36px;image-rendering:pixelated;transition:transform .12s steps(2)}
 .pick .nm{font-size:13px}
-.pick .co{font-size:11px;color:var(--ink-soft)}
+.pick .pile{width:76px;height:68px}
 .pick .ptr{position:absolute;top:-16px;left:50%;width:14px;height:8px;margin-left:-7px;image-rendering:pixelated;visibility:hidden}
 .pick.on img{transform:translateY(-6px)}
 .pick.on .ptr{visibility:visible}
@@ -97,6 +97,10 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
 .led .ic{width:30px;height:30px;image-rendering:pixelated}
 .led .nm{font-size:15px}
 .led .cnt{font-size:13px;color:var(--ink-soft);margin-left:6px;font-variant-numeric:tabular-nums}
+.led .stk{display:inline-flex;vertical-align:-4px;margin-left:8px}
+.led .stk img{width:20px;height:20px;image-rendering:pixelated}
+.led .stk img+img{margin-left:-4px}
+.led .stk img.part{opacity:.35}
 .led .ef{display:block;font-size:12px;color:var(--ink-soft)}
 .led .pr{align-self:stretch;display:flex;align-items:center;justify-content:flex-end;gap:3px;padding-inline:6px;border-left:2px solid var(--line);font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .led .pr img{width:14px;height:14px;image-rendering:pixelated}
@@ -407,6 +411,22 @@ const batchN = () => Math.max(6, Math.round((6 + 3 * S.eq.tenpan) * crowd()));
 const boxN = () => Math.max(12, Math.round(12 * crowd()));
 const boxPrice = m => MATS[m].price * boxN();
 const ovenN = () => 1 + S.eq.oven;
+/* 在庫の山：数字のかわりに、積み上がる絵で見せる（11/5 しょーくん「数字が多すぎる」）。
+   1つぶ＝1回に焼く数の1/5（1回焼くと5つぶふえる）。15つぶ（3回分）で満杯 */
+const PILE_POS = [];
+for (let r = 0; r < 5; r++) {
+  const n = 5 - r, x0 = Math.floor(r * 7 / 2), c = x0 + (n - 1) * 3.5, row = [];
+  for (let k = 0; k < n; k++) row.push({ x: x0 + k * 7, y: -10 - r * 6 });
+  row.sort((a, b) => Math.abs(a.x - c) - Math.abs(b.x - c) || a.x - b.x);
+  PILE_POS.push(...row);
+}
+const PILE_W = 38, PILE_H = 34;
+const pileDots = n => n <= 0 ? 0 : Math.min(PILE_POS.length, Math.ceil(n * 5 / batchN()));
+function drawPile(g, id, n, x, yb) {
+  const k = pileDots(n);
+  if (!k) { g.globalAlpha = 0.22; g.drawImage(SPR[id], x + 14, yb - 10); g.globalAlpha = 1; return; }   // からっぽ：うすい形だけ
+  for (const p of PILE_POS.slice(0, k).sort((a, b) => b.y - a.y || a.x - b.x)) g.drawImage(SPR[id], x + p.x, yb + p.y);
+}
 
 /* ---------- 床と壁 ---------- */
 function paintFloor(r, st, fy, fh) {
@@ -479,6 +499,8 @@ const boxPos = k => ({ x: 4 + (k % 6) * 15, y: FL() + 4 - Math.floor(k / 6) * 10
 const ovenX = k => { const n = S.ovens.length, tot = n * 26 + (n - 1) * 5; return ((W - tot) >> 1) + k * 31; };
 const ovenTop = () => FL() - 26;
 const doorTop = () => FL() - 44;
+const pileY = () => ovenTop() - 14;      // 厨房の棚板（焼けたお菓子が積み上がる）
+const pileX = k => 2 + k * 43;
 const qx = k => 54 + k * 12;
 
 function buildNyuka() {
@@ -505,6 +527,10 @@ function buildChubo() {
   for (let Y = F - 8, k = 0; Y > 0; Y -= 8, k++) for (let X = (k % 2) * 4; X < W; X += 8) r('#e2dad0', X, Y - 7, 1, 7);
   for (let Y = F, k = 0; Y < HH; Y += 8, k++) for (let X = (k % 2) * 8; X < W; X += 16) { r('#e9e1d6', X, Y, 8, 8); r('#cfc3b3', X + 8 - (k % 2) * 16, Y, 8, 8); }
   r('rgba(43,26,18,.18)', 0, F, W, 2);
+  // 焼けたお菓子を積む棚板
+  const Y = pileY();
+  r('#d29a68', 0, Y, W, 1); r('#b47a4c', 0, Y + 1, W, 2); r('#6e452c', 0, Y + 3, W, 1); r('rgba(43,26,18,.12)', 0, Y + 4, W, 2);
+  for (const bx of [12, 63, 114]) { r('#8a5a3b', bx, Y + 4, 2, 5); r('#8a5a3b', bx + 2, Y + 4, 1, 2); }
   return c;
 }
 function buildReji() {
@@ -958,7 +984,7 @@ function drawOven(k) {
   if (done) ctx.drawImage(BUB.excl, x + 8, y - 10 - (blink % 0.8 < 0.4 ? 1 : 0));
 }
 function renderChubo() {
-
+  ORDER.forEach((id, k) => drawPile(ctx, id, S.inv[id], pileX(k), pileY()));
   syncOvens();
   for (let k = 0; k < S.ovens.length; k++) drawOven(k);
   drawHelper('chubo', 'pati', HH - 2);
@@ -1095,12 +1121,17 @@ const picks = {};
 for (const id of ORDER) {
   const b = document.createElement('button');
   b.className = 'pick'; b.type = 'button'; b.id = 'pick-' + id;
-  b.innerHTML = '<img class="ptr" alt=""><img alt=""><span class="nm"></span><span class="co"></span>';
+  b.innerHTML = '<img class="ptr" alt=""><img class="pile" alt=""><span class="nm"></span>';
   b.querySelector('.ptr').src = PTR_URL;
-  b.querySelectorAll('img')[1].src = big(SPR[id], 4);
   b.querySelector('.nm').textContent = SWEETS[id].name;
   b.addEventListener('click', () => { ed.id = id; ed.price = S.prices[id]; ed.n = Math.min(cap(), avail(id)); drawSheet(); });
   $('tray').appendChild(b); picks[id] = b;
+}
+const PILE_URL = {};
+function pileURL(id, n) {
+  const key = id + ':' + pileDots(n);
+  if (!PILE_URL[key]) { const c = mk(PILE_W, PILE_H); drawPile(c.getContext('2d'), id, n, 0, PILE_H); PILE_URL[key] = big(c, 3); }
+  return PILE_URL[key];
 }
 const HEART_ON_URL = big(HEART_ON, 2), HEART_OFF_URL = big(HEART_OFF, 2);
 const avail = id => S.inv[id] + (S.slots[ed.slot].id === id ? S.slots[ed.slot].n : 0);
@@ -1116,11 +1147,12 @@ function drawSheet() {
   if (ed.n > mx) ed.n = mx;
   for (const id of ORDER) {
     picks[id].classList.toggle('on', id === ed.id); picks[id].setAttribute('aria-pressed', id === ed.id);
-    picks[id].querySelector('.co').textContent = '在庫' + fmt(S.inv[id]);
+    const im = picks[id].querySelector('.pile'), u = pileURL(id, id === ed.id ? A - ed.n : avail(id));
+    if (im.src !== u) im.src = u;
   }
   $('nVal').textContent = ed.n + 'こ';
   $('nMinus').disabled = ed.n <= 0; $('nPlus').disabled = ed.n >= mx;
-  $('payVal').textContent = '在庫のこり ' + fmt(A - ed.n);
+  $('payVal').textContent = '';
   $('pVal').textContent = fmt(ed.price) + '円';
   $('pMinus').disabled = ed.price <= 10; $('pPlus').disabled = ed.price >= 99990;
   const hearts = Math.max(0, Math.min(5, Math.round(ease(ed.id, ed.price) / 0.72 * 5)));
@@ -1194,7 +1226,6 @@ function paintRecipe(b, id, n) {
   const lack = RECIPE[id].filter(m => S.stock[m] < n);
   b.disabled = lack.length > 0;
   b.classList.toggle('lack', lack.length > 0);
-  b.querySelector('.cnt').textContent = '在庫' + fmt(S.inv[id]);
   b.querySelector('.ef').textContent = lack.length ? lack.map(m => MATS[m].name).join('・') + 'がたりない' : RECIPE[id].map(m => MATS[m].name).join('・');
   b.querySelectorAll('.mt').forEach(im => im.classList.toggle('lack', S.stock[im.dataset.m] < n));
 }
@@ -1203,7 +1234,7 @@ function tapOven(k) {
   const o = S.ovens[k];
   if (isDone(o)) {
     takeOut(k); S.tips.take = 1;
-    if (!S.tips.t3) { S.tips.t3 = 1; toast('お菓子が在庫に入った。売り場の棚に並べよう'); }
+    if (!S.tips.t3) { S.tips.t3 = 1; toast('焼けたお菓子が積まれた。売り場の棚に並べよう'); }
   } else if (!o.id) toast('上の「お菓子を焼く」からえらぶ');
   else toast('焼いているところ');
 }
@@ -1347,6 +1378,7 @@ const NBoard = makeBoard('nyuka', '材料を注文する');
 for (const m of MORDER) {
   const b = ledRow('n-' + m, MSPR[m]);
   b.addEventListener('click', () => tapOrder(m));
+  const sk = document.createElement('span'); sk.className = 'stk'; b.querySelector('.nm').after(sk);
   NBoard.querySelector('.book').appendChild(b); NROW[m] = b;
 }
 const CBoard = makeBoard('chubo', 'お菓子を焼く');
@@ -1354,20 +1386,28 @@ for (const id of ORDER) { CROW[id] = recipeRow(id, () => bakeNext(id)); CBoard.q
 OVL.ready = true;
 const placeBox = (el, x, y, w, h) => { el.style.left = x * SC + 'px'; el.style.top = y * SC + 'px'; el.style.width = w * SC + 'px'; el.style.maxHeight = h * SC + 'px'; };
 function layoutOverlay() {
-  placeBox(NBoard, 4, 5, 120, doorTop() - 10); placeBox(CBoard, 4, 5, 120, ovenTop() - 19);
+  placeBox(NBoard, 4, 5, 120, doorTop() - 10); placeBox(CBoard, 4, 5, 120, pileY() - PILE_H - 9);
+}
+function paintStk(el, m) {
+  const per = batchN(), full = Math.min(5, Math.floor(S.stock[m] / per)), part = full < 5 && S.stock[m] % per > 0, key = full + (part ? '+' : '');
+  if (el.dataset.k === key) return;
+  el.dataset.k = key; el.textContent = '';
+  for (let k = 0; k < full + (part ? 1 : 0); k++) { const im = new Image(); im.alt = ''; im.src = MAT_URL[m]; if (k >= full) im.className = 'part'; el.appendChild(im); }
+  el.setAttribute('aria-label', full ? 'あと' + full + '回焼ける' : part ? '1回分より少ない' : 'ない');
 }
 function refreshOverlay() {
   if (!S) return;
   for (const k in OV) OV[k].hidden = view !== k;
   if (view === 'nyuka') {
-    NBoard.querySelector('.led-total').textContent = 'タップで1箱（' + fmt(boxN()) + 'こ）';
+    NBoard.querySelector('.led-total').textContent = 'タップで1箱';
     for (const m of MORDER) {
       const p = boxPrice(m), way = S.deliv.filter(d => d.m === m).length, came = S.boxes.filter(x => x.m === m).length;
-      setRow(NROW[m], MATS[m].name, '倉庫 ' + fmt(S.stock[m]) + 'こ', way ? 'とどく途中 ' + way + '箱' : came ? '届いた箱が下に' + came + 'つ' : USES[m], fmt(p), S.money >= p);
+      paintStk(NROW[m].querySelector('.stk'), m);
+      setRow(NROW[m], MATS[m].name, '', way ? 'とどく途中 ' + way + '箱' : came ? '届いた箱が下に' + came + 'つ' : USES[m], fmt(p), S.money >= p);
     }
   } else if (view === 'chubo') {
     const n = batchN();
-    CBoard.querySelector('.led-total').textContent = ORDER.some(canBake) ? 'タップで1回' + fmt(n) + 'こ' : '材料は入荷で注文';
+    CBoard.querySelector('.led-total').textContent = ORDER.some(canBake) ? 'タップで焼く' : '材料は入荷で注文';
     for (const id of ORDER) paintRecipe(CROW[id], id, n);
   }
 }
