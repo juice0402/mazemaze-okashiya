@@ -390,16 +390,16 @@ const STAGES = [null,
     wall: ['#e2d8f0', '#d6cbea'], awn: ['#f2c94c', '#fffaf0', '#b8902a'], floor: 'marble', board: '#f5efe0' },
 ];
 const EQUIP = [
-  { id: 'shiire', unit: '人', name: '仕入れ係', eff: '材料を注文して、箱を開けてくれる', eff2: '仕入れが速くなる', base: 600, rate: 1.6 },
-  { id: 'pati', unit: '人', name: 'パティシエ', eff: 'オーブンで焼いて、取り出してくれる', eff2: '取り出しが速くなる', base: 700, rate: 1.6 },
-  { id: 'tenin', unit: '人', name: '品出し係', eff: '空いた棚に在庫から並べてくれる', eff2: '並べるのが速くなる', base: 500, rate: 1.6 },
-  { id: 'reji', unit: '人', name: 'レジ係', eff: 'レジでお会計してくれる', eff2: 'お会計が速くなる', base: 400, rate: 1.6 },
-  { id: 'oven', unit: '台', name: 'オーブン', eff: '同時に焼ける数 +1', base: 1500, rate: 3, max: 3 },
-  { id: 'tenpan', unit: '枚', name: '大きな天板', eff: '1回に焼ける数 +3こ', base: 2500, rate: 1.4 },
+  { id: 'shiire', unit: '人', name: '仕入れ係', eff: '材料の注文と箱あけ', eff2: '速くなる', base: 600, rate: 1.6 },
+  { id: 'pati', unit: '人', name: 'パティシエ', eff: '焼いて取り出す', eff2: '速くなる', base: 700, rate: 1.6 },
+  { id: 'tenin', unit: '人', name: '品出し係', eff: '棚に並べる', eff2: '速くなる', base: 500, rate: 1.6 },
+  { id: 'reji', unit: '人', name: 'レジ係', eff: 'お会計する', eff2: '速くなる', base: 400, rate: 1.6 },
+  { id: 'oven', unit: '台', name: 'オーブン', eff: '同時に焼ける +1', base: 1500, rate: 3, max: 3 },
+  { id: 'tenpan', unit: '枚', name: '大きな天板', eff: '1回 +3こ', base: 2500, rate: 1.4 },
   { id: 'kanban', unit: '枚', name: '看板', eff: 'お客さん +15%', base: 200, rate: 1.15 },
-  { id: 'kago', unit: 'こ', name: '買い物かご', eff: '1人が買う数 +25%', base: 1200, rate: 1.17 },
-  { id: 'tanaita', unit: '枚', name: '大きな棚板', eff: '1マスに置ける数 +9こ', base: 3000, rate: 1.35 },
-  { id: 'case', unit: '台', name: 'ショーケース', eff: '高めの値段でも買ってもらえる', base: 15000, rate: 1.18 },
+  { id: 'kago', unit: 'こ', name: '買い物かご', eff: '買う数 +25%', base: 1200, rate: 1.17 },
+  { id: 'tanaita', unit: '枚', name: '大きな棚板', eff: '棚1マス +9こ', base: 3000, rate: 1.35 },
+  { id: 'case', unit: '台', name: 'ショーケース', eff: '高くても売れる', base: 15000, rate: 1.18 },
   { id: 'chirashi', unit: '枚', name: 'チラシ', eff: 'お客さん +60%', base: 100000, rate: 1.15 },
 ];
 const EQ = Object.fromEntries(EQUIP.map(e => [e.id, e]));
@@ -806,13 +806,13 @@ const poke = (room, tx) => { const h = HELP[room]; if (tx != null) h.tx = tx; h.
 function shiireAct() {
   let did = false;
   if (S.boxes.length) did = openBox();
-  const need = {};
-  for (const id of inUse()) for (const m of RECIPE[id]) need[m] = (need[m] || 0) + 2 * batchN();
-  let best = null, bestR = 1;
-  for (const m in need) {
+  // ため込まない：棚のお菓子に使う材料で、つぎに焼く分（1回分）が足りないものだけ、1箱ずつ注文する
+  const n = batchN(), use = inUse();
+  let best = null, bestHave = Infinity;
+  for (const m of MORDER) {
+    if (!use.some(id => RECIPE[id].includes(m))) continue;
     const have = S.stock[m] + S.deliv.filter(d => d.m === m).reduce((a, d) => a + d.n, 0) + S.boxes.filter(b => b.m === m).reduce((a, b) => a + b.n, 0);
-    const r = have / need[m];
-    if (r < bestR && S.money >= boxPrice(m)) { bestR = r; best = m; }
+    if (have < n && have < bestHave && S.money >= boxPrice(m)) { bestHave = have; best = m; }
   }
   if (best) did = order(best) || did;
   if (did) poke('nyuka');
@@ -826,7 +826,7 @@ function patiAct() {
   for (const id of inUse()) {
     if (!canBake(id)) continue;
     const v = S.inv[id] + S.ovens.filter(o => o.id === id).reduce((a, o) => a + o.n, 0);
-    if (v >= 3 * batchN()) continue;
+    if (v >= batchN()) continue;   // 在庫（と焼いている分）が1回分を切ったら焼く
     if (v < bestV) { bestV = v; best = id; }
   }
   if (best && bake(idle, best)) poke('chubo', ovenX(idle) + 13);
@@ -1288,8 +1288,8 @@ function refreshLedger() {
   const nextStage = STAGES[S.stage + 1];
   if (nextStage) {
     LED.mise.hidden = false;
-    const lv = nextStage.tiers > STAGES[S.stage].tiers ? '棚が' + nextStage.tiers + '段に' : '1マスに置ける数が2倍に';
-    setRow(LED.mise, nextStage.name + 'にする', '', lv + '・お客さん ×' + (nextStage.cust / STAGES[S.stage].cust).toFixed(1).replace('.0', ''), fmt(nextStage.cost), S.money >= nextStage.cost);
+    const lv = nextStage.tiers > STAGES[S.stage].tiers ? '棚' + nextStage.tiers + '段' : '棚1マス2倍';
+    setRow(LED.mise, nextStage.name + 'にする', '', lv + '・お客さん×' + (nextStage.cust / STAGES[S.stage].cust).toFixed(1).replace('.0', ''), fmt(nextStage.cost), S.money >= nextStage.cost);
   } else LED.mise.hidden = true;
   let shownLocked = false;
   for (const e of EQUIP) {
@@ -1298,10 +1298,10 @@ function refreshLedger() {
       b.hidden = false;
       const full = maxed(e.id);
       b.classList.toggle('maxed', full);
-      setRow(b, e.name, n ? n + e.unit : '', full ? 'これ以上は置けない' : S.eq[e.id] && e.eff2 ? e.eff2 : e.eff, full ? '' : fmt(equipCost(e.id)), !full && S.money >= equipCost(e.id));
+      setRow(b, e.name, n ? n + e.unit : '', full ? 'もう置けない' : S.eq[e.id] && e.eff2 ? e.eff2 : e.eff, full ? '' : fmt(equipCost(e.id)), !full && S.money >= equipCost(e.id));
     } else if (!shownLocked) {
       shownLocked = true; b.hidden = false;
-      setRow(b, '？？？', '', 'もっと売れると出てくる', fmt(equipCost(e.id)), false, true);
+      setRow(b, '？？？', '', 'もっと売ると出る', fmt(equipCost(e.id)), false, true);
     } else b.hidden = true;
   }
   $('ledTotal').textContent = 'これまで ' + fmt(S.total.sold) + 'こ・' + fmt(S.total.revenue) + '円' + (S.total.lost ? '・むだ ' + fmt(S.total.lost) + 'こ' : '');
@@ -1393,7 +1393,7 @@ function start(data) {
   const frame = now => {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     blink += dt;
-    if (document.visibilityState === 'visible') tick(dt);
+    if (document.visibilityState === 'visible' && $('ledger').hidden) tick(dt);   // 帳面を開いている間は一時停止（11/4 しょーくん）
     slow += dt;
     if (slow > 0.3) {
       slow = 0;
