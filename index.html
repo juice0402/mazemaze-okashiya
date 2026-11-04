@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="棚にお菓子を並べて値段を決めると、お客さんが好みで買っていくドット絵のお店ゲーム。">
+<meta name="theme-color" content="#2b1a12">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>まぜまぜおかし屋</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
+<style>
+/* 縦長1画面：上に帳場（お金と時計）、まん中に大きな木の棚、下にきょうの売上。ドット絵のお店1つの世界なので色は1つにしぼる */
+:root{
+  --cocoa:#2b1a12;
+  --walnut:#4a2c1c;
+  --walnut-hi:#7a4b2e;
+  --milk:#fdf2f4;
+  --milk-2:#f6dfe5;
+  --ink:#3a2318;
+  --ink-soft:#7a5a4a;
+  --berry:#e0507a;
+  --berry-dk:#a8304f;
+  --mint:#bfe3cf;
+  --gold:#f6c94c;
+  --paper:#ffffff;
+  --font:"DotGothic16","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --notch:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px);
+  color-scheme:dark;
+}
+html{box-sizing:border-box;height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:var(--font);overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#app{position:relative;height:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#hud{flex:none;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:10px 8px}
+.shop{font-size:12px;color:var(--mint);letter-spacing:.06em}
+#money{display:flex;align-items:center;gap:6px;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums;transform-origin:left center}
+#money img{width:21px;height:21px;image-rendering:pixelated}
+#money small{font-size:15px}
+#money.bump{animation:bump .22s steps(2)}
+@keyframes bump{50%{transform:scale(1.08)}}
+#clock{text-align:right;line-height:1.15}
+#clock .d{font-size:13px;color:var(--mint)}
+#timeVal{font-size:22px;font-variant-numeric:tabular-nums}
+#stage{position:relative;flex:1;min-height:0}
+#scene{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;box-shadow:0 0 0 3px var(--walnut),0 0 0 6px var(--cocoa);cursor:pointer}
+#foot{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;padding-block:6px;font-size:14px;color:var(--milk-2)}
+#foot b{font-weight:400;color:var(--milk);font-size:17px;font-variant-numeric:tabular-nums}
+#today{margin-left:auto}
+.panel{background:var(--milk);color:var(--ink);border:4px solid var(--walnut);box-shadow:inset 0 0 0 2px var(--paper);clip-path:var(--notch)}
+#sheet{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));padding:4px 10px 10px}
+#tray{display:flex;justify-content:space-around;align-items:flex-end;padding:18px 0 0;border-bottom:4px solid var(--walnut-hi)}
+.pick{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;background:none;border:0;padding:0 4px 3px;font:inherit;color:var(--ink);cursor:pointer}
+.pick img{width:36px;height:36px;image-rendering:pixelated;transition:transform .12s steps(2)}
+.pick .nm{font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-block:8px 6px}
+.cell{min-width:0}
+.cap{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:18px;margin-bottom:3px}
+.stepper{display:flex;align-items:center;justify-content:space-between}
+.pick .co{font-size:11px;color:var(--ink-soft)}
+.pick .ptr{position:absolute;top:-16px;left:50%;width:14px;height:8px;margin-left:-7px;image-rendering:pixelated;visibility:hidden}
+.pick.on img{transform:translateY(-6px)}
+.pick.on .ptr{visibility:visible}
+.pick:focus-visible,.step:focus-visible,.btn:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+.lab{font-size:13px;color:var(--ink-soft)}
+.step{width:36px;height:36px;flex:none;font:inherit;font-size:20px;line-height:1;color:var(--ink);background:var(--milk-2);border:3px solid var(--walnut);border-bottom-width:5px;clip-path:var(--notch);cursor:pointer;touch-action:none}
+.step:active{border-bottom-width:3px;transform:translateY(2px)}
+.step:disabled{opacity:.35}
+output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.val{font-size:12px;display:flex;align-items:center;gap:1px;white-space:nowrap}
+.val img{width:12px;height:10px;image-rendering:pixelated}
+#note{margin:0 2px 8px;font-size:13px;min-height:1.4em;color:var(--ink-soft)}
+#note.warn{color:var(--berry-dk)}
+.acts{display:flex;gap:10px}
+.btn{flex:1;height:48px;font:inherit;font-size:17px;clip-path:var(--notch);cursor:pointer}
+.btn.main{background:var(--berry);color:var(--paper);border:3px solid var(--berry-dk);border-bottom-width:6px}
+.btn.main:active{border-bottom-width:3px;transform:translateY(3px)}
+.btn.main:disabled{opacity:.45}
+.btn.sub{background:transparent;color:var(--ink);border:3px solid var(--walnut);border-bottom-width:6px}
+.btn.sub:active{border-bottom-width:3px;transform:translateY(3px)}
+#receipt{position:absolute;inset:0;display:grid;place-items:center;background:rgba(43,26,18,.6);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+.paper{position:relative;width:min(290px,100%);background:var(--paper);color:var(--ink);padding:18px 18px 22px;font-size:15px;font-variant-numeric:tabular-nums}
+.paper::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0h12v2L6 8 0 2z' fill='%23fff'/%3E%3C/svg%3E") repeat-x}
+.r-head{text-align:center;font-size:16px;letter-spacing:.08em}
+.r-day{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:2px}
+.r-rule{border-top:2px dashed var(--ink-soft);margin-block:10px;opacity:.6}
+.r-line{display:flex;justify-content:space-between;gap:12px;padding-block:2px}
+.r-line.sum{font-size:18px}
+.r-none{color:var(--ink-soft);text-align:center}
+#nextBtn{width:100%;margin-top:16px}
+@media (prefers-reduced-motion:reduce){#money.bump{animation:none}.pick img{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <div>
+      <div class="shop">まぜまぜおかし屋</div>
+      <div id="money"><img id="coinImg" alt=""><span id="moneyVal">0</span><small>円</small></div>
+    </div>
+    <div id="clock"><div class="d"><span id="dayVal">1</span>日目</div><div id="timeVal">9:00</div></div>
+  </header>
+  <main id="stage"><canvas id="scene" width="128" height="176" role="img" aria-label="お店の棚とお客さん"></canvas></main>
+  <footer id="foot"><span id="hint">棚をタップすると並べられる</span><span id="today">きょう <b id="todayN">0</b>こ <b id="todayY">0</b>円</span></footer>
+
+  <section id="sheet" class="panel" hidden aria-label="棚に並べる">
+    <div id="tray"></div>
+    <div class="grid2">
+      <div class="cell"><div class="cap"><span class="lab">こ数</span><span class="val" id="payVal"></span></div>
+        <div class="stepper"><button class="step" id="nMinus" aria-label="へらす">−</button><output id="nVal">0こ</output><button class="step" id="nPlus" aria-label="ふやす">＋</button></div></div>
+      <div class="cell"><div class="cap"><span class="lab">値段</span><span class="val" id="hearts" aria-label="売れやすさ"></span></div>
+        <div class="stepper"><button class="step" id="pMinus" aria-label="値下げ">−</button><output id="pVal">0円</output><button class="step" id="pPlus" aria-label="値上げ">＋</button></div></div>
+    </div>
+    <p id="note"></p>
+    <div class="acts"><button class="btn sub" id="cancelBtn">やめる</button><button class="btn main" id="placeBtn">並べる</button></div>
+  </section>
+
+  <section id="receipt" hidden aria-label="きょうのレシート">
+    <div class="paper">
+      <div class="r-head">まぜまぜおかし屋</div>
+      <div class="r-day" id="rDay">1日目</div>
+      <div class="r-rule"></div>
+      <div id="rItems"></div>
+      <div class="r-rule"></div>
+      <div class="r-line sum"><span>売上</span><span id="rRev">0円</span></div>
+      <div class="r-line"><span>材料費</span><span id="rSpent">0円</span></div>
+      <div class="r-line"><span>来たお客さん</span><span id="rVis">0人</span></div>
+      <button class="btn main" id="nextBtn">つぎの日へ</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+'use strict';
+const W = 128, H = 176, KEY = 'mazemaze-okashiya';
+const MPS = 3;          // 1秒でお店の時計が3分すすむ（9:00〜18:00 が3分）
+const DAY_MIN = 540;
+const CAP = 9;          // 1マスに置ける数
+const TIER_Y = [24, 76];
+const $ = id => document.getElementById(id);
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const fmt = n => Math.round(n).toLocaleString('ja-JP');
+
+/* ---------- ドット絵 ---------- */
+function fromMap(map, pal) {
+  const h = map.length, w = map[0].length, c = mk(w, h), x = c.getContext('2d');
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const k = map[j][i];
+    if (k === '.' || !pal[k]) continue;
+    x.fillStyle = pal[k]; x.fillRect(i, j, 1, 1);
+  }
+  return c;
+}
+function outline(src, col) {
+  const w = src.width, h = src.height, d = src.getContext('2d').getImageData(0, 0, w, h).data;
+  const a = (i, j) => (i < 0 || j < 0 || i >= w || j >= h) ? 0 : d[(j * w + i) * 4 + 3];
+  const c = mk(w, h), x = c.getContext('2d');
+  x.fillStyle = col;
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    if (a(i, j)) continue;
+    if (a(i - 1, j) || a(i + 1, j) || a(i, j - 1) || a(i, j + 1)) x.fillRect(i, j, 1, 1);
+  }
+  x.drawImage(src, 0, 0);
+  return c;
+}
+function big(src, s) {
+  const c = mk(src.width * s, src.height * s), x = c.getContext('2d');
+  x.imageSmoothingEnabled = false; x.drawImage(src, 0, 0, c.width, c.height);
+  return c.toDataURL();
+}
+
+const SWEETS = {
+  cookie: { name: 'クッキー', cost: 30, value: 100,
+    map: ['..........','..oooooo..','.olllbbbo.','olcllbbcbo','obllbbbbbo','obbbbcbbbo','ocbbbbbbbo','obbbcbbcbo','.obbbbbbo.','..oooooo..'],
+    pal: { o: '#5a3418', b: '#c98a4b', l: '#e4b273', c: '#3b2414' } },
+  donut: { name: 'ドーナツ', cost: 50, value: 150,
+    map: ['..oooooo..','.oPPppypo.','oPpgpppwpo','oppyoopppo','opgo..oypo','oppo..opgo','odpwoopppo','oddpppgpdo','.oddddddo.','..oooooo..'],
+    pal: { o: '#7a3a4a', p: '#f28cab', P: '#f9c6d6', d: '#d79a5c', y: '#ffd75e', g: '#6fd1bd', w: '#ffffff' } },
+  purin: { name: 'プリン', cost: 70, value: 200,
+    map: ['...oooo...','..oCccco..','..occcco..','.oYyyyyso.','.oYyyyyso.','oYyyyyyyso','oyyyyyyyso','osssssssso','WwwwwwwwwW','.WWWWWWWW.'],
+    pal: { o: '#6b3d1a', c: '#8a4a1c', C: '#b8682a', y: '#f6d36b', Y: '#fcebb0', s: '#dfae46', w: '#ffffff', W: '#b9cad6' } },
+};
+const ORDER = ['cookie', 'donut', 'purin'];
+const SPR = {};
+for (const id of ORDER) SPR[id] = fromMap(SWEETS[id].map, SWEETS[id].pal);
+
+const COIN = fromMap(['..ooo..','.oyyyo.','oyYyyyo','oyYyyyo','oyyyyyo','.oyyyo.','..ooo..'], { o: '#a36d0e', y: '#f6c94c', Y: '#fff0a8' });
+const HEART_MAP = ['.rr.rr.','rRrrrrr','rrrrrrr','.rrrrr.','..rrr..','...r...'];
+const HEART_ON = fromMap(HEART_MAP, { r: '#e0507a', R: '#ffc2d2' });
+const HEART_OFF = fromMap(HEART_MAP, { r: '#e4cfd5', R: '#e4cfd5' });
+const PTR = fromMap(['bbbbbbb','.bbbbb.','..bbb..','...b...'], { b: '#e0507a' });
+const BUB_BASE = ['.ooooooooo.','owwwwwwwwwo','owwwwwwwwwo','owwwwwwwwwo','owwwwwwwwwo','owwwwwwwwwo','.ooowooooo.','...owo.....','....o......'];
+function bubble(icon, pal) {
+  const b = fromMap(BUB_BASE, { o: '#3a2318', w: '#ffffff' }), x = b.getContext('2d');
+  x.drawImage(fromMap(icon, pal), 3, 1);
+  return b;
+}
+const BUB = {
+  heart: bubble(['.r.r.','rrrrr','rrrrr','.rrr.','..r..'], { r: '#e0507a' }),
+  drop: bubble(['..b..','..b..','.bbb.','bbBbb','.bbb.'], { b: '#4f8fd6', B: '#bfe0ff' }),
+  dots: bubble(['.....','.....','k.k.k','.....','.....'], { k: '#3a2318' }),
+};
+
+/* お客さん：好みと、どこまでの値段なら買うか（t は「ふつうの値段」の何倍までがまんできるか） */
+const TYPES = [
+  { id: 'kodomo', w: 3, t: 1.0, pref: { cookie: 1, donut: .8, purin: .4 }, h: 15, small: true, skin: '#f6cfae', hair: '#5a3418', hat: '#e0484f', hatDk: '#a8302f', shirt: '#f7c843', arm: '#d9a72a', pants: '#3f6fb5' },
+  { id: 'gakusei', w: 3, t: 1.15, pref: { cookie: .6, donut: 1, purin: .6 }, h: 19, skin: '#f3c9a5', hair: '#2a1d1a', shirt: '#2f3f6b', arm: '#253256', pants: '#2f3f6b', collar: '#ffffff' },
+  { id: 'otona', w: 2, t: 1.45, pref: { cookie: .45, donut: .6, purin: 1 }, h: 20, skin: '#eab88f', hair: '#6b4426', shirt: '#5f8f6a', arm: '#4a7354', pants: '#3b3b46' },
+  { id: 'obaachan', w: 2, t: 1.25, pref: { cookie: .85, donut: .3, purin: .9 }, h: 18, skin: '#f1c7a6', hair: '#cfcad6', bun: true, shirt: '#8d6bb3', arm: '#735596', pants: '#5b4a6e' },
+];
+function personSprite(t, frame) {
+  const top = 3, legH = t.small ? 2 : 3, bodyH = t.h - 7 - legH;
+  const c = mk(12, top + t.h + 1), x = c.getContext('2d');
+  const r = (col, X, Y, w = 1, h = 1) => { x.fillStyle = col; x.fillRect(X, Y, w, h); };
+  const y = top;
+  // 頭
+  if (t.hat) { r(t.hat, 3, y, 6); r(t.hat, 2, y + 1, 8); r(t.hatDk, 2, y + 2, 9); }
+  else { r(t.hair, 3, y, 6); r(t.hair, 2, y + 1, 8); r(t.hair, 2, y + 2, 2); r(t.skin, 4, y + 2, 5); r(t.hair, 9, y + 2); }
+  if (t.bun) { r(t.hair, 5, y - 2, 2); r(t.hair, 4, y - 1, 4); }
+  if (t.hat) r(t.skin, 3, y + 2, 6);
+  r(t.hair, 2, y + 3); r(t.skin, 3, y + 3, 6); r(t.hair, 9, y + 3);
+  r(t.skin, 2, y + 4, 8); r(t.skin, 2, y + 5, 8); r(t.skin, 3, y + 6, 6);
+  r('#2b1a12', 4, y + 4); r('#2b1a12', 7, y + 4);
+  r('#f08a9a', 3, y + 5); r('#f08a9a', 8, y + 5);
+  // からだ
+  const bw = t.small ? 6 : 8, bx = t.small ? 3 : 2, yb = y + 7;
+  r(t.shirt, bx, yb, bw, bodyH);
+  if (t.collar) { r(t.collar, 5, yb, 2); }
+  r(t.arm, bx - 1, yb, 1, bodyH - 1); r(t.arm, bx + bw, yb, 1, bodyH - 1);
+  r(t.skin, bx - 1, yb + bodyH - 1); r(t.skin, bx + bw, yb + bodyH - 1);
+  // あし（frame 1・2 で片方を上げて歩く）
+  const yl = yb + bodyH, lx = bx + 1, rx = bx + bw - 3;
+  const lh = frame === 1 ? legH - 1 : legH, rh = frame === 2 ? legH - 1 : legH;
+  r(t.pants, lx, yl, 2, lh - 1); r('#3a2318', lx, yl + lh - 1, 2);
+  r(t.pants, rx, yl, 2, rh - 1); r('#3a2318', rx, yl + rh - 1, 2);
+  return outline(c, '#2b1a12');
+}
+const PSPR = {};
+for (const t of TYPES) PSPR[t.id] = [0, 1, 2].map(f => personSprite(t, f));
+
+const DIG = {
+  '0': ['111','101','101','101','111'], '1': ['010','110','010','010','111'], '2': ['111','001','111','100','111'],
+  '3': ['111','001','111','001','111'], '4': ['101','101','111','001','001'], '5': ['111','100','111','001','111'],
+  '6': ['111','100','111','101','111'], '7': ['111','001','001','010','010'], '8': ['111','101','111','101','111'],
+  '9': ['111','101','111','001','111'], '+': ['000','010','111','010','000'],
+};
+function digits(g, str, x, y, col) {
+  g.fillStyle = col;
+  for (let k = 0; k < str.length; k++) {
+    const m = DIG[str[k]]; if (!m) continue;
+    for (let j = 0; j < 5; j++) for (let i = 0; i < 3; i++) if (m[j][i] === '1') g.fillRect(x + k * 4 + i, y + j, 1, 1);
+  }
+}
+
+/* ---------- お店の背景（1回だけ描く） ---------- */
+function buildBG() {
+  const c = mk(W, HH), x = c.getContext('2d');
+  const r = (col, X, Y, w, h) => { x.fillStyle = col; x.fillRect(X, Y, w, h); };
+  r('#bfe3cf', 0, 0, W, 136 + OFF);
+  for (let X = 2; X < W; X += 8) r('#b1d9c3', X, 0, 3, 136 + OFF);
+  for (let X = 0, k = 0; X < W; X += 8, k++) {
+    const col = k % 2 ? '#fbeff2' : '#ef8fae';
+    r(col, X, 0, 8, 9); r(col, X + 1, 9, 6, 1); r(col, X + 2, 10, 4, 1);
+  }
+  r('#c9607f', 0, 0, W, 1);
+  if (OFF >= 20) {
+    // 棚の上があいたら、お店の看板をつるす
+    const sy = 11 + Math.floor((OFF - 18) / 2) + 2, sx = 40;
+    r('#5a3420', sx + 6, 11, 1, sy - 11); r('#5a3420', sx + 41, 11, 1, sy - 11);
+    r('#3f2416', sx, sy, 48, 18); r('#9a6640', sx + 1, sy + 1, 46, 16); r('#b47a4c', sx + 2, sy + 2, 44, 14);
+    ORDER.forEach((id, k) => x.drawImage(SPR[id], sx + 5 + k * 13, sy + 4));
+  }
+  x.translate(0, OFF);
+  r('#5a3420', 3, 14, 122, 9); r('#7d4d2e', 3, 15, 122, 2); r('#9a6640', 4, 14, 120, 1); r('#3f2416', 3, 22, 122, 1);
+  r('#5a3420', 5, 23, 6, 112); r('#7d4d2e', 6, 23, 2, 112);
+  r('#5a3420', 117, 23, 6, 112); r('#7d4d2e', 118, 23, 2, 112);
+  r('#8a5a3b', 11, 23, 106, 106);
+  for (let X = 11; X < 117; X += 9) r('#7f5235', X, 23, 1, 106);
+  for (const ty of TIER_Y) {
+    r('#6e452c', 11, ty, 106, 3);
+    const p = ty + 48;
+    r('#3f2416', 5, p - 1, 118, 1);
+    r('#b47a4c', 5, p, 118, 4); r('#d29a68', 5, p, 118, 1); r('#7d4d2e', 5, p + 3, 118, 1);
+    for (const dx of [45, 81]) { r('#5a3420', dx, ty, 2, 47); r('#6e452c', dx + 2, ty, 1, 47); }
+  }
+  r('#4a2c1c', 5, 128, 118, 7); r('#3f2416', 5, 134, 118, 1);
+  r('#efdbe1', 0, 135, W, 2);
+  for (let Y = 137, k = 0; Y < H; Y += 6, k++) {
+    r(k % 2 ? '#b07a4d' : '#a87248', 0, Y, W, 6); r('#8a5a36', 0, Y + 5, W, 1);
+    for (let X = (k * 17) % 32; X < W; X += 32) r('#8a5a36', X, Y, 1, 5);
+  }
+  r('rgba(43,26,18,.22)', 5, 137, 118, 2);
+  return c;
+}
+let HH = H, OFF = 0, BG = null;   // 画面が縦に長いときは、棚の上の壁をのばす
+
+function slotRect(i) {
+  const tier = Math.floor(i / 3), col = i % 3, x = 10 + col * 36, y = TIER_Y[tier];
+  return { x, y, w: 36, plank: y + 48, cx: x + 18 };
+}
+
+/* ---------- セーブ ---------- */
+const blankDay = () => ({ visitors: 0, sold: {}, rev: {}, spent: 0 });
+function newGame() {
+  return {
+    v: 1, money: 500, day: 1, minute: 0, phase: 'open',
+    slots: [{ id: 'cookie', n: 6 }, { id: 'donut', n: 4 }, { id: 'purin', n: 3 }, { id: null, n: 0 }, { id: null, n: 0 }, { id: null, n: 0 }],
+    prices: { cookie: 100, donut: 150, purin: 200 },
+    today: blankDay(), total: { sold: 0, revenue: 0 }, hintDone: false,
+  };
+}
+function sanitize(o) {
+  const d = newGame();
+  if (!o || o.v !== 1 || !Array.isArray(o.slots)) return d;
+  const num = (v, def) => Number.isFinite(v) ? v : def;
+  const s = {
+    v: 1, money: num(o.money, d.money), day: Math.max(1, num(o.day, 1)), minute: Math.min(DAY_MIN, Math.max(0, num(o.minute, 0))),
+    phase: ['open', 'closing', 'receipt'].includes(o.phase) ? o.phase : 'open',
+    slots: d.slots.map((def, i) => {
+      const x = o.slots[i];
+      if (!x || !SWEETS[x.id]) return { id: null, n: 0 };
+      return { id: x.id, n: Math.min(CAP, Math.max(0, Math.floor(num(x.n, 0)))) };
+    }),
+    prices: {}, today: Object.assign(blankDay(), o.today || {}),
+    total: Object.assign({ sold: 0, revenue: 0 }, o.total || {}), hintDone: !!o.hintDone,
+  };
+  for (const id of ORDER) s.prices[id] = Math.min(990, Math.max(10, num(o.prices && o.prices[id], d.prices[id])));
+  return s;
+}
+function load() {
+  try { const t = localStorage.getItem(KEY); return t ? JSON.parse(t) : null; } catch (e) { return null; }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* 保存できない環境ではそのまま遊ぶ */ }
+}
+
+/* ---------- 遊び ---------- */
+let S, cust = [], fx = [], spawnT = 3, sheetSlot = -1, blink = 0, P = 1, lastMin = -1;
+const cv = $('scene'), ctx = cv.getContext('2d');
+const pf = (r, t) => 1 / (1 + Math.exp((r - t) * 7));
+
+function pickType() {
+  const sum = TYPES.reduce((a, t) => a + t.w, 0);
+  let k = Math.random() * sum;
+  for (const t of TYPES) { k -= t.w; if (k < 0) return t; }
+  return TYPES[0];
+}
+function decide(t) {
+  let best = null, bestScore = -1;
+  for (const id of ORDER) {
+    if (!S.slots.some(s => s.id === id && s.n > 0)) continue;
+    const p = pf(S.prices[id] / SWEETS[id].value, t.t), ap = t.pref[id] * p;
+    const sc = ap * (0.8 + Math.random() * 0.4);
+    if (sc > bestScore) { bestScore = sc; best = { id, ap, p }; }
+  }
+  if (!best) return { sweet: null, slot: -1, outcome: 'none' };
+  const list = [];
+  S.slots.forEach((s, i) => { if (s.id === best.id && s.n > 0) list.push(i); });
+  const outcome = Math.random() < Math.min(0.95, best.ap * 1.15) ? 'buy' : (best.p < 0.45 ? 'pricey' : 'none');
+  return { sweet: best.id, slot: list[Math.floor(Math.random() * list.length)], outcome };
+}
+function spawn() {
+  if (cust.length >= 5) return;
+  const t = pickType(), d = decide(t);
+  cust.push(Object.assign({
+    t, x: -8, y: 158 + Math.floor(Math.random() * 12), sp: 15 + Math.random() * 6,
+    state: 'in', timer: 0, walk: 0, bubble: null,
+    tx: d.slot >= 0 ? slotRect(d.slot).cx + Math.round(Math.random() * 6 - 3) : 20 + Math.random() * 88,
+  }, d));
+  S.today.visitors++;
+}
+function sell(i, id) {
+  const s = S.slots[i], p = S.prices[id];
+  s.n--;
+  S.money += p;
+  S.today.sold[id] = (S.today.sold[id] || 0) + 1;
+  S.today.rev[id] = (S.today.rev[id] || 0) + p;
+  S.total.sold++; S.total.revenue += p;
+  const r = slotRect(i);
+  fx.push({ x: r.cx, y: r.plank - 2, t: 0, amt: p });
+  hud(true);
+}
+function resolve(c) {
+  c.state = 'react'; c.timer = 1.1;
+  if (c.outcome === 'buy') {
+    let i = c.slot;
+    if (!(S.slots[i] && S.slots[i].id === c.sweet && S.slots[i].n > 0)) i = S.slots.findIndex(s => s.id === c.sweet && s.n > 0);
+    if (i < 0) { c.bubble = 'dots'; return; }
+    sell(i, c.sweet); c.bubble = 'heart';
+  } else c.bubble = c.outcome === 'pricey' ? 'drop' : 'dots';
+}
+function updateCustomers(dt) {
+  for (const c of cust) {
+    if (c.state === 'in' || c.state === 'out') {
+      c.x += c.sp * dt; c.walk += dt;
+      if (c.state === 'in' && c.x >= c.tx) { c.x = c.tx; c.state = 'think'; c.timer = 0.9; c.bubble = 'dots'; }
+      else if (c.state === 'out' && c.x > W + 10) c.gone = true;
+    } else {
+      c.timer -= dt;
+      if (c.timer <= 0) { if (c.state === 'think') resolve(c); else { c.state = 'out'; c.bubble = null; } }
+    }
+  }
+  cust = cust.filter(c => !c.gone);
+}
+function tick(dt) {
+  if (S.phase === 'open') {
+    S.minute += dt * MPS;
+    if (S.minute >= DAY_MIN) { S.minute = DAY_MIN; S.phase = 'closing'; }
+    spawnT -= dt * MPS;
+    if (spawnT <= 0 && S.phase === 'open') { spawn(); spawnT = 9 + Math.random() * 7; }
+  }
+  updateCustomers(dt);
+  for (const f of fx) f.t += dt;
+  fx = fx.filter(f => f.t < 0.9);
+  if (S.phase === 'closing' && cust.length === 0) { S.phase = 'receipt'; showReceipt(); save(); }
+  const m = Math.floor(S.minute);
+  if (m !== lastMin) { lastMin = m; hudTime(); }
+}
+
+/* ---------- 描く ---------- */
+function tag(cx, y, price) {
+  const s = String(price), w = s.length * 4 + 3, x = cx - (w >> 1);
+  ctx.fillStyle = '#3a2318'; ctx.fillRect(x, y, w, 9);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(x + 1, y + 1, w - 2, 7);
+  digits(ctx, s, x + 2, y + 2, '#c8324f');
+}
+function drawSlot(i) {
+  const s = S.slots[i], r = slotRect(i);
+  if (!s.id || s.n <= 0) {
+    ctx.fillStyle = '#b58a62';
+    const cy = r.plank - 16;
+    ctx.fillRect(r.cx - 3, cy, 7, 1); ctx.fillRect(r.cx, cy - 3, 1, 7);
+    return;
+  }
+  const spr = SPR[s.id];
+  for (let row = 2; row >= 0; row--) for (let col = 0; col < 3; col++) {
+    if (row * 3 + col < s.n) ctx.drawImage(spr, r.x + 2 + col * 11, r.plank - 10 - row * 9);
+  }
+  tag(r.cx, r.plank + 1, S.prices[s.id]);
+}
+function drawCust(c) {
+  const walking = c.state === 'in' || c.state === 'out';
+  const spr = PSPR[c.t.id][walking ? (Math.floor(c.walk * 5) % 2 ? 1 : 2) : 0];
+  const dx = Math.round(c.x) - 6, dy = Math.round(c.y) - (spr.height - 2);
+  ctx.drawImage(spr, dx, dy);
+  if (c.bubble) ctx.drawImage(BUB[c.bubble], Math.round(c.x) - 5, dy - 7);
+}
+function drawFx(f) {
+  const k = f.t / 0.9, y = f.y - 2 - Math.round(k * 14);
+  ctx.globalAlpha = k > 0.7 ? (1 - k) / 0.3 : 1;
+  ctx.drawImage(COIN, f.x - 10, y);
+  const s = '+' + f.amt;
+  digits(ctx, s, f.x - 1, y + 2, '#3a2318');
+  digits(ctx, s, f.x - 2, y + 1, '#fff3a0');
+  ctx.globalAlpha = 1;
+}
+function drawBrackets(i) {
+  const r = slotRect(i), x0 = r.x + 1, y0 = r.y + 1, x1 = r.x + r.w - 1, y1 = r.plank + 10;
+  ctx.fillStyle = '#e0507a';
+  for (const [x, y, sx, sy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) {
+    ctx.fillRect(sx > 0 ? x : x - 5, sy > 0 ? y : y - 1, 6, 2);
+    ctx.fillRect(sx > 0 ? x : x - 1, sy > 0 ? y : y - 5, 2, 6);
+  }
+}
+function render() {
+  ctx.setTransform(P, 0, 0, P, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(BG, 0, 0);
+  ctx.setTransform(P, 0, 0, P, 0, P * OFF);
+  for (let i = 0; i < 6; i++) drawSlot(i);
+  cust.sort((a, b) => a.y - b.y);
+  for (const c of cust) drawCust(c);
+  for (const f of fx) drawFx(f);
+  if (sheetSlot >= 0 && blink % 0.7 < 0.45) drawBrackets(sheetSlot);
+}
+function fit() {
+  const st = $('stage'), dpr = window.devicePixelRatio || 1;
+  P = Math.max(1, Math.floor(Math.min(st.clientWidth * dpr / W, st.clientHeight * dpr / H)));
+  HH = Math.max(H, Math.min(H + 70, Math.floor(st.clientHeight * dpr / P)));
+  OFF = HH - H;
+  cv.width = W * P; cv.height = HH * P;
+  cv.style.width = (W * P / dpr) + 'px'; cv.style.height = (HH * P / dpr) + 'px';
+  BG = buildBG();
+}
+
+/* ---------- 画面の文字 ---------- */
+function hudTime() {
+  const m = Math.floor(S.minute) + 540;
+  $('dayVal').textContent = S.day;
+  $('timeVal').textContent = S.phase === 'open' ? Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') : '閉店';
+}
+function hud(bump) {
+  $('moneyVal').textContent = fmt(S.money);
+  let n = 0, y = 0;
+  for (const k in S.today.sold) { n += S.today.sold[k]; y += S.today.rev[k] || 0; }
+  $('todayN').textContent = n; $('todayY').textContent = fmt(y);
+  $('hint').hidden = S.hintDone;
+  hudTime();
+  if (bump) { const el = $('money'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+}
+
+/* ---------- 並べる ---------- */
+let ed = { slot: -1, id: 'cookie', n: 0, price: 100 };
+const picks = {};
+for (const id of ORDER) {
+  const b = document.createElement('button');
+  b.className = 'pick'; b.type = 'button'; b.id = 'pick-' + id;
+  b.innerHTML = '<img class="ptr" alt=""><img alt=""><span class="nm"></span><span class="co"></span>';
+  b.querySelector('.ptr').src = big(PTR, 2);
+  b.querySelectorAll('img')[1].src = big(SPR[id], 4);
+  b.querySelector('.nm').textContent = SWEETS[id].name;
+  b.querySelector('.co').textContent = '1こ' + SWEETS[id].cost + '円';
+  b.addEventListener('click', () => { ed.id = id; ed.price = S.prices[id]; drawSheet(); });
+  $('tray').appendChild(b); picks[id] = b;
+}
+const HEART_ON_URL = big(HEART_ON, 2), HEART_OFF_URL = big(HEART_OFF, 2);
+function delta() {
+  const s = S.slots[ed.slot];
+  if (s.id && s.n > 0) {
+    if (s.id === ed.id) return (ed.n - s.n) * SWEETS[ed.id].cost;
+    return ed.n * SWEETS[ed.id].cost - s.n * SWEETS[s.id].cost;
+  }
+  return ed.n * SWEETS[ed.id].cost;
+}
+function ease(id, price) {
+  let a = 0, w = 0;
+  for (const t of TYPES) { a += t.w * t.pref[id] * pf(price / SWEETS[id].value, t.t); w += t.w; }
+  return a / w;
+}
+function drawSheet() {
+  const s = S.slots[ed.slot], d = delta();
+  for (const id of ORDER) { picks[id].classList.toggle('on', id === ed.id); picks[id].setAttribute('aria-pressed', id === ed.id); }
+  $('nVal').textContent = ed.n + 'こ';
+  $('nMinus').disabled = ed.n <= 0; $('nPlus').disabled = ed.n >= CAP;
+  $('payVal').textContent = d > 0 ? '−' + fmt(d) + '円' : d < 0 ? '＋' + fmt(-d) + '円' : '';
+  $('pVal').textContent = fmt(ed.price) + '円';
+  $('pMinus').disabled = ed.price <= 10; $('pPlus').disabled = ed.price >= 990;
+  const hearts = Math.max(0, Math.min(5, Math.round(ease(ed.id, ed.price) / 0.72 * 5)));
+  const hb = $('hearts'); hb.textContent = '';
+  for (let k = 0; k < 5; k++) { const im = new Image(); im.alt = ''; im.src = k < hearts ? HEART_ON_URL : HEART_OFF_URL; hb.appendChild(im); }
+  hb.setAttribute('aria-label', '売れやすさ 5のうち' + hearts);
+  const note = $('note'), prof = ed.price - SWEETS[ed.id].cost, short = d > S.money;
+  note.classList.toggle('warn', short);
+  note.textContent = short ? 'お金が足りない' : prof >= 0 ? '1こ売れると ' + prof + '円のもうけ' : '1こ売れるごとに ' + (-prof) + '円の損';
+  const same = (s.id === ed.id && s.n === ed.n) || (ed.n === 0 && s.n === 0);
+  $('placeBtn').textContent = same ? '決める' : '並べる';
+  $('placeBtn').disabled = short;
+}
+function openSheet(i) {
+  const s = S.slots[i];
+  ed.slot = i;
+  ed.id = s.id || ORDER[0];
+  ed.price = S.prices[ed.id];
+  ed.n = s.n > 0 ? s.n : Math.max(0, Math.min(CAP, Math.floor(S.money / SWEETS[ed.id].cost)));
+  sheetSlot = i;
+  S.hintDone = true;
+  // 下の段のときはパネルを上に出して、えらんだマスが見えるようにする
+  const sh = $('sheet');
+  if (i >= 3) { sh.style.top = ($('hud').offsetHeight + 4) + 'px'; sh.style.bottom = 'auto'; }
+  else { sh.style.top = 'auto'; sh.style.bottom = '8px'; }
+  sh.hidden = false;
+  hud(); drawSheet();
+}
+function closeSheet() { sheetSlot = -1; $('sheet').hidden = true; }
+function place() {
+  const d = delta();
+  if (d > S.money) return;
+  S.money -= d; S.today.spent += d;
+  S.prices[ed.id] = ed.price;
+  S.slots[ed.slot] = ed.n > 0 ? { id: ed.id, n: ed.n } : { id: null, n: 0 };
+  closeSheet(); hud(); save();
+}
+function hold(btn, fn) {
+  let t1, t2;
+  const stop = () => { clearTimeout(t1); clearInterval(t2); };
+  btn.addEventListener('pointerdown', e => {
+    if (btn.disabled) return;
+    e.preventDefault(); fn();
+    t1 = setTimeout(() => { t2 = setInterval(() => { if (btn.disabled) stop(); else fn(); }, 70); }, 380);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
+  btn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!btn.disabled) fn(); } });
+}
+hold($('nMinus'), () => { ed.n = Math.max(0, ed.n - 1); drawSheet(); });
+hold($('nPlus'), () => { ed.n = Math.min(CAP, ed.n + 1); drawSheet(); });
+hold($('pMinus'), () => { ed.price = Math.max(10, ed.price - 10); drawSheet(); });
+hold($('pPlus'), () => { ed.price = Math.min(990, ed.price + 10); drawSheet(); });
+$('cancelBtn').addEventListener('click', closeSheet);
+$('placeBtn').addEventListener('click', place);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheetSlot >= 0) closeSheet(); });
+
+cv.addEventListener('click', e => {
+  if (S.phase === 'receipt') return;
+  const b = cv.getBoundingClientRect();
+  const x = (e.clientX - b.left) / b.width * W, y = (e.clientY - b.top) / b.height * HH - OFF;
+  for (let i = 0; i < 6; i++) {
+    const r = slotRect(i);
+    if (x >= r.x && x < r.x + r.w && y >= r.y && y < r.plank + 10) { openSheet(i); return; }
+  }
+});
+
+/* ---------- レシート ---------- */
+function showReceipt() {
+  closeSheet();
+  $('rDay').textContent = S.day + '日目';
+  const box = $('rItems'); box.textContent = '';
+  let rev = 0;
+  for (const id of ORDER) {
+    const n = S.today.sold[id] || 0;
+    if (!n) continue;
+    rev += S.today.rev[id] || 0;
+    const row = document.createElement('div'); row.className = 'r-line';
+    row.innerHTML = '<span></span><span></span>';
+    row.children[0].textContent = SWEETS[id].name + ' ×' + n;
+    row.children[1].textContent = fmt(S.today.rev[id] || 0);
+    box.appendChild(row);
+  }
+  if (!rev) { const p = document.createElement('div'); p.className = 'r-none'; p.textContent = '売れたものなし'; box.appendChild(p); }
+  $('rRev').textContent = fmt(rev) + '円';
+  $('rSpent').textContent = fmt(S.today.spent) + '円';
+  $('rVis').textContent = S.today.visitors + '人';
+  $('receipt').hidden = false;
+  hud();
+}
+$('nextBtn').addEventListener('click', () => {
+  S.day++; S.minute = 0; S.phase = 'open'; S.today = blankDay(); spawnT = 3; lastMin = -1;
+  $('receipt').hidden = true;
+  hud(); save();
+});
+
+/* ---------- 動かす ---------- */
+function start(data) {
+  S = sanitize((data && data.state) || load());
+  $('coinImg').src = big(COIN, 3);
+  fit();
+  new ResizeObserver(fit).observe($('stage'));
+  hud();
+  if (S.phase === 'receipt') showReceipt();
+  let last = performance.now();
+  const frame = now => {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    blink += dt;
+    if (document.visibilityState === 'visible' && sheetSlot < 0 && S.phase !== 'receipt') tick(dt);
+    render();
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  setInterval(save, 5000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
+  window.addEventListener('pagehide', save);
+}
+window.claude?.hot?.snapshot?.(() => ({ state: S }));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
+</body>
+</html>
