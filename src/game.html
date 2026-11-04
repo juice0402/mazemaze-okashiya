@@ -759,9 +759,10 @@ function takeOut(k) {
 }
 
 /* レジ：並んだお客さんをお会計。待たせすぎると帰ってしまう */
+const atReji = () => S.queue.length > 0 && Math.abs(S.queue[0].x - qx(0)) < 0.5;   // 先頭のお客さんがレジに着いた
 function checkout() {
+  if (!atReji()) return false;   // 歩いている途中はお会計できない（11/5 しょーくん）
   const q = S.queue.shift();
-  if (!q) return false;
   S.money += q.pay;
   for (const it of q.items) S.total.sold += it[1];
   S.total.revenue += q.pay;
@@ -827,7 +828,7 @@ function staffTick(dt) {
   if (n.shiire > 0 && (T.shiire -= dt) <= 0) { T.shiire = 3 / n.shiire; shiireAct(); }
   if (n.pati > 0 && (T.pati -= dt) <= 0) { T.pati = 2 / n.pati; patiAct(); }
   if (n.tenin > 0 && (T.tenin -= dt) <= 0) { T.tenin = 5 / n.tenin; restockOne(); }
-  if (n.reji > 0 && (T.reji -= dt) <= 0) { T.reji = 1.6 / n.reji; if (checkout()) poke('reji'); }
+  if (n.reji > 0 && (T.reji -= dt) <= 0 && checkout()) { T.reji = 1.6 / n.reji; poke('reji'); }   // だれも着いていなければ、着いたらすぐ
 }
 function updateHelpers(dt) {
   for (const k in HELP) {
@@ -967,7 +968,7 @@ function renderReji() {
   drawHelper('reji', 'reji', F - 5);
   ctx.drawImage(BG.rejiFront, 0, 0);
   const front = S.queue[0];
-  if (front) { const s = pixNum(front.pay); digits(ctx, s, 37 - textW(s), F - 37, '#7fe3a8'); }
+  if (atReji()) { const s = pixNum(front.pay); digits(ctx, s, 37 - textW(s), F - 37, '#7fe3a8'); }
   const shown = S.queue.slice(0, QVIS + 2);
   for (let k = shown.length - 1; k >= 0; k--) {
     const q = shown[k], t = TYPE[q.tid], d = Math.abs((k < QVIS ? qx(k) : W + 8) - q.x) > 0.5;
@@ -1028,7 +1029,7 @@ function showHint() {
   let msg = '';
   if (view === 'nyuka' && S.tips.order && !S.tips.open && !S.eq.shiire && S.boxes.length) msg = '届いた箱をタップして開ける';
   else if (view === 'chubo' && S.tips.bake && !S.tips.take && !S.eq.pati && S.ovens.some(isDone)) msg = '焼けたらタップで取り出す';
-  else if (view === 'reji' && (!S.queue.length || S.eq.reji)) msg = '';
+  else if (view === 'reji' && (!atReji() || S.eq.reji)) msg = '';
   else { const [k, m] = TIPS[view]; if (!S.tips[k]) msg = m; }
   const h = $('hint'), ovTop = parseFloat($('ov').style.top) || 0;
   if (h.textContent !== msg) h.textContent = msg;
@@ -1384,7 +1385,7 @@ function start(data) {
   const frame = now => {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     blink += dt;
-    if (document.visibilityState === 'visible' && $('ledger').hidden) tick(dt);   // 帳面を開いている間は一時停止（11/4 しょーくん）
+    if (document.visibilityState === 'visible' && $('ledger').hidden && $('sheet').hidden) tick(dt);   // 帳面・棚に並べるパネルを開いている間は一時停止（11/4・11/5 しょーくん）
     slow += dt;
     if (slow > 0.3) {
       slow = 0;
