@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
 <style>
-/* 縦長1画面：上に帳場（お金と時計）、まん中に大きな木の棚、下に毎秒の売上と帳面。ドット絵のお店1つの世界なので色は1つにしぼる */
+/* 縦長1画面：上に帳場（お金と毎秒の売上）、まん中に今いる部屋、下に部屋の絵（入荷・厨房・売り場・レジ）とお店の帳面。ドット絵のお店1つの世界なので色は1つにしぼる */
 :root{
   --cocoa:#2b1a12;
   --walnut:#4a2c1c;
@@ -36,7 +36,6 @@ html{box-sizing:border-box;height:100%}
 body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:var(--font);overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 #app{position:relative;height:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 #hud{flex:none;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:10px 8px}
-.shop{font-size:12px;color:var(--mint);letter-spacing:.06em}
 #money{display:flex;align-items:center;gap:6px;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums;transform-origin:left center}
 #money img{width:21px;height:21px;image-rendering:pixelated}
 #money small{font-size:15px}
@@ -47,8 +46,17 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 #stage{position:relative;flex:1;min-height:0}
 #scene{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;box-shadow:0 0 0 3px var(--walnut),0 0 0 6px var(--cocoa);cursor:pointer}
 #toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;font-size:15px;white-space:nowrap;pointer-events:none}
-#foot{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding-block:6px;font-size:14px;color:var(--milk-2)}
-#shopBtn{flex:none;margin-left:auto;display:flex;align-items:center;gap:6px;height:40px;padding-inline:12px;font-size:16px;color:var(--milk);border-color:var(--walnut-hi);background:var(--walnut)}
+#hint{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:6px 12px;font-size:14px;white-space:nowrap;pointer-events:none}
+#foot{flex:none;display:flex;align-items:flex-end;gap:8px;padding-block:18px 8px}
+#rooms{flex:1;min-width:0;display:flex;align-items:flex-end;border-bottom:4px solid var(--walnut-hi)}
+.room{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;background:none;border:0;padding:0 0 3px;font:inherit;color:var(--milk-2);cursor:pointer}
+.room canvas{width:51px;height:51px;image-rendering:pixelated;transition:transform .12s steps(2)}
+.room span{font-size:12px;line-height:1.2;opacity:.7}
+.room .ptr{position:absolute;top:-15px;left:50%;width:14px;height:8px;margin-left:-7px;image-rendering:pixelated;visibility:hidden}
+.room.on canvas{transform:translateY(-4px)}
+.room.on span{opacity:1;color:var(--milk)}
+.room.on .ptr{visibility:visible}
+#shopBtn{flex:none;display:flex;align-items:center;gap:6px;height:44px;margin-bottom:4px;padding-inline:10px;font-size:15px;color:var(--milk);border-color:var(--walnut-hi);background:var(--walnut)}
 #shopBtn img{width:20px;height:20px;image-rendering:pixelated}
 #shopBtn.can{background:var(--berry);border-color:var(--berry-dk);color:var(--paper)}
 .panel{background:var(--milk);color:var(--ink);border:4px solid var(--walnut);box-shadow:inset 0 0 0 2px var(--paper)}
@@ -61,7 +69,7 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 .pick .ptr{position:absolute;top:-16px;left:50%;width:14px;height:8px;margin-left:-7px;image-rendering:pixelated;visibility:hidden}
 .pick.on img{transform:translateY(-6px)}
 .pick.on .ptr{visibility:visible}
-.pick:focus-visible,.step:focus-visible,.btn:focus-visible,.led:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+.pick:focus-visible,.step:focus-visible,.btn:focus-visible,.led:focus-visible,.room:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-block:8px 6px}
 .cell{min-width:0}
 .cap{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:18px;margin-bottom:3px}
@@ -71,21 +79,23 @@ body{height:100%;margin:0;background:var(--cocoa);color:var(--milk);font-family:
 .step:active{border-bottom-width:3px;transform:translateY(2px)}
 .step:disabled{opacity:.35}
 output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.val{font-size:12px;display:flex;align-items:center;gap:1px;white-space:nowrap}
+.val{font-size:12px;display:flex;align-items:center;gap:1px;white-space:nowrap;color:var(--ink-soft)}
 .val img{width:12px;height:10px;image-rendering:pixelated}
-#note{margin:0 2px 8px;font-size:13px;min-height:1.4em;color:var(--ink-soft)}
-#note.warn{color:var(--berry-dk)}
+.note{margin:0 2px 8px;font-size:13px;min-height:1.4em;color:var(--ink-soft)}
+.note.warn{color:var(--berry-dk)}
 .acts{display:flex;gap:10px}
 .btn{flex:1;height:48px;font:inherit;font-size:17px;cursor:pointer}
 .btn.main{background:var(--berry);color:var(--paper);border:3px solid var(--berry-dk);border-bottom-width:6px}
 .btn.main:disabled{opacity:.45}
 .btn.sub{background:transparent;color:var(--ink);border:3px solid var(--walnut);border-bottom-width:6px}
 .btn:active:not(:disabled){border-bottom-width:3px;transform:translateY(3px)}
-#ledger{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:8px;max-height:calc(100% - 86px);display:flex;flex-direction:column;padding:10px 10px 10px}
+#ledger,#bake{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;padding:10px}
+#ledger{bottom:8px;max-height:calc(100% - 86px)}
+#bake .note{margin-bottom:6px}
 .led-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-inline:2px}
 .led-head h2{margin:0;font-size:16px;font-weight:400}
 .led-total{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
-#ledList{flex:1;min-height:0;overflow-y:auto;margin-block:6px 10px;border-block:2px solid var(--ink-soft);border-inline:3px double var(--berry);overscroll-behavior:contain}
+.book{flex:1;min-height:0;overflow-y:auto;margin-block:6px 10px;border-block:2px solid var(--ink-soft);border-inline:3px double var(--berry);overscroll-behavior:contain}
 .led{display:grid;grid-template-columns:34px 1fr 6.4em;align-items:center;gap:8px;width:100%;padding:0 0 0 8px;background:none;border:0;border-bottom:2px solid var(--line);font:inherit;color:var(--ink);text-align:left;cursor:pointer}
 .led>*{padding-block:6px}
 .led .ic{width:30px;height:30px;image-rendering:pixelated}
@@ -94,13 +104,18 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
 .led .ef{display:block;font-size:12px;color:var(--ink-soft)}
 .led .pr{align-self:stretch;display:flex;align-items:center;justify-content:flex-end;gap:3px;padding-inline:6px;border-left:2px solid var(--line);font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .led .pr img{width:14px;height:14px;image-rendering:pixelated}
+.led .pr .mt{width:18px;height:18px}
+.led .pr .mt.lack{opacity:.25}
 .led:disabled{cursor:default}
 .led:disabled .pr{color:var(--ink-faint)}
 .led:active:not(:disabled){background:var(--milk-2)}
 .led.big .nm{color:var(--berry-dk)}
 .led.locked .nm,.led.locked .ef{color:var(--ink-faint)}
 .led.locked .ic{opacity:.25}
-@media (prefers-reduced-motion:reduce){#money.bump{animation:none}.pick img{transition:none}}
+.led.lack .ef{color:var(--berry-dk)}
+.led.lack .ic{opacity:.5}
+.led.maxed .pr img{visibility:hidden}
+@media (prefers-reduced-motion:reduce){#money.bump{animation:none}.pick img,.room canvas{transition:none}}
 </style>
 </head>
 <body>
@@ -110,11 +125,12 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
     <div id="rate">毎秒 <b id="rateVal">0</b>円</div>
   </header>
   <main id="stage">
-    <canvas id="scene" width="128" height="176" role="img" aria-label="お店の棚とお客さん"></canvas>
+    <canvas id="scene" width="128" height="176" role="img" aria-label="売り場：棚とお客さん"></canvas>
     <div id="toast" class="panel" hidden></div>
+    <div id="hint" class="panel" hidden></div>
   </main>
   <footer id="foot">
-    <span id="hint">棚をタップすると並べられる</span>
+    <nav id="rooms" aria-label="部屋をえらぶ"></nav>
     <button class="btn sub" id="shopBtn" type="button"><img id="shopIcon" alt="">お店</button>
   </footer>
 
@@ -126,13 +142,20 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
       <div class="cell"><div class="cap"><span class="lab">値段</span><span class="val" id="hearts" aria-label="売れやすさ"></span></div>
         <div class="stepper"><button class="step" id="pMinus" aria-label="値下げ">−</button><output id="pVal">0円</output><button class="step" id="pPlus" aria-label="値上げ">＋</button></div></div>
     </div>
-    <p id="note"></p>
+    <p id="note" class="note"></p>
     <div class="acts"><button class="btn sub" id="cancelBtn">やめる</button><button class="btn main" id="placeBtn">並べる</button></div>
+  </section>
+
+  <section id="bake" class="panel" hidden aria-label="オーブンで焼く">
+    <div class="led-head"><h2>なにを焼く？</h2><span class="led-total" id="bakeInfo"></span></div>
+    <div id="bakeList" class="book"></div>
+    <p id="bakeNote" class="note"></p>
+    <button class="btn sub" id="bakeClose">やめる</button>
   </section>
 
   <section id="ledger" class="panel" hidden aria-label="お店の帳面">
     <div class="led-head"><h2>お店の帳面</h2><span class="led-total" id="ledTotal"></span></div>
-    <div id="ledList"></div>
+    <div id="ledList" class="book"></div>
     <button class="btn sub" id="ledClose">とじる</button>
   </section>
 
@@ -143,6 +166,10 @@ output{flex:1;min-width:0;text-align:center;font-size:18px;font-variant-numeric:
 'use strict';
 const W = 128, KEY = 'mazemaze-okashiya';
 const MPS = 3;          // お客さんの来るペースの単位（1秒＝3）。日数・時計はない
+const BAKE_T = 8;       // 1回焼くのにかかる秒
+const DELIV_T = 4;      // 注文してから箱が届くまでの秒
+const PAT = 25;         // レジで待てる秒（こえると帰る。持っていたお菓子はむだになる）
+const QVIS = 6;         // レジの列で絵に出す人数
 const $ = id => document.getElementById(id);
 const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
 const clampInt = (v, lo, hi, def) => Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.floor(v))) : def;
@@ -186,15 +213,16 @@ function big(src, s) {
   x.imageSmoothingEnabled = false; x.drawImage(src, 0, 0, c.width, c.height);
   return c.toDataURL();
 }
+function crop(src, sx, sy, w, h) { const c = mk(w, h); c.getContext('2d').drawImage(src, -sx, -sy); return c; }
 
 const SWEETS = {
-  cookie: { name: 'クッキー', cost: 30, value: 100,
+  cookie: { name: 'クッキー', value: 100,
     map: ['..........','..oooooo..','.olllbbbo.','olcllbbcbo','obllbbbbbo','obbbbcbbbo','ocbbbbbbbo','obbbcbbcbo','.obbbbbbo.','..oooooo..'],
     pal: { o: '#5a3418', b: '#c98a4b', l: '#e4b273', c: '#3b2414' } },
-  donut: { name: 'ドーナツ', cost: 50, value: 150,
+  donut: { name: 'ドーナツ', value: 150,
     map: ['..oooooo..','.oPPppypo.','oPpgpppwpo','oppyoopppo','opgo..oypo','oppo..opgo','odpwoopppo','oddpppgpdo','.oddddddo.','..oooooo..'],
     pal: { o: '#7a3a4a', p: '#f28cab', P: '#f9c6d6', d: '#d79a5c', y: '#ffd75e', g: '#6fd1bd', w: '#ffffff' } },
-  purin: { name: 'プリン', cost: 70, value: 200,
+  purin: { name: 'プリン', value: 200,
     map: ['...oooo...','..oCccco..','..occcco..','.oYyyyyso.','.oYyyyyso.','oYyyyyyyso','oyyyyyyyso','osssssssso','WwwwwwwwwW','.WWWWWWWW.'],
     pal: { o: '#6b3d1a', c: '#8a4a1c', C: '#b8682a', y: '#f6d36b', Y: '#fcebb0', s: '#dfae46', w: '#ffffff', W: '#b9cad6' } },
 };
@@ -202,12 +230,54 @@ const ORDER = ['cookie', 'donut', 'purin'];
 const SPR = {};
 for (const id of ORDER) SPR[id] = fromMap(SWEETS[id].map, SWEETS[id].pal);
 
+/* 材料：1こ作るのに、レシピの材料を1つずつ使う（値段は1つ分） */
+const MATS = {
+  komugi: { name: '小麦粉', price: 10, label: '#e6d9bd',
+    map: ['...oooo...','..oWWWWo..','...oWWo...','..oWWWWo..','.oWWWWWWo.','oWWWyyWWWo','oWWyWWyWWo','oWWWyyWWWo','oWWWWWWWWo','.oooooooo.'],
+    pal: { o: '#7a6a58', W: '#f7f1e3', y: '#d9a84a' } },
+  tamago: { name: '卵', price: 32, label: '#f6c27a',
+    map: ['...oooo...','..oWWWWo..','.oWHWWWWo.','.oWHWWWWo.','oWWWWWWWWo','oWWWWWWWWo','oWWWWWWWso','.oWWWWWso.','..osssso..','...oooo...'],
+    pal: { o: '#a8743c', W: '#fbe7c6', H: '#ffffff', s: '#e8c79a' } },
+  gyunyu: { name: '牛乳', price: 30, label: '#8fc1ee',
+    map: ['....oo....','...oWWo...','..oWWWWo..','.oWWWWWWo.','.oooooooo.','.oWWWWWWo.','.obbbbbbo.','.obWWWWbo.','.obbbbbbo.','.oooooooo.'],
+    pal: { o: '#3a4a6a', W: '#ffffff', b: '#6fa8e0' } },
+  sato: { name: '砂糖', price: 8, label: '#f7a8c2',
+    map: ['..oooooo..','..oppppo..','.oPPPPPPo.','.oPwPPwPo.','oPPPPPPPPo','oPPwPPPwPo','oPPPPwPPPo','oPwPPPPPPo','oPPPPPPPPo','.oooooooo.'],
+    pal: { o: '#8a3a5a', p: '#e07aa0', P: '#f9c6d6', w: '#ffffff' } },
+  bata: { name: 'バター', price: 12, label: '#f6d36b',
+    map: ['..........','..........','...oooooo.','..oYYYYYyo','.oYYYYYyyo','.ooooooyyo','.oyyyyyoyo','.oyyyyyyo.','WooooooooW','.WWWWWWWW.'],
+    pal: { o: '#a5761c', Y: '#fff3a8', y: '#f6d36b', W: '#b9cad6' } },
+};
+const MORDER = Object.keys(MATS);
+const MSPR = {};
+for (const m of MORDER) MSPR[m] = fromMap(MATS[m].map, MATS[m].pal);
+const RECIPE = { cookie: ['komugi', 'bata', 'sato'], donut: ['komugi', 'tamago', 'sato'], purin: ['tamago', 'gyunyu', 'sato'] };
+for (const id of ORDER) SWEETS[id].cost = RECIPE[id].reduce((a, m) => a + MATS[m].price, 0);   // 30・50・70円
+
+/* 段ボール箱：前の紙に材料の色 */
+function boxSprite(label, w, h) {
+  const c = mk(w, h), x = c.getContext('2d');
+  const r = (col, X, Y, ww, hh) => { x.fillStyle = col; x.fillRect(X, Y, ww, hh); };
+  r('#6b4426', 0, 0, w, h);
+  r('#d8ad74', 1, 1, w - 2, h - 2);
+  r('#e8c48e', 1, 1, w - 2, 2);
+  r('#6b4426', 1, 3, w - 2, 1);
+  r('#c08a4e', (w >> 1) - 1, 1, 2, 2);
+  r('#b88a52', 1, h - 2, w - 2, 1);
+  if (label) { r('#ffffff', 3, 5, w - 6, h - 7); r(label, 4, 6, w - 8, h - 9); }
+  return c;
+}
+const BOXSPR = {};
+for (const m of MORDER) BOXSPR[m] = boxSprite(MATS[m].label, 14, 11);
+const MINIBOX = boxSprite(null, 8, 6);
+
 const COIN = fromMap(['..ooo..','.oyyyo.','oyYyyyo','oyYyyyo','oyyyyyo','.oyyyo.','..ooo..'], { o: '#a36d0e', y: '#f6c94c', Y: '#fff0a8' });
 const HEART_MAP = ['.rr.rr.','rRrrrrr','rrrrrrr','.rrrrr.','..rrr..','...r...'];
 const HEART_ON = fromMap(HEART_MAP, { r: '#e0507a', R: '#ffc2d2' });
 const HEART_OFF = fromMap(HEART_MAP, { r: '#e4cfd5', R: '#e4cfd5' });
 const PTR = fromMap(['bbbbbbb','.bbbbb.','..bbb..','...b...'], { b: '#e0507a' });
 const BUB_BASE = ['.ooooooooo.','owwwwwwwwwo','owwwwwwwwwo','owwwwwwwwwo','owwwwwwwwwo','owwwwwwwwwo','.ooowooooo.','...owo.....','....o......'];
+const BUB_SIGN = fromMap(BUB_BASE, { o: '#e0507a', w: '#ffffff' });   // 下の部屋の絵の知らせ（暗い背景でも見えるふち）
 function bubble(icon, pal) {
   const b = fromMap(BUB_BASE, { o: '#3a2318', w: '#ffffff' }), x = b.getContext('2d');
   x.drawImage(fromMap(icon, pal), 3, 1);
@@ -217,6 +287,20 @@ const BUB = {
   heart: bubble(['.r.r.','rrrrr','rrrrr','.rrr.','..r..'], { r: '#e0507a' }),
   drop: bubble(['..b..','..b..','.bbb.','bbBbb','.bbb.'], { b: '#4f8fd6', B: '#bfe0ff' }),
   dots: bubble(['.....','.....','k.k.k','.....','.....'], { k: '#3a2318' }),
+  excl: bubble(['..r..','..r..','..r..','.....','..r..'], { r: '#e0507a' }),
+  angry: bubble(['rr.rr','r...r','.....','r...r','rr.rr'], { r: '#d8304a' }),
+};
+
+/* 部屋の絵（下に並ぶ） */
+const ROOM_ICON = {
+  nyuka: fromMap(['............','............','.oooooooooo.','.okkkTTkkko.','.okkkTTkkko.','.oooooooooo.','.oddddddddo.','.oddwwwwddo.','.oddwccwddo.','.oddwwwwddo.','.oooooooooo.','............'],
+    { o: '#5a3420', k: '#e6c08a', T: '#c08a4e', d: '#d2a46a', w: '#ffffff', c: '#f6c27a' }),
+  chubo: fromMap(['oooooooooooo','oggggggggggo','ogkgkgggggro','oooooooooooo','owwwwwwwwwwo','owoooooooowo','owoyyyyyyowo','owoyYYyyyowo','owoooooooowo','owwwwwwwwwwo','oooooooooooo','.oo......oo.'],
+    { o: '#3a3540', g: '#9aa3ad', k: '#2b2630', r: '#e0507a', w: '#d9dee3', y: '#f6a04c', Y: '#ffd36b' }),
+  uriba: fromMap(['oooooooooooo','oBBBBBBBBBBo','oBccBddBppBo','oBccBddBppBo','oLLLLLLLLLLo','oBBBBBBBBBBo','oBppBccBddBo','oBppBccBddBo','oLLLLLLLLLLo','oBBBBBBBBBBo','oooooooooooo','.o........o.'],
+    { o: '#3f2416', B: '#8a5a3b', L: '#d29a68', c: '#c98a4b', d: '#f28cab', p: '#f6d36b' }),
+  reji: fromMap(['......ooooo.','......oGGGo.','......ooooo.','.......oo...','.oooooooooo.','.orrrrrrrro.','.orwrwrwrro.','.orrrrrrrro.','oooooooooooo','oddddddddddo','oddddyyddddo','oooooooooooo'],
+    { o: '#3a2318', G: '#7fe3a8', r: '#e0507a', w: '#ffffff', d: '#8a5a3b', y: '#f6c94c' }),
 };
 
 /* 帳面の絵 */
@@ -227,6 +311,8 @@ const ICONS = {
   case: fromMap(['oooooooooo','oggggggwgo','ogggggwggo','oggggwgggo','ogpgggggyo','oppggggyyo','oooooooooo','obbbbbbbbo','obbbbbbbbo','oooooooooo'], { o: '#3f2416', g: '#cdeef5', w: '#ffffff', p: '#f28cab', y: '#f6d36b', b: '#8a5a3b' }),
   chirashi: fromMap(['.ooooooo..','.owwwwwoo.','.owrrrwwo.','.owrrrwwo.','.owwwwwwo.','.owkkkkwo.','.owwwwwwo.','.owkkkwwo.','.owwwwwwo.','.oooooooo.'], { o: '#3a2318', w: '#ffffff', r: '#e0507a', k: '#7a5a4a' }),
   mise: fromMap(['....oo....','...orro...','..orrrro..','.orrrrrro.','oooooooooo','.owwwwwwo.','.owbbwddo.','.owbbwddo.','.owwwwddo.','.oooooooo.'], { o: '#3a2318', r: '#e0507a', w: '#fdf2f4', b: '#8fd3e8', d: '#8a5a3b' }),
+  oven: fromMap(['oooooooooo','ogkgkgggro','oooooooooo','owwwwwwwwo','owoooooowo','owoyyyyowo','owoYyyyowo','owoooooowo','owwwwwwwwo','oooooooooo'], { o: '#3a3540', g: '#9aa3ad', k: '#2b2630', r: '#e0507a', w: '#d9dee3', y: '#f6a04c', Y: '#ffd36b' }),
+  tenpan: fromMap(['..........','..........','..........','oooooooooo','owccwwccwo','owccwwccwo','owwwwwwwwo','oooooooooo','..........','..........'], { o: '#5a6370', w: '#c9d0d8', c: '#c98a4b' }),
 };
 
 /* お客さん：好みと、どこまでの値段なら買うか（t は「ふつうの値段」の何倍までがまんできるか） */
@@ -236,13 +322,21 @@ const TYPES = [
   { id: 'otona', w: 2, t: 1.45, pref: { cookie: .45, donut: .6, purin: 1 }, h: 20, skin: '#eab88f', hair: '#6b4426', shirt: '#5f8f6a', arm: '#4a7354', pants: '#3b3b46' },
   { id: 'obaachan', w: 2, t: 1.25, pref: { cookie: .85, donut: .3, purin: .9 }, h: 18, skin: '#f1c7a6', hair: '#cfcad6', bun: true, shirt: '#8d6bb3', arm: '#735596', pants: '#5b4a6e' },
 ];
-const STAFF = { id: 'tenin', h: 19, skin: '#f6cfae', hair: '#3a2318', shirt: '#ffffff', arm: '#e6e1e8', pants: '#4a3a5a', apron: '#e0507a' };
+const TYPE = Object.fromEntries(TYPES.map(t => [t.id, t]));
+/* 係の人：仕入れ係（緑のぼうし）・パティシエ（白いぼうし）・品出し係（ピンクのエプロン）・レジ係（青いエプロン） */
+const STAFFS = {
+  shiire: { h: 19, skin: '#f3c9a5', hair: '#5a3418', hat: '#4a8f5a', hatDk: '#336b40', shirt: '#e9d3a8', arm: '#d3b98a', pants: '#5a4a3a', apron: '#4a8f5a' },
+  pati: { h: 19, skin: '#f6cfae', hair: '#6b4426', chef: true, shirt: '#ffffff', arm: '#e6e1e8', pants: '#3b3b46' },
+  tenin: { h: 19, skin: '#f6cfae', hair: '#3a2318', shirt: '#ffffff', arm: '#e6e1e8', pants: '#4a3a5a', apron: '#e0507a' },
+  reji: { h: 19, skin: '#eab88f', hair: '#2a1d1a', shirt: '#ffffff', arm: '#e6e1e8', pants: '#3b3b46', apron: '#4f8fd6' },
+};
 function personSprite(t, frame) {
   const top = 3, legH = t.small ? 2 : 3, bodyH = t.h - 7 - legH;
   const c = mk(12, top + t.h + 1), x = c.getContext('2d');
   const r = (col, X, Y, w = 1, h = 1) => { x.fillStyle = col; x.fillRect(X, Y, w, h); };
   const y = top;
-  if (t.hat) { r(t.hat, 3, y, 6); r(t.hat, 2, y + 1, 8); r(t.hatDk, 2, y + 2, 9); }
+  if (t.chef) { r('#ffffff', 4, y - 3, 4); r('#ffffff', 3, y - 2, 6, 2); r('#ffffff', 2, y, 8); r('#e6e1e8', 2, y + 1, 8); r(t.hair, 2, y + 2, 2); r(t.skin, 4, y + 2, 5); r(t.hair, 9, y + 2); }
+  else if (t.hat) { r(t.hat, 3, y, 6); r(t.hat, 2, y + 1, 8); r(t.hatDk, 2, y + 2, 9); }
   else { r(t.hair, 3, y, 6); r(t.hair, 2, y + 1, 8); r(t.hair, 2, y + 2, 2); r(t.skin, 4, y + 2, 5); r(t.hair, 9, y + 2); }
   if (t.bun) { r(t.hair, 5, y - 2, 2); r(t.hair, 4, y - 1, 4); }
   if (t.hat) r(t.skin, 3, y + 2, 6);
@@ -264,13 +358,15 @@ function personSprite(t, frame) {
 }
 const PSPR = {};
 for (const t of TYPES) PSPR[t.id] = [0, 1, 2].map(f => personSprite(t, f));
+const SSPR = {};
+for (const k in STAFFS) { SSPR[k] = [0, 1, 2].map(f => personSprite(STAFFS[k], f)); ICONS[k] = crop(SSPR[k][0], 1, 0, 10, 10); }
 
 const DIG = {
   '0': ['111','101','101','101','111'], '1': ['010','110','010','010','111'], '2': ['111','001','111','100','111'],
   '3': ['111','001','111','001','111'], '4': ['101','101','111','001','001'], '5': ['111','100','111','001','111'],
   '6': ['111','100','111','101','111'], '7': ['111','001','001','010','010'], '8': ['111','101','111','101','111'],
   '9': ['111','101','111','001','111'], '+': ['000','010','111','010','000'], 'x': ['000','101','010','101','000'],
-  '万': ['11111','01000','11110','01010','10011'],
+  '-': ['000','000','111','000','000'], '万': ['11111','01000','11110','01010','10011'],
 };
 const textW = s => [...s].reduce((a, ch) => a + (DIG[ch] ? DIG[ch][0].length + 1 : 4), 0) - 1;
 function digits(g, str, x, y, col) {
@@ -284,8 +380,9 @@ function digits(g, str, x, y, col) {
   }
 }
 const pixNum = n => n < 1e6 ? String(Math.floor(n)) : Math.floor(n / 1e4) + '万';
+function shadowText(g, s, x, y, col) { digits(g, s, x + 1, y + 1, '#3a2318'); digits(g, s, x, y, col); }
 
-/* ---------- お店の大きさ ---------- */
+/* ---------- お店の大きさと設備 ---------- */
 const STAGES = [null,
   { name: '小さなお店', tiers: 2, pitch: 52, cust: 1, cap: 9,
     wall: ['#bfe3cf', '#b1d9c3'], awn: ['#ef8fae', '#fbeff2', '#c9607f'], floor: 'wood', board: '#efdbe1' },
@@ -295,7 +392,12 @@ const STAGES = [null,
     wall: ['#e2d8f0', '#d6cbea'], awn: ['#f2c94c', '#fffaf0', '#b8902a'], floor: 'marble', board: '#f5efe0' },
 ];
 const EQUIP = [
-  { id: 'tenin', unit: '人', name: '店員さん', eff: '空いた棚に自動で並べる', eff2: '並べるのが速くなる', base: 500, rate: 1.6 },
+  { id: 'shiire', unit: '人', name: '仕入れ係', eff: '材料を注文して、箱を開けてくれる', eff2: '仕入れが速くなる', base: 600, rate: 1.6 },
+  { id: 'pati', unit: '人', name: 'パティシエ', eff: 'オーブンで焼いて、取り出してくれる', eff2: '取り出しが速くなる', base: 700, rate: 1.6 },
+  { id: 'tenin', unit: '人', name: '品出し係', eff: '空いた棚に在庫から並べてくれる', eff2: '並べるのが速くなる', base: 500, rate: 1.6 },
+  { id: 'reji', unit: '人', name: 'レジ係', eff: 'レジでお会計してくれる', eff2: 'お会計が速くなる', base: 400, rate: 1.6 },
+  { id: 'oven', unit: '台', name: 'オーブン', eff: '同時に焼ける数 +1', base: 1500, rate: 3, max: 3 },
+  { id: 'tenpan', unit: '枚', name: '大きな天板', eff: '1回に焼ける数 +3こ', base: 2500, rate: 1.4 },
   { id: 'kanban', unit: '枚', name: '看板', eff: 'お客さん +15%', base: 200, rate: 1.15 },
   { id: 'kago', unit: 'こ', name: '買い物かご', eff: '1人が買う数 +25%', base: 1200, rate: 1.17 },
   { id: 'tanaita', unit: '枚', name: '大きな棚板', eff: '1マスに置ける数 +9こ', base: 3000, rate: 1.35 },
@@ -304,30 +406,61 @@ const EQUIP = [
 ];
 const EQ = Object.fromEntries(EQUIP.map(e => [e.id, e]));
 const equipCost = id => Math.ceil(EQ[id].base * Math.pow(EQ[id].rate, S.eq[id]));
+const maxed = id => EQ[id].max != null && S.eq[id] >= EQ[id].max;
 const cap = () => STAGES[S.stage].cap + 9 * S.eq.tanaita;
 const custMul = () => STAGES[S.stage].cust * (1 + 0.15 * S.eq.kanban) * (1 + 0.6 * S.eq.chirashi);
 const basket = () => 1 + 0.25 * S.eq.kago;
 const tol = () => 1 + 0.06 * S.eq.case + (S.stage >= 3 ? 0.2 : 0);
 const geo = () => { const st = STAGES[S.stage]; const base = 24 + st.tiers * st.pitch; return { tiers: st.tiers, pitch: st.pitch, base, HB: base + 48 }; };
+/* お客さんがふえたら、1人の絵が何人分かをふやす（画面に出す人数はしぼる）。焼く数・箱の中身も同じだけふえる */
+function crowd() { const iv = 12 / custMul(); return iv < 8 ? 8 / iv : 1; }
+const batchN = () => Math.max(6, Math.round((6 + 3 * S.eq.tenpan) * crowd()));
+const boxN = () => Math.max(12, Math.round(12 * crowd()));
+const boxPrice = m => MATS[m].price * boxN();
+const ovenN = () => 1 + S.eq.oven;
 
-/* ---------- お店の背景（大きさが変わるたびに描く） ---------- */
-function buildBG() {
-  const st = STAGES[S.stage], g = geo(), c = mk(W, HH), x = c.getContext('2d');
-  const r = (col, X, Y, w, h) => { x.fillStyle = col; x.fillRect(X, Y, w, h); };
-  const wallH = g.base + 8 + OFF;
-  r(st.wall[0], 0, 0, W, wallH);
-  for (let X = 2; X < W; X += 8) r(st.wall[1], X, 0, 3, wallH);
+/* ---------- 床と壁 ---------- */
+function paintFloor(r, st, fy, fh) {
+  if (st.floor === 'wood') {
+    for (let Y = fy, k = 0; Y < fy + fh; Y += 6, k++) {
+      r(k % 2 ? '#b07a4d' : '#a87248', 0, Y, W, 6); r('#8a5a36', 0, Y + 5, W, 1);
+      for (let X = (k * 17) % 32; X < W; X += 32) r('#8a5a36', X, Y, 1, 5);
+    }
+  } else if (st.floor === 'tile') {
+    for (let Y = fy, k = 0; Y < fy + fh; Y += 8, k++) for (let X = -(k % 2) * 8; X < W; X += 16) {
+      r('#e9e1d6', X, Y, 8, 8); r('#c98f7a', X + 8, Y, 8, 8);
+    }
+  } else {
+    for (let Y = fy, k = 0; Y < fy + fh; Y += 10, k++) for (let X = -(k % 2) * 10; X < W; X += 20) {
+      r('#f4f1f6', X, Y, 10, 10); r('#3e3550', X + 10, Y, 10, 10);
+      r('#ffffff', X + 2, Y + 2, 3, 1); r('#55496e', X + 13, Y + 3, 3, 1);
+    }
+  }
+}
+function paintWall(r, st, h) {
+  r(st.wall[0], 0, 0, W, h);
+  for (let X = 2; X < W; X += 8) r(st.wall[1], X, 0, 3, h);
   for (let X = 0, k = 0; X < W; X += 8, k++) {
     const col = k % 2 ? st.awn[1] : st.awn[0];
     r(col, X, 0, 8, 9); r(col, X + 1, 9, 6, 1); r(col, X + 2, 10, 4, 1);
   }
   r(st.awn[2], 0, 0, W, 1);
+}
+function paintSign(x, r, sx, sy) {
+  const rim = S.stage >= 3 ? '#b8902a' : '#3f2416', face = S.stage >= 3 ? '#f2c94c' : '#b47a4c';
+  r(rim, sx, sy, 48, 18); r('#9a6640', sx + 1, sy + 1, 46, 16); r(face, sx + 2, sy + 2, 44, 14);
+  ORDER.forEach((id, k) => x.drawImage(SPR[id], sx + 5 + k * 13, sy + 4));
+}
+const painter = c => { const x = c.getContext('2d'); return [x, (col, X, Y, w, h) => { x.fillStyle = col; x.fillRect(X, Y, w, h); }]; };
+
+/* 売り場（大きさが変わるたびに描く） */
+function buildUriba() {
+  const st = STAGES[S.stage], g = geo(), c = mk(W, HH), [x, r] = painter(c);
+  paintWall(r, st, g.base + 8 + OFF);
   if (OFF >= 20) {
     const sy = 11 + Math.floor((OFF - 18) / 2) + 2, sx = 40;
-    const rim = S.stage >= 3 ? '#b8902a' : '#3f2416', face = S.stage >= 3 ? '#f2c94c' : '#b47a4c';
     r('#5a3420', sx + 6, 11, 1, sy - 11); r('#5a3420', sx + 41, 11, 1, sy - 11);
-    r(rim, sx, sy, 48, 18); r('#9a6640', sx + 1, sy + 1, 46, 16); r(face, sx + 2, sy + 2, 44, 14);
-    ORDER.forEach((id, k) => x.drawImage(SPR[id], sx + 5 + k * 13, sy + 4));
+    paintSign(x, r, sx, sy);
   }
   x.translate(0, OFF);
   const trim = S.stage >= 3 ? '#c9a23a' : '#9a6640';
@@ -345,23 +478,86 @@ function buildBG() {
   }
   r('#4a2c1c', 5, g.base, 118, 7); r('#3f2416', 5, g.base + 6, 118, 1);
   r(st.board, 0, g.base + 7, W, 2);
-  const fy = g.base + 9, fh = HH - OFF - fy;
-  if (st.floor === 'wood') {
-    for (let Y = fy, k = 0; Y < fy + fh; Y += 6, k++) {
-      r(k % 2 ? '#b07a4d' : '#a87248', 0, Y, W, 6); r('#8a5a36', 0, Y + 5, W, 1);
-      for (let X = (k * 17) % 32; X < W; X += 32) r('#8a5a36', X, Y, 1, 5);
-    }
-  } else if (st.floor === 'tile') {
-    for (let Y = fy, k = 0; Y < fy + fh; Y += 8, k++) for (let X = -(k % 2) * 8, m = 0; X < W; X += 16, m++) {
-      r('#e9e1d6', X, Y, 8, 8); r('#c98f7a', X + 8, Y, 8, 8);
-    }
-  } else {
-    for (let Y = fy, k = 0; Y < fy + fh; Y += 10, k++) for (let X = -(k % 2) * 10; X < W; X += 20) {
-      r('#f4f1f6', X, Y, 10, 10); r('#3e3550', X + 10, Y, 10, 10);
-      r('#ffffff', X + 2, Y + 2, 3, 1); r('#55496e', X + 13, Y + 3, 3, 1);
-    }
-  }
+  const fy = g.base + 9;
+  paintFloor(r, st, fy, HH - OFF - fy);
   r('rgba(43,26,18,.22)', 5, fy, 118, 2);
+  return c;
+}
+
+/* ほかの部屋は、床の上の高さ（F）から上へ描く。画面が高いときは壁がのびる */
+const FL = () => HH - 24;
+const cardRect = k => ({ x: 4 + k * 24, y: FL() - 96, w: 22, h: 36 });
+const boxPos = k => ({ x: 4 + (k % 6) * 15, y: FL() + 4 - Math.floor(k / 6) * 10 });
+const ovenX = k => { const n = S.ovens.length, tot = n * 26 + (n - 1) * 5; return ((W - tot) >> 1) + k * 31; };
+const ovenTop = () => FL() - 26;
+const qx = k => 54 + k * 12;
+
+function buildNyuka() {
+  const c = mk(W, HH), [x, r] = painter(c), F = FL();
+  r('#d6b487', 0, 0, W, F);
+  for (let X = 0; X < W; X += 12) r('#c9a376', X, 0, 1, F);
+  for (let X = 6; X < W; X += 12) for (let Y = 14; Y < F; Y += 40) r('#a88252', X, Y, 1, 1);
+  r('#8a5a3b', 0, 0, W, 4); r('#6e452c', 0, 4, W, 1);
+  const cy = F - 96;
+  r('#6e452c', 2, cy - 4, 124, 2);
+  for (let k = 0; k < MORDER.length; k++) {
+    const R = cardRect(k), m = MORDER[k];
+    r('#3a2318', R.x, R.y, R.w, R.h); r('#fff7ea', R.x + 1, R.y + 1, R.w - 2, R.h - 2);
+    r(MATS[m].label, R.x + 1, R.y + 1, R.w - 2, 3);
+    x.drawImage(MSPR[m], R.x + 6, R.y + 6);
+  }
+  r('#8a5a3b', 2, cy + 38, 124, 4); r('#b47a4c', 2, cy + 38, 124, 1); r('#5a3420', 2, cy + 42, 124, 1);
+  r('#5a3420', 8, cy + 43, 2, 5); r('#5a3420', 118, cy + 43, 2, 5);
+  // 裏口のとびら（届くまでの伝票をはる）
+  r('#5a3420', 97, F - 52, 29, 52); r('#a87248', 99, F - 50, 25, 50); r('#8a5a36', 111, F - 50, 1, 50);
+  r('#f4ead8', 101, F - 48, 21, 34); r('#d9cbb0', 101, F - 48, 21, 1);
+  r('#f6c94c', 108, F - 9, 2, 2); r('#f6c94c', 113, F - 9, 2, 2);
+  r('#a39d94', 0, F, W, 24);
+  for (let X = 0; X < W; X += 16) r('#958f87', X, F + 1, 1, 23);
+  r('#958f87', 0, F + 12, W, 1);
+  r('rgba(43,26,18,.22)', 0, F, W, 2);
+  return c;
+}
+function buildChubo() {
+  const c = mk(W, HH), [x, r] = painter(c), F = FL();
+  r('#f3efe8', 0, 0, W, F);
+  for (let Y = F - 8; Y > 0; Y -= 8) r('#e2dad0', 0, Y, W, 1);
+  for (let Y = F - 8, k = 0; Y > 0; Y -= 8, k++) for (let X = (k % 2) * 4; X < W; X += 8) r('#e2dad0', X, Y - 7, 1, 7);
+  const my = F - 92;
+  r('#8a5a3b', 2, my + 18, 124, 3); r('#b47a4c', 2, my + 18, 124, 1); r('#5a3420', 2, my + 21, 124, 1);
+  r('#5a3420', 8, my + 22, 2, 4); r('#5a3420', 118, my + 22, 2, 4);
+  MORDER.forEach((m, k) => x.drawImage(MSPR[m], 13 + k * 25 - 5, my));
+  const sy = F - 62;
+  r('#9aa3ad', 4, sy + 11, 120, 2); r('#6b7380', 4, sy + 13, 120, 1);
+  for (const X of [6, 64, 120]) r('#6b7380', X, sy + 14, 1, 4);
+  ORDER.forEach((id, k) => x.drawImage(SPR[id], 22 + k * 42 - 12, sy));
+  for (let Y = F, k = 0; Y < HH; Y += 8, k++) for (let X = (k % 2) * 8; X < W; X += 16) { r('#e9e1d6', X, Y, 8, 8); r('#cfc3b3', X + 8 - (k % 2) * 16, Y, 8, 8); }
+  r('rgba(43,26,18,.18)', 0, F, W, 2);
+  return c;
+}
+function buildReji() {
+  const st = STAGES[S.stage], c = mk(W, HH), [x, r] = painter(c), F = FL();
+  paintWall(r, st, F);
+  const sy = Math.max(16, F - 70);
+  r('#5a3420', 64, 11, 1, sy - 11); r('#5a3420', 99, 11, 1, sy - 11);
+  paintSign(x, r, 58, sy);
+  paintFloor(r, st, F, 24);
+  r('rgba(43,26,18,.22)', 0, F, W, 2);
+  return c;
+}
+/* レジ台（レジ係の手前に描く） */
+function buildRejiFront() {
+  const c = mk(W, HH), [, r] = painter(c), F = FL();
+  r('#3f2416', 0, F - 15, 43, 1); r('#d29a68', 0, F - 14, 42, 2); r('#b47a4c', 0, F - 12, 42, 2);
+  r('#8a5a3b', 0, F - 10, 41, 22); r('#7d4d2e', 0, F - 10, 41, 1);
+  r('#6e452c', 13, F - 8, 1, 18); r('#6e452c', 27, F - 8, 1, 18);
+  r('#3f2416', 41, F - 14, 1, 26); r('#4a2c1c', 0, F + 12, 42, 2);
+  // レジ
+  r('#3a2318', 16, F - 27, 23, 13); r('#e0507a', 17, F - 26, 21, 11);
+  for (let k = 0; k < 5; k++) { r('#ffffff', 19 + k * 4, F - 23, 2, 1); r('#ffffff', 19 + k * 4, F - 20, 2, 1); }
+  r('#a8304f', 17, F - 17, 21, 2);
+  r('#3a2318', 26, F - 30, 3, 3);
+  r('#3a2318', 17, F - 39, 22, 9); r('#1f3a2c', 18, F - 38, 20, 7);
   return c;
 }
 
@@ -371,27 +567,29 @@ function slotRect(i) {
 }
 
 /* ---------- セーブ ---------- */
-const blankDay = () => ({ visitors: 0, sold: {}, rev: {}, spent: 0 });
-const emptyEq = () => Object.fromEntries(EQUIP.map(e => [e.id, 0]));
+const zeroOf = keys => Object.fromEntries(keys.map(k => [k, 0]));
 function newGame() {
   return {
-    v: 2, money: 500, stage: 1, eq: emptyEq(),
+    v: 3, money: 500, stage: 1, eq: zeroOf(EQUIP.map(e => e.id)),
     slots: [{ id: 'cookie', n: 6 }, { id: 'donut', n: 4 }, { id: 'purin', n: 3 }, { id: null, n: 0 }, { id: null, n: 0 }, { id: null, n: 0 }],
     prices: { cookie: 100, donut: 150, purin: 200 },
-    today: blankDay(), total: { sold: 0, revenue: 0 }, hintDone: false,
+    stock: { komugi: 12, tamago: 6, gyunyu: 6, sato: 18, bata: 6 },
+    inv: zeroOf(ORDER),
+    ovens: [{ id: null, t: 0, n: 0 }], deliv: [], boxes: [], queue: [],
+    total: { sold: 0, revenue: 0, lost: 0 }, tips: {},
   };
 }
 function sanitize(o) {
   const d = newGame();
-  if (!o || (o.v !== 1 && o.v !== 2) || !Array.isArray(o.slots)) return d;
+  if (!o || o.v !== 3 || !Array.isArray(o.slots)) return d;   // 第2版までのセーブは読まずに新しく始める（11/4 しょーくん）
   const num = (v, def) => Number.isFinite(v) ? v : def;
+  const arr = v => Array.isArray(v) ? v.slice(0, 200) : [];
   const s = {
-    v: 2, money: Math.max(0, num(o.money, d.money)),
-    stage: o.v === 2 ? clampInt(o.stage, 1, STAGES.length - 1, 1) : 1, eq: emptyEq(),
-    prices: {}, today: Object.assign(blankDay(), o.today || {}),
-    total: Object.assign({ sold: 0, revenue: 0 }, o.total || {}), hintDone: !!o.hintDone,
+    v: 3, money: Math.max(0, num(o.money, d.money)), stage: clampInt(o.stage, 1, STAGES.length - 1, 1),
+    eq: zeroOf(EQUIP.map(e => e.id)), prices: {}, stock: {}, inv: {},
+    total: Object.assign({ sold: 0, revenue: 0, lost: 0 }, o.total || {}), tips: Object.assign({}, o.tips || {}),
   };
-  if (o.eq) for (const e of EQUIP) s.eq[e.id] = clampInt(o.eq[e.id], 0, 9999, 0);
+  if (o.eq) for (const e of EQUIP) s.eq[e.id] = clampInt(o.eq[e.id], 0, e.max ?? 9999, 0);
   const capN = STAGES[s.stage].cap + 9 * s.eq.tanaita;
   s.slots = Array.from({ length: STAGES[s.stage].tiers * 3 }, (_, i) => {
     const x = o.slots[i];
@@ -399,6 +597,18 @@ function sanitize(o) {
     return { id: x.id, n: clampInt(x.n, 0, capN, 0) };
   });
   for (const id of ORDER) s.prices[id] = clampInt(o.prices && o.prices[id], 10, 99990, d.prices[id]);
+  for (const m of MORDER) s.stock[m] = clampInt(o.stock && o.stock[m], 0, 1e15, 0);
+  for (const id of ORDER) s.inv[id] = clampInt(o.inv && o.inv[id], 0, 1e15, 0);
+  s.ovens = Array.from({ length: 1 + s.eq.oven }, (_, i) => {
+    const v = arr(o.ovens)[i];
+    return v && SWEETS[v.id] ? { id: v.id, t: Math.min(BAKE_T, Math.max(0, num(v.t, 0))), n: clampInt(v.n, 1, 1e15, 6) } : { id: null, t: 0, n: 0 };
+  });
+  s.deliv = arr(o.deliv).filter(v => v && MATS[v.m]).map(v => ({ m: v.m, n: clampInt(v.n, 1, 1e15, 12), t: Math.min(DELIV_T, Math.max(0, num(v.t, 0))) }));
+  s.boxes = arr(o.boxes).filter(v => v && MATS[v.m]).map(v => ({ m: v.m, n: clampInt(v.n, 1, 1e15, 12) }));
+  s.queue = arr(o.queue).filter(q => q && TYPE[q.tid] && Array.isArray(q.items)).map(q => {
+    const items = q.items.filter(it => Array.isArray(it) && SWEETS[it[0]]).map(it => [it[0], clampInt(it[1], 1, 1e15, 1), clampInt(it[2], 0, 1e15, 0)]);
+    return { tid: q.tid, items, pay: items.reduce((a, it) => a + it[1] * it[2], 0), grp: Math.max(1, num(q.grp, 1)), pat: Math.min(PAT, Math.max(1, num(q.pat, PAT))), x: W + 8 };
+  }).filter(q => q.items.length);
   return s;
 }
 function load() {
@@ -409,12 +619,16 @@ function save() {
 }
 
 /* ---------- 遊び ---------- */
-let S, cust = [], fx = [], spawnT = 3, staffT = 2, sheetSlot = -1, blink = 0, P = 1;
-let HH = 176, OFF = 0, BG = null, runClock = 0, sales = [], staff = [];
+let S, view = 'uriba', cust = [], exits = [], fx = [], spawnT = 3, sheetSlot = -1, bakeOven = -1, blink = 0, P = 1;
+let HH = 176, OFF = 0, BG = {}, runClock = 0, sales = [], staff = [];
+const T = { shiire: 1, pati: 1, tenin: 2, reji: 1 };   // 係ごとの、次に動くまでの秒
+const HELP = { nyuka: { x: 112, tx: 112, hop: 0, walk: 0 }, chubo: { x: 64, tx: 64, hop: 0, walk: 0 }, reji: { x: 8, tx: 8, hop: 0, walk: 0 } };
 const cv = $('scene'), ctx = cv.getContext('2d');
 const pf = (r, t) => 1 / (1 + Math.exp((r - t) * 7));
 const sround = v => Math.floor(v) + (Math.random() < v - Math.floor(v) ? 1 : 0);
+const addFx = (room, x, y, txt, col, coin) => fx.push({ room, x, y, t: 0, txt, col, coin });
 
+/* 売り場：お客さんは棚からお菓子を取って、レジに並ぶ */
 function pickType() {
   const sum = TYPES.reduce((a, t) => a + t.w, 0);
   let k = Math.random() * sum;
@@ -436,30 +650,14 @@ function decide(t) {
   const outcome = Math.random() < Math.min(0.95, best.ap * 1.15) ? 'buy' : (best.p < 0.45 ? 'pricey' : 'none');
   return { sweet: best.id, slot: list[Math.floor(Math.random() * list.length)], outcome };
 }
-/* お客さんがふえたら、1人の絵が何人分かをふやす（画面に出す人数はしぼる） */
-function crowd() { const iv = 12 / custMul(); return iv < 8 ? 8 / iv : 1; }
 function spawn() {
   if (cust.length >= 5) return;
   const t = pickType(), d = decide(t), g = geo(), grp = crowd();
   cust.push(Object.assign({
     t, x: -8, y: g.base + 32 + Math.floor(Math.random() * 11), sp: 15 + Math.random() * 6,
-    state: 'in', timer: 0, walk: 0, bubble: null, grp, many: 0,
+    state: 'in', timer: 0, walk: 0, bubble: null, grp, many: 0, items: null,
     tx: d.slot >= 0 ? slotRect(d.slot).cx + Math.round(Math.random() * 6 - 3) : 20 + Math.random() * 88,
   }, d));
-  S.today.visitors += sround(grp);
-}
-function sellFrom(i, id, want) {
-  const s = S.slots[i], k = Math.min(want, s.n), p = S.prices[id] * k;
-  if (k <= 0) return 0;
-  s.n -= k;
-  S.money += p;
-  S.today.sold[id] = (S.today.sold[id] || 0) + k;
-  S.today.rev[id] = (S.today.rev[id] || 0) + p;
-  S.total.sold += k; S.total.revenue += p;
-  sales.push([runClock, p]);
-  const r = slotRect(i);
-  fx.push({ x: r.cx, y: r.plank - 2, t: 0, txt: '+' + pixNum(p), col: '#fff3a0', coin: true });
-  return k;
 }
 function resolve(c) {
   c.state = 'react'; c.timer = 1.1;
@@ -470,16 +668,33 @@ function resolve(c) {
       if (want <= 0) break;
       const s = S.slots[i];
       if (!s || s.id !== c.sweet || s.n <= 0) continue;
-      const k = sellFrom(i, c.sweet, want); want -= k; got += k;
+      const k = Math.min(want, s.n);
+      s.n -= k; want -= k; got += k;
     }
     if (!got) { c.bubble = 'dots'; return; }
+    c.items = [[c.sweet, got, S.prices[c.sweet]]];
     c.bubble = 'heart'; c.many = got;
-    hud(true);
   } else c.bubble = c.outcome === 'pricey' ? 'drop' : 'dots';
 }
-/* 店員さん：絵に出すのは3人まで。棚の前の奥側を歩いて、補充する棚まで行く（お客さんは手前を通る） */
-const STAFF_SPR = [0, 1, 2].map(f => personSprite(STAFF, f));
-ICONS.tenin = STAFF_SPR[0];
+function joinQueue(c) {
+  S.queue.push({ tid: c.t.id, items: c.items, pay: c.items.reduce((a, it) => a + it[1] * it[2], 0), grp: c.grp, pat: PAT, x: W + 8 });
+  if (!S.tips.q) { S.tips.q = 1; if (view !== 'reji') toast('レジにお客さんが並んだ'); }
+}
+function updateCustomers(dt) {
+  for (const c of cust) {
+    if (c.state === 'in' || c.state === 'out') {
+      c.x += c.sp * dt; c.walk += dt;
+      if (c.state === 'in' && c.x >= c.tx) { c.x = c.tx; c.state = 'think'; c.timer = 0.9; c.bubble = 'dots'; }
+      else if (c.state === 'out' && c.x > W + 10) { c.gone = true; if (c.items) joinQueue(c); }
+    } else {
+      c.timer -= dt;
+      if (c.timer <= 0) { if (c.state === 'think') resolve(c); else { c.state = 'out'; c.bubble = null; } }
+    }
+  }
+  cust = cust.filter(c => !c.gone);
+}
+
+/* 品出し係：絵に出すのは3人まで。棚の前の奥側を歩いて、補充する棚まで行く（お客さんは手前を通る） */
 function syncStaff() {
   const n = Math.min(3, S.eq.tenin);
   while (staff.length < n) { const home = 116 - staff.length * 12; staff.push({ x: home, home, state: 'idle', slot: -1, walk: 0, hop: 0, wait: 0 }); }
@@ -488,25 +703,24 @@ function syncStaff() {
 function pickSlot() {
   const C = cap(), busy = new Set(staff.filter(s => s.state === 'go').map(s => s.slot));
   let best = -1, bestFill = 1;
-  S.slots.forEach((s, i) => { if (s.id && s.n < C && !busy.has(i) && s.n / C < bestFill) { bestFill = s.n / C; best = i; } });
+  S.slots.forEach((s, i) => { if (s.id && s.n < C && S.inv[s.id] > 0 && !busy.has(i) && s.n / C < bestFill) { bestFill = s.n / C; best = i; } });
   return best;
 }
 function fillSlot(i) {
   const C = cap(), s = S.slots[i];
   if (!s || !s.id) return;
-  const cost = SWEETS[s.id].cost, k = Math.min(C - s.n, Math.floor(S.money / cost));
+  const k = Math.min(C - s.n, S.inv[s.id]);
   if (k <= 0) return;
-  s.n += k; S.money -= k * cost; S.today.spent += k * cost;
+  s.n += k; S.inv[s.id] -= k;
   const r = slotRect(i);
-  fx.push({ x: r.cx, y: r.plank - 14, t: 0, txt: '+' + k, col: '#bdf2c8' });
-  hud();
+  addFx('uriba', r.cx, r.plank - 14, '+' + pixNum(k), '#bdf2c8');
 }
 function restockOne() {
   const i = pickSlot();
   if (i < 0) return;
   const st = staff.find(s => s.state === 'idle');
   if (st) { st.state = 'go'; st.slot = i; }
-  else if (S.eq.tenin > staff.length) fillSlot(i);   // 絵に出ていない店員さんは、その場で並べる
+  else if (S.eq.tenin > staff.length) fillSlot(i);   // 絵に出ていない品出し係は、その場で並べる
 }
 function updateStaff(dt) {
   for (const st of staff) {
@@ -525,37 +739,163 @@ function updateStaff(dt) {
     }
   }
 }
-function updateCustomers(dt) {
-  for (const c of cust) {
-    if (c.state === 'in' || c.state === 'out') {
-      c.x += c.sp * dt; c.walk += dt;
-      if (c.state === 'in' && c.x >= c.tx) { c.x = c.tx; c.state = 'think'; c.timer = 0.9; c.bubble = 'dots'; }
-      else if (c.state === 'out' && c.x > W + 10) c.gone = true;
-    } else {
-      c.timer -= dt;
-      if (c.timer <= 0) { if (c.state === 'think') resolve(c); else { c.state = 'out'; c.bubble = null; } }
-    }
-  }
-  cust = cust.filter(c => !c.gone);
+
+/* 入荷：注文すると少したって箱が届く。箱を開けると材料が倉庫に入る */
+function order(m) {
+  const p = boxPrice(m);
+  if (S.money < p) return false;
+  S.money -= p;
+  S.deliv.push({ m, n: boxN(), t: DELIV_T });
+  const R = cardRect(MORDER.indexOf(m));
+  addFx('nyuka', R.x + 11, R.y + 4, '-' + pixNum(p), '#ffd0dc');
+  return true;
 }
+function updateDeliv(dt) {
+  for (const d of S.deliv) d.t -= dt;
+  const came = S.deliv.filter(d => d.t <= 0);
+  if (!came.length) return;
+  S.deliv = S.deliv.filter(d => d.t > 0);
+  for (const d of came) S.boxes.push({ m: d.m, n: d.n });
+}
+function openBox() {
+  const b = S.boxes.pop();
+  if (!b) return false;
+  S.stock[b.m] += b.n;
+  const R = cardRect(MORDER.indexOf(b.m));
+  addFx('nyuka', R.x + 11, R.y + 14, '+' + pixNum(b.n), '#bdf2c8');
+  return true;
+}
+
+/* 厨房：オーブンに入れて焼き、焼けたら取り出すと在庫になる */
+function syncOvens() { while (S.ovens.length < ovenN()) S.ovens.push({ id: null, t: 0, n: 0 }); }
+const canBake = id => RECIPE[id].every(m => S.stock[m] >= batchN());
+const isDone = o => o.id && o.t <= 0;
+function bake(k, id) {
+  const o = S.ovens[k];
+  if (!o || o.id || !canBake(id)) return false;
+  const n = batchN();
+  for (const m of RECIPE[id]) S.stock[m] -= n;
+  o.id = id; o.t = BAKE_T; o.n = n;
+  return true;
+}
+function takeOut(k) {
+  const o = S.ovens[k];
+  if (!o || !isDone(o)) return false;
+  S.inv[o.id] += o.n;
+  addFx('chubo', ovenX(k) + 13, ovenTop() - 4, '+' + pixNum(o.n), '#bdf2c8');
+  o.id = null; o.t = 0; o.n = 0;
+  return true;
+}
+
+/* レジ：並んだお客さんをお会計。待たせすぎると帰ってしまう */
+function checkout() {
+  const q = S.queue.shift();
+  if (!q) return false;
+  S.money += q.pay;
+  for (const it of q.items) S.total.sold += it[1];
+  S.total.revenue += q.pay;
+  sales.push([runClock, q.pay]);
+  addFx('reji', 28, FL() - 44, '+' + pixNum(q.pay), '#fff3a0', true);
+  exits.push({ t: TYPE[q.tid], x: q.x, y: FL() + 22, bubble: 'heart', walk: 0, sp: 26 });
+  hud(true);
+  return true;
+}
+function updateQueue(dt) {
+  S.queue.forEach((q, k) => {
+    q.pat -= dt;
+    const tx = k < QVIS ? qx(k) : W + 8, d = tx - q.x, step = 34 * dt;
+    if (Math.abs(d) <= step) q.x = tx; else { q.x += Math.sign(d) * step; q.walk = (q.walk || 0) + dt; }
+  });
+  const left = S.queue.filter(q => q.pat <= 0);
+  if (!left.length) return;
+  S.queue = S.queue.filter(q => q.pat > 0);
+  for (const q of left) {
+    S.total.lost += q.items.reduce((a, it) => a + it[1], 0);
+    exits.push({ t: TYPE[q.tid], x: q.x, y: FL() + 22, bubble: 'angry', walk: 0, sp: 30 });
+  }
+  if (!S.tips.lost) { S.tips.lost = 1; toast('待たせすぎて、お客さんが帰っちゃった'); }
+}
+function updateExits(dt) {
+  for (const e of exits) { e.x += e.sp * dt; e.walk += dt; }
+  exits = exits.filter(e => e.x < W + 12);
+}
+
+/* 係の人（入荷・厨房・レジ）。売り場の品出し係は上 */
+const inUse = () => { const u = ORDER.filter(id => S.slots.some(s => s.id === id)); return u.length ? u : ORDER; };
+const poke = (room, tx) => { const h = HELP[room]; if (tx != null) h.tx = tx; h.hop = 0.25; };
+function shiireAct() {
+  let did = false;
+  if (S.boxes.length) did = openBox();
+  const need = {};
+  for (const id of inUse()) for (const m of RECIPE[id]) need[m] = (need[m] || 0) + 2 * batchN();
+  let best = null, bestR = 1;
+  for (const m in need) {
+    const have = S.stock[m] + S.deliv.filter(d => d.m === m).reduce((a, d) => a + d.n, 0) + S.boxes.filter(b => b.m === m).reduce((a, b) => a + b.n, 0);
+    const r = have / need[m];
+    if (r < bestR && S.money >= boxPrice(m)) { bestR = r; best = m; }
+  }
+  if (best) did = order(best) || did;
+  if (did) poke('nyuka');
+}
+function patiAct() {
+  const done = S.ovens.findIndex(isDone);
+  if (done >= 0) { takeOut(done); poke('chubo', ovenX(done) + 13); return; }
+  const idle = S.ovens.findIndex(o => !o.id);
+  if (idle < 0) return;
+  let best = null, bestV = Infinity;
+  for (const id of inUse()) {
+    if (!canBake(id)) continue;
+    const v = S.inv[id] + S.ovens.filter(o => o.id === id).reduce((a, o) => a + o.n, 0);
+    if (v >= 3 * batchN()) continue;
+    if (v < bestV) { bestV = v; best = id; }
+  }
+  if (best && bake(idle, best)) poke('chubo', ovenX(idle) + 13);
+}
+function staffTick(dt) {
+  const n = S.eq;
+  if (n.shiire > 0 && (T.shiire -= dt) <= 0) { T.shiire = 3 / n.shiire; shiireAct(); }
+  if (n.pati > 0 && (T.pati -= dt) <= 0) { T.pati = 2 / n.pati; patiAct(); }
+  if (n.tenin > 0 && (T.tenin -= dt) <= 0) { T.tenin = 5 / n.tenin; restockOne(); }
+  if (n.reji > 0 && (T.reji -= dt) <= 0) { T.reji = 1.6 / n.reji; if (checkout()) poke('reji'); }
+}
+function updateHelpers(dt) {
+  for (const k in HELP) {
+    const h = HELP[k], d = h.tx - h.x, step = 40 * dt;
+    h.hop = Math.max(0, h.hop - dt);
+    if (Math.abs(d) <= step) h.x = h.tx; else { h.x += Math.sign(d) * step; h.walk += dt; }
+  }
+}
+
 function tick(dt) {
   runClock += dt;
   spawnT -= dt * MPS;
   if (spawnT <= 0) { spawn(); spawnT = Math.max(8, 12 / custMul()) * (0.7 + Math.random() * 0.6); }
-  if (S.eq.tenin > 0) { staffT -= dt; if (staffT <= 0) { staffT = 5 / S.eq.tenin; restockOne(); } }
-  syncStaff();
-  updateStaff(dt);
-  updateCustomers(dt);
+  syncOvens(); syncStaff();
+  staffTick(dt);
+  updateStaff(dt); updateHelpers(dt);
+  updateCustomers(dt); updateQueue(dt); updateExits(dt);
+  for (const o of S.ovens) if (o.id && o.t > 0) o.t = Math.max(0, o.t - dt);
+  updateDeliv(dt);
   for (const f of fx) f.t += dt;
   fx = fx.filter(f => f.t < 0.9);
 }
 
 /* ---------- 描く ---------- */
-function tag(cx, y, price) {
-  const s = String(price), w = textW(s) + 4, x = cx - (w >> 1);
-  ctx.fillStyle = '#3a2318'; ctx.fillRect(x, y, w, 9);
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(x + 1, y + 1, w - 2, 7);
-  digits(ctx, s, x + 2, y + 2, '#c8324f');
+const rect = (col, X, Y, w, h) => { ctx.fillStyle = col; ctx.fillRect(X, Y, w, h); };
+function tag(cx, y, price, dim) {
+  const s = pixNum(price), w = textW(s) + 4, x = cx - (w >> 1);
+  rect('#3a2318', x, y, w, 9); rect(dim ? '#e7dde0' : '#ffffff', x + 1, y + 1, w - 2, 7);
+  digits(ctx, s, x + 2, y + 2, dim ? '#b8a0a6' : '#c8324f');
+}
+function drawPerson(spr3, t, x, y, walking, walkT, bubble, many, hold) {
+  const spr = spr3[walking ? (Math.floor(walkT * 5) % 2 ? 1 : 2) : 0];
+  const X = Math.round(x), dy = Math.round(y) - (spr.height - 2);
+  ctx.drawImage(spr, X - 6, dy);
+  if (hold) ctx.drawImage(SPR[hold], X - 5, Math.round(y) - t.h + 7);
+  if (bubble) {
+    ctx.drawImage(BUB[bubble], X - 5, dy - 7);
+    if (bubble === 'heart' && many > 1) { const s = 'x' + pixNum(many); shadowText(ctx, s, X + 6, dy - 5, '#ffffff'); }
+  }
 }
 function drawSlot(i) {
   const s = S.slots[i], r = slotRect(i);
@@ -570,65 +910,126 @@ function drawSlot(i) {
   for (let row = 2; row >= 0; row--) for (let col = 0; col < 3; col++) {
     if (row * 3 + col < shown) ctx.drawImage(spr, r.x + 2 + col * 11, r.plank - 10 - row * 9);
   }
-  if (s.n > 9) {
-    const t = 'x' + pixNum(s.n);
-    digits(ctx, t, r.x + r.w - 2 - textW(t), r.y + 8, '#3f2416');
-    digits(ctx, t, r.x + r.w - 3 - textW(t), r.y + 7, '#fbeff2');
-  }
+  if (s.n > 9) { const t = 'x' + pixNum(s.n); shadowText(ctx, t, r.x + r.w - 3 - textW(t), r.y + 7, '#fbeff2'); }
   tag(r.cx, r.plank + 1, S.prices[s.id]);
 }
-function drawCust(c) {
-  const walking = c.state === 'in' || c.state === 'out';
-  const spr = PSPR[c.t.id][walking ? (Math.floor(c.walk * 5) % 2 ? 1 : 2) : 0];
-  const dx = Math.round(c.x) - 6, dy = Math.round(c.y) - (spr.height - 2);
-  ctx.drawImage(spr, dx, dy);
-  if (c.bubble) {
-    ctx.drawImage(BUB[c.bubble], Math.round(c.x) - 5, dy - 7);
-    if (c.bubble === 'heart' && c.many > 1) {
-      const t = 'x' + pixNum(c.many);
-      digits(ctx, t, Math.round(c.x) + 7, dy - 4, '#3a2318');
-      digits(ctx, t, Math.round(c.x) + 6, dy - 5, '#ffffff');
-    }
-  }
-}
-function drawStaff() {
-  const g = geo();
-  syncStaff();
-  for (const st of [...staff].sort((a, b) => a.x - b.x)) {
-    const moving = st.state === 'go' || st.state === 'back';
-    const spr = STAFF_SPR[moving ? (Math.floor(st.walk * 6) % 2 ? 1 : 2) : 0];
-    const y = g.base + 21 - Math.round(Math.sin(Math.min(1, st.hop / 0.25) * Math.PI) * 3);
-    ctx.drawImage(spr, Math.round(st.x) - 6, y - (spr.height - 2));
-  }
-}
-function drawFx(f) {
-  const k = f.t / 0.9, y = f.y - 2 - Math.round(k * 14);
-  ctx.globalAlpha = k > 0.7 ? (1 - k) / 0.3 : 1;
-  const x0 = f.coin ? f.x - 1 : f.x - (textW(f.txt) >> 1);
-  if (f.coin) ctx.drawImage(COIN, f.x - 10, y);
-  digits(ctx, f.txt, x0 + 1, y + 2, '#3a2318');
-  digits(ctx, f.txt, x0, y + 1, f.col);
-  ctx.globalAlpha = 1;
-}
-function drawBrackets(i) {
-  const r = slotRect(i), x0 = r.x + 1, y0 = r.y + 1, x1 = r.x + r.w - 1, y1 = r.plank + 10;
+function drawBrackets(x0, y0, x1, y1) {
   ctx.fillStyle = '#e0507a';
   for (const [x, y, sx, sy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) {
     ctx.fillRect(sx > 0 ? x : x - 5, sy > 0 ? y : y - 1, 6, 2);
     ctx.fillRect(sx > 0 ? x : x - 1, sy > 0 ? y : y - 5, 2, 6);
   }
 }
+function drawHelper(room, kind, yBottom) {
+  if (!S.eq[kind]) return;
+  const h = HELP[room], moving = Math.abs(h.tx - h.x) > 0.5;
+  const spr = SSPR[kind][moving ? (Math.floor(h.walk * 6) % 2 ? 1 : 2) : 0];
+  const y = yBottom - Math.round(Math.sin(Math.min(1, h.hop / 0.25) * Math.PI) * 3);
+  ctx.drawImage(spr, Math.round(h.x) - 6, y - (spr.height - 2));
+}
+function renderUriba() {
+  const g = geo();
+  for (let i = 0; i < S.slots.length; i++) drawSlot(i);
+  for (const st of [...staff].sort((a, b) => a.x - b.x)) {
+    const moving = st.state === 'go' || st.state === 'back';
+    const spr = SSPR.tenin[moving ? (Math.floor(st.walk * 6) % 2 ? 1 : 2) : 0];
+    const y = g.base + 21 - Math.round(Math.sin(Math.min(1, st.hop / 0.25) * Math.PI) * 3);
+    ctx.drawImage(spr, Math.round(st.x) - 6, y - (spr.height - 2));
+  }
+  cust.sort((a, b) => a.y - b.y);
+  for (const c of cust) drawPerson(PSPR[c.t.id], c.t, c.x, c.y, c.state === 'in' || c.state === 'out', c.walk, c.bubble, c.many, null);
+  if (sheetSlot >= 0 && blink % 0.7 < 0.45) { const r = slotRect(sheetSlot); drawBrackets(r.x + 1, r.y + 1, r.x + r.w - 1, r.plank + 10); }
+}
+function renderNyuka() {
+  const F = FL();
+  MORDER.forEach((m, k) => {
+    const R = cardRect(k), s = pixNum(S.stock[m]);
+    digits(ctx, s, R.x + 11 - (textW(s) >> 1), R.y + 18, S.stock[m] > 0 ? '#3a2318' : '#c8324f');
+    tag(R.x + 11, R.y + 25, boxPrice(m), S.money < boxPrice(m));
+  });
+  // 届くまで（とびらの伝票）
+  S.deliv.slice(0, 4).forEach((d, k) => {
+    const y = F - 46 + k * 8;
+    ctx.drawImage(MINIBOX, 102, y);
+    rect(MATS[d.m].label, 104, y + 3, 4, 2);
+    rect('#d9cbb0', 111, y + 2, 10, 2); rect('#5bb89a', 111, y + 2, Math.round(10 * (1 - d.t / DELIV_T)), 2);
+  });
+  if (S.deliv.length > 4) digits(ctx, '+' + (S.deliv.length - 4), 104, F - 13, '#7a5a4a');
+  // 届いた箱
+  const n = Math.min(12, S.boxes.length);
+  for (let k = 0; k < n; k++) {
+    const p = boxPos(k), top = k === n - 1;
+    ctx.drawImage(BOXSPR[S.boxes[k].m], p.x, p.y - (top && blink % 0.8 < 0.4 ? 1 : 0));
+  }
+  if (S.boxes.length > 12) shadowText(ctx, '+' + (S.boxes.length - 12), 70, F - 14, '#ffffff');
+  drawHelper('nyuka', 'shiire', HH - 2);
+}
+function drawOven(k) {
+  const o = S.ovens[k], x = ovenX(k), y = ovenTop(), done = isDone(o), baking = o.id && !done;
+  rect('#3a3540', x, y, 26, 32); rect('#d9dee3', x + 1, y + 1, 24, 30);
+  rect('#9aa3ad', x + 1, y + 1, 24, 5);
+  rect(done ? '#7fe3a8' : baking ? '#e0507a' : '#4a4552', x + 3, y + 2, 2, 2);
+  rect('#3a3540', x + 7, y + 2, 16, 3); rect('#4a4552', x + 8, y + 3, 14, 1);
+  if (baking) rect('#e0507a', x + 8, y + 3, Math.round(14 * (1 - o.t / BAKE_T)), 1);
+  if (done) rect('#7fe3a8', x + 8, y + 3, 14, 1);
+  rect('#3a3540', x + 1, y + 6, 24, 1);
+  rect('#6b7380', x + 6, y + 8, 14, 1);
+  rect('#b9c1c9', x + 3, y + 10, 20, 18);
+  rect('#3a3540', x + 4, y + 11, 18, 16);
+  if (!o.id) { rect('#4a4552', x + 5, y + 12, 16, 14); rect('#6a6575', x + 7, y + 13, 3, 1); rect('#6a6575', x + 7, y + 14, 1, 2); }
+  else {
+    rect(done ? '#ffd36b' : '#f6a04c', x + 5, y + 12, 16, 14);
+    if (baking && blink % 0.5 < 0.25) rect('#ffd36b', x + 5, y + 23, 16, 3);
+    ctx.globalAlpha = done ? 1 : 0.55; ctx.drawImage(SPR[o.id], x + 8, y + 14); ctx.globalAlpha = 1;
+  }
+  rect('#3a3540', x + 2, y + 32, 3, 2); rect('#3a3540', x + 21, y + 32, 3, 2);
+  if (baking) for (let j = 0; j < 2; j++) {
+    const ph = (blink * 0.9 + j * 0.5) % 1;
+    ctx.globalAlpha = 1 - ph; rect('#ffffff', x + 9 + j * 7, y - 2 - Math.round(ph * 7), 1, 2); ctx.globalAlpha = 1;
+  }
+  if (done) ctx.drawImage(BUB.excl, x + 8, y - 10 - (blink % 0.8 < 0.4 ? 1 : 0));
+}
+function renderChubo() {
+  const F = FL(), my = F - 92, sy = F - 62, n = batchN();
+  MORDER.forEach((m, k) => { const s = pixNum(S.stock[m]), cx = 13 + k * 25; digits(ctx, s, cx - (textW(s) >> 1), my + 11, S.stock[m] >= n ? '#3a2318' : '#c8324f'); });
+  ORDER.forEach((id, k) => digits(ctx, 'x' + pixNum(S.inv[id]), 22 + k * 42, sy + 3, '#3a2318'));
+  syncOvens();
+  for (let k = 0; k < S.ovens.length; k++) drawOven(k);
+  drawHelper('chubo', 'pati', HH - 2);
+  if (bakeOven >= 0 && blink % 0.7 < 0.45) { const x = ovenX(bakeOven), y = ovenTop(); drawBrackets(x - 1, y - 1, x + 26, y + 34); }
+}
+function renderReji() {
+  const F = FL();
+  drawHelper('reji', 'reji', F - 5);
+  ctx.drawImage(BG.rejiFront, 0, 0);
+  const front = S.queue[0];
+  if (front) { const s = pixNum(front.pay); digits(ctx, s, 37 - textW(s), F - 37, '#7fe3a8'); }
+  const shown = S.queue.slice(0, QVIS + 2);
+  for (let k = shown.length - 1; k >= 0; k--) {
+    const q = shown[k], t = TYPE[q.tid], d = Math.abs((k < QVIS ? qx(k) : W + 8) - q.x) > 0.5;
+    const hot = q.pat < PAT * 0.35;
+    drawPerson(PSPR[q.tid], t, q.x, F + 14, d, q.walk || 0, hot && blink % 0.8 < 0.5 ? 'drop' : null, 0, q.items[0][0]);
+  }
+  if (S.queue.length > QVIS) shadowText(ctx, '+' + (S.queue.length - QVIS), 108, F - 26, '#ffffff');
+  for (const e of exits) drawPerson(PSPR[e.t.id], e.t, e.x, e.y, true, e.walk, e.bubble, 0, null);
+}
+function drawFx(f) {
+  const k = f.t / 0.9, y = f.y - 2 - Math.round(k * 14);
+  ctx.globalAlpha = k > 0.7 ? (1 - k) / 0.3 : 1;
+  const x0 = f.coin ? f.x - 1 : f.x - (textW(f.txt) >> 1);
+  if (f.coin) ctx.drawImage(COIN, f.x - 10, y);
+  shadowText(ctx, f.txt, x0, y + 1, f.col);
+  ctx.globalAlpha = 1;
+}
 function render() {
   ctx.setTransform(P, 0, 0, P, 0, 0);
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(BG, 0, 0);
-  ctx.setTransform(P, 0, 0, P, 0, P * OFF);
-  for (let i = 0; i < S.slots.length; i++) drawSlot(i);
-  drawStaff();
-  cust.sort((a, b) => a.y - b.y);
-  for (const c of cust) drawCust(c);
-  for (const f of fx) drawFx(f);
-  if (sheetSlot >= 0 && blink % 0.7 < 0.45) drawBrackets(sheetSlot);
+  ctx.drawImage(BG[view], 0, 0);
+  if (view === 'uriba') { ctx.setTransform(P, 0, 0, P, 0, P * OFF); renderUriba(); }
+  else if (view === 'nyuka') renderNyuka();
+  else if (view === 'chubo') renderChubo();
+  else renderReji();
+  for (const f of fx) if (f.room === view) drawFx(f);
 }
 function fit() {
   const st = $('stage'), dpr = window.devicePixelRatio || 1, HB = geo().HB;
@@ -637,7 +1038,7 @@ function fit() {
   OFF = HH - HB;
   cv.width = W * P; cv.height = HH * P;
   cv.style.width = (W * P / dpr) + 'px'; cv.style.height = (HH * P / dpr) + 'px';
-  BG = buildBG();
+  BG = { uriba: buildUriba(), nyuka: buildNyuka(), chubo: buildChubo(), reji: buildReji(), rejiFront: buildRejiFront() };
 }
 
 /* ---------- 画面の文字 ---------- */
@@ -648,35 +1049,88 @@ function rate() {
 }
 function hud(bump) {
   $('moneyVal').textContent = fmt(S.money);
-  $('hint').hidden = S.hintDone;
   if (bump) { const el = $('money'); el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
 }
 let toastT = 0;
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
+const TIPS = { uriba: ['place', '棚をタップすると並べられる'], chubo: ['bake', 'オーブンをタップして焼く'], nyuka: ['order', '材料をタップすると注文できる'], reji: ['pay', 'タップでお会計'] };
+function showHint() {
+  let msg = '';
+  if (view === 'nyuka' && S.tips.order && !S.tips.open && !S.eq.shiire && S.boxes.length) msg = '届いた箱をタップして開ける';
+  else if (view === 'chubo' && S.tips.bake && !S.tips.take && !S.eq.pati && S.ovens.some(isDone)) msg = '焼けたらタップで取り出す';
+  else if (view === 'reji' && (!S.queue.length || S.eq.reji)) msg = '';
+  else { const [k, m] = TIPS[view]; if (!S.tips[k]) msg = m; }
+  const h = $('hint');
+  if (h.textContent !== msg) h.textContent = msg;
+  h.hidden = !msg || !$('sheet').hidden || !$('bake').hidden || !$('toast').hidden;   // 知らせ（toast）が出ている間はヒントを休む
+}
 
-/* ---------- 並べる ---------- */
+/* ---------- 部屋の切りかえ（下の絵） ---------- */
+const ROOMS = [
+  { id: 'nyuka', name: '入荷', label: '入荷：材料の箱が届く部屋' },
+  { id: 'chubo', name: '厨房', label: '厨房：オーブンでお菓子を焼く部屋' },
+  { id: 'uriba', name: '売り場', label: '売り場：棚とお客さん' },
+  { id: 'reji', name: 'レジ', label: 'レジ：お会計を待つお客さん' },
+];
+const TABK = Math.max(1, Math.round(3 * (window.devicePixelRatio || 1)));
+const TAB = {};
+const PTR_URL = big(PTR, 2);
+for (const R of ROOMS) {
+  const b = document.createElement('button');
+  b.className = 'room'; b.type = 'button'; b.dataset.room = R.id;
+  b.innerHTML = '<img class="ptr" alt=""><canvas></canvas><span></span>';
+  b.querySelector('.ptr').src = PTR_URL;
+  b.querySelector('span').textContent = R.name;
+  const c = b.querySelector('canvas'); c.width = 17 * TABK; c.height = 17 * TABK;
+  b.addEventListener('click', () => setView(R.id));
+  $('rooms').appendChild(b);
+  TAB[R.id] = { b, g: c.getContext('2d') };
+}
+/* 知らせのしるし：箱が届いた・焼けた・空いた棚に並べられる・レジの行列 */
+function signOf(id) {
+  if (id === 'nyuka') return { n: S.boxes.length };
+  if (id === 'chubo') return { n: S.ovens.filter(isDone).length };
+  if (id === 'uriba') return { n: S.slots.filter(s => s.id && s.n === 0 && S.inv[s.id] > 0).length };
+  return { n: S.queue.length, hot: S.queue.some(q => q.pat < PAT * 0.35) };
+}
+function drawTabs() {
+  for (const R of ROOMS) {
+    const { b, g } = TAB[R.id], sg = signOf(R.id);
+    g.setTransform(TABK, 0, 0, TABK, 0, 0); g.imageSmoothingEnabled = false;
+    g.clearRect(0, 0, 17, 17);
+    g.drawImage(ROOM_ICON[R.id], 1, 5);
+    if (sg.n > 0) {
+      const s = sg.n > 99 ? '99' : String(sg.n);
+      const up = sg.hot && blink % 0.8 < 0.4 ? 1 : 0;
+      g.drawImage(BUB_SIGN, 6, 1 - up);
+      digits(g, s, 7 + ((9 - textW(s)) >> 1), 2 - up, sg.hot ? '#d8304a' : '#3a2318');
+    }
+    b.setAttribute('aria-label', R.name + (sg.n > 0 ? '（' + sg.n + '）' : ''));
+  }
+}
+function setView(id) {
+  if (view !== id) { closeSheet(); closeBake(); }
+  view = id;
+  for (const R of ROOMS) { TAB[R.id].b.classList.toggle('on', R.id === id); TAB[R.id].b.setAttribute('aria-pressed', R.id === id); }
+  cv.setAttribute('aria-label', ROOMS.find(R => R.id === id).label);
+  showHint();
+}
+
+/* ---------- 棚に並べる（在庫から） ---------- */
 let ed = { slot: -1, id: 'cookie', n: 0, price: 100 };
 const picks = {};
 for (const id of ORDER) {
   const b = document.createElement('button');
   b.className = 'pick'; b.type = 'button'; b.id = 'pick-' + id;
   b.innerHTML = '<img class="ptr" alt=""><img alt=""><span class="nm"></span><span class="co"></span>';
-  b.querySelector('.ptr').src = big(PTR, 2);
+  b.querySelector('.ptr').src = PTR_URL;
   b.querySelectorAll('img')[1].src = big(SPR[id], 4);
   b.querySelector('.nm').textContent = SWEETS[id].name;
-  b.querySelector('.co').textContent = '1こ' + SWEETS[id].cost + '円';
-  b.addEventListener('click', () => { ed.id = id; ed.price = S.prices[id]; drawSheet(); });
+  b.addEventListener('click', () => { ed.id = id; ed.price = S.prices[id]; ed.n = Math.min(cap(), avail(id)); drawSheet(); });
   $('tray').appendChild(b); picks[id] = b;
 }
 const HEART_ON_URL = big(HEART_ON, 2), HEART_OFF_URL = big(HEART_OFF, 2);
-function delta() {
-  const s = S.slots[ed.slot];
-  if (s.id && s.n > 0) {
-    if (s.id === ed.id) return (ed.n - s.n) * SWEETS[ed.id].cost;
-    return ed.n * SWEETS[ed.id].cost - s.n * SWEETS[s.id].cost;
-  }
-  return ed.n * SWEETS[ed.id].cost;
-}
+const avail = id => S.inv[id] + (S.slots[ed.slot].id === id ? S.slots[ed.slot].n : 0);
 function ease(id, price) {
   let a = 0, w = 0;
   for (const t of TYPES) { a += t.w * t.pref[id] * pf(price / SWEETS[id].value, t.t * tol()); w += t.w; }
@@ -685,50 +1139,52 @@ function ease(id, price) {
 const priceStep = (p, down) => { const q = down ? p - 1 : p; return q < 1000 ? 10 : q < 10000 ? 100 : 1000; };
 const countStep = () => cap() >= 30 ? 3 : 1;
 function drawSheet() {
-  const s = S.slots[ed.slot], d = delta(), C = cap();
-  for (const id of ORDER) { picks[id].classList.toggle('on', id === ed.id); picks[id].setAttribute('aria-pressed', id === ed.id); }
+  const s = S.slots[ed.slot], A = avail(ed.id), mx = Math.min(cap(), A);
+  if (ed.n > mx) ed.n = mx;
+  for (const id of ORDER) {
+    picks[id].classList.toggle('on', id === ed.id); picks[id].setAttribute('aria-pressed', id === ed.id);
+    picks[id].querySelector('.co').textContent = '在庫' + fmt(S.inv[id]);
+  }
   $('nVal').textContent = ed.n + 'こ';
-  $('nMinus').disabled = ed.n <= 0; $('nPlus').disabled = ed.n >= C;
-  $('payVal').textContent = d > 0 ? '−' + fmt(d) + '円' : d < 0 ? '＋' + fmt(-d) + '円' : '';
+  $('nMinus').disabled = ed.n <= 0; $('nPlus').disabled = ed.n >= mx;
+  $('payVal').textContent = '在庫のこり ' + fmt(A - ed.n);
   $('pVal').textContent = fmt(ed.price) + '円';
   $('pMinus').disabled = ed.price <= 10; $('pPlus').disabled = ed.price >= 99990;
   const hearts = Math.max(0, Math.min(5, Math.round(ease(ed.id, ed.price) / 0.72 * 5)));
   const hb = $('hearts'); hb.textContent = '';
   for (let k = 0; k < 5; k++) { const im = new Image(); im.alt = ''; im.src = k < hearts ? HEART_ON_URL : HEART_OFF_URL; hb.appendChild(im); }
   hb.setAttribute('aria-label', '売れやすさ 5のうち' + hearts);
-  const note = $('note'), prof = ed.price - SWEETS[ed.id].cost, short = d > S.money;
-  note.classList.toggle('warn', short);
-  note.textContent = short ? 'お金が足りない' : prof >= 0 ? '1こ売れると ' + fmt(prof) + '円のもうけ' : '1こ売れるごとに ' + fmt(-prof) + '円の損';
-  const same = (s.id === ed.id && s.n === ed.n) || (ed.n === 0 && s.n === 0);
-  $('placeBtn').textContent = same ? '決める' : '並べる';
-  $('placeBtn').disabled = short;
+  const note = $('note'), prof = ed.price - SWEETS[ed.id].cost, none = A <= 0;
+  note.classList.toggle('warn', none);
+  note.textContent = none ? '在庫がない（厨房で焼く）' : prof >= 0 ? '1こ売れると ' + fmt(prof) + '円のもうけ' : '1こ売れるごとに ' + fmt(-prof) + '円の損';
+  $('placeBtn').textContent = (s.id === ed.id && s.n === ed.n) ? '決める' : '並べる';
 }
 function openSheet(i) {
-  closeLedger();
-  const s = S.slots[i], C = cap();
+  closeLedger(); closeBake();
+  const s = S.slots[i];
   ed.slot = i;
-  ed.id = s.id || ORDER[0];
+  ed.id = s.id || ORDER.find(id => S.inv[id] > 0) || ORDER[0];
   ed.price = S.prices[ed.id];
-  ed.n = s.n > 0 ? s.n : Math.max(0, Math.min(C, Math.floor(S.money / SWEETS[ed.id].cost)));
+  ed.n = Math.min(cap(), avail(ed.id));
   sheetSlot = i;
-  S.hintDone = true;
   // 下の段のときはパネルを上に出して、えらんだマスが見えるようにする
   const sh = $('sheet'), lower = Math.floor(i / 3) >= Math.floor(geo().tiers / 2);
   if (lower) { sh.style.top = ($('hud').offsetHeight + 4) + 'px'; sh.style.bottom = 'auto'; }
   else { sh.style.top = 'auto'; sh.style.bottom = '8px'; }
-  sh.hidden = false; syncFoot();
-  hud(); drawSheet();
+  sh.hidden = false; syncFoot(); showHint();
+  drawSheet();
 }
 function closeSheet() { sheetSlot = -1; $('sheet').hidden = true; syncFoot(); }
-// パネルを開いている間は、下の段（毎秒の売上とお店のボタン）をかくす
+// 帳面と棚のパネルを開いている間は、下の段（部屋とお店のボタン）をかくす
 function syncFoot() { $('foot').style.visibility = ($('sheet').hidden && $('ledger').hidden) ? '' : 'hidden'; }
 function place() {
-  const d = delta();
-  if (d > S.money) return;
-  S.money -= d; S.today.spent += d;
+  const s = S.slots[ed.slot], A = avail(ed.id), n = Math.min(ed.n, cap(), A);
+  if (s.id && s.id !== ed.id) S.inv[s.id] += s.n;
+  S.inv[ed.id] = A - n;
   S.prices[ed.id] = ed.price;
-  S.slots[ed.slot] = ed.n > 0 ? { id: ed.id, n: ed.n } : { id: null, n: 0 };
-  closeSheet(); hud(); save();
+  S.slots[ed.slot] = { id: ed.id, n };
+  S.tips.place = 1;
+  closeSheet(); save();
 }
 function hold(btn, fn) {
   let t1, t2;
@@ -742,23 +1198,91 @@ function hold(btn, fn) {
   btn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!btn.disabled) fn(); } });
 }
 hold($('nMinus'), () => { ed.n = Math.max(0, ed.n - countStep()); drawSheet(); });
-hold($('nPlus'), () => { ed.n = Math.min(cap(), ed.n + countStep()); drawSheet(); });
+hold($('nPlus'), () => { ed.n = Math.min(cap(), avail(ed.id), ed.n + countStep()); drawSheet(); });
 hold($('pMinus'), () => { ed.price = Math.max(10, ed.price - priceStep(ed.price, true)); drawSheet(); });
 hold($('pPlus'), () => { ed.price = Math.min(99990, ed.price + priceStep(ed.price, false)); drawSheet(); });
 $('cancelBtn').addEventListener('click', closeSheet);
 $('placeBtn').addEventListener('click', place);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheet(); closeLedger(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheet(); closeLedger(); closeBake(); } });
 
+/* ---------- オーブンで焼く（なにを焼くかえらぶ） ---------- */
+const MAT_URL = Object.fromEntries(MORDER.map(m => [m, big(MSPR[m], 2)]));
+const BK = {};
+for (const id of ORDER) {
+  const b = document.createElement('button');
+  b.className = 'led'; b.type = 'button';
+  b.innerHTML = '<img class="ic" alt=""><span><span class="nm"></span><span class="cnt"></span><span class="ef"></span></span><span class="pr"></span>';
+  b.querySelector('.ic').src = big(SPR[id], 3);
+  b.querySelector('.nm').textContent = SWEETS[id].name;
+  for (const m of RECIPE[id]) { const im = new Image(); im.className = 'mt'; im.alt = MATS[m].name; im.src = MAT_URL[m]; im.dataset.m = m; b.querySelector('.pr').appendChild(im); }
+  b.addEventListener('click', () => {
+    if (bakeOven >= 0 && bake(bakeOven, id)) { S.tips.bake = 1; closeBake(); save(); }
+  });
+  $('bakeList').appendChild(b); BK[id] = b;
+}
+function drawBake() {
+  const n = batchN();
+  $('bakeInfo').textContent = '1回で' + fmt(n) + 'こ焼ける';
+  for (const id of ORDER) {
+    const b = BK[id], lack = RECIPE[id].filter(m => S.stock[m] < n);
+    b.disabled = lack.length > 0;
+    b.classList.toggle('lack', lack.length > 0);
+    b.querySelector('.cnt').textContent = '在庫' + fmt(S.inv[id]);
+    b.querySelector('.ef').textContent = lack.length ? lack.map(m => MATS[m].name).join('・') + 'がたりない' : RECIPE[id].map(m => MATS[m].name).join('・');
+    b.querySelectorAll('.mt').forEach(im => im.classList.toggle('lack', S.stock[im.dataset.m] < n));
+  }
+  const none = ORDER.every(id => !canBake(id));
+  $('bakeNote').classList.toggle('warn', none);
+  $('bakeNote').textContent = none ? '材料がたりない（入荷で注文する）' : '';
+}
+function openBake(k) {
+  closeSheet(); closeLedger();
+  bakeOven = k;
+  const p = $('bake');
+  p.style.top = ($('hud').offsetHeight + 4) + 'px';
+  p.hidden = false; showHint();
+  drawBake();
+}
+function closeBake() { bakeOven = -1; $('bake').hidden = true; }
+$('bakeClose').addEventListener('click', closeBake);
+
+/* ---------- 画面をタップ ---------- */
+function tapOven(k) {
+  const o = S.ovens[k];
+  if (isDone(o)) { takeOut(k); S.tips.take = 1; closeBake(); }
+  else if (!o.id) openBake(k);
+  else toast('焼いているところ');
+}
 cv.addEventListener('click', e => {
   const b = cv.getBoundingClientRect();
-  const x = (e.clientX - b.left) / b.width * W, y = (e.clientY - b.top) / b.height * HH - OFF;
-  for (let i = 0; i < S.slots.length; i++) {
-    const r = slotRect(i);
-    if (x >= r.x && x < r.x + r.w && y >= r.y && y < r.plank + 10) { openSheet(i); return; }
+  const x = (e.clientX - b.left) / b.width * W, yy = (e.clientY - b.top) / b.height * HH;
+  if (view === 'uriba') {
+    const y = yy - OFF;
+    for (let i = 0; i < S.slots.length; i++) {
+      const r = slotRect(i);
+      if (x >= r.x && x < r.x + r.w && y >= r.y && y < r.plank + 10) { openSheet(i); return; }
+    }
+  } else if (view === 'nyuka') {
+    for (let k = 0; k < MORDER.length; k++) {
+      const R = cardRect(k);
+      if (x >= R.x - 1 && x < R.x + R.w + 1 && yy >= R.y - 2 && yy < R.y + R.h + 2) {
+        if (order(MORDER[k])) S.tips.order = 1; else toast('お金が足りない');
+        return;
+      }
+    }
+    if (S.boxes.length && yy > FL() - 50) { openBox(); S.tips.open = 1; }
+  } else if (view === 'chubo') {
+    for (let k = 0; k < S.ovens.length; k++) {
+      const X = ovenX(k), Y = ovenTop();
+      if (x >= X - 2 && x < X + 28 && yy >= Y - 12 && yy < Y + 36) { tapOven(k); return; }
+    }
+  } else {
+    if (checkout()) { S.tips.pay = 1; poke('reji'); }
   }
+  showHint();
 });
 
-/* ---------- お店の帳面（設備を買う） ---------- */
+/* ---------- お店の帳面（係・設備を買う） ---------- */
 const COIN_URL = big(COIN, 2);
 function ledRow(id, icon) {
   const b = document.createElement('button');
@@ -778,7 +1302,8 @@ for (const e of EQUIP) {
   LED[e.id].addEventListener('click', () => buyEquip(e.id));
   $('ledList').appendChild(LED[e.id]);
 }
-const seen = id => S.eq[id] > 0 || S.total.revenue >= EQ[id].base * 0.4 || id === 'tenin' || id === 'kanban';
+const STAFF_IDS = ['shiire', 'pati', 'tenin', 'reji'];
+const seen = id => S.eq[id] > 0 || STAFF_IDS.includes(id) || id === 'kanban' || S.total.revenue >= EQ[id].base * 0.4;
 function setRow(b, name, cnt, eff, price, can, locked) {
   b.querySelector('.nm').textContent = name;
   b.querySelector('.cnt').textContent = cnt;
@@ -796,27 +1321,31 @@ function refreshLedger() {
   } else LED.mise.hidden = true;
   let shownLocked = false;
   for (const e of EQUIP) {
-    const b = LED[e.id];
+    const b = LED[e.id], n = e.id === 'oven' ? 1 + S.eq.oven : S.eq[e.id];
     if (seen(e.id)) {
       b.hidden = false;
-      setRow(b, e.name, S.eq[e.id] ? S.eq[e.id] + e.unit : '', S.eq[e.id] && e.eff2 ? e.eff2 : e.eff, fmt(equipCost(e.id)), S.money >= equipCost(e.id));
+      const full = maxed(e.id);
+      b.classList.toggle('maxed', full);
+      setRow(b, e.name, n ? n + e.unit : '', full ? 'これ以上は置けない' : S.eq[e.id] && e.eff2 ? e.eff2 : e.eff, full ? '' : fmt(equipCost(e.id)), !full && S.money >= equipCost(e.id));
     } else if (!shownLocked) {
       shownLocked = true; b.hidden = false;
       setRow(b, '？？？', '', 'もっと売れると出てくる', fmt(equipCost(e.id)), false, true);
     } else b.hidden = true;
   }
-  $('ledTotal').textContent = 'これまで ' + fmt(S.total.sold) + 'こ・' + fmt(S.total.revenue) + '円';
+  $('ledTotal').textContent = 'これまで ' + fmt(S.total.sold) + 'こ・' + fmt(S.total.revenue) + '円' + (S.total.lost ? '・むだ ' + fmt(S.total.lost) + 'こ' : '');
 }
 function anyAffordable() {
   const ns = STAGES[S.stage + 1];
   if (ns && S.money >= ns.cost) return true;
-  return EQUIP.some(e => seen(e.id) && S.money >= equipCost(e.id));
+  return EQUIP.some(e => seen(e.id) && !maxed(e.id) && S.money >= equipCost(e.id));
 }
 function buyEquip(id) {
+  if (maxed(id)) return;
   const c = equipCost(id);
   if (S.money < c) return;
   S.money -= c; S.eq[id]++;
-  if (id === 'tenin' && S.eq.tenin === 1) staffT = 1;
+  if (T[id] != null && S.eq[id] === 1) T[id] = 1;
+  syncOvens();
   hud(); refreshLedger(); save();
 }
 function expand() {
@@ -832,7 +1361,7 @@ function expand() {
   closeLedger(); hud(); save();
   toast(ns.name + 'になった');
 }
-function openLedger() { closeSheet(); refreshLedger(); $('ledger').hidden = false; syncFoot(); }
+function openLedger() { closeSheet(); closeBake(); refreshLedger(); $('ledger').hidden = false; syncFoot(); }
 function closeLedger() { $('ledger').hidden = true; syncFoot(); }
 $('shopBtn').addEventListener('click', () => { if ($('ledger').hidden) openLedger(); else closeLedger(); });
 $('ledClose').addEventListener('click', closeLedger);
@@ -842,14 +1371,15 @@ function start(data) {
   S = sanitize((data && data.state) || load());
   $('coinImg').src = big(COIN, 3);
   $('shopIcon').src = big(ICONS.mise, 2);
+  syncOvens();
   fit();
   new ResizeObserver(fit).observe($('stage'));
-  hud();
+  hud(); setView('uriba'); drawTabs();
   let last = performance.now(), slow = 0;
   const frame = now => {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     blink += dt;
-    if (document.visibilityState === 'visible' && sheetSlot < 0) tick(dt);
+    if (document.visibilityState === 'visible') tick(dt);
     slow += dt;
     if (slow > 0.3) {
       slow = 0;
@@ -857,6 +1387,9 @@ function start(data) {
       $('moneyVal').textContent = fmt(S.money);
       $('shopBtn').classList.toggle('can', anyAffordable());
       if (!$('ledger').hidden) refreshLedger();
+      if (!$('bake').hidden) drawBake();
+      if (!$('sheet').hidden) drawSheet();
+      drawTabs(); showHint();
     }
     render();
     requestAnimationFrame(frame);
