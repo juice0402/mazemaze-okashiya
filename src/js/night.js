@@ -31,7 +31,6 @@ function startNight() {
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     flashes: [], held: [], sel: null, view: false, last: null,
   };
-  scn.flee = 0; scn.heat = START_HEAT;
   N = S.night; rollShop(); dealAnim = true;
   save(); render();
 }

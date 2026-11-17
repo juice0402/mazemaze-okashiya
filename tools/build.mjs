@@ -20,9 +20,13 @@ for (const f of readdirSync(artDir).sort()) {
   const m = f.match(/^(.+)\.(webp|png)$/); if (!m) continue;
   ART[m[1]] = `data:image/${m[2]};base64,` + readFileSync(join(artDir, f)).toString('base64');
 }
-const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\n" + ORDER.map(p => `/* ---- ${p} ---- */\n` + rd(p)).join('\n') + '\n})();';
+// 小さくする（11/18 軽量化）：遊ぶ人の index.html には、コメントと行の頭の空白を入れない（src はそのまま読みやすく）
+// CSS：/* */ を消して空白をつめる。JS：1行まるごとのコメント（// と /* */）と行の頭の空白だけ消す（文字列やテンプレートの中には書かない決まり）
+const minCss = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '\n').replace(/\n+/g, '\n').trim();
+const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').replace(/^[ \t]*\/\/.*$/gm, '').replace(/^[ \t]+/gm, '').replace(/\n{2,}/g, '\n');
+const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
 const frag = rd('src/shell.html')
-  .replace('<!--STYLE-->', () => '<style>\n' + STYLES.map(rd).join('\n') + '</style>')
+  .replace('<!--STYLE-->', () => '<style>\n' + minCss(STYLES.map(rd).join('\n')) + '</style>')
   .replace('<!--SCRIPT-->', () => '<script>\n' + js + '\n</script>');
 
 const cut = frag.indexOf('<div id="app">');

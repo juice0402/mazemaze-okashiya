@@ -50,6 +50,7 @@ const ACTS = {
   ...MORNING_ACTS, ...DAY_ACTS,   // 朝と昼の画面のボタン（morning.js・day.js＝昼のチャット）
 };
 function boot(data) {
+  if (!boot.art) { boot.art = 1; return artBlobs(() => boot(data)); }   // 先に絵を blob URL に（core.js）
   const s = data && data.S ? sanitize(data.S) : null;
   S = s || newState();
   if (!s) S.phase = 'title';

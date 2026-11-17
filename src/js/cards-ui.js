@@ -1,12 +1,6 @@
 /* ==== カード（11/17 夜「カードがこのゲームのキモ」）：ふちはレア度の金属（★1 銅・★2 銀・★3 金と虹の箔）・中は絵の窓・名前のリボン・属性の帯・短い効果の紙
    左上に炎のダメージの紋章・右上に★。生地は紙の左に焼き加減の炎（色と数字）。文字の大きさはカードの幅で決まる（style.css の cqw）
    cardMini：手札・ドラッグ・演出　cardTile：調理台（絵と数字・焼き加減の炎とメーター）　cardBig：タップで大きく見る ==== */
-function cardTastes(d) { return [...new Set(d.mats.map(m => MATS[m].taste))]; }
-/* 属性（種類・役目）と★と味 */
-function typeLine(d) {
-  const t = cardTastes(d);
-  return `${attrsOf(d).join('・')}${d.star > 1 ? ' ★' + d.star : ''}${t.length ? '／' + t.join('・') : ''}`;
-}
 /* いまのダメージ（生地は焼き加減の倍率こみ） */
 function cardDmg(d, cook) { return d.fx.dmg ? Math.floor(d.fx.dmg * STAR_MUL[d.star] * (d.dough ? cookMul(cook || 0) : 1) * 10) / 10 : 0; }
 /* 効果のことば（短く） */
@@ -51,6 +45,10 @@ const textW = t => [...t].reduce((a, c) => a + (/[0-9.+\-]/.test(c) ? .6 : /[×�
 const fitFs = (t, w) => Math.min(9, Math.floor(w / textW(t) * 10) / 10);
 
 /* ダメージの紋章（けた数で文字を小さく） */
+/* ★2・★3のきらめき（11/18 軽量化）：光の帯は transform で動かす（色をぬりなおさない）。★1には出さない
+   pc-shine＝絵の窓の上・pc-gl＝ふちの上（いちばん最後に置いて、前の .pc::after と同じ重なり） */
+const shineI = d => d.star > 1 ? '<i class="pc-shine"></i>' : '';
+const glossI = d => d.star > 1 ? '<i class="pc-gl"></i>' : '';
 function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-pow l${Math.min(t.length, 5)}">${t}</b>`; }
 /* カードの形（mini と huge は同じ形で大きさだけちがう）。紙は1つの効果を1行で、上から大事な2つまで */
 function cardFace(cid, cls, opt = {}) {
@@ -60,10 +58,10 @@ function cardFace(cid, cls, opt = {}) {
     : `<span class="ln plain">${esc(plainLine(d))}</span>`;
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
-    <div class="pc-win"><div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i></div>
+    <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
     <div class="pc-name"><span>${esc(d.short)}</span></div>${attrBar(d)}
     <div class="pc-text${ck ? ' has-ck' : ''}">${ck}<span class="pl">${txt}</span></div>
-    ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}
+    ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
   </div>`;
 }
 function cardMini(cid, opt = {}) { return cardFace(cid, 'mini', opt); }
@@ -71,9 +69,9 @@ function cardMini(cid, opt = {}) { return cardFace(cid, 'mini', opt); }
 function cardTile(cid, opt = {}) {
   const d = cardDef(cid), cook = d.dough ? opt.cook || 0 : null, dmg = cardDmg(d, cook);
   return `<div class="pc tile k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}">
-    <div class="pc-win"><div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i></div>
+    <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
     ${starGems(d)}${dmg ? powBadge(dmg) : ''}
-    ${cook != null ? `${cookIcon(cook)}<i class="cook c${cookStage(cook)}" style="--c:${cook}"></i>` : ''}</div>`;
+    ${cook != null ? `${cookIcon(cook)}<i class="cook c${cookStage(cook)}" style="--c:${cook}"></i>` : ''}${glossI(d)}</div>`;
 }
 function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook, tap: true }); }
 /* 大きなカードの下（ゼンゼロの形・11/18 しょーくん）：名前・属性・焼き加減はカードに出ているので書かない。材料も出さない

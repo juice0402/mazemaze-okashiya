@@ -8,6 +8,26 @@ const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
 
+/* 絵を軽く渡す（11/18 軽量化）：ART の dataURL（1まい数十KB）を画面の文字に入れると、描きなおすたびに何百KBの文字を作って読みなおす。
+   起動のときに一度だけ blob URL（短い名前）にかえる。blob の絵が出せない所では dataURL のまま。かえおわってから done() */
+function artBlobs(done) {
+  const keys = Object.keys(ART);
+  let fin = false; const end = () => { if (!fin) { fin = true; done(); } };
+  try {
+    if (!keys.length || !URL.createObjectURL) return end();
+    const blob = d => {
+      const c = d.indexOf(','), bin = atob(d.slice(c + 1)), u = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+      return URL.createObjectURL(new Blob([u], { type: d.slice(5, d.indexOf(';')) }));
+    };
+    const img = new Image();
+    img.onload = () => { try { for (const k of keys) if (ART[k].startsWith('data:')) ART[k] = blob(ART[k]); } catch (e) { /* dataURL のまま */ } end(); };
+    img.onerror = end;
+    img.src = blob(ART[keys[0]]);
+    setTimeout(end, 400);   // 待ちすぎない（そのときは dataURL のまま）
+  } catch (e) { end(); }
+}
+
 /* 大きな数字：10万からは「万・億・兆・京」 */
 function fmt(n) {
   n = Math.floor(n);

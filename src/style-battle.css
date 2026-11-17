@@ -57,9 +57,6 @@
 .tslot .pc.tile.pon2{animation:pon2 var(--ad,.6s) cubic-bezier(.25,1.3,.5,1)}
 @keyframes pon2{0%{transform:none}30%{transform:translateY(-32px) scale(1.55) rotate(-8deg);filter:brightness(1.25)}48%{transform:translateY(-36px) scale(1.6) rotate(7deg);filter:brightness(1.25)}72%{transform:translateY(3px) scale(.9)}86%{transform:translateY(-7px) scale(1.14)}100%{transform:translateY(-3px) scale(1.08)}}
 .tslot .pc.tile.pon3{animation:pon3 var(--ad,1.15s) linear;z-index:30}
-/* サイコーの金の光は、跳ねたあともつづける */
-.tslot .pc.tile.best.pon1,.tslot .pc.tile.best.pon2,.tslot .pc.tile.best.pon3{animation-name:var(--pn),bestglow;animation-duration:var(--ad,.5s),1.2s;animation-iteration-count:1,infinite;animation-direction:normal,alternate;animation-delay:0s,var(--ad,.5s)}
-.tslot .pc.tile.pon1{--pn:pon1}.tslot .pc.tile.pon2{--pn:pon2}.tslot .pc.tile.pon3{--pn:pon3}
 @keyframes pon3{
   0%{transform:perspective(420px) translateY(0) scale(1) rotateY(0deg);filter:none}
   18%{transform:perspective(420px) translateY(-72px) scale(1.95) rotateY(0deg);filter:brightness(1.3) drop-shadow(0 22px 12px rgba(0,0,0,.55));animation-timing-function:cubic-bezier(.45,0,.4,1)}

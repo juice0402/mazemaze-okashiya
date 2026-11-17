@@ -34,4 +34,12 @@
 
 ## 動き
 - 動きは CSS の animation で。`REDUCED`（動きをへらす設定）のときは動かしすぎない
+
+## 軽く描く（11/18 しょーくん「描写ルールを見直して軽量化」・どちらのチャットも）
+- 絵は `ART['名前']`・`artImg(cid)`・`cardIconURL(cid)` をそのまま使う（起動のときに短い blob URL になっている）。dataURL を自分で作って innerHTML に入れない。canvas で描いた絵は、作ったら Map に入れて使いまわす（cardIconURL の形）
+- ずっと動く（infinite）アニメは **transform と opacity だけ**。box-shadow・filter・left/top・width・background-position・color は動かさない（スマホが毎フレームぬりなおす）。光らせたいときは、光った形を ::before/::after に重ねて opacity だけ動かす（例：`.pc.tile.best::before`・`.ck.c3::after`）。光の帯は帯の物を transform で動かす（`.pc-gl`）
+- 1回だけの短い演出（0.6秒くらいまで）は、filter で明るくしてもよい
+- requestAnimationFrame のループは、描く物がない画面では止める（scene.js の sceneLoop の形）
+- 描きなおしは `render()` でまるごと。指に合わせて毎フレーム動く物（ドラッグなど）は style の transform だけ変える（innerHTML を作りなおさない）
+- 使わなくなったクラス・関数・絵はけずる（コメントで残さない）。src のコメントはビルドで消えるので、説明は書いてよい
 - 夜のバトルの速さ `T()`・はやおくりは夜だけのもの（昼は day.js の `scn.speed`）

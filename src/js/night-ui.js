@@ -7,7 +7,6 @@ const ORD = ['①', '②', '③', '④', '⑤'];
 /* ---------- 演出 ---------- */
 /* 鉄板の火力（1〜4）。フィールドがないと焼けないので、光らせない */
 function setHeat(h) {
-  scn.heat = h;
   const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
   [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
   lab.textContent = N.field ? HEAT[h] : `${HEAT[h]}（場なし）`;
@@ -191,7 +190,7 @@ function cutIn(cid, sub) {
   el.className = 'cutin'; el.style.setProperty('--cd', ms + 'ms');
   el.innerHTML = `<i class="ci-flash"></i><div class="ci-band"><i class="ci-lines"></i><div class="ci-in">
     <img class="ci-hero${h.flip ? ' flip' : ''}" src="${h.src}" alt="">
-    <div class="ci-card pc k-s s3">${artImg(cid)}<i class="pc-shine"></i></div>
+    <div class="ci-card pc k-s s3">${artImg(cid)}<i class="pc-shine"></i><i class="pc-gl"></i></div>
     <p class="ci-title"><small>${sub}</small><span>${esc(d.short)}</span></p></div></div>`;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), ms);
