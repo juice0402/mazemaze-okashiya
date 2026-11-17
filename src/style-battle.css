@@ -1,0 +1,128 @@
+/* ==== バトルの演出と舞台の賑やかし（11/18 しょーくんの感想・Version 33。動きは src/js/battle-fx.js） ==== */
+
+/* ---------- 舞台：木の額縁・手前の草・デフォルメのほのかとモブ（ペパマリの戦闘・ゼンゼロのように） ---------- */
+.deco{position:absolute;inset:0;z-index:8;pointer-events:none;container-type:size;border-radius:inherit}
+/* 額縁：木の輪（まんなかを抜く）＋内側の真ちゅうの線＋角の飾り＋上のまんなかの紋章 */
+.dc-frame{position:absolute;inset:0;border-radius:11px;padding:7px;
+  background:repeating-linear-gradient(90deg,rgba(40,18,6,.16) 0 1px,transparent 1px 7px),repeating-linear-gradient(0deg,rgba(40,18,6,.16) 0 1px,transparent 1px 7px),linear-gradient(135deg,#b07c46,#7a4c28 35%,#a06a38 55%,#5e3a1e);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.dc-line{position:absolute;inset:6px;border-radius:6px;border:1.5px solid #ffd98a;box-shadow:0 0 0 1px #3a1c08,inset 0 0 0 1px rgba(58,28,8,.7),inset 0 0 14px 4px rgba(20,8,2,.45)}
+.fc{position:absolute;width:17px;height:17px;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#ff8fb0 0 22%,#c43c64 24% 30%,transparent 32%),radial-gradient(circle at 35% 30%,#fff7c8,#f4c24e 45%,#a86a10 80%);box-shadow:0 0 0 1.5px #3a1c08,0 2px 3px rgba(0,0,0,.5)}
+.fc.tl{left:-1px;top:-1px}.fc.tr{right:-1px;top:-1px}.fc.bl{left:-1px;bottom:-1px}.fc.br{right:-1px;bottom:-1px}
+.fc-crest{position:absolute;left:50%;top:-3px;width:34px;height:20px;translate:-50% 0;border-radius:0 0 17px 17px;
+  background:radial-gradient(circle at 50% 38%,#ff8fb0 0 18%,#c43c64 20% 26%,transparent 28%),radial-gradient(circle at 40% 20%,#fff7c8,#f4c24e 40%,#a86a10 85%);box-shadow:0 0 0 1.5px #3a1c08,0 2px 4px rgba(0,0,0,.5)}
+/* 舞台の手前の木の段と草（草はコードで描いた SVG） */
+.dc-ledge{position:absolute;left:0;right:0;bottom:0;height:max(12px,5.5cqh);
+  background:repeating-linear-gradient(90deg,rgba(40,18,6,.2) 0 1px,transparent 1px 23px),linear-gradient(#9a6838,#6a4022 55%,#46280f);box-shadow:inset 0 2px 0 rgba(255,226,180,.45),0 -3px 6px rgba(0,0,0,.35)}
+.dc-grass{position:absolute;left:0;bottom:max(9px,4.2cqh);width:100%;height:max(20px,9cqh);filter:drop-shadow(0 -1px 0 rgba(20,40,10,.35))}
+/* デフォルメの子たち：ぴょこぴょこ（--k で少しずつずらす） */
+.dc{position:absolute;bottom:max(6px,2.6cqh);object-fit:contain;object-position:bottom;transform-origin:50% 100%;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.5));animation:dchop 1.7s ease-in-out infinite;animation-delay:calc(var(--k,0) * -.41s)}
+@keyframes dchop{0%,55%,100%{transform:none}66%{transform:scale(1.07,.9)}78%{transform:translateY(-16%) scale(.95,1.06)}90%{transform:scale(1.04,.96)}}
+.dc-chibi{left:3px;height:25cqh;max-width:24%}
+.dc-chibi.tmp{height:27cqh}
+.m-slime{right:2px;height:13cqh;max-width:16%}
+.m-hitsuji{right:15%;height:14cqh;max-width:16%}
+.m-tokage{left:22%;height:10cqh;max-width:13%}
+.m-hiyoko{right:31%;height:10cqh;max-width:12%}
+.m-kurage{left:47%;top:15cqh;bottom:auto;height:9cqh;max-width:12%;animation:dcfloat 3.2s ease-in-out infinite}
+@keyframes dcfloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12%) rotate(4deg)}}
+.dc.tmp{opacity:.95}
+/* ショップのあいだは、考えるほのかとモブがショップの下のすみに（カードと値札をかくさない） */
+.deco.shop .dc-chibi{height:23cqh}
+.deco.shop .m-tokage{left:auto;right:30%}
+.deco.shop .m-hiyoko{right:auto;left:22%}
+.deco.shop .m-kurage{display:none}
+/* みんなの反応：hop＝ふつうの一撃・jump＝大きな一撃と★3・scare＝モンスターがほえた */
+.deco.hop .dc{animation:dcjump .5s ease-out both;animation-delay:calc(var(--k,0) * 45ms)}
+.deco.jump .dc{animation:dcjump2 .8s cubic-bezier(.3,1.3,.5,1) both;animation-delay:calc(var(--k,0) * 55ms)}
+.deco.scare .dc{animation:dcscare .55s linear both}
+@keyframes dcjump{40%{transform:translateY(-22%) scale(.94,1.08)}75%{transform:scale(1.06,.94)}}
+@keyframes dcjump2{0%{transform:scale(1.1,.85)}35%{transform:translateY(-45%) scale(.92,1.1) rotate(-6deg)}60%{transform:translateY(-38%) rotate(6deg)}82%{transform:scale(1.1,.88)}100%{transform:none}}
+@keyframes dcscare{0%,100%{transform:none}20%,60%{transform:translateX(-5%) scale(1.04,.94)}40%,80%{transform:translateX(5%) scale(1.04,.94)}}
+/* 額縁と段のぶん、ほのか・モンスター・火力のメーターを少し上へ */
+.night .stage .chef{bottom:max(14px,7cqh);height:min(82%,calc((min(100vw, 460px) - 32px) * .38))}
+.night .stage .mon{bottom:22%}
+.night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}
+.night .ov-top{top:9px;left:13px;right:13px;z-index:9}
+.stage:has(.shopov:not(.out)) .ov-top,.stage:has(.shopov:not(.out)) .ov-heat{visibility:hidden}
+/* ショップは額縁の内側に */
+.night .shopov{inset:6px;border-radius:7px}
+
+/* ---------- 発動したカードが跳ねる（★1 ぽん・★2 大きく・★3 縦にくるっと1回転してズドン） ---------- */
+.tslot.lift{z-index:30}
+.tslot .pc.tile.pon1{animation:pon1 var(--ad,.44s) cubic-bezier(.3,1.5,.5,1)}
+@keyframes pon1{0%{transform:none}35%{transform:translateY(-14px) scale(1.25) rotate(-5deg)}65%{transform:translateY(1px) scale(.95)}100%{transform:translateY(-3px) scale(1.08)}}
+.tslot .pc.tile.pon2{animation:pon2 var(--ad,.6s) cubic-bezier(.25,1.3,.5,1)}
+@keyframes pon2{0%{transform:none}30%{transform:translateY(-32px) scale(1.55) rotate(-8deg);filter:brightness(1.25)}48%{transform:translateY(-36px) scale(1.6) rotate(7deg);filter:brightness(1.25)}72%{transform:translateY(3px) scale(.9)}86%{transform:translateY(-7px) scale(1.14)}100%{transform:translateY(-3px) scale(1.08)}}
+.tslot .pc.tile.pon3{animation:pon3 var(--ad,1.15s) linear;z-index:30}
+/* サイコーの金の光は、跳ねたあともつづける */
+.tslot .pc.tile.best.pon1,.tslot .pc.tile.best.pon2,.tslot .pc.tile.best.pon3{animation-name:var(--pn),bestglow;animation-duration:var(--ad,.5s),1.2s;animation-iteration-count:1,infinite;animation-direction:normal,alternate;animation-delay:0s,var(--ad,.5s)}
+.tslot .pc.tile.pon1{--pn:pon1}.tslot .pc.tile.pon2{--pn:pon2}.tslot .pc.tile.pon3{--pn:pon3}
+@keyframes pon3{
+  0%{transform:perspective(420px) translateY(0) scale(1) rotateY(0deg);filter:none}
+  18%{transform:perspective(420px) translateY(-72px) scale(1.95) rotateY(0deg);filter:brightness(1.3) drop-shadow(0 22px 12px rgba(0,0,0,.55));animation-timing-function:cubic-bezier(.45,0,.4,1)}
+  56%{transform:perspective(420px) translateY(-86px) scale(2.1) rotateY(360deg);filter:brightness(1.5) drop-shadow(0 0 16px #ffe066)}
+  70%{transform:perspective(420px) translateY(-92px) scale(2.15) rotateY(360deg);filter:brightness(1.6) drop-shadow(0 0 22px #ffe066);animation-timing-function:cubic-bezier(.7,0,1,.5)}
+  78%{transform:perspective(420px) translateY(7px) scale(.88,.86) rotateY(360deg);filter:brightness(2.2)}
+  87%{transform:perspective(420px) translateY(-9px) scale(1.2) rotateY(360deg);filter:brightness(1.3)}
+  100%{transform:perspective(420px) translateY(-3px) scale(1.08) rotateY(360deg);filter:none}}
+.tslot .pc.tile.slam::after{content:"";position:absolute;inset:-4px;border-radius:10px;background:#fff;animation:slamflash .35s ease-out forwards;pointer-events:none}
+@keyframes slamflash{from{opacity:.95}to{opacity:0}}
+.tiles.tquake{animation:tquake .38s linear}
+@keyframes tquake{10%,50%{transform:translate(0,5px)}30%,70%{transform:translate(0,-4px)}90%{transform:translate(0,2px)}}
+/* 下のパネルのカードもぽん */
+.bp-card .pc.bpon{animation:bpon var(--ad,.48s) cubic-bezier(.25,1.5,.45,1)}
+@keyframes bpon{0%{transform:translateY(16px) scale(.6) rotate(-10deg);opacity:0}45%{transform:translateY(-10px) scale(1.12) rotate(4deg);opacity:1}100%{transform:none}}
+
+/* ---------- 下のパネルの札：ぽんと跳ねて出る・いま効いている札が光る・計算の札は › でつながる・右の数字がはねる ---------- */
+.bp-f{gap:6px 11px}
+.f-chip{position:relative}
+.f-chip.in{animation:chipon var(--ad,.36s) cubic-bezier(.2,1.7,.4,1) forwards}
+@keyframes chipon{0%{opacity:0;transform:translateY(12px) scale(.4)}55%{opacity:1;transform:translateY(-8px) scale(1.2)}100%{opacity:1;transform:none}}
+.f-chip.in:not(.cur){filter:saturate(.8) brightness(.9)}
+.f-chip.cur{z-index:1;box-shadow:inset 0 0 0 1px rgba(255,236,190,.9),0 0 0 2px #fff3c0,0 0 12px 3px rgba(255,200,80,.85)}
+.f-chip.calc~.f-chip.calc::before{content:"";position:absolute;left:-9px;top:50%;width:0;height:0;translate:0 -50%;border:5px solid transparent;border-right:0;border-left:6px solid #b07a4a}
+.bp-dmg b{display:inline-block}
+.bp-dmg.bump b{animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
+@keyframes numbump{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-4deg)}100%{transform:none}}
+.bp-dmg.fin b{color:#ffe066;text-shadow:0 3px 0 #3a1004,0 0 16px rgba(255,170,40,.95)}
+
+/* ---------- オーラ（ほかのカードにかかる効果）・光の輪・木くず・ズドン・マスに残る札 ---------- */
+#fxl{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.aura{position:absolute;width:calc(20px * var(--s,1));height:calc(20px * var(--s,1));margin:calc(-10px * var(--s,1)) 0 0 calc(-10px * var(--s,1));border-radius:50%;
+  background:radial-gradient(circle,#fff 0 24%,var(--ac) 48%,transparent 72%);box-shadow:0 0 14px 5px var(--ac)}
+.aura.tr{opacity:.65;box-shadow:0 0 6px 1px var(--ac)}
+.a-next{--ac:#ff6fa0}.a-nb,.a-rally{--ac:#ffcf3a}.a-again{--ac:#ffa53a}.a-sear,.a-heat{--ac:#ff5a24}.a-best,.a-fin{--ac:#ffe066}.a-stop{--ac:#c99cff}
+.r-gold{--ac:#ffd84a}.r-slam{--ac:#fff3c0}
+.aring{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:3px solid var(--ac,#ffe066);box-shadow:0 0 12px 3px var(--ac,#ffe066),inset 0 0 10px 2px var(--ac,#ffe066);animation:aring .5s ease-out forwards}
+.aring.r-slam{width:90px;height:44px;margin:-6px 0 0 -45px;border-width:4px;animation:slamring .6s ease-out forwards}
+@keyframes aring{from{opacity:1;transform:scale(.3)}to{opacity:0;transform:scale(1.5)}}
+@keyframes slamring{from{opacity:1;transform:scale(.3)}to{opacity:0;transform:scale(3,2)}}
+.ahit{animation:ahit .4s ease-out}
+@keyframes ahit{30%{filter:brightness(1.8) saturate(1.4)}}
+.debris{position:absolute;width:7px;height:5px;margin:-3px 0 0 -3px;border-radius:1px;background:#8a5a30;box-shadow:0 0 0 1px #3a1c08}
+.debris.gold{background:#ffe066;box-shadow:0 0 6px 2px rgba(255,214,80,.9)}
+.zudon{position:absolute;translate:-50% 0;font-family:var(--disp);font-weight:400;font-size:30px;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:5px #6a1a04;paint-order:stroke fill;text-shadow:0 4px 0 #3a1004,0 0 16px rgba(255,170,40,.9);animation:zudon .9s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes zudon{0%{opacity:0;transform:scale(2.4) rotate(-12deg)}20%{opacity:1;transform:scale(1) rotate(-6deg)}75%{opacity:1;transform:translateY(-8px) rotate(-6deg)}100%{opacity:0;transform:translateY(-22px) rotate(-6deg)}}
+.buffs{position:absolute;left:50%;top:-11px;z-index:5;translate:-50% 0;display:flex;gap:2px;pointer-events:none}
+.buff{font-style:normal;font-family:var(--disp);font-weight:400;font-size:10.5px;line-height:1;white-space:nowrap;padding:3px 5px 2px;border-radius:7px;color:#fff;
+  background:var(--bc);box-shadow:0 0 0 1.5px #2a1408,0 0 9px 2px var(--bc);animation:buffin .4s cubic-bezier(.2,1.8,.4,1) backwards}
+.buff.b-next{--bc:#e8467a}.buff.b-nb,.buff.b-rally{--bc:#d89a10;color:#2a1408}.buff.b-again{--bc:#e8781e}
+.buff.absorb{animation:buffout .42s ease-in forwards}
+@keyframes buffin{from{opacity:0;transform:scale(2.2)}}
+@keyframes buffout{35%{transform:scale(1.45)}100%{opacity:0;transform:translateY(22px) scale(.2)}}
+#heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
+
+@media (prefers-reduced-motion:reduce){.dc{animation:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
+/* 下のパネルは手札の所いっぱいなので、札と数字を大きく（どの順番で効いているか見やすく） */
+.bp{gap:12px;padding:12px 14px 12px 12px}
+.bp-card{width:min(30%,118px)}
+.bp-name{font-size:19px}
+.f-chip{min-width:54px;padding:4px 9px 5px;border-radius:10px}
+.f-chip b{font-size:20px}
+.f-chip small{font-size:11px}
+.bp-dmg{min-width:92px}
+.bp-dmg b{font-size:40px}
+.bp-dmg.hot b{font-size:46px}

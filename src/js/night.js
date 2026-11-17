@@ -268,28 +268,36 @@ function resolveRound() {
   // 1. 焼き：バトルのはじめに、鉄板の生地がいっせいに焼ける
   if (F) {
     const list = [], safeAll = stop();
+    const stopAt = board.findIndex(c => c && cardDef(c.cid).fx.stop);
     board.forEach((c, i) => {
       if (!c) return; const d = cardDef(c.cid); if (!d.dough) return;
       const r = cookStep(c, heat + (d.fx.spd || 0), safeAll || d.fx.noburn);
       burn(i, r); list.push({ i, ...r });
     });
-    if (list.length) ev.push({ type: 'bake', heat, list });
+    if (list.length) ev.push({ type: 'bake', heat, list, stop: stopAt >= 0 ? stopAt : null });
   }
   // 2. 発動：左から順に
   const idx = board.map((c, i) => c ? i : -1).filter(i => i >= 0);
   const first = idx[0], last = idx[idx.length - 1];
   const extra = Array(SLOTS).fill(0);
-  let pend = 1, total = 0, rally = 0;
+  let pend = 1, total = 0, rally = 0, pendEv = [];
+  /* ほかのカードにかかる効果は、バトルの画面でオーラを飛ばすので、どこからどこへかを残す（11/18 しょーくん）
+     e.out＝このカードから飛ばす [{k, to, v}]（to はマスの番号の列・'heat'・'score'）。parts の4つめ＝かかった元のマス */
+  const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
   for (const i of idx) {
     const times = 1 + Math.min(3, extra[i]);
     for (let t = 0; t < times; t++) {
       const c = board[i], d = cardDef(c.cid), fx = d.fx, sm = STAR_MUL[d.star];
-      const e = { type: 'act', i, cid: c.cid, again: t > 0, dmg: 0, cook: c.cook };
-      if (i === first && t === 0 && fx.rally) { rally += fx.rally * sm; e.rally = true; }
-      if (fx.heat) { const h0 = heat; heat = Math.max(1, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; }
+      const e = { type: 'act', i, cid: c.cid, again: t > 0, dmg: 0, cook: c.cook, out: [] };
+      if (i === first && t === 0 && fx.rally) {
+        rally += fx.rally * sm; e.rally = true;
+        e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j)), v: fx.rally * sm });
+      }
+      if (fx.nb && dmgAt(i + 1)) e.out.push({ k: 'nb', to: [i + 1], v: fx.nb * sm });
+      if (fx.heat) { const h0 = heat; heat = Math.max(1, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
       if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
         const o = board[i + 1], r = cookStep(o, fx.sear, stop() || cardDef(o.cid).fx.noburn);
-        burn(i + 1, r); e.sear = { i: i + 1, ...r };
+        burn(i + 1, r); e.sear = { i: i + 1, ...r }; e.out.push({ k: 'sear', to: [i + 1] });
       }
       let dmg = 0;
       if (fx.dmg) {
@@ -301,21 +309,27 @@ function resolveRound() {
           if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
         }
         if (fx.lead && i === first) { base *= fx.lead; e.lead = true; parts.push(['×', fx.lead, 'スタート']); }
-        if (fx.sai && i === last) { const n = board.filter(o => o && cardDef(o.cid).dough && o.cook >= COOK_MAX).length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n); base *= v; e.sai = n; if (n) parts.push(['×', v, `サイコー${n}枚`]); }
-        let nb = 0;
-        for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid); if (od.fx.nb) nb += od.fx.nb * STAR_MUL[od.star]; } }
-        if (nb) { base += nb; parts.push(['+', nb, 'となり']); }
-        if (rally) { base += rally; parts.push(['+', rally, 'スタート']); }
-        if (pend !== 1) { base *= pend; parts.push(['×', pend, '次の攻撃']); }
-        pend = 1;
+        if (fx.sai && i === last) {
+          const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n);
+          base *= v; e.sai = n; if (n) parts.push(['×', v, `サイコー${n}枚`, best.filter(j => j !== i)]);
+        }
+        let nb = 0; const nbs = [];
+        for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid); if (od.fx.nb) { nb += od.fx.nb * STAR_MUL[od.star]; nbs.push(j); } } }
+        if (nb) { base += nb; parts.push(['+', nb, 'となり', nbs]); }
+        if (rally) { base += rally; parts.push(['+', rally, 'スタート', [first]]); }
+        if (pend !== 1) {
+          base *= pend; parts.push(['×', pend, '次の攻撃', [...new Set(pendEv.map(p => p.i))]]);
+          for (const p of pendEv) p.out.push({ k: 'next', to: [i], v: p.next });
+        }
+        pend = 1; pendEv = [];
         dmg = Math.min(DMG_CAP, Math.floor(base));
         e.base = fx.dmg * sm; e.parts = parts;
       }
-      if (fx.next) { pend *= fx.next; e.next = fx.next; }
+      if (fx.next) { pend *= fx.next; e.next = fx.next; pendEv.push(e); }
       total += dmg;
-      if (fx.fin && i === last) { const add = Math.floor(total * (fx.fin - 1)); dmg += add; total += add; e.fin = [fx.fin, add]; }
+      if (fx.fin && i === last) { const add = Math.floor(total * (fx.fin - 1)); dmg += add; total += add; e.fin = [fx.fin, add]; e.out.push({ k: 'fin', to: 'score' }); }
       total = Math.min(DMG_CAP, total);
-      if (fx.again && t === 0 && i + 1 < SLOTS) extra[i + 1] += fx.again;
+      if (fx.again && t === 0 && i + 1 < SLOTS) { extra[i + 1] += fx.again; if (board[i + 1]) e.out.push({ k: 'again', to: [i + 1] }); }
       if (fx.call) { call = true; e.call = true; }
       e.dmg = dmg;
       ev.push(e);
@@ -335,7 +349,7 @@ function bake() {
     battleIntro(q, () => {
       let k = 0, run = 0;
       const step = () => {
-        if (k >= res.ev.length) return setTimeout(() => finishRound(res), T(650));
+        if (k >= res.ev.length) return setTimeout(() => finishRound(res), T(950));
         const e = res.ev[k];
         if (e.type === 'act' && !e.again && !e.cut && cardDef(e.cid).star === 3) { e.cut = true; return setTimeout(step, cutIn(e.cid, 'スペシャル発動！')); }
         k++; run += e.dmg || 0;
