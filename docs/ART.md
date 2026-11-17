@@ -32,12 +32,13 @@
 | card-yobirin・field-teppan・field-ishigama（よびりん・ほのかの鉄板・ごうごう石窯） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards8.md`・もとの PNG `assets/art/raw/cards8.png` | 道具カードとフィールド（hiArt が b: を field-○○ で引く） |
 | burnt-1・burnt-2・burnt-3（焦げクッキー・焦げ焦げクッキー・すみびクッキー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards9.md`・もとの PNG `assets/art/raw/cards9.png` | 焦げのカード（hiArt が k: を burnt-★ で引く） |
 | bg-night（夜のおかし屋さんの厨房） | A | Codex | 2026-11-17 | art-irai `requests/okashi/bg1.md`・もとの PNG `assets/art/raw/bg1.png`（緑は抜かず、横960の webp に） | 夜の舞台とタイトルの背景 |
+| candy-sable・candy-castella・candy-brownie（★2 サブレ・カステラ・ショコラ） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards10.md`・もとの PNG `assets/art/raw/cards10.png` | ★2 のお菓子（形だけの絵。材料の絵がのった candy-形-材料 があればそちら） |
+| candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
-## これから頼む絵（組み合わせ式で枚数をおさえる）
-- ★1（ぜんぶモンスター食材）：食材6（リーフフェアリーの粉・ゴーゴーヤギのバター・こんぺいトカゲの砂糖・ほのお鳥のたまご・カカオゴーレムのかけら・焦げクッキー）＋ふしぎ2（ぷるぷるスライムのゼリー・くもひつじのホイップ）＋道具6（おばけ樹木のまき・ハネコウモリのうちわ・しずくクラゲの水・ひだねサラマンダーの火種・つるオバケのかご・コインガエルのちょきん箱）
-- ★2：お菓子の形7（クッキー・サブレ・キャンディ・カステラ・ブラウニー・ゼリー・シュークリーム）＋材料ごとのトッピング8を重ねる
-- ★3：特製の飾り（お皿・リボン・きらきら）に★2を2つのせる
-- キャラ：ほのかの表情ちがい・食材モンスター（ぷるぷるスライム・くもひつじ）・あとで水の飴細工職人と草のパティシエ
+## これから頼む絵
+- ★3：クッキー以外の形の「○○タワー」（サブレ・カステラ・ショコラ・ドロップ・ゼリー・シュー）と、ちがう形どうしの★3（いまはコードで描いた仮の絵）
+- 朝と昼の画面の背景（いまはドットの場面）
+- キャラ：あとで水の飴細工職人と草のパティシエ・ほかの食材モンスター
 
 ## 音
 - 掛け声（「えいっ」「はっ」など）は、あとで声の依頼箱 juice0402/koe-irai（VOICEVOX）で作る。クレジット画面に「音声合成：VOICEVOX:…」の1行
