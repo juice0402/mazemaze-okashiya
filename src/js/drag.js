@@ -53,12 +53,17 @@ function dragBegin(D) {
   });
   const v = sellValue(cardDef(D.cid)), sv = $('sellv');
   if (sv) sv.textContent = v ? `+${v}` : '（無料の枠がもどる）';
+  /* 調理台の上では、つかんだカードを調理台のマスと同じ大きさに（調理台が見えるように） */
+  const tl = document.querySelector('.tiles'), sl = document.querySelector('.tslot');
+  D.tiles = tl && tl.getBoundingClientRect(); D.small = sl ? sl.offsetWidth / D.w : 1; D.k = 1;
   D.over = undefined;
 }
 
 function dragMove(D, x, y) {
   D.x = x; D.y = y;
-  D.g.style.transform = `translate(${x - D.w / 2}px,${y - D.h * 0.8}px) rotate(-4deg) scale(1.06)`;
+  D.g.style.transform = `translate(${x - D.w / 2}px,${y - D.h * 0.8}px) rotate(-4deg)`;
+  const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
+  if (k !== D.k) { D.k = k; D.g.style.scale = k; }
   const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');
   const Z = D.zones.find(o => o.z === z && o.P) || null;
   if (Z === D.over) return;
@@ -92,13 +97,13 @@ function dragFinish(D) {
   if (!Z || !Z.P) {   // 行き先がなければ、もとの場所へもどる
     const g = D.g; D.g = null; dragClean(D);
     if (g && D.x != null && g.animate) {
-      g.animate([{ transform: g.style.transform }, { transform: `translate(${D.home.x - D.w / 2}px,${D.home.y - D.h / 2}px) scale(.9)`, opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
+      g.animate([{ transform: g.style.transform }, { transform: `translate(${D.home.x - D.w / 2}px,${D.home.y - D.h * 0.8}px)`, opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
       setTimeout(() => g.remove(), 170);
     } else if (g) g.remove();
     return;
   }
   const gr = D.g.getBoundingClientRect();
-  const from = [{ x: gr.left + gr.width / 2, y: gr.top + gr.height / 2, w: D.w }, cardSpot(Z.q)];
+  const from = [{ x: gr.left + gr.width / 2, y: gr.top + gr.height / 2, w: D.w * D.k }, cardSpot(Z.q)];
   dragClean(D);
   if (dropCard(D.p, Z.q, from) && Z.P.kind === 'buy') {
     const t = document.querySelector(Z.q.where === 'board' ? `.tslot[data-w="board"][data-i="${Z.q.i}"] .pc` : '.fslot .pc');

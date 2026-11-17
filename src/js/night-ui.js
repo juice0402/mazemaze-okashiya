@@ -189,11 +189,11 @@ function viewerHTML() {
     const cid = N.shop[s.i]; if (!cid) return '';
     const d = cardDef(cid), free = N.round === 1;
     return box(cid, null, `<button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'えらぶ' : `買う <small>コイン${d.cost}</small>`}</button>`,
-      d.cat === 'field' ? '左の「場」へドラッグでも置ける' : 'ドラッグで調理台へ・光るカードにかさねると まぜる');
+      d.cat === 'field' ? 'ドラッグで「場」へ' : 'ドラッグで置く・かさねて まぜる');
   }
-  if (s.where === 'field') return N.field ? box('b:' + N.field, null, sellBtn(), 'いつでも効いている・あたらしいフィールドを買うと入れかわる') : '';
+  if (s.where === 'field') return N.field ? box('b:' + N.field, null, sellBtn(), '新しいのを買うと入れかわる') : '';
   const c = cardAt(s); if (!c) return '';
-  return box(c.cid, c.cook, sellBtn(), s.where === 'held' ? `手持ち・ドラッグで調理台へ・${mixRule(cardDef(c.cid))}` : `${ORD[s.i]}番めにうごく・${mixRule(cardDef(c.cid))}`);
+  return box(c.cid, c.cook, sellBtn(), s.where === 'held' ? `手持ち・${mixRule(cardDef(c.cid))}` : `${ORD[s.i]}番め・${mixRule(cardDef(c.cid))}`);
 }
 /* うる（1ラウンド目の★1は「もどす」＝無料の枠がもどる） */
 function sellLabel(d) { const v = sellValue(d); return v ? `うる <small>+${v}</small>` : 'もどす'; }
@@ -204,12 +204,12 @@ function sellBtn() {
 /* 手札：左に手持ち（まぜてできた自分のカード・ふちが金）、右に仕入れ。扇形に並べる。ドラッグで調理台へ・カードどうしをかさねるとまぜる */
 function handHTML() {
   const list = [...N.held.map((c, i) => ['held', i, c.cid]), ...N.shop.map((c, i) => ['shop', i, c]).filter(x => x[2])];
-  return `<div class="hand" style="--n:${list.length};--ov:${list.length >= 4 ? .16 : .1}">${list.map(([w, i, cid], k) => `<button class="handcard${w === 'held' ? ' own' : ''}" style="--k:${k}" data-act="card" data-drag data-drop data-w="${w}" data-i="${i}">${cardMini(cid, { cost: w === 'held' ? '手持ち' : N.round === 1 ? '無料' : cardDef(cid).cost })}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')}</div>`;
+  return `<div class="hand" style="--n:${list.length};--ov:${list.length >= 4 ? .22 : .1}">${list.map(([w, i, cid], k) => `<button class="handcard${w === 'held' ? ' own' : ''}" style="--k:${k}" data-act="card" data-drag data-drop data-w="${w}" data-i="${i}">${cardMini(cid, { cost: w === 'held' ? null : N.round === 1 ? '無料' : cardDef(cid).cost })}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')}</div>`;
 }
 function barHTML() {
   const orb = `<span class="orb" title="${N.round === 1 ? '無料でえらべる数' : 'コイン'}"><i>${N.round === 1 ? '無料' : 'コイン'}</i><b>${N.round === 1 ? N.picks : N.coins}</b></span>`;
   return `${orb}
-    ${N.round === 1 ? '<span class="bar-hint">カードを調理台へドラッグ（3まい）。かさねると まぜる</span>' : `<button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`}
+    ${N.round === 1 ? '<span class="bar-hint">3まい えらんで 調理台へ</span>' : `<button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`}
     <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>バトル！</button>
     <div class="sellzone" data-drop data-w="sell" data-i="0"><b>ここで うる</b><span id="sellv"></span></div>`;
 }

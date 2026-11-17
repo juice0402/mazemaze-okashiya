@@ -148,7 +148,7 @@ const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && 
 function mixRule(d) {
   if (d.cat === 'field') return 'フィールドは まぜられない';
   if (d.star >= 3) return '★3は完成。もう まぜられない';
-  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : '生地か素材'}の★${d.star}と まぜると★${d.star + 1}`;
+  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : '生地か素材'}の★${d.star}と まぜる`;
 }
 /* p のカードを q へ落としたら何が起きるか（ドラッグの光と案内・指をはなしたとき）。kind：mix・buy・place・move・sell */
 function dropPlan(p, q) {

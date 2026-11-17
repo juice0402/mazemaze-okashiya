@@ -87,8 +87,8 @@ const cookName = c => c >= COOK_MAX ? 'サイコー' : c >= 6 ? 'こんがり' :
 /* フィールド：手札（仕入れ）にまざって出てくる。買うと調理台の左の「場」に入り、鉄板の火力が start になる。
    フィールドがないと、バトルのはじめの焼きはない（やきごてなら焼ける） */
 const FIELDS = {
-  teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['中火になる', '生地を焼く'], text: '置くと鉄板が中火になる。バトルのはじめに、場の生地をいまの火力で焼く' },
-  ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['強火になる', 'サイコー×1.5'], text: '置くと鉄板が強火になる。バトルのはじめに生地を焼く。焼き加減サイコーの生地のダメージ×1.5' },
+  teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['中火で焼く'], text: '置くと鉄板が中火になる。バトルのはじめに、場の生地をいまの火力で焼く' },
+  ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['強火で焼く', 'サイコー×1.5'], text: '置くと鉄板が強火になる。バトルのはじめに生地を焼く。焼き加減サイコーの生地のダメージ×1.5' },
 };
 
 /* シェフ：固有のデッキプールとフィールド。水の飴細工職人・草のパティシエは、あとで常連さんから仲間になる（素材も道具も別） */
@@ -180,22 +180,23 @@ function mixCid(a, b) {
   return A.star === 1 ? 'o:' + recipeKey(A.mats[0], B.mats[0]) : 's:' + ids.join('|');
 }
 
-function fxText(fx, star = 1) {
+/* カードの効果のことば（短く。生地は焼ける・道具は発動で効く、などビルドの前提は書かない）。ダメージはカードの数字で見せる */
+function fxList(fx, star = 1) {
   const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-  if (fx.dmg) p.push(`ダメージ${f(fx.dmg)}`);
-  if (fx.spd) p.push(fx.spd > 0 ? `焼けるのが${fx.spd}段はやい` : `焼けるのが${-fx.spd}段おそい`);
-  if (fx.lead) p.push(`先頭にあるとダメージ×${fx.lead}`);
-  if (fx.sai) p.push(`いちばん最後にあると、焼き加減サイコーの生地1枚につきダメージ×${fx.sai + 0.5 * (star - 1)}`);
-  if (fx.bitter) p.push('焦げると焦げ焦げクッキー★2になる');
-  if (fx.nb) p.push(`となりのカードのダメージ+${f(fx.nb)}`);
-  if (fx.next) p.push(`つぎにダメージを出すカードを×${fx.next}`);
-  if (fx.fin) p.push(`いちばん最後にあると、このラウンドのダメージ合計×${fx.fin}`);
-  if (fx.rally) p.push(`先頭にあると、このラウンドの攻撃カードぜんぶダメージ+${f(fx.rally)}`);
-  if (fx.again) p.push(`右どなりがもう${fx.again}回うごく`);
-  if (fx.heat) p.push(`発動すると鉄板の火力が${Math.abs(fx.heat)}段${fx.heat > 0 ? '上がる' : '下がる'}`);
-  if (fx.sear) p.push(`発動すると右どなりの生地を焼き加減+${fx.sear}（フィールドがなくても焼ける）`);
-  if (fx.call) p.push('つぎの仕入れに、フィールドがかならず1枚出る');
+  if (fx.spd) p.push(fx.spd > 0 ? '早く焼ける' : 'ゆっくり焼ける');
+  if (fx.lead) p.push(`先頭で×${fx.lead}`);
+  if (fx.sai) p.push(`最後：サイコー1枚×${fx.sai + 0.5 * (star - 1)}`);
+  if (fx.bitter) p.push('焦げると★2');
+  if (fx.nb) p.push(`となり+${f(fx.nb)}`);
+  if (fx.next) p.push(`つぎ×${fx.next}`);
+  if (fx.fin) p.push(`最後：合計×${fx.fin}`);
+  if (fx.rally) p.push(`先頭：攻撃ぜんぶ+${f(fx.rally)}`);
+  if (fx.again) p.push(`右がもう${fx.again}回`);
+  if (fx.heat) p.push(`火力${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
+  if (fx.sear) p.push(`右の生地を焼く+${fx.sear}`);
+  if (fx.call) p.push('次にフィールドが出る');
   if (fx.noburn) p.push('焦げない');
-  if (fx.stop) p.push('置いているあいだ、ほかの生地は焼き加減サイコーで止まる（焦げない）');
-  return p.join('。');
+  if (fx.stop) p.push('ほかの生地はサイコーで止まる');
+  return p;
 }
+function fxText(fx, star = 1) { return fxList(fx, star).join('・'); }

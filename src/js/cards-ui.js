@@ -1,7 +1,6 @@
-/* ==== カード（今どきの縦持ちカードゲームの形：絵が主役・大きな数字・★のきらめき） ====
-   cardMini：調理台と手札（仕入れ）。絵がカードいっぱい、左上に効果の札1つ（手札はコストの丸）、右上に★、下に名前の帯、右下に大きなダメージの数字
-   cardBig：タップでひらく大きなカード。説明はカードの下の紙（cardInfo）に出す。枠と光の色は style.css の .pc.k-* */
-
+/* ==== カード（11/17 夜「カードがこのゲームのキモ」）：ふちはレア度の金属（★1 銅・★2 銀・★3 金と虹の箔）・中は絵の窓・名前のリボン・短い効果の紙
+   左上にコストの宝石（仕入れだけ）・絵の右下に炎のダメージの紋章・右上に★。文字の大きさはカードの幅で決まる（style.css の cqw）
+   cardMini：手札・ドラッグ・演出　cardTile：調理台（絵と数字だけ・焼き加減のメーター）　cardBig：タップで大きく見る ==== */
 function cardTastes(d) { return [...new Set(d.mats.map(m => MATS[m].taste))]; }
 /* 属性（種類・役目）と★と味 */
 function typeLine(d) {
@@ -10,67 +9,38 @@ function typeLine(d) {
 }
 /* いまのダメージ（生地は焼き加減の倍率こみ） */
 function cardDmg(d, cook) { return d.fx.dmg ? Math.floor(d.fx.dmg * STAR_MUL[d.star] * (d.dough ? cookMul(cook || 0) : 1) * 10) / 10 : 0; }
-/* 効果の札（短いことば）。小さいカードには1つめだけ出す */
-function cardChips(d) {
-  if (d.cat === 'field') return FIELDS[d.cid.slice(2)].chips.slice();
-  const fx = d.fx, m = STAR_MUL[d.star], r = v => Math.floor(v * m * 10) / 10, out = [];
-  if (fx.heat) out.push(`火力${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`);
-  if (fx.sear) out.push(`右を焼く+${fx.sear}`);
-  if (fx.spd) out.push(fx.spd > 0 ? 'はやく焼ける' : 'ゆっくり焼ける');
-  if (fx.lead) out.push(`先頭で×${fx.lead}`);
-  if (fx.sai) out.push(`最後でサイコー1枚×${fx.sai + 0.5 * (d.star - 1)}`);
-  if (fx.bitter) out.push('焦げると焦げ焦げ');
-  if (fx.nb) out.push(`となり+${r(fx.nb)}`);
-  if (fx.next) out.push(`つぎ×${fx.next}`);
-  if (fx.fin) out.push(`最後で合計×${fx.fin}`);
-  if (fx.rally) out.push(`先頭で攻撃ぜんぶ+${r(fx.rally)}`);
-  if (fx.again) out.push(`右もう${fx.again}回`);
-  if (fx.call) out.push('フィールドをよぶ');
-  if (fx.noburn) out.push('焦げない');
-  if (fx.stop) out.push('生地がサイコーで止まる');
-  return out;
-}
+/* 効果のことば（短く） */
+function cardChips(d) { return d.cat === 'field' ? FIELDS[d.cid.slice(2)].chips.slice() : fxList(d.fx, d.star); }
 const artImg = cid => `<img${hiArt(cid) ? ' class="hi"' : ''} src="${cardIconURL(cid)}" alt="">`;
 const starGems = d => d.star > 1 ? `<span class="pc-star">${'★'.repeat(d.star)}</span>` : '';
 
-function cardMini(cid, opt = {}) {
-  const d = cardDef(cid), dmg = cardDmg(d), tag = cardChips(d)[0];
-  return `<div class="pc mini k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
-    <div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i>
-    ${opt.cost != null ? `<span class="pc-cost">${opt.cost}</span>` : tag ? `<span class="pc-tag">${tag}</span>` : ''}
-    ${starGems(d)}
-    <div class="pc-plate"><span>${esc(d.short)}</span></div>
-    ${dmg ? `<b class="pc-pow">${dmg}</b>` : ''}
+/* ダメージの紋章（けた数で文字を小さく） */
+function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-pow l${Math.min(t.length, 5)}">${t}</b>`; }
+/* カードの形（mini と huge は同じ形で大きさだけちがう） */
+function cardFace(cid, cls, opt = {}) {
+  const d = cardDef(cid), dmg = cardDmg(d, opt.cook), text = cardChips(d).join('・');
+  const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
+  return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
+    <div class="pc-win"><div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i></div>
+    <div class="pc-name"><span>${esc(d.short)}</span></div>
+    <p class="pc-text${text ? '' : ' none'}"><span>${esc(text || attrsOf(d).join('・'))}</span></p>
+    ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}
   </div>`;
 }
-/* 調理台のタイル（アイコンだけ）：地の色・絵・★・右下に小さなダメージ */
-/* 生地のタイルには焼き加減のメーター（9段階。サイコーは金に光る） */
+function cardMini(cid, opt = {}) { return cardFace(cid, 'mini', opt); }
+/* 調理台のタイル：同じふちと絵の窓。数字は右上の紋章、★は左下、生地は下に焼き加減のメーター（9段階。サイコーは金に光る） */
 function cardTile(cid, opt = {}) {
   const d = cardDef(cid), cook = d.dough ? opt.cook || 0 : null, dmg = cardDmg(d, cook);
-  return `<div class="pc tile k-${d.kind} s${d.star}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}">
-    <div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i>
-    ${d.star > 1 ? `<span class="tl-star">${'★'.repeat(d.star)}</span>` : ''}${dmg ? `<b class="tl-pow">${Math.floor(dmg)}</b>` : ''}
+  return `<div class="pc tile k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}">
+    <div class="pc-win"><div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i></div>
+    ${starGems(d)}${dmg ? powBadge(dmg) : ''}
     ${cook != null ? `<i class="cook c${cookStage(cook)}" style="--c:${cook}"></i>` : ''}</div>`;
 }
-function cardBig(cid, cook) {
-  const d = cardDef(cid), dmg = cardDmg(d, cook);
-  return `<div class="pc huge k-${d.kind} s${d.star}">
-    <div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i>
-    ${starGems(d)}
-    <div class="pc-plate"><span>${esc(d.name)}</span></div>
-    ${dmg ? `<b class="pc-pow">${dmg}</b>` : ''}
-  </div>`;
-}
-/* 大きなカードの下の説明（紙のラベル） */
+function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook }); }
+/* 大きなカードの下：種類と、生地は焼き加減・お菓子は材料だけ（効果はカードに書いてある） */
 function cardInfo(cid, cook) {
   const d = cardDef(cid);
-  const flavor = d.kind === 'o' || d.kind === 's' || d.kind === 'k' ? FLAVOR[d.kind] : d.cat === 'tool' && d.star > 1 ? FLAVOR.u : FLAVOR[cid.slice(2)];
-  const recipe = d.kind === 'o' || d.kind === 's' ? `<p class="ci-recipe">材料：${d.mats.map(m => MATS[m].short).join('＋')}</p>` : '';
-  return `<div class="cinfo k-${d.kind}">
-    <p class="ci-type">${typeLine(d)}</p>
-    <div class="ci-chips">${cardChips(d).map(c => `<span>${c}</span>`).join('')}</div>
-    <p class="ci-fx">${d.cat === 'field' ? FIELDS[cid.slice(2)].text + '。調理台の左の「場」に置く' : fxText(d.fx, d.star)}</p>${recipe}
-    ${d.dough ? `<p class="ci-cook">焼き加減 <b>${cook || 0}</b>/${COOK_MAX}（${cookName(cook || 0)}・ダメージ×${fmtMul(cookMul(cook || 0))}）${d.fx.noburn ? '' : '　サイコーのまま焼かれると焦げる'}</p>` : ''}
-    <p class="ci-flavor">${esc(flavor || '')}</p>
-  </div>`;
+  const recipe = d.kind === 'o' || d.kind === 's' ? `・${d.mats.map(m => MATS[m].short).join('＋')}` : '';
+  const ck = d.dough ? `<p class="ci-cook">焼き加減 <b>${cook || 0}</b>/${COOK_MAX}　${cookName(cook || 0)}・×${fmtMul(cookMul(cook || 0))}</p>` : '';
+  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.name)}</p><p class="ci-type">${attrsOf(d).join('・')}${recipe}</p>${ck}</div>`;
 }
