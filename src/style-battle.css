@@ -30,7 +30,7 @@
 @keyframes dcfloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12%) rotate(4deg)}}
 .dc.tmp{opacity:.95}
 /* ショップのあいだは、考えるほのかとモブがショップの下のすみに（カードと値札をかくさない） */
-.deco.shop .dc-chibi{height:23cqh}
+.deco.shop .dc-chibi{height:20cqh}
 .deco.shop .m-tokage{left:auto;right:30%}
 .deco.shop .m-hiyoko{right:auto;left:22%}
 .deco.shop .m-kurage{display:none}
@@ -42,13 +42,13 @@
 @keyframes dcjump2{0%{transform:scale(1.1,.85)}35%{transform:translateY(-45%) scale(.92,1.1) rotate(-6deg)}60%{transform:translateY(-38%) rotate(6deg)}82%{transform:scale(1.1,.88)}100%{transform:none}}
 @keyframes dcscare{0%,100%{transform:none}20%,60%{transform:translateX(-5%) scale(1.04,.94)}40%,80%{transform:translateX(5%) scale(1.04,.94)}}
 /* 額縁と段のぶん、ほのか・モンスター・火力のメーターを少し上へ */
-.night .stage .chef{bottom:max(14px,7cqh);height:min(82%,calc((min(100vw, 460px) - 32px) * .38))}
+.night .stage .chef{left:13%;bottom:max(14px,7cqh);height:min(82%,calc((min(100vw, 460px) - 32px) * .38))}
 .night .stage .mon{bottom:22%}
 .night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 .stage:has(.shopov:not(.out)) .ov-top,.stage:has(.shopov:not(.out)) .ov-heat{visibility:hidden}
 /* ショップは額縁の内側に */
-.night .shopov{inset:6px;border-radius:7px}
+.night .shopov{inset:6px;border-radius:7px;padding-bottom:max(40px,12%)}   /* 下は草とモブの場所（カードの紙をかくさない） */
 
 /* ---------- 発動したカードが跳ねる（★1 ぽん・★2 大きく・★3 縦にくるっと1回転してズドン） ---------- */
 .tslot.lift{z-index:30}
