@@ -10,6 +10,7 @@ function typeLine(d) {
 function cardDmg(d) { return d.fx.dmg ? Math.floor(d.fx.dmg * STAR_MUL[d.star] * 10) / 10 : 0; }
 /* 効果の札（短いことば）。小さいカードには1つめだけ出す */
 function cardChips(d) {
+  if (d.kind === 'b') return FIELDS[d.cid.slice(2)].chips.slice();
   const fx = d.fx, m = STAR_MUL[d.star], r = v => Math.floor(v * m * 10) / 10, out = [];
   if (fx.set != null) out.push(`火力を${fx.set}に`);
   if (fx.first) out.push(`先頭で火力+${(fx.heat || 0) + fx.first}`);
@@ -61,7 +62,7 @@ function cardInfo(cid) {
   return `<div class="cinfo k-${d.kind}">
     <p class="ci-type">${typeLine(d)}</p>
     <div class="ci-chips">${cardChips(d).map(c => `<span>${c}</span>`).join('')}</div>
-    <p class="ci-fx">${fxText(d.fx, d.star)}</p>${recipe}
+    <p class="ci-fx">${d.kind === 'b' ? FIELDS[cid.slice(2)].text + '。調理台の左の「場」に置くと、ずっと効く' : fxText(d.fx, d.star)}</p>${recipe}
     <p class="ci-flavor">${esc(flavor || '')}</p>
   </div>`;
 }

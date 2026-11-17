@@ -16,6 +16,9 @@ const ICON_MAPS = {
   mizu: [['....oo....', '...obbo...', '...obbo...', '..obbbbo..', '.obwbbbbo.', '.obwbbbbo.', '.obbbbbbo.', '.obbbbbbo.', '..obbbbo..', '...oooo...'], { o: '#2a4a7a', b: '#6fa8e0', w: '#dff0ff' }],
   kago: [['...oooo...', '..o....o..', '.o......o.', 'oooooooooo', 'obybybybyo', 'oybybybybo', '.obybybyo.', '.oybybybo.', '..oooooo..', '..........'], { o: '#7a4b2e', b: '#c98a4b', y: '#e4b273' }],
   chokin: [['..........', '....oo....', '..oookoo..', '.oPPPPPPo.', 'oPwPPPPPPo', 'oPkPPPPPPo', 'opPPPPPPPo', '.oPPPPPPo.', '.oo.oo.oo.', '..........'], { o: '#8a3a5a', P: '#f9a8c0', p: '#e07aa0', w: '#ffffff', k: '#3a1e2a' }],
+  chubi: [['..........', 'oooooooooo', 'oSSSSSSSSo', 'oSwSSSSSSo', 'oSSSSSSSSo', '.oSSSSSSo.', '..oooooo..', '..r.rr.r..', '.ryrryyry.', '.oooooooo.'], { o: '#3a2318', S: '#c9a27a', w: '#f0dcc0', r: '#f0702a', y: '#ffc94a' }],
+  max: [['....r.....', '...rr..r..', '..rrr.rr..', '..rryrrr.r', '.rryyyrrrr', '.ryyyyyrr.', 'rryywwyyrr', 'ryywwwwyyr', '.ryywwyyr.', '..rrrrrr..'], { r: '#e0402a', y: '#ffb84a', w: '#fff3c0' }],
+  maze: [['...oooo...', '..o.oo.o..', '.o.o..o.o.', '.o.o..o.o.', '.o.o..o.o.', '..o.oo.o..', '...oooo...', '....hh....', '....hh....', '....hh....'], { o: '#9a8a7a', h: '#8a5a3b' }],
   hiokoshi: [['....o.....', '...oro....', '...orro.o.', '..orrrooro', '..orryrrro', '.orryyyrro', '.oryyyyyro', '.oryywyyro', '..oryyyro.', '...ooooo..'], { o: '#7a1e10', r: '#f0502a', y: '#ffc94a', w: '#fff6d0' }],
 };
 const ICON = {};

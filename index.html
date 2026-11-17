@@ -107,7 +107,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .ov-heat{bottom:5px}
 .float{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-size:14px;font-weight:700;color:var(--gold);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;white-space:nowrap;pointer-events:none;animation:up .95s ease-out forwards;z-index:3}
 .float.koge{color:#e0d6cc;top:-4px}
-.stage .float.big{left:84%;top:18%;font-size:26px}
+.stage .float.dmg{left:84%;top:18%;font-size:26px}
 @keyframes up{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -24px}}
 
 /* 火力 */
@@ -128,6 +128,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
   background:radial-gradient(120% 90% at 50% 30%,var(--g1),var(--g2));box-shadow:0 0 0 2px var(--rim),0 0 0 3.5px #2a170c,0 4px 8px rgba(0,0,0,.45)}
 .pc.k-f{--g1:#c8f2df;--g2:#46a988;--rim:#d8fff0}
 .pc.k-t{--g1:#d8b08a;--g2:#6e4528;--rim:#e9cfae}
+.pc.k-b{--g1:#ffd08a;--g2:#b8401e;--rim:#ffe2a8}
 .pc.k-o{--g1:#ffd0da;--g2:#d9587a;--rim:#ffe0e8}
 .pc.k-s{--g1:#fff2b8;--g2:#d49a22;--rim:#fff0a8}
 .pc::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.6),transparent 55%)}
@@ -160,14 +161,17 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.huge .pc-pow{font-size:40px;-webkit-text-stroke:3px #5a2a04}
 .pc.huge .pc-star{font-size:22px}
 
-/* 調理台：アイコンのタイル6つを1行に（左から順に発動）。木のカウンターの上 */
+/* 調理台：左にフィールドの「場」、そのあとにアイコンのタイル6つ（左から順に発動）を1行に。木のカウンターの上 */
 .night{--hh:clamp(112px,22vh,168px)}
-.tiles{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;padding:9px 9px 8px;border-radius:12px;
+.tiles{flex:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:9px 7px 7px;border-radius:12px;
   background:linear-gradient(#a8784e,#7a5236);box-shadow:inset 0 2px 0 rgba(255,230,200,.35),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 rgba(0,0,0,.35)}
 .tslot{position:relative;min-width:0;aspect-ratio:1;max-height:64px;padding:0;border:none;border-radius:10px;background:rgba(42,23,12,.32);box-shadow:inset 0 2px 5px rgba(0,0,0,.45)}
 .tslot::after{content:"";position:absolute;inset:26%;border-radius:50%;border:2px dashed rgba(255,240,220,.26);pointer-events:none}
 .tslot:has(.pc){background:transparent;box-shadow:none}
 .tslot:has(.pc)::after{display:none}
+.fslot{margin-right:3px;background:rgba(90,42,4,.35);box-shadow:inset 0 0 0 1.5px rgba(246,198,90,.55),inset 0 2px 5px rgba(0,0,0,.45)}
+.fslot::after{inset:18%;border-radius:8px;border-color:rgba(246,198,90,.45)}
+.fslot .ord{color:#3a1c08;background:var(--gold)}
 .tslot .ord{position:absolute;left:-5px;top:-6px;z-index:4;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:9.5px;font-weight:900;color:#3a1c08;background:var(--cream);box-shadow:0 0 0 1.5px #3a2318}
 .tslot.sel .pc{outline:3px solid var(--gold);outline-offset:2px}
 .tslot.can .pc{animation:canmix .9s ease-in-out infinite alternate}
@@ -186,12 +190,12 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes kon{0%{transform:none}35%{transform:translateY(-11px) scale(1.22) rotate(-5deg)}65%{transform:translateY(1px) scale(.95)}100%{transform:translateY(-3px) scale(1.08)}}
 @keyframes ring{from{opacity:1;scale:.8}to{opacity:0;scale:1.4}}
 
-/* タイル行の下の説明：ふだんは使い方。焼いている間は、発動したカードの名前・効果・火加減と、大きなダメージ */
-.callout{position:relative;flex:none;height:52px;border-radius:12px;isolation:isolate;background:var(--cream);color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35)}
-.callout:empty{background:transparent;box-shadow:none}
-.co-hint{height:100%;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:0 12px;font-size:12.5px;font-weight:700;line-height:1.35;color:var(--ink)}
-.co-hint b{color:#c4501a}
-.co-hint small{font-size:10.5px;color:var(--ink-soft)}
+/* バトルの間だけ出る説明：タイル行のすぐ下、手札の上にかぶせる。発動したカードの名前・効果・火加減と、大きなダメージ */
+.handwrap{position:relative;flex:none}
+.callout{position:absolute;left:0;right:0;top:2px;z-index:6;height:52px;border-radius:12px;isolation:isolate;background:var(--cream);color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.35)}
+.callout:empty{display:none}
+.night .hand{transition:opacity .25s,filter .25s}
+.night.busy .hand{opacity:.35;filter:saturate(.5)}
 .co-ev{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 12px 0 7px;border-radius:12px}
 .co-ev::before{content:"";position:absolute;left:var(--x);top:-8px;translate:-50% 0;border:8px solid transparent;border-top:0;border-bottom-color:var(--cream)}
 .co-ev.burnt{background:#d9cfc5}.co-ev.burnt::before{border-bottom-color:#d9cfc5}
@@ -289,10 +293,6 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes popin{from{scale:.85;opacity:0}}
 
 /* フィールドをえらぶ */
-.fields{display:flex;flex-direction:column;gap:6px;min-height:0;overflow-y:auto;flex:none}
-.field{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:linear-gradient(var(--cream),var(--cream-2));color:var(--ink);padding:8px 12px}
-.field b{font-size:16px;color:#b8541c}
-.field span{font-size:12px;line-height:1.45;font-weight:500}
 
 /* 夜の結果 */
 .end{align-items:center;text-align:center;flex:none}
@@ -493,6 +493,9 @@ const TOOLS = {
 
 /* カードのフレーバーテキスト（大きなカードの下に出す） */
 const FLAVOR = {
+  chubi: 'ほのか愛用の厚手なべ。じっくり中火を守ってくれる。',
+  max: 'かまどの扉を全開に！ ほのおがごうごう、焦げるかどうかは腕しだい。',
+  maze: '材料をおまかせでまぜてくれる、ちょっとうるさい魔法のまぜ機。',
   komugi: '葉っぱの妖精がまく、きらきらの粉。さくっと軽く焼きあがる。',
   bata: '走りまわるゴーゴーヤギのミルクから。こくがあって、まわりの食材を元気にする。',
   sato: 'しっぽが金平糖のトカゲが落としていく、あまい結晶。火のめぐりがよくなる。',
@@ -515,12 +518,15 @@ const FLAVOR = {
 const ZONES = ['弱火', '中火', '強火', '焦げ'];
 const zoneOf = h => h <= 3 ? 0 : h <= 7 ? 1 : h <= 10 ? 2 : 3;
 
-/* フィールド：夜のはじめに1つえらぶ（シェフごとにちがう） */
+/* フィールド：手札（仕入れ）にまざって出てくるカード。出たら調理台の左の「場」に置く（1つだけ・置きかえOK）。
+   置いていないあいだは BASE_FIELD（ふつうのかまど） */
 const FIELDS = {
-  chubi: { name: '中火キープ', start: 4, cap: 7, mul: [1, 6, 6], text: '火力4からはじまり、7より上がらない（焦げない）。中火が×6' },
-  max:   { name: '火力マックス', start: 6, mul: [1, 2, 6], text: '火力6からはじまる。強火が×6。そのかわり焦げやすい' },
-  maze:  { name: '自動まぜまぜ機', start: 4, mul: [1, 2, 4], mix: 1, boost: 1.5, text: '火力4からはじまる。★2・★3のダメージ×1.5、まぜるたびにコイン+1' },
+  chubi: { name: '中火キープ', start: 4, cap: 7, mul: [1, 6, 6], chips: ['中火×6', '焦げない'], text: '火力4からはじまり、7より上がらない（焦げない）。中火が×6' },
+  max:   { name: '火力マックス', start: 6, mul: [1, 2, 6], chips: ['強火×6', '火力6から'], text: '火力6からはじまる。強火が×6。そのかわり焦げやすい' },
+  maze:  { name: '自動まぜまぜ機', start: 4, mul: [1, 2, 4], mix: 1, boost: 1.5, chips: ['★2★3×1.5', 'まぜるとコイン+1'], text: '火力4からはじまる。★2・★3のダメージ×1.5、まぜるたびにコイン+1' },
 };
+const BASE_FIELD = { name: 'ふつうのかまど', start: 4, mul: [1, 2, 4] };
+const fieldOf = id => FIELDS[id] || BASE_FIELD;
 
 /* シェフ：固有のデッキプールとフィールド。水の飴細工職人・草のパティシエは、あとで常連さんから仲間になる */
 const CHEFS = {
@@ -556,7 +562,7 @@ function mergeFx(a, b) {
   return o;
 }
 
-/* ---------- カード（'m:材料'・'t:道具'・'o:材料+材料'＝★2・'s:お菓子|お菓子'＝★3） ---------- */
+/* ---------- カード（'m:材料'・'t:道具'・'b:フィールド'・'o:材料+材料'＝★2・'s:お菓子|お菓子'＝★3） ---------- */
 function specialName(r1, r2) { return r1.noun === r2.noun ? `特製${r1.noun}タワー` : `特製${r1.noun}＆${r2.noun}`; }
 const DEFS = new Map();
 function cardDef(cid) {
@@ -565,6 +571,7 @@ function cardDef(cid) {
   let d;
   const pairFx = r => mergeFx(MATS[r.mats[0]].fx, MATS[r.mats[1]].fx);
   if (k === 'm') { const m = MATS[id]; d = { kind: m.fushigi ? 'f' : 'm', star: 1, food: true, name: m.name, fx: m.fx, mats: [id], cost: m.fushigi ? 4 : 3 }; }
+  else if (k === 'b') { const f = FIELDS[id]; d = { kind: 'b', star: 1, food: false, name: f.name, fx: {}, mats: [], cost: 5 }; }
   else if (k === 't') { const t = TOOLS[id]; d = { kind: 't', star: 1, food: false, name: t.name, fx: t.fx, mats: [], cost: 3 }; }
   else if (k === 'o') { const r = recipeOf(id); d = { kind: 'o', star: 2, food: true, name: r.name, fx: pairFx(r), mats: r.mats, cost: 6 }; }
   else { const [r1, r2] = id.split('|').map(recipeOf); const fx = mergeFx(pairFx(r1), pairFx(r2)); fx.proof = 1; d = { kind: 's', star: 3, food: true, name: specialName(r1, r2), fx, mats: [...r1.mats, ...r2.mats], keys: [r1.key, r2.key], cost: 0 }; }
@@ -573,7 +580,7 @@ function cardDef(cid) {
   DEFS.set(cid, d);
   return d;
 }
-const KIND_NAME = { m: '食材', f: 'ふしぎな食材', t: '道具', o: 'お菓子', s: 'スペシャル' };
+const KIND_NAME = { m: '食材', f: 'ふしぎな食材', t: '道具', b: 'フィールド', o: 'お菓子', s: 'スペシャル' };
 
 function fxText(fx, star = 1) {
   const m = STAR_MUL[star] || 1, p = [];
@@ -639,6 +646,9 @@ const ICON_MAPS = {
   mizu: [['....oo....', '...obbo...', '...obbo...', '..obbbbo..', '.obwbbbbo.', '.obwbbbbo.', '.obbbbbbo.', '.obbbbbbo.', '..obbbbo..', '...oooo...'], { o: '#2a4a7a', b: '#6fa8e0', w: '#dff0ff' }],
   kago: [['...oooo...', '..o....o..', '.o......o.', 'oooooooooo', 'obybybybyo', 'oybybybybo', '.obybybyo.', '.oybybybo.', '..oooooo..', '..........'], { o: '#7a4b2e', b: '#c98a4b', y: '#e4b273' }],
   chokin: [['..........', '....oo....', '..oookoo..', '.oPPPPPPo.', 'oPwPPPPPPo', 'oPkPPPPPPo', 'opPPPPPPPo', '.oPPPPPPo.', '.oo.oo.oo.', '..........'], { o: '#8a3a5a', P: '#f9a8c0', p: '#e07aa0', w: '#ffffff', k: '#3a1e2a' }],
+  chubi: [['..........', 'oooooooooo', 'oSSSSSSSSo', 'oSwSSSSSSo', 'oSSSSSSSSo', '.oSSSSSSo.', '..oooooo..', '..r.rr.r..', '.ryrryyry.', '.oooooooo.'], { o: '#3a2318', S: '#c9a27a', w: '#f0dcc0', r: '#f0702a', y: '#ffc94a' }],
+  max: [['....r.....', '...rr..r..', '..rrr.rr..', '..rryrrr.r', '.rryyyrrrr', '.ryyyyyrr.', 'rryywwyyrr', 'ryywwwwyyr', '.ryywwyyr.', '..rrrrrr..'], { r: '#e0402a', y: '#ffb84a', w: '#fff3c0' }],
+  maze: [['...oooo...', '..o.oo.o..', '.o.o..o.o.', '.o.o..o.o.', '.o.o..o.o.', '..o.oo.o..', '...oooo...', '....hh....', '....hh....', '....hh....'], { o: '#9a8a7a', h: '#8a5a3b' }],
   hiokoshi: [['....o.....', '...oro....', '...orro.o.', '..orrrooro', '..orryrrro', '.orryyyrro', '.oryyyyyro', '.oryywyyro', '..oryyyro.', '...ooooo..'], { o: '#7a1e10', r: '#f0502a', y: '#ffc94a', w: '#fff6d0' }],
 };
 const ICON = {};
@@ -760,6 +770,7 @@ function typeLine(d) {
 function cardDmg(d) { return d.fx.dmg ? Math.floor(d.fx.dmg * STAR_MUL[d.star] * 10) / 10 : 0; }
 /* 効果の札（短いことば）。小さいカードには1つめだけ出す */
 function cardChips(d) {
+  if (d.kind === 'b') return FIELDS[d.cid.slice(2)].chips.slice();
   const fx = d.fx, m = STAR_MUL[d.star], r = v => Math.floor(v * m * 10) / 10, out = [];
   if (fx.set != null) out.push(`火力を${fx.set}に`);
   if (fx.first) out.push(`先頭で火力+${(fx.heat || 0) + fx.first}`);
@@ -811,7 +822,7 @@ function cardInfo(cid) {
   return `<div class="cinfo k-${d.kind}">
     <p class="ci-type">${typeLine(d)}</p>
     <div class="ci-chips">${cardChips(d).map(c => `<span>${c}</span>`).join('')}</div>
-    <p class="ci-fx">${fxText(d.fx, d.star)}</p>${recipe}
+    <p class="ci-fx">${d.kind === 'b' ? FIELDS[cid.slice(2)].text + '。調理台の左の「場」に置くと、ずっと効く' : fxText(d.fx, d.star)}</p>${recipe}
     <p class="ci-flavor">${esc(flavor || '')}</p>
   </div>`;
 }
@@ -922,24 +933,26 @@ function drawDay(g, t, dt) {
 
 /* ---- src/js/night.js ---- */
 /* ==== 夜：食材モンスターの襲撃を9ラウンドで撃退する（ゼンゼロのオバケ屋敷の形が土台） ====
-   1ラウンド：仕入れ（毎回3枚・入れかえ・コインで買う）→ 並べる・まぜる → 焼く（調理台の左から順にうごく）
+   1ラウンド：仕入れ（毎回3枚・入れかえ・コインで買う）→ 並べる・まぜる → バトル（調理台の左から順にうごく）
+   フィールドも仕入れにまざって出てくる。買うと調理台の左の「場」に入る（1つだけ・置きかえOK）
    ラウンド1だけ、5まいから3まい えらんで無料。食材★1＋★1をまぜると★2のお菓子（レシピがひらめく）、★2＋★2で★3スペシャル
    調理台6マス（①〜⑥の順にうごく）。冷蔵庫はなし（11/17 しょーくん）。画面は night-ui.js */
 const SLOTS = 6, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, SHOP_MAX = 5, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
 const STEP_MS = REDUCED ? 200 : 620;
 let N = null;          // S.night（夜のあいだの状態）
-let busy = false;      // 焼いている間は操作しない
+let busy = false;      // バトルの間は操作しない
 
 function startNight() {
   S.phase = 'night';
   S.today = { day: S.day, score: 0, beaten: false, drop: null, drops: 0, flashes: [], made: [], sales: 0, served: 0, visitors: 0, newRegulars: [] };
   S.night = {
-    mon: (S.day - 1) % MONSTERS.length, field: null, stage: 'field', round: 1, coins: 0, picks: ROUND1_PICKS,
+    mon: (S.day - 1) % MONSTERS.length, field: null, stage: 'shop', round: 1, coins: 0, picks: ROUND1_PICKS,
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     flashes: [], sel: null, mixing: false, last: null,
   };
-  scn.flee = 0; scn.heat = 2;
+  scn.flee = 0; scn.heat = BASE_FIELD.start;
+  N = S.night; rollShop();
   save(); render();
 }
 
@@ -952,6 +965,7 @@ function poolList() {
   for (const cid of CHEFS[S.chef].pool) L.push([cid, cid[0] === 'm' ? 3 : 2]);
   if (N.round >= 3 || N.met > 0) L.push(['m:' + MONSTERS[N.mon].drop, 3]);
   for (const cid of S.pool) L.push([cid, 2]);
+  for (const id of CHEFS[S.chef].fields) if (id !== N.field) L.push(['b:' + id, 1]);
   return L;
 }
 function draw1(L) {
@@ -968,13 +982,12 @@ function rollShop() {
     const foods = CHEFS[S.chef].pool.filter(c => c[0] === 'm');
     while (out.filter(c => cardDef(c).food).length < 3) out.push(pick(foods));
   }
-  while (out.length < shopSize()) out.push(draw1(L));
+  while (out.length < shopSize()) {
+    let c = draw1(L);
+    for (let t = 0; t < 9 && c[0] === 'b' && out.includes(c); t++) c = draw1(L);   // 同じフィールドは1回に1枚まで
+    out.push(c);
+  }
   N.shop = shuffle(out);
-}
-function chooseField(id) {
-  if (!FIELDS[id]) return;
-  N.field = id; N.stage = 'shop'; scn.heat = FIELDS[id].start;
-  rollShop(); save(); renderNight();
 }
 function place(cid) {
   const j = N.board.indexOf(null); if (j < 0) return null;
@@ -983,17 +996,26 @@ function place(cid) {
 function buy(i) {
   const cid = N.shop[i]; if (!cid || busy || N.stage !== 'shop') return;
   const d = cardDef(cid), free = N.round === 1;
-  if (free && N.picks <= 0) return toast('3まい えらんだよ。焼いてみよう');
+  if (free && N.picks <= 0) return toast('3まい えらんだよ。バトルしてみよう');
   if (!free && N.coins < d.cost) return toast('コインがたりない');
-  const at = place(cid);
-  if (!at) return toast('調理台がいっぱい。うるか、まぜてから買おう');
+  if (d.kind === 'b') {
+    if (N.field) toast('フィールドを入れかえた');
+    N.field = cid.slice(2); scn.heat = FIELDS[N.field].start;
+  } else if (!place(cid)) return toast('調理台がいっぱい。うるか、まぜてから買おう');
   if (free) N.picks--; else N.coins -= d.cost;
   N.shop[i] = null; N.sel = null; N.mixing = false;
   save(); renderNight();
 }
-const selCard = () => N.sel && N.sel.where !== 'shop' ? area(N.sel.where)[N.sel.i] : null;
+const selCard = () => N.sel && N.sel.where === 'board' ? N.board[N.sel.i] : null;
 function sell() {
-  const c = selCard(); if (!c || busy || N.stage !== 'shop') return;
+  if (busy || N.stage !== 'shop' || !N.sel) return;
+  if (N.sel.where === 'field') {
+    if (!N.field) return;
+    if (N.round === 1) N.picks = Math.min(ROUND1_PICKS, N.picks + 1); else N.coins += SELL[1];
+    N.field = null; N.sel = null; scn.heat = BASE_FIELD.start;
+    return save(), renderNight();
+  }
+  const c = selCard(); if (!c) return;
   const d = cardDef(c.cid);
   if (N.round === 1 && d.star === 1) N.picks = Math.min(ROUND1_PICKS, N.picks + 1);
   else N.coins += SELL[d.star];
@@ -1035,7 +1057,7 @@ function doMix(to) {
   const cid = mixResult(a.cid, b.cid), d = cardDef(cid);
   area(to.where)[to.i] = { cid, born: true }; area(from.where)[from.i] = null;
   N.mixing = false; N.sel = { where: to.where, i: to.i };
-  if (FIELDS[N.field].mix) N.coins += FIELDS[N.field].mix;
+  if (fieldOf(N.field).mix) N.coins += fieldOf(N.field).mix;
   if (d.star === 2) {
     const key = cid.slice(2);
     if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); toast('ひらめき！ ' + d.name); }
@@ -1054,14 +1076,15 @@ function tapCard(where, i) {
     N.mixing = false; N.sel = null; toast('同じ★の食材どうしをえらんでね');
     return renderNight();
   }
+  if (where === 'field') { if (N.field) { N.sel = { where, i: 0 }; renderNight(); } return; }
   const list = where === 'board' ? N.board : N.shop;
   if (!list[i]) return;
   N.sel = { where, i }; renderNight();
 }
 
-/* ---------- 焼く：調理台の左から順にうごく ---------- */
+/* ---------- バトル：調理台の左から順にうごく（関数の名前は bake のまま） ---------- */
 function resolveRound() {
-  const F = FIELDS[N.field], ev = [], extra = Array(SLOTS).fill(0);
+  const F = fieldOf(N.field), ev = [], extra = Array(SLOTS).fill(0);
   let heat = F.start, pend = 1, total = 0, burnt = N.burnt;
   for (let i = 0; i < SLOTS; i++) {
     const b = N.board[i]; if (!b) continue;
@@ -1095,7 +1118,7 @@ function resolveRound() {
 }
 function bake() {
   if (busy || N.stage !== 'shop') return;
-  if (!N.board.some(Boolean)) return toast('調理台にカードを置いてから焼こう');
+  if (!N.board.some(Boolean)) return toast('調理台にカードを置いてからバトルしよう');
   if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
   const res = resolveRound();
   busy = true; N.sel = null; N.mixing = false; renderNight();
@@ -1125,7 +1148,7 @@ function nextRound() {
   if (N.round >= ROUNDS) return endNight();
   N.coins += INCOME + (N.last.ok ? QUOTA_BONUS : 0) + N.last.coin;
   N.round++; N.stage = 'shop'; N.sel = null; N.mixing = false;
-  scn.heat = FIELDS[N.field].start;
+  scn.heat = fieldOf(N.field).start;
   rollShop(); save(); renderNight();
 }
 function endNight() {
@@ -1138,7 +1161,8 @@ function endNight() {
 }
 
 /* ---- src/js/night-ui.js ---- */
-/* ==== 夜のバトルの画面：舞台（ほのか・モンスター・火力の光）・調理台（アイコンのタイル6つを1行・左から順）・その下の説明・仕入れ・下のボタン列
+/* ==== 夜のバトルの画面：舞台（ほのか・モンスター・火力の光）・調理台（左にフィールドの「場」＋アイコンのタイル6つを1行・左から順）・仕入れ・下のボタン列
+   バトル中は、タイル行のすぐ下に発動したカードの説明を出す（手札の上にかぶせる）
    カードをタップすると大きな紙のカードがひらく（説明はそこで読む。テキストボックスはなし） ==== */
 const ORD = ['①', '②', '③', '④', '⑤', '⑥'];
 
@@ -1162,7 +1186,7 @@ function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.of
 /* 発動：タイルがコンと跳ね、タイル行の下の説明に効果とダメージを大きく出す */
 function showEvent(e, run, q) {
   document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
-  const slot = document.querySelector(`.tslot[data-i="${e.i}"]`);
+  const slot = document.querySelector(`.tslot[data-w="board"][data-i="${e.i}"]`);
   const card = slot && slot.querySelector('.pc');
   if (slot) slot.classList.add('now', 'done');
   if (card) replay(card, 'kon');
@@ -1170,25 +1194,19 @@ function showEvent(e, run, q) {
   if (co) { co.innerHTML = calloutHTML(e, q); replay(co, 'pop'); }
   setHeat(e.heat);
   if (e.burnt) { replay($('smoke'), 'on'); heroFor('oops', 1100); setTimeout(() => setHeat(e.after), STEP_MS / 2); }
-  if (e.dmg > 0) { replay($('mon'), 'hit'); replay($('chef'), 'act'); floatAt($('floats'), fmt(e.dmg), 'big'); }
+  if (e.dmg > 0) { replay($('mon'), 'hit'); replay($('chef'), 'act'); floatAt($('floats'), fmt(e.dmg), 'dmg'); }
   $('score').textContent = fmt(N.score + run);
   $('qfill').style.width = Math.min(100, run / q * 100) + '%';
   $('qtext').textContent = `${fmt(run)} / ノルマ ${fmt(q)}`;
 }
-/* タイル行の下の説明：ふだんは使い方、焼いている間は発動したカード（名前・効果・火加減・ダメージ） */
-function calloutIdle() {
-  if (N.stage !== 'shop') return '';
-  if (N.mixing) return `<p class="co-hint">光っているカードと まぜるよ<small>★1の食材どうし → ★2のお菓子・★2どうし → ★3のスペシャル</small></p>`;
-  if (!N.board.some(Boolean)) return `<p class="co-hint">下の仕入れカードをタップして 調理台にならべよう</p>`;
-  return `<p class="co-hint"><span>「焼く！」で <b>左から順に</b> 発動するよ</span><small>カードをタップで 大きく見る・ならびかえ・まぜる</small></p>`;
-}
+/* バトルの間だけ、タイル行のすぐ下（手札の上にかぶせる）に、発動したカードの名前・効果・火加減・ダメージを出す */
 function calloutHTML(e, q) {
-  const cid = N.board[e.i].cid, d = cardDef(cid), F = FIELDS[N.field], z = zoneOf(e.heat);
+  const cid = N.board[e.i].cid, d = cardDef(cid), F = fieldOf(N.field), z = zoneOf(e.heat);
   const chips = cardChips(d).slice(0, 2).map(c => `<span>${c}</span>`).join('');
   const zone = e.burnt ? '<span class="co-z z3">焦げ！</span>' : `<span class="co-z z${z}">${ZONES[z]}${e.dmg > 0 ? ' ×' + F.mul[z] : ''}</span>`;
   const num = e.dmg > 0 ? `<b class="co-dmg${e.dmg >= q / 3 ? ' hot' : ''}">${fmt(e.dmg)}</b>`
     : e.burnt ? '<b class="co-dmg koge">焦げた…</b>' : `<b class="co-dmg soft">火力 ${e.after}</b>`;
-  return `<div class="co-ev${e.burnt ? ' burnt' : ''}" style="--x:${(e.i + .5) / SLOTS * 100}%">
+  return `<div class="co-ev${e.burnt ? ' burnt' : ''}" style="--x:${(e.i + 1.5) / (SLOTS + 1) * 100}%">
     <span class="co-ic pc k-${d.kind}">${artImg(cid)}</span>
     <div class="co-main"><p class="co-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><p class="co-chips">${chips}${zone}</p></div>${num}</div>`;
 }
@@ -1240,6 +1258,13 @@ function viewerHTML() {
     return `<div class="viewer" data-act="close"><div class="vbox" data-act="noop"><button class="vclose" data-act="close" aria-label="とじる">×</button>${cardBig(cid)}${cardInfo(cid)}
       <div class="vbtns"><button class="pill sub" data-act="close">とじる</button><button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'えらぶ' : `買う <small>コイン${d.cost}</small>`}</button></div></div></div>`;
   }
+  if (s.where === 'field') {
+    if (!N.field) return '';
+    const cid = 'b:' + N.field;
+    return `<div class="viewer" data-act="close"><div class="vbox" data-act="noop"><button class="vclose" data-act="close" aria-label="とじる">×</button>${cardBig(cid)}${cardInfo(cid)}
+      <div class="vbtns"><button class="pill sub" data-act="close">とじる</button><button class="pill sub" data-act="sell">${N.round === 1 ? 'もどす' : `うる <small>+${SELL[1]}</small>`}</button></div>
+      <p class="vhint">いつでも効いている・あたらしいフィールドを買うと入れかわる</p></div></div>`;
+  }
   const b = N.board[s.i]; if (!b) return '';
   const d = cardDef(b.cid), canM = d.food && d.star < 3;
   return `<div class="viewer" data-act="close"><div class="vbox" data-act="noop"><button class="vclose" data-act="close" aria-label="とじる">×</button>${cardBig(b.cid)}${cardInfo(b.cid)}
@@ -1259,19 +1284,16 @@ function barHTML() {
   if (N.mixing) return `<span class="bar-hint">光っているカードをタップすると まぜるよ</span><button class="pill sub" data-act="cancelMix">やめる</button>`;
   return `<span class="orb" title="${N.round === 1 ? '無料でえらべる数' : 'コイン'}"><i>${N.round === 1 ? '無料' : 'コイン'}</i><b>${N.round === 1 ? N.picks : N.coins}</b></span>
     ${N.round === 1 ? '<span class="bar-hint">5まいから3まい えらぼう</span>' : `<button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`}
-    <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>焼く！</button>`;
+    <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>バトル！</button>`;
 }
 
 /* ---------- 夜の画面 ---------- */
 function renderNight() {
   N = S.night;
+  if (N.stage === 'field') { N.stage = 'shop'; rollShop(); }   // 前の形（夜のはじめにフィールドをえらぶ）のセーブ
   const mon = MONSTERS[N.mon], F = N.field ? FIELDS[N.field] : null;
   let body = '';
-  if (N.stage === 'field') {
-    const chef = CHEFS[S.chef];
-    body = `<div class="panel tight"><h2>${esc(mon.name)}がやってきた！</h2><p>${esc(mon.text)}。${chef.job} ${chef.name}のフィールドを1つえらぼう</p></div>
-      <div class="fields">${chef.fields.map(id => `<button class="field" data-act="field" data-id="${id}"><b>${FIELDS[id].name}</b><span>${FIELDS[id].text}</span></button>`).join('')}</div>`;
-  } else if (N.stage === 'end') {
+  if (N.stage === 'end') {
     const T = S.today, hp = nightHP(S.day), m = MATS[T.drop];
     body = `<div class="panel end ${T.beaten ? 'win' : ''}"><h2>${T.beaten ? '撃退せいこう！' : 'にげられちゃった…'}</h2>
         <p class="bignum">${fmt(T.score)}</p><p>${esc(mon.name)}のたいりょく ${fmt(hp)}</p>
@@ -1280,17 +1302,17 @@ function renderNight() {
       </div><button class="big" data-act="toMorning">朝の仕込みへ</button>`;
   } else {
     const mx = N.mixing ? partners() : [];
-    body = `<div class="tiles">${N.board.map((c, i) => {
+    const fOn = N.sel && N.sel.where === 'field';
+    body = `<div class="tiles"><button class="tslot fslot${fOn ? ' sel' : ''}" data-act="card" data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) => {
         const on = N.sel && N.sel.where === 'board' && N.sel.i === i;
         return `<button class="tslot${on ? ' sel' : ''}${mx.includes(i) ? ' can' : ''}" data-act="card" data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born }) : ''}</button>`;
       }).join('')}</div>
-      <div class="callout" id="callout">${calloutIdle()}</div>
-      ${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}
+      <div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}</div>
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
-  $('screen').innerHTML = `<section class="night fit">
+  $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}">
     <div class="stage" id="stage" data-z="0"><i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i><i class="glow"></i>
       ${heroImg(N.stage === 'end' ? (S.today.beaten ? 'joy' : 'surprise') : 'battle')}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
@@ -1299,7 +1321,7 @@ function renderNight() {
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div></div>
     <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}ノルマ ${fmt(q)}</span></div>
     ${body}</section>`;
-  setHeat(N.field ? (N.stage === 'shop' ? FIELDS[N.field].start : scn.heat) : 2);
+  setHeat(N.stage === 'shop' ? fieldOf(N.field).start : scn.heat);
   for (const c of N.board) if (c) delete c.born;
 }
 
@@ -1514,7 +1536,6 @@ const ACTS = {
   start: () => { S = newState(); startNight(); },
   continue: () => { const s = load(); if (s) { S = s; if (S.phase === 'night' && S.night && S.night.stage === 'roundEnd') busy = false; render(); } },
   reset: () => { if (!resetArm) { resetArm = true; return renderTitle(); } resetArm = false; S = newState(); startNight(); },
-  field: el => chooseField(el.dataset.id),
   card: el => tapCard(el.dataset.w, +el.dataset.i),
   close: () => closeView(),
   noop: () => {},

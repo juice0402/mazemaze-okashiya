@@ -1,4 +1,5 @@
-/* ==== 夜のバトルの画面：舞台（ほのか・モンスター・火力の光）・調理台（アイコンのタイル6つを1行・左から順）・その下の説明・仕入れ・下のボタン列
+/* ==== 夜のバトルの画面：舞台（ほのか・モンスター・火力の光）・調理台（左にフィールドの「場」＋アイコンのタイル6つを1行・左から順）・仕入れ・下のボタン列
+   バトル中は、タイル行のすぐ下に発動したカードの説明を出す（手札の上にかぶせる）
    カードをタップすると大きな紙のカードがひらく（説明はそこで読む。テキストボックスはなし） ==== */
 const ORD = ['①', '②', '③', '④', '⑤', '⑥'];
 
@@ -22,7 +23,7 @@ function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.of
 /* 発動：タイルがコンと跳ね、タイル行の下の説明に効果とダメージを大きく出す */
 function showEvent(e, run, q) {
   document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
-  const slot = document.querySelector(`.tslot[data-i="${e.i}"]`);
+  const slot = document.querySelector(`.tslot[data-w="board"][data-i="${e.i}"]`);
   const card = slot && slot.querySelector('.pc');
   if (slot) slot.classList.add('now', 'done');
   if (card) replay(card, 'kon');
@@ -30,25 +31,19 @@ function showEvent(e, run, q) {
   if (co) { co.innerHTML = calloutHTML(e, q); replay(co, 'pop'); }
   setHeat(e.heat);
   if (e.burnt) { replay($('smoke'), 'on'); heroFor('oops', 1100); setTimeout(() => setHeat(e.after), STEP_MS / 2); }
-  if (e.dmg > 0) { replay($('mon'), 'hit'); replay($('chef'), 'act'); floatAt($('floats'), fmt(e.dmg), 'big'); }
+  if (e.dmg > 0) { replay($('mon'), 'hit'); replay($('chef'), 'act'); floatAt($('floats'), fmt(e.dmg), 'dmg'); }
   $('score').textContent = fmt(N.score + run);
   $('qfill').style.width = Math.min(100, run / q * 100) + '%';
   $('qtext').textContent = `${fmt(run)} / ノルマ ${fmt(q)}`;
 }
-/* タイル行の下の説明：ふだんは使い方、焼いている間は発動したカード（名前・効果・火加減・ダメージ） */
-function calloutIdle() {
-  if (N.stage !== 'shop') return '';
-  if (N.mixing) return `<p class="co-hint">光っているカードと まぜるよ<small>★1の食材どうし → ★2のお菓子・★2どうし → ★3のスペシャル</small></p>`;
-  if (!N.board.some(Boolean)) return `<p class="co-hint">下の仕入れカードをタップして 調理台にならべよう</p>`;
-  return `<p class="co-hint"><span>「焼く！」で <b>左から順に</b> 発動するよ</span><small>カードをタップで 大きく見る・ならびかえ・まぜる</small></p>`;
-}
+/* バトルの間だけ、タイル行のすぐ下（手札の上にかぶせる）に、発動したカードの名前・効果・火加減・ダメージを出す */
 function calloutHTML(e, q) {
-  const cid = N.board[e.i].cid, d = cardDef(cid), F = FIELDS[N.field], z = zoneOf(e.heat);
+  const cid = N.board[e.i].cid, d = cardDef(cid), F = fieldOf(N.field), z = zoneOf(e.heat);
   const chips = cardChips(d).slice(0, 2).map(c => `<span>${c}</span>`).join('');
   const zone = e.burnt ? '<span class="co-z z3">焦げ！</span>' : `<span class="co-z z${z}">${ZONES[z]}${e.dmg > 0 ? ' ×' + F.mul[z] : ''}</span>`;
   const num = e.dmg > 0 ? `<b class="co-dmg${e.dmg >= q / 3 ? ' hot' : ''}">${fmt(e.dmg)}</b>`
     : e.burnt ? '<b class="co-dmg koge">焦げた…</b>' : `<b class="co-dmg soft">火力 ${e.after}</b>`;
-  return `<div class="co-ev${e.burnt ? ' burnt' : ''}" style="--x:${(e.i + .5) / SLOTS * 100}%">
+  return `<div class="co-ev${e.burnt ? ' burnt' : ''}" style="--x:${(e.i + 1.5) / (SLOTS + 1) * 100}%">
     <span class="co-ic pc k-${d.kind}">${artImg(cid)}</span>
     <div class="co-main"><p class="co-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><p class="co-chips">${chips}${zone}</p></div>${num}</div>`;
 }
@@ -100,6 +95,13 @@ function viewerHTML() {
     return `<div class="viewer" data-act="close"><div class="vbox" data-act="noop"><button class="vclose" data-act="close" aria-label="とじる">×</button>${cardBig(cid)}${cardInfo(cid)}
       <div class="vbtns"><button class="pill sub" data-act="close">とじる</button><button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'えらぶ' : `買う <small>コイン${d.cost}</small>`}</button></div></div></div>`;
   }
+  if (s.where === 'field') {
+    if (!N.field) return '';
+    const cid = 'b:' + N.field;
+    return `<div class="viewer" data-act="close"><div class="vbox" data-act="noop"><button class="vclose" data-act="close" aria-label="とじる">×</button>${cardBig(cid)}${cardInfo(cid)}
+      <div class="vbtns"><button class="pill sub" data-act="close">とじる</button><button class="pill sub" data-act="sell">${N.round === 1 ? 'もどす' : `うる <small>+${SELL[1]}</small>`}</button></div>
+      <p class="vhint">いつでも効いている・あたらしいフィールドを買うと入れかわる</p></div></div>`;
+  }
   const b = N.board[s.i]; if (!b) return '';
   const d = cardDef(b.cid), canM = d.food && d.star < 3;
   return `<div class="viewer" data-act="close"><div class="vbox" data-act="noop"><button class="vclose" data-act="close" aria-label="とじる">×</button>${cardBig(b.cid)}${cardInfo(b.cid)}
@@ -119,19 +121,16 @@ function barHTML() {
   if (N.mixing) return `<span class="bar-hint">光っているカードをタップすると まぜるよ</span><button class="pill sub" data-act="cancelMix">やめる</button>`;
   return `<span class="orb" title="${N.round === 1 ? '無料でえらべる数' : 'コイン'}"><i>${N.round === 1 ? '無料' : 'コイン'}</i><b>${N.round === 1 ? N.picks : N.coins}</b></span>
     ${N.round === 1 ? '<span class="bar-hint">5まいから3まい えらぼう</span>' : `<button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`}
-    <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>焼く！</button>`;
+    <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>バトル！</button>`;
 }
 
 /* ---------- 夜の画面 ---------- */
 function renderNight() {
   N = S.night;
+  if (N.stage === 'field') { N.stage = 'shop'; rollShop(); }   // 前の形（夜のはじめにフィールドをえらぶ）のセーブ
   const mon = MONSTERS[N.mon], F = N.field ? FIELDS[N.field] : null;
   let body = '';
-  if (N.stage === 'field') {
-    const chef = CHEFS[S.chef];
-    body = `<div class="panel tight"><h2>${esc(mon.name)}がやってきた！</h2><p>${esc(mon.text)}。${chef.job} ${chef.name}のフィールドを1つえらぼう</p></div>
-      <div class="fields">${chef.fields.map(id => `<button class="field" data-act="field" data-id="${id}"><b>${FIELDS[id].name}</b><span>${FIELDS[id].text}</span></button>`).join('')}</div>`;
-  } else if (N.stage === 'end') {
+  if (N.stage === 'end') {
     const T = S.today, hp = nightHP(S.day), m = MATS[T.drop];
     body = `<div class="panel end ${T.beaten ? 'win' : ''}"><h2>${T.beaten ? '撃退せいこう！' : 'にげられちゃった…'}</h2>
         <p class="bignum">${fmt(T.score)}</p><p>${esc(mon.name)}のたいりょく ${fmt(hp)}</p>
@@ -140,17 +139,17 @@ function renderNight() {
       </div><button class="big" data-act="toMorning">朝の仕込みへ</button>`;
   } else {
     const mx = N.mixing ? partners() : [];
-    body = `<div class="tiles">${N.board.map((c, i) => {
+    const fOn = N.sel && N.sel.where === 'field';
+    body = `<div class="tiles"><button class="tslot fslot${fOn ? ' sel' : ''}" data-act="card" data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) => {
         const on = N.sel && N.sel.where === 'board' && N.sel.i === i;
         return `<button class="tslot${on ? ' sel' : ''}${mx.includes(i) ? ' can' : ''}" data-act="card" data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born }) : ''}</button>`;
       }).join('')}</div>
-      <div class="callout" id="callout">${calloutIdle()}</div>
-      ${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}
+      <div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}</div>
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
-  $('screen').innerHTML = `<section class="night fit">
+  $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}">
     <div class="stage" id="stage" data-z="0"><i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i><i class="glow"></i>
       ${heroImg(N.stage === 'end' ? (S.today.beaten ? 'joy' : 'surprise') : 'battle')}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
@@ -159,6 +158,6 @@ function renderNight() {
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div></div>
     <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}ノルマ ${fmt(q)}</span></div>
     ${body}</section>`;
-  setHeat(N.field ? (N.stage === 'shop' ? FIELDS[N.field].start : scn.heat) : 2);
+  setHeat(N.stage === 'shop' ? fieldOf(N.field).start : scn.heat);
   for (const c of N.board) if (c) delete c.born;
 }

@@ -31,6 +31,9 @@ const TOOLS = {
 
 /* カードのフレーバーテキスト（大きなカードの下に出す） */
 const FLAVOR = {
+  chubi: 'ほのか愛用の厚手なべ。じっくり中火を守ってくれる。',
+  max: 'かまどの扉を全開に！ ほのおがごうごう、焦げるかどうかは腕しだい。',
+  maze: '材料をおまかせでまぜてくれる、ちょっとうるさい魔法のまぜ機。',
   komugi: '葉っぱの妖精がまく、きらきらの粉。さくっと軽く焼きあがる。',
   bata: '走りまわるゴーゴーヤギのミルクから。こくがあって、まわりの食材を元気にする。',
   sato: 'しっぽが金平糖のトカゲが落としていく、あまい結晶。火のめぐりがよくなる。',
@@ -53,12 +56,15 @@ const FLAVOR = {
 const ZONES = ['弱火', '中火', '強火', '焦げ'];
 const zoneOf = h => h <= 3 ? 0 : h <= 7 ? 1 : h <= 10 ? 2 : 3;
 
-/* フィールド：夜のはじめに1つえらぶ（シェフごとにちがう） */
+/* フィールド：手札（仕入れ）にまざって出てくるカード。出たら調理台の左の「場」に置く（1つだけ・置きかえOK）。
+   置いていないあいだは BASE_FIELD（ふつうのかまど） */
 const FIELDS = {
-  chubi: { name: '中火キープ', start: 4, cap: 7, mul: [1, 6, 6], text: '火力4からはじまり、7より上がらない（焦げない）。中火が×6' },
-  max:   { name: '火力マックス', start: 6, mul: [1, 2, 6], text: '火力6からはじまる。強火が×6。そのかわり焦げやすい' },
-  maze:  { name: '自動まぜまぜ機', start: 4, mul: [1, 2, 4], mix: 1, boost: 1.5, text: '火力4からはじまる。★2・★3のダメージ×1.5、まぜるたびにコイン+1' },
+  chubi: { name: '中火キープ', start: 4, cap: 7, mul: [1, 6, 6], chips: ['中火×6', '焦げない'], text: '火力4からはじまり、7より上がらない（焦げない）。中火が×6' },
+  max:   { name: '火力マックス', start: 6, mul: [1, 2, 6], chips: ['強火×6', '火力6から'], text: '火力6からはじまる。強火が×6。そのかわり焦げやすい' },
+  maze:  { name: '自動まぜまぜ機', start: 4, mul: [1, 2, 4], mix: 1, boost: 1.5, chips: ['★2★3×1.5', 'まぜるとコイン+1'], text: '火力4からはじまる。★2・★3のダメージ×1.5、まぜるたびにコイン+1' },
 };
+const BASE_FIELD = { name: 'ふつうのかまど', start: 4, mul: [1, 2, 4] };
+const fieldOf = id => FIELDS[id] || BASE_FIELD;
 
 /* シェフ：固有のデッキプールとフィールド。水の飴細工職人・草のパティシエは、あとで常連さんから仲間になる */
 const CHEFS = {
@@ -94,7 +100,7 @@ function mergeFx(a, b) {
   return o;
 }
 
-/* ---------- カード（'m:材料'・'t:道具'・'o:材料+材料'＝★2・'s:お菓子|お菓子'＝★3） ---------- */
+/* ---------- カード（'m:材料'・'t:道具'・'b:フィールド'・'o:材料+材料'＝★2・'s:お菓子|お菓子'＝★3） ---------- */
 function specialName(r1, r2) { return r1.noun === r2.noun ? `特製${r1.noun}タワー` : `特製${r1.noun}＆${r2.noun}`; }
 const DEFS = new Map();
 function cardDef(cid) {
@@ -103,6 +109,7 @@ function cardDef(cid) {
   let d;
   const pairFx = r => mergeFx(MATS[r.mats[0]].fx, MATS[r.mats[1]].fx);
   if (k === 'm') { const m = MATS[id]; d = { kind: m.fushigi ? 'f' : 'm', star: 1, food: true, name: m.name, fx: m.fx, mats: [id], cost: m.fushigi ? 4 : 3 }; }
+  else if (k === 'b') { const f = FIELDS[id]; d = { kind: 'b', star: 1, food: false, name: f.name, fx: {}, mats: [], cost: 5 }; }
   else if (k === 't') { const t = TOOLS[id]; d = { kind: 't', star: 1, food: false, name: t.name, fx: t.fx, mats: [], cost: 3 }; }
   else if (k === 'o') { const r = recipeOf(id); d = { kind: 'o', star: 2, food: true, name: r.name, fx: pairFx(r), mats: r.mats, cost: 6 }; }
   else { const [r1, r2] = id.split('|').map(recipeOf); const fx = mergeFx(pairFx(r1), pairFx(r2)); fx.proof = 1; d = { kind: 's', star: 3, food: true, name: specialName(r1, r2), fx, mats: [...r1.mats, ...r2.mats], keys: [r1.key, r2.key], cost: 0 }; }
@@ -111,7 +118,7 @@ function cardDef(cid) {
   DEFS.set(cid, d);
   return d;
 }
-const KIND_NAME = { m: '食材', f: 'ふしぎな食材', t: '道具', o: 'お菓子', s: 'スペシャル' };
+const KIND_NAME = { m: '食材', f: 'ふしぎな食材', t: '道具', b: 'フィールド', o: 'お菓子', s: 'スペシャル' };
 
 function fxText(fx, star = 1) {
   const m = STAR_MUL[star] || 1, p = [];

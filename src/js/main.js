@@ -34,7 +34,6 @@ const ACTS = {
   start: () => { S = newState(); startNight(); },
   continue: () => { const s = load(); if (s) { S = s; if (S.phase === 'night' && S.night && S.night.stage === 'roundEnd') busy = false; render(); } },
   reset: () => { if (!resetArm) { resetArm = true; return renderTitle(); } resetArm = false; S = newState(); startNight(); },
-  field: el => chooseField(el.dataset.id),
   card: el => tapCard(el.dataset.w, +el.dataset.i),
   close: () => closeView(),
   noop: () => {},
