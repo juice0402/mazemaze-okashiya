@@ -44,13 +44,10 @@ const ACTS = {
   bake: () => bake(),
   next: () => nextRound(),
   toMorning: () => goMorning(),
-  bakeRecipe: el => bakeRecipe(el.dataset.key),
-  toCard: () => toCard(),
-  toShelf: () => toShelf(),
   openShop: () => goDay(),
-  fast: () => toggleFast(),
   toResult: () => goResult(),
   nextDay: () => nextDay(),
+  ...MORNING_ACTS, ...DAY_ACTS,   // 朝と昼の画面のボタン（morning.js・day.js＝昼のチャット）
 };
 function boot(data) {
   const s = data && data.S ? sanitize(data.S) : null;

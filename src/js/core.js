@@ -96,3 +96,4 @@ function toast(msg, ms = 1900) {
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, ms);
 }
+const HEART = '\u2665\uFE0E';   // ハートは絵文字にならないように文字の形で（昼の画面とまとめで使う）

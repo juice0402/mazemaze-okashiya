@@ -372,37 +372,6 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .got{display:flex;align-items:center;gap:8px;font-size:15px}
 .got img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated}
 
-/* 朝 */
-.stockline{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
-.stockline .fus{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-.stockline img,.rm img{width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle}
-.recipes{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:2px 2px 6px}
-.recipe{flex:none;display:flex;align-items:center;gap:10px;text-align:left;padding:6px 10px;font-weight:500}
-.candy{width:42px;height:42px;object-fit:contain;image-rendering:pixelated;flex:none}
-.rbody{display:flex;flex-direction:column;gap:2px;min-width:0}
-.rn{font-size:14px;font-weight:700}
-.rn em{font-style:normal;font-size:10px;color:#fff;background:var(--strawberry);border-radius:3px;padding:0 4px;margin-left:6px}
-.rm{font-size:12px;display:flex;align-items:center;gap:3px;flex-wrap:wrap}
-.rneed{font-size:11px;color:#2f8a6a}
-.tag{font-size:10px;border:1px solid currentColor;border-radius:3px;padding:0 4px;color:#b8541c}
-.tags{display:flex;gap:4px;flex-wrap:wrap}
-.made{flex:none;flex-direction:row;align-items:flex-start;gap:10px;border-color:var(--gold);padding:8px 10px}
-.made .candy{width:54px;height:54px}
-.made .tag{color:var(--gold)}
-
-/* 昼 */
-.scene-wrap{position:relative;flex:1 1 0;min-height:72px;max-height:calc((min(100vw, 460px) - 32px) / 2);border:3px solid #3a2318;border-radius:12px;overflow:hidden;background:#fbe3d4}
-.scene-wrap canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
-.shelf{flex:none;display:flex;gap:10px;align-items:flex-start;font-size:12px}
-.shelf .lbl{color:var(--milk-soft);flex:none}
-#shelfList{display:flex;gap:4px 12px;flex-wrap:wrap}
-#shelfList .item{display:flex;align-items:center;gap:4px}
-#shelfList img{width:24px;height:24px;object-fit:contain;image-rendering:pixelated}
-.log{flex:1;min-height:48px;list-style:none;margin:0;padding:6px 10px;background:rgba(42,23,12,.45);border:2px solid #3a2318;border-radius:10px;display:flex;flex-direction:column;gap:3px;font-size:12px;overflow-y:auto}
-.log li{flex:none}
-.log li.love{color:var(--gold)}
-.log li.no{color:var(--milk-soft)}
-
 /* まとめ */
 dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:13px}
 dt{color:var(--milk-soft)}
@@ -699,9 +668,6 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 .panel h2,.end h2{font-family:var(--disp);font-weight:400;letter-spacing:1px;color:#ffd27a;-webkit-text-stroke:3px #3a1404;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
 .end h2{font-size:24px}
 .bignum{font-family:var(--disp);font-weight:400;font-size:40px;color:#ffe08a;-webkit-text-stroke:5px #4a1a04;paint-order:stroke fill;text-shadow:0 4px 0 #2a0c02,0 0 18px rgba(255,180,60,.55)}
-.recipe{background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;box-shadow:inset 0 0 0 1px rgba(217,168,90,.7),0 3px 0 #3a1c08}
-.scene-wrap{border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4)}
-.log{background:rgba(30,14,6,.55);border:2px solid #24130a;box-shadow:inset 0 0 0 1px rgba(255,214,140,.3)}
 #score{display:inline-block}
 #score.tick{animation:scoretick .32s cubic-bezier(.2,1.6,.4,1)}
 @keyframes scoretick{0%{transform:scale(1.45);color:#fff}100%{transform:scale(1)}}
@@ -986,6 +952,42 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 .bp-dmg{min-width:92px}
 .bp-dmg b{font-size:40px}
 .bp-dmg.hot b{font-size:46px}
+
+/* ==== 朝（お菓子づくり）と昼（販売）の画面の見た目（持ち主：昼のチャット【okashi-hiru】）。共通の部品（ボタン・パネル・色・文字・カード）は style.css のものをそのまま使う ==== */
+/* 朝 */
+.stockline{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
+.stockline .fus{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.stockline img,.rm img{width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle}
+.recipes{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:2px 2px 6px}
+.recipe{flex:none;display:flex;align-items:center;gap:10px;text-align:left;padding:6px 10px;font-weight:500}
+.candy{width:42px;height:42px;object-fit:contain;image-rendering:pixelated;flex:none}
+.rbody{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rn{font-size:14px;font-weight:700}
+.rn em{font-style:normal;font-size:10px;color:#fff;background:var(--strawberry);border-radius:3px;padding:0 4px;margin-left:6px}
+.rm{font-size:12px;display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.rneed{font-size:11px;color:#2f8a6a}
+.tag{font-size:10px;border:1px solid currentColor;border-radius:3px;padding:0 4px;color:#b8541c}
+.tags{display:flex;gap:4px;flex-wrap:wrap}
+.made{flex:none;flex-direction:row;align-items:flex-start;gap:10px;border-color:var(--gold);padding:8px 10px}
+.made .candy{width:54px;height:54px}
+.made .tag{color:var(--gold)}
+
+/* 昼 */
+.scene-wrap{position:relative;flex:1 1 0;min-height:72px;max-height:calc((min(100vw, 460px) - 32px) / 2);border:3px solid #3a2318;border-radius:12px;overflow:hidden;background:#fbe3d4}
+.scene-wrap canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.shelf{flex:none;display:flex;gap:10px;align-items:flex-start;font-size:12px}
+.shelf .lbl{color:var(--milk-soft);flex:none}
+#shelfList{display:flex;gap:4px 12px;flex-wrap:wrap}
+#shelfList .item{display:flex;align-items:center;gap:4px}
+#shelfList img{width:24px;height:24px;object-fit:contain;image-rendering:pixelated}
+.log{flex:1;min-height:48px;list-style:none;margin:0;padding:6px 10px;background:rgba(42,23,12,.45);border:2px solid #3a2318;border-radius:10px;display:flex;flex-direction:column;gap:3px;font-size:12px;overflow-y:auto}
+.log li{flex:none}
+.log li.love{color:var(--gold)}
+.log li.no{color:var(--milk-soft)}
+/* 今どきの見た目の皮（もとは style.css のいちばん下） */
+.recipe{background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;box-shadow:inset 0 0 0 1px rgba(217,168,90,.7),0 3px 0 #3a1c08}
+.scene-wrap{border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4)}
+.log{background:rgba(30,14,6,.55);border:2px solid #24130a;box-shadow:inset 0 0 0 1px rgba(255,214,140,.3)}
 </style>
 </head>
 <body>
@@ -1097,6 +1099,7 @@ function toast(msg, ms = 1900) {
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, ms);
 }
+const HEART = '\u2665\uFE0E';   // ハートは絵文字にならないように文字の形で（昼の画面とまとめで使う）
 
 /* ---- src/data/cards.js ---- */
 /* ==== データ：カード・フィールド・シェフ・レシピ（ほのかの火力クッキーのビルド・11/17 夕方の仕様 claude/okashi-battle-spec.md） ====
@@ -1364,14 +1367,29 @@ const quota = (r, day) => Math.round(160 * Math.pow(1.9, r - 1) * (1 + 0.6 * (da
 function nightHP(day) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day); return s; }
 
 /* お昼のお客さん：すきな味が1つでも入ったお菓子は2倍の値段で買ってハート。ハート3つで常連さん（あとで仲間に） */
+/* お客さん：名前・見た目（キャラなのでリーダー）。すきな味は src/data/hiru.js の CUST_LIKES（昼のチャット） */
 const CUSTOMERS = [
-  { id: 'kodomo', name: 'こども', likes: ['あまい', 'ぷるぷる'], h: 15, small: true, skin: '#f6cfae', hair: '#5a3418', hat: '#e0484f', hatDk: '#a8302f', shirt: '#f7c843', arm: '#d9a72a', pants: '#3f6fb5' },
-  { id: 'gakusei', name: '学生さん', likes: ['さくさく', 'とろーり'], h: 19, skin: '#f3c9a5', hair: '#2a1d1a', shirt: '#2f3f6b', arm: '#253256', pants: '#2f3f6b', collar: '#ffffff' },
-  { id: 'otona', name: 'おとなの人', likes: ['こくまろ', 'こんがり'], h: 20, skin: '#eab88f', hair: '#6b4426', shirt: '#5f8f6a', arm: '#4a7354', pants: '#3b3b46' },
-  { id: 'obaachan', name: 'おばあちゃん', likes: ['ふわふわ', 'こくまろ'], h: 18, skin: '#f1c7a6', hair: '#cfcad6', bun: true, shirt: '#8d6bb3', arm: '#735596', pants: '#5b4a6e' },
+  { id: 'kodomo', name: 'こども', h: 15, small: true, skin: '#f6cfae', hair: '#5a3418', hat: '#e0484f', hatDk: '#a8302f', shirt: '#f7c843', arm: '#d9a72a', pants: '#3f6fb5' },
+  { id: 'gakusei', name: '学生さん', h: 19, skin: '#f3c9a5', hair: '#2a1d1a', shirt: '#2f3f6b', arm: '#253256', pants: '#2f3f6b', collar: '#ffffff' },
+  { id: 'otona', name: 'おとなの人', h: 20, skin: '#eab88f', hair: '#6b4426', shirt: '#5f8f6a', arm: '#4a7354', pants: '#3b3b46' },
+  { id: 'obaachan', name: 'おばあちゃん', h: 18, skin: '#f1c7a6', hair: '#cfcad6', bun: true, shirt: '#8d6bb3', arm: '#735596', pants: '#5b4a6e' },
 ];
 const CUST = Object.fromEntries(CUSTOMERS.map(c => [c.id, c]));
 const HEARTS_REGULAR = 3;
+
+/* ---- src/data/hiru.js ---- */
+/* ==== 朝と昼の数字（持ち主：昼のチャット【okashi-hiru】）====
+   夜と昼をまたぐ数字（お金・材料・レシピの値段と味・常連さんになるハートの数 HEARTS_REGULAR）はリーダー（src/data/cards.js・world.js） */
+const OVENS = 3, BATCH = 3;                        // 朝に焼けるのは3回。1回で3こ（売るとき）
+const CUST_BASE = 6, LIKE_MUL = 2, OTHER_BUY = 0.6; // 1日のお客さんの数のもと・すきな味は2倍の値段・すきな味がないとき買う人の割合
+/* お客さんのすきな味（お客さんの名前と見た目は world.js の CUSTOMERS） */
+const CUST_LIKES = {
+  kodomo: ['あまい', 'ぷるぷる'],
+  gakusei: ['さくさく', 'とろーり'],
+  otona: ['こくまろ', 'こんがり'],
+  obaachan: ['ふわふわ', 'こくまろ'],
+};
+const likesOf = c => CUST_LIKES[c.id] || [];
 
 /* ---- src/js/art.js ---- */
 /* ==== 絵：すべてコードで描くドット絵（C）。材料4つ・クッキー・お客さんの絵は前の版から ==== */
@@ -1606,7 +1624,7 @@ function cardInfo(cid) {
 }
 
 /* ---- src/js/scene.js ---- */
-/* ==== 場面の絵：夜のお店（バトル）と昼のお店（販売）。幅96×高さ48を画面の幅いっぱいにのばす ==== */
+/* ==== 場面の絵のしくみ（持ち主：リーダー）：mountScene・sceneLoop。昼の絵は day-scene.js（昼のチャット）。夜のドットの場面 drawNight は、いまはハイグラの舞台に置きかわって使っていない ==== */
 const SW = 96, SH = 48, FLOOR = 41;
 const scn = { mode: 'night', heat: 2, hit: 0, smoke: 0, flee: 0, cust: [], speed: 1, bg: {}, cv: null, raf: 0, last: 0 };
 const CANDY_CV = new Map();
@@ -1672,6 +1690,8 @@ function drawNight(g, t, dt) {
   scn.smoke = Math.max(0, scn.smoke - dt * 0.8);
 }
 
+/* ---- src/js/day-scene.js ---- */
+/* ==== 昼の場面の絵（持ち主：昼のチャット【okashi-hiru】）。幅96×高さ48。動かすのは scene.js の mountScene・sceneLoop（リーダー） ==== */
 /* ---------- 昼：明るいお店、棚のお菓子、歩いてくるお客さん ---------- */
 function dayBg() {
   if (scn.bg.day) return scn.bg.day;
@@ -2788,12 +2808,10 @@ function dragClean(D) {
 
 /* ---- src/js/morning.js ---- */
 /* ==== 朝：ひらめいたレシピとふしぎな材料でお菓子を作る → カードにするか、お昼に売るか ==== */
-const OVENS = 3, BATCH = 3;   // 朝に焼けるのは3回。1回で3こ（売るとき）
+/* 持ち主：昼のチャット【okashi-hiru】。朝の画面に来るのは flow.js の goMorning（リーダー）→ startMorning。カードにするのは flow.js の deckAddCandy（リーダーの入口）。数字は src/data/hiru.js */
 
-function goMorning() {
-  S.phase = 'morning'; S.morning = { ovens: OVENS, cur: null };
-  save(); render();
-}
+/* 朝のはじめ（flow.js の goMorning から呼ぶ）：S.morning を用意する */
+function startMorning() { S.morning = { ovens: OVENS, cur: null }; }
 function canBake(key) {
   const need = {};
   for (const m of recipeOf(key).needs) need[m] = (need[m] || 0) + 1;
@@ -2811,7 +2829,7 @@ function bakeRecipe(key) {
 }
 function toCard() {
   const M = S.morning; if (!M.cur) return;
-  S.pool.push('o:' + M.cur);
+  deckAddCandy(M.cur);
   toast(`${recipeOf(M.cur).name}をカードにした。夜のショップに出てくるよ`);
   M.cur = null; save(); renderMorning();
 }
@@ -2852,21 +2870,26 @@ function renderMorning() {
     <button class="big" data-act="openShop" ${M.cur ? 'disabled' : ''}>お店をあける</button>
   </section>`;
 }
+/* 朝の画面のボタン（data-act）。main.js の ACTS に入る */
+const MORNING_ACTS = {
+  bakeRecipe: el => bakeRecipe(el.dataset.key),
+  toCard: () => toCard(),
+  toShelf: () => toShelf(),
+};
 
 /* ---- src/js/day.js ---- */
-/* ==== 昼：棚1つでお菓子を売る → 1日のまとめ ====
+/* ==== 昼：棚1つでお菓子を売る（持ち主：昼のチャット【okashi-hiru】。昼に来るのは flow.js の goDay → startDay・まとめへは goResult。数字は src/data/hiru.js） ====
    お客さんはすきな味が2つ。棚にすきな味のお菓子があれば2倍の値段で買ってハート（3つで常連さん）
    なければ6わりの人がほかのお菓子を買う */
-const HEART = '\u2665\uFE0E';   // 絵文字にならないように文字の形で
-const CUST_BASE = 6, LIKE_MUL = 2, OTHER_BUY = 0.6;
 let dayTimer = 0;
 
-function goDay() {
-  S.phase = 'day';
+/* 昼のはじめ（flow.js の goDay から呼ぶ）：S.dayRun を用意する */
+function startDay() {
   S.dayRun = { i: 0, total: CUST_BASE + Math.min(4, S.day - 1), log: [], done: false };
   scn.cust = []; scn.speed = 1;
-  save(); render();
 }
+/* 昼をおえる（flow.js の goResult から呼ぶ） */
+function stopDay() { clearTimeout(dayTimer); }
 function addLog(text, cls = '') {
   S.dayRun.log.push([text, cls]);
   const ol = $('dayLog');
@@ -2876,11 +2899,11 @@ function serve(c) {
   const items = S.shelf.filter(s => s.n > 0), T = S.today;
   T.visitors++;
   if (!items.length) { addLog(`${c.name}：売り切れで帰っちゃった`, 'no'); return 'none'; }
-  const liked = items.filter(s => recipeOf(s.key).tastes.some(t => c.likes.includes(t)));
+  const liked = items.filter(s => recipeOf(s.key).tastes.some(t => likesOf(c).includes(t)));
   let s = null, p = 0, love = false;
   if (liked.length) { s = liked.sort((a, b) => recipeOf(b.key).price - recipeOf(a.key).price)[0]; p = recipeOf(s.key).price * LIKE_MUL; love = true; }
   else if (Math.random() < OTHER_BUY) { s = pick(items); p = recipeOf(s.key).price; }
-  if (!s) { addLog(`${c.name}：すきな味（${c.likes.join('・')}）がなかった`, 'no'); return 'none'; }
+  if (!s) { addLog(`${c.name}：すきな味（${likesOf(c).join('・')}）がなかった`, 'no'); return 'none'; }
   s.n--; S.shelf = S.shelf.filter(x => x.n > 0);
   S.money += p; T.sales += p; T.served++;
   const name = recipeOf(s.key).name;
@@ -2937,10 +2960,22 @@ function renderDay() {
   mountScene('day'); updateDayInfo();
   if (!R.done && !scn.cust.length) runCustomers();
 }
+/* 昼の画面のボタン（data-act）。main.js の ACTS に入る */
+const DAY_ACTS = {
+  fast: () => toggleFast(),
+};
+
+/* ---- src/js/flow.js ---- */
+/* ==== 1日の流れ（夜→朝→昼→まとめ）・1日のまとめの画面・朝から呼ぶデッキの入口（持ち主：リーダー【okashi】）
+   画面の切りかえの幕は main.js（S.phase が変わると wipe）。朝と昼の画面は morning.js・day.js（昼のチャット） ==== */
+function goMorning() { S.phase = 'morning'; startMorning(); save(); render(); }
+function goDay() { S.phase = 'day'; startDay(); save(); render(); }
+function goResult() { stopDay(); S.phase = 'result'; save(); render(); }
+function nextDay() { S.day++; startNight(); }
+/* 朝に作ったお菓子をカードにする入口（デッキのしくみはリーダー）。いまは夜のショップに出てくるカードの山 S.pool に足すだけ */
+function deckAddCandy(key) { S.pool.push('o:' + key); }
 
 /* ---------- 1日のまとめ ---------- */
-function goResult() { clearTimeout(dayTimer); S.phase = 'result'; save(); render(); }
-function nextDay() { S.day++; startNight(); }
 function renderResult() {
   const T = S.today, mon = MONSTERS[(T.day - 1) % MONSTERS.length];
   const hearts = CUSTOMERS.map(c => `<li><span>${c.name}</span><span class="hearts">${HEART.repeat(Math.min(HEARTS_REGULAR, S.hearts[c.id] || 0))}<i>${HEART.repeat(Math.max(0, HEARTS_REGULAR - (S.hearts[c.id] || 0)))}</i></span>${S.regulars.includes(c.id) ? '<em>常連さん</em>' : ''}</li>`).join('');
@@ -3007,13 +3042,10 @@ const ACTS = {
   bake: () => bake(),
   next: () => nextRound(),
   toMorning: () => goMorning(),
-  bakeRecipe: el => bakeRecipe(el.dataset.key),
-  toCard: () => toCard(),
-  toShelf: () => toShelf(),
   openShop: () => goDay(),
-  fast: () => toggleFast(),
   toResult: () => goResult(),
   nextDay: () => nextDay(),
+  ...MORNING_ACTS, ...DAY_ACTS,   // 朝と昼の画面のボタン（morning.js・day.js＝昼のチャット）
 };
 function boot(data) {
   const s = data && data.S ? sanitize(data.S) : null;

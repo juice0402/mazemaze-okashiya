@@ -1,10 +1,8 @@
 /* ==== 朝：ひらめいたレシピとふしぎな材料でお菓子を作る → カードにするか、お昼に売るか ==== */
-const OVENS = 3, BATCH = 3;   // 朝に焼けるのは3回。1回で3こ（売るとき）
+/* 持ち主：昼のチャット【okashi-hiru】。朝の画面に来るのは flow.js の goMorning（リーダー）→ startMorning。カードにするのは flow.js の deckAddCandy（リーダーの入口）。数字は src/data/hiru.js */
 
-function goMorning() {
-  S.phase = 'morning'; S.morning = { ovens: OVENS, cur: null };
-  save(); render();
-}
+/* 朝のはじめ（flow.js の goMorning から呼ぶ）：S.morning を用意する */
+function startMorning() { S.morning = { ovens: OVENS, cur: null }; }
 function canBake(key) {
   const need = {};
   for (const m of recipeOf(key).needs) need[m] = (need[m] || 0) + 1;
@@ -22,7 +20,7 @@ function bakeRecipe(key) {
 }
 function toCard() {
   const M = S.morning; if (!M.cur) return;
-  S.pool.push('o:' + M.cur);
+  deckAddCandy(M.cur);
   toast(`${recipeOf(M.cur).name}をカードにした。夜のショップに出てくるよ`);
   M.cur = null; save(); renderMorning();
 }
@@ -63,3 +61,9 @@ function renderMorning() {
     <button class="big" data-act="openShop" ${M.cur ? 'disabled' : ''}>お店をあける</button>
   </section>`;
 }
+/* 朝の画面のボタン（data-act）。main.js の ACTS に入る */
+const MORNING_ACTS = {
+  bakeRecipe: el => bakeRecipe(el.dataset.key),
+  toCard: () => toCard(),
+  toShelf: () => toShelf(),
+};

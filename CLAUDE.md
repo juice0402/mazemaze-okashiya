@@ -1,6 +1,7 @@
 # まぜまぜおかし屋（記号 okashi）
 
 - 企画と決まったことは、ネット副業プロジェクトの `claude/okashi-game-idea.md`
+- 2つのチャットで作る（リーダー【okashi】＝夜・共通の所・main／昼【okashi-hiru】＝朝と昼の画面・枝 hiru/…）。決まりはプロジェクトの `claude/okashi-bunntan.md`。直してよいファイルは `docs/MAP.md` の「持ち主」、共通の部品の使い方は `docs/PARTS.md`
 - 地図は `docs/MAP.md`。直すのは `src/`（役目ごとのファイル・数字は `src/data/`）。直したら `node tools/build.mjs` で `index.html` を作り、両方をコミットする（index.html は手で直さない）
 - 試しに遊ぶアーティファクトは `node tools/build.mjs --artifact <ファイル>` で作ったものを、同じ URL に出しなおす
 - 1日の流れ：夜（食材モンスターの襲撃を9ラウンドのカードで撃退）→ 朝（ひらめいたレシピでお菓子を作り、カードにするか売るか）→ 昼（棚1つで販売）→ まとめ
