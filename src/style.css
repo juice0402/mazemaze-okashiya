@@ -18,7 +18,7 @@
   --mint:#7fd6c0;
   --steel:#8fb3d9;
   --scene-bg:#241b3d;
-  --font:"DotGothic16","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --font:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
   color-scheme:dark;
 }
 html{box-sizing:border-box;height:100%}
@@ -35,11 +35,11 @@ h1,h2,h3{font-weight:normal;margin:0;text-wrap:balance}
 h2{font-size:16px;color:var(--gold)}
 p{margin:0;line-height:1.5;font-size:13px}
 small{font-size:11px;color:var(--milk-soft)}
-b{font-weight:normal;color:var(--gold)}
+b{font-weight:700;color:var(--gold)}
 .muted{color:var(--milk-soft);font-size:12px}
 
 /* ボタン */
-button{font-family:var(--font);font-size:15px;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:4px;padding:8px 12px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button{font-family:var(--font);font-weight:700;font-size:15px;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
 button:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 button:disabled{opacity:.45;cursor:default}
 button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
@@ -50,7 +50,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .row.two>button{flex:1}
 .hint{font-size:11px;color:var(--milk-soft)}
-.panel{background:var(--panel);border:2px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.panel{background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
 .panel.tight{padding:8px 10px;gap:4px;flex:none}
 
 /* 場面の絵：幅いっぱい（高さが足りないときは小さく） */
@@ -67,6 +67,34 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .float.koge{color:var(--milk-soft);top:-4px}
 @keyframes up{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -24px}}
 
+/* 夜の舞台（ハイグラ）：夜のお店の厨房に、ほのか（右向き）とモンスター。火力でほのかの足もとが光る */
+.stage{position:relative;flex:1 1 0;min-height:150px;max-height:calc((min(100vw, 460px) - 32px) * .68);border-radius:12px;overflow:hidden;border:2px solid var(--line);
+  background:radial-gradient(70% 55% at 80% 18%,rgba(150,130,255,.20),transparent 70%),linear-gradient(#2c2254,#1a1434 62%,#130f27)}
+.st-win{position:absolute;left:38%;top:9%;width:22%;aspect-ratio:3/4;border-radius:40% 40% 6px 6px;border:3px solid #4c3f74;
+  background:radial-gradient(circle at 68% 32%,#fff3c4 0 10%,rgba(255,243,196,.35) 11%,transparent 24%),linear-gradient(#1a2a5a,#0f1534)}
+.st-floor{position:absolute;inset:auto 0 0;height:20%;background:linear-gradient(#4a3348,#2a1d2c);box-shadow:inset 0 2px 0 rgba(255,210,170,.18)}
+.glow{position:absolute;left:0;bottom:0;width:58%;height:85%;pointer-events:none;mix-blend-mode:screen;opacity:.25;transition:opacity .25s,filter .25s;
+  background:radial-gradient(ellipse 60% 55% at 42% 100%,#ff7a2a,rgba(255,90,30,.35) 45%,transparent 72%)}
+.stage[data-z="1"] .glow{opacity:.5}.stage[data-z="2"] .glow{opacity:.95;filter:saturate(1.3)}
+.stage[data-z="3"] .glow{opacity:.55;filter:grayscale(1) brightness(.6)}
+.chef{position:absolute;left:2%;bottom:3%;height:94%;max-width:52%;object-fit:contain;object-position:left bottom;transform-origin:center bottom;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));animation:breathe 3.2s ease-in-out infinite}
+.chef.flip{transform:scaleX(-1)}
+.chef:not(.hi){image-rendering:pixelated}
+.chef.act{animation:act .3s ease-out}
+@keyframes breathe{50%{translate:0 -2px}}
+@keyframes act{40%{translate:6px -3px}}
+.mon{position:absolute;right:5%;bottom:12%;width:36%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 6px 6px rgba(0,0,0,.45));animation:bob 2.4s ease-in-out infinite}
+.mon.hit{animation:hit .3s}
+.mon.flee{animation:flee 1.4s ease-in forwards}
+@keyframes bob{50%{translate:0 -4px}}
+@keyframes hit{0%{filter:brightness(2.4) drop-shadow(0 6px 6px rgba(0,0,0,.45))}25%{translate:7px 0}50%{translate:-5px 0}75%{translate:3px 0}}
+@keyframes flee{to{translate:130% -10%;rotate:20deg;opacity:0}}
+.smoke{position:absolute;left:14%;top:18%;width:22%;aspect-ratio:1;border-radius:50%;opacity:0;pointer-events:none;background:radial-gradient(circle,rgba(160,150,170,.9),rgba(120,110,130,.4) 50%,transparent 70%)}
+.smoke.on{animation:smoke 1s ease-out}
+@keyframes smoke{0%{opacity:.95;scale:.6}100%{opacity:0;scale:1.6;translate:0 -30%}}
+.stage .float.big{left:72%;top:28%;font-size:26px;font-weight:700}
+
 /* 火力 */
 .heat-bar{flex:1;display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
 .heat-bar i{height:7px;background:rgba(18,14,34,.75);border-radius:1px}
@@ -80,18 +108,19 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .qbar i{display:block;height:100%;background:var(--gold);transition:width .25s}
 
 /* カード */
-.card{position:relative;min-width:0;width:100%;height:100%;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:4px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 2px;text-align:center;overflow:hidden}
-.card .band{position:absolute;inset:0 0 auto;height:4px}
+.card{position:relative;min-width:0;width:100%;height:100%;background:linear-gradient(#fffaf0,#f6e4c8);color:var(--ink);border:2px solid #5a3a24;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7);display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 2px;text-align:center;overflow:hidden}
+.card .band{position:absolute;inset:0 0 auto;height:5px}
 .card.k-m .band{background:var(--ember)}.card.k-f .band{background:var(--mint)}.card.k-t .band{background:var(--steel)}.card.k-o .band{background:var(--berry)}
 .card.k-s{background:#fff6cf;border-color:#8a5a10}.card.k-s .band{background:var(--gold)}
-.card img{width:28px;height:28px;image-rendering:pixelated;flex:none}
-.card .nm{font-size:10px;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
-.card .rk{position:absolute;top:4px;right:2px;font-size:9px;letter-spacing:-1px;color:var(--ember-dk)}
+.card img{width:30px;height:30px;image-rendering:pixelated;flex:none;object-fit:contain}
+.card img.hi{image-rendering:auto;width:38px;height:34px;filter:drop-shadow(0 1px 1px rgba(60,30,10,.35))}
+.card .nm{font-weight:700;font-size:10px;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.card .rk{position:absolute;top:4px;right:2px;font-size:10px;letter-spacing:-1px;color:#e8a21a;text-shadow:0 1px 0 #7a4a08}
 .card.fire{animation:fire .38s}
 .card.born{animation:born .5s ease-out}
 @keyframes fire{50%{transform:translateY(-5px) scale(1.07);box-shadow:0 0 0 3px var(--ember)}}
 @keyframes born{0%{transform:scale(.5);box-shadow:0 0 0 6px var(--gold)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
-.slot{position:relative;min-width:0;padding:0;background:transparent;border:2px dashed var(--line);border-radius:4px;box-shadow:none;color:var(--milk-soft)}
+.slot{position:relative;min-width:0;padding:0;background:rgba(255,255,255,.03);border:2px dashed var(--line);border-radius:7px;box-shadow:none;color:var(--milk-soft)}
 .slot:has(.card){border:none}
 .slot.sel .card,.shopcard.sel .card{outline:3px solid var(--gold);outline-offset:1px}
 .slot.can .card{box-shadow:0 0 0 3px var(--mint);animation:glow .9s ease-in-out infinite alternate}
@@ -111,16 +140,17 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .shopcard{min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:2px;padding:0;background:transparent;border:none;box-shadow:none;color:var(--milk)}
 .shopcard .card{height:58px}
 .shopcard .card .nm{-webkit-line-clamp:1;font-size:11px}
+.shopcard .card img.hi{width:44px;height:36px}
 .shopcard .cost{font-size:11px;color:var(--gold);text-align:center;line-height:1.2}
 .soldout{border:2px dashed var(--panel-2);border-radius:4px;min-height:58px}
 .reroll{flex:none;width:44px;padding:4px 2px;font-size:12px;line-height:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .reroll small{color:var(--gold);font-size:12px}
-.action{flex:none;display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:6px;height:92px}
-.action .info{min-width:0;background:var(--panel);border:2px solid var(--line);border-radius:4px;padding:5px 8px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.action{flex:none;display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:6px;height:104px}
+.action .info{min-width:0;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:5px 8px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
 .action .ttl{font-size:14px}
 .action p{font-size:12px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .action .btns{display:flex;gap:6px;align-items:center;margin-top:auto}
-.go{height:100%;padding:4px;font-size:18px;background:var(--ember);color:#2b120a;border-color:#2b120a;box-shadow:0 4px 0 #2b120a}
+.go{height:100%;padding:4px;font-size:19px;background:linear-gradient(#ffa25a,var(--ember) 55%,#e8692a);color:#2b120a;border-color:#2b120a;border-radius:10px;box-shadow:0 4px 0 #2b120a}
 
 /* フィールドをえらぶ */
 .fields{display:flex;flex-direction:column;gap:6px;min-height:0;overflow-y:auto;flex:none}
@@ -184,7 +214,7 @@ dd.gold{color:var(--gold);font-size:17px}
 .howto{list-style:none;margin:0;padding:10px 12px;background:var(--panel);border:2px solid var(--line);border-radius:4px;display:flex;flex-direction:column;gap:6px;text-align:left;font-size:13px;line-height:1.5}
 
 /* お知らせ（絵の上あたりに出す） */
-#toast{position:absolute;left:50%;top:calc(44px + env(safe-area-inset-top,0px));transform:translateX(-50%);max-width:calc(100% - 32px);background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:4px;padding:7px 14px;font-size:14px;box-shadow:0 3px 0 var(--ink);z-index:20;pointer-events:none;text-align:center}
+#toast{position:absolute;left:50%;top:calc(118px + env(safe-area-inset-top,0px));transform:translateX(-50%);max-width:calc(100% - 32px);background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:4px;padding:7px 14px;font-size:14px;box-shadow:0 3px 0 var(--ink);z-index:20;pointer-events:none;text-align:center}
 #toast.show{animation:pop .2s ease-out}
 @keyframes pop{from{transform:translate(-50%,-8px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 

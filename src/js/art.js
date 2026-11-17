@@ -51,9 +51,19 @@ function specialCanvas(id) {
   return o;
 }
 
+/* ---------- ハイグラの絵：ART はビルドが assets/art/*.webp から作る（名前→dataURL）。まだない絵はドット絵の仮の絵 ---------- */
+const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンディ': 'candy', 'カステラ': 'castella', 'ブラウニー': 'brownie', 'ゼリー': 'jelly', 'シュークリーム': 'puff' };
+function hiArt(cid) {
+  const k = cid[0], id = cid.slice(2);
+  if (k === 'm' || k === 't') return ART['card-' + id] || null;
+  if (k === 'o') return ART['candy-' + NOUN_ID[recipeOf(id).noun]] || null;
+  return null;
+}
+
 /* ---------- カードの絵（dataURL にして使いまわす） ---------- */
 const URLS = new Map();
 function cardIconURL(cid) {
+  const hi = hiArt(cid); if (hi) return hi;
   if (URLS.has(cid)) return URLS.get(cid);
   const k = cid[0], id = cid.slice(2);
   const src = k === 'o' ? candyCanvas(id) : k === 's' ? specialCanvas(id) : ICON[id];

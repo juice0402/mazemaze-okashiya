@@ -13,7 +13,9 @@
 | src/js/core.js | 小さな道具・ドット絵（fromMap・outline・big）・セーブ（KEY・VER=4・newState・sanitize）・toast | 88行 |
 | src/data/cards.js | 材料 MATS・道具 TOOLS・火力 ZONES・フィールド FIELDS・シェフ CHEFS・★の倍率 STAR_MUL・レシピ（recipeOf・mergeFx）・カード（cardDef・specialName・fxText） | 数字を変えるのはここ |
 | src/data/world.js | 食材モンスター MONSTERS・ノルマ quota/nightHP・お客さん CUSTOMERS | 数字を変えるのはここ |
-| src/js/art.js | アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
+| assets/art/ | ハイグラの絵（webp）。ビルドが名前→dataURL の表 ART にして埋めこむ。もとの PNG は assets/art/raw/（埋めこまない）。一覧は docs/ART.md | |
+| tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL） | |
+| src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
 | src/js/scene.js | 場面の絵（96×48）：夜 drawNight（火力でコンロの火・モンスターのゆれ）・昼 drawDay（棚・お客さん scn.cust） | |
 | src/js/night.js | 夜のバトル：仕入れ（rollShop・buy・sell・reroll）・まぜる（canMix・mixResult・startMix・doMix・tapCard）・焼く（resolveRound が計算、bake/showEvent が演出）・finishRound/nextRound/endNight・画面（actionHTML・renderNight） | resolveRound 150行目あたり |
 | src/js/morning.js | 朝の仕込み：bakeRecipe・toCard（S.pool へ）・toShelf（S.shelf へ）・renderMorning | |

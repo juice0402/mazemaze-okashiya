@@ -8,7 +8,7 @@ function renderTop() {
 }
 function renderTitle() {
   const saved = load();
-  const chef = big(CHEF_SPR[0], 5), mon = big(MON_SPR.slime, 3);
+  const chef = ART.honoka || big(CHEF_SPR[0], 5), mon = ART['mon-slime'] || big(MON_SPR.slime, 3);
   $('screen').innerHTML = `<section class="title">
     <h1>まぜまぜ<br>おかし屋</h1>
     <div class="hero"><img src="${chef}" alt="炎のシェフ ほのか"><img src="${mon}" alt="ぷるぷるスライム"></div>

@@ -199,6 +199,7 @@ function setHeat(h) {
   [...bar.children].forEach((c, i) => { c.className = i < Math.min(12, h) ? 'on z' + zoneOf(i + 1) : ''; });
   lab.textContent = `${ZONES[z]} ${Math.min(h, 99)}`;
   lab.className = 'heat-label z' + z;
+  const st = $('stage'); if (st) st.dataset.z = z;
 }
 function floatAt(el, text, cls = '') {
   if (!el) return;
@@ -206,13 +207,14 @@ function floatAt(el, text, cls = '') {
   f.className = 'float ' + cls; f.textContent = text;
   el.appendChild(f); setTimeout(() => f.remove(), 1000);
 }
+function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 function showEvent(e, run, q) {
   const slot = document.querySelector(`[data-act="card"][data-w="board"][data-i="${e.i}"]`);
   const card = slot && slot.querySelector('.card');
   if (card) { card.classList.remove('fire'); void card.offsetWidth; card.classList.add('fire'); }
   setHeat(e.heat);
-  if (e.burnt) { scn.smoke = 1; floatAt(slot, '焦げた', 'koge'); setTimeout(() => setHeat(e.after), STEP_MS / 2); }
-  if (e.dmg > 0) { floatAt(slot, (e.again ? 'もう1回 ' : '') + fmt(e.dmg)); scn.hit = 0.3; floatAt($('floats'), fmt(e.dmg), 'big'); }
+  if (e.burnt) { replay($('smoke'), 'on'); heroFor('oops', 1100); floatAt(slot, '焦げた', 'koge'); setTimeout(() => setHeat(e.after), STEP_MS / 2); }
+  if (e.dmg > 0) { floatAt(slot, (e.again ? 'もう1回 ' : '') + fmt(e.dmg)); replay($('mon'), 'hit'); replay($('hero'), 'act'); floatAt($('floats'), fmt(e.dmg), 'big'); }
   $('score').textContent = fmt(N.score + run);
   $('qfill').style.width = Math.min(100, run / q * 100) + '%';
   $('qtext').textContent = `${fmt(run)} / ノルマ ${fmt(q)}`;
@@ -239,14 +241,13 @@ function endNight() {
   S.stock[drop] = (S.stock[drop] || 0) + drops;
   Object.assign(S.today, { score: N.score, beaten, drop, drops, flashes: N.flashes.slice() });
   N.stage = 'end';
-  if (beaten) scn.flee = performance.now() / 1000;
   save(); renderNight();
 }
 
 /* ---------- 画面（スマホ1画面に収める） ---------- */
 function cardHTML(cid, extra = '') {
   const d = cardDef(cid);
-  return `<div class="card k-${d.kind}${extra}"><i class="band"></i><img src="${cardIconURL(cid)}" alt="">${d.star > 1 ? `<span class="rk">${'★'.repeat(d.star)}</span>` : ''}<span class="nm">${esc(d.name)}</span></div>`;
+  return `<div class="card k-${d.kind}${extra}"><i class="band"></i><img${hiArt(cid) ? ' class="hi"' : ''} src="${cardIconURL(cid)}" alt="">${d.star > 1 ? `<span class="rk">${'★'.repeat(d.star)}</span>` : ''}<span class="nm">${esc(d.short)}</span></div>`;
 }
 function cellHTML(w, i, c, mixable) {
   const s = N.sel, on = s && s.where === w && s.i === i;
@@ -255,7 +256,7 @@ function cellHTML(w, i, c, mixable) {
 }
 function actionHTML() {
   if (N.stage === 'roundEnd') {
-    const L = N.last, drop = MATS[MONSTERS[N.mon].drop].name, gain = [];
+    const L = N.last, drop = MATS[MONSTERS[N.mon].drop].short, gain = [];
     if (L.ok) gain.push(`コイン+${QUOTA_BONUS}`, `${drop}1つ`);
     if (L.coin) gain.push(`ちょきん箱+${L.coin}`);
     return `<div class="info"><b class="ttl">ラウンド${L.round}　${fmt(L.total)}</b><p>${L.ok ? 'ノルマたっせい！' : 'ノルマにとどかなかった'}${gain.length ? '　' + gain.join('・') : ''}</p></div>
@@ -278,6 +279,18 @@ function actionHTML() {
   const hint = N.round === 1 ? `5まいから<b>3まい</b>えらぼう（あと${N.picks}）。同じ★の食材どうしは、まぜると強くなるよ` : '調理台のカードが左からうごくよ。食材★1＋★1で★2、★2＋★2で★3';
   return `<div class="info"><p>${hint}</p></div>${bakeBtn}`;
 }
+/* ほのかの立ち絵：バトルは右向きのかまえ。表情の絵は左向きなので左右反転して右向きにする */
+const HERO = { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true] };
+function heroPick(k) { const [n, flip] = HERO[k]; return ART[n] ? { src: ART[n], flip } : { src: ART.honoka || big(CHEF_SPR[0], 8), flip: !!ART.honoka }; }
+function heroImg(k) { const h = heroPick(k); return `<img class="chef${ART.honoka ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="hero" src="${h.src}" alt="炎のシェフ ほのか">`; }
+let heroT = 0;
+function heroFor(k, ms) {
+  const el = $('hero'); if (!el) return;
+  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); };
+  set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
+}
+const MON_URL = {};
+const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || big(MON_SPR[id], 8));
 function heatCells() { return Array.from({ length: 12 }, () => '<i></i>').join(''); }
 function renderNight() {
   N = S.night;
@@ -307,11 +320,13 @@ function renderNight() {
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
   $('screen').innerHTML = `<section class="night fit">
-    <div class="scene-wrap"><canvas id="scene" width="${SW}" height="${SH}"></canvas><div id="floats"></div>
+    <div class="stage" id="stage" data-z="0"><i class="st-win"></i><i class="st-floor"></i><i class="glow"></i>
+      ${heroImg(N.stage === 'end' ? (S.today.beaten ? 'joy' : 'surprise') : 'battle')}
+      <img class="mon${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
+      <i class="smoke" id="smoke"></i><div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span><span class="score">スコア <b id="score">${fmt(N.score)}</b></span></div>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div></div>
     <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}ノルマ ${fmt(q)}</span></div>
     ${body}</section>`;
-  mountScene('night');
   setHeat(N.field ? (N.stage === 'shop' ? FIELDS[N.field].start : scn.heat) : 2);
 }

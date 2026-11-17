@@ -1,7 +1,7 @@
 // まぜまぜおかし屋のビルド（Node の標準だけ）。node tools/build.mjs
 // src/shell.html の <!--STYLE--> に src/style.css、<!--SCRIPT--> に JS を順に入れて index.html を作る
 // --artifact <ファイル> をつけると、アーティファクト用（doctype などなし）も書く
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -11,7 +11,14 @@ const ORDER = [
   'src/js/core.js', 'src/data/cards.js', 'src/data/world.js',
   'src/js/art.js', 'src/js/scene.js', 'src/js/night.js', 'src/js/morning.js', 'src/js/day.js', 'src/js/main.js',
 ];
-const js = "(() => {\n'use strict';\n" + ORDER.map(p => `/* ---- ${p} ---- */\n` + rd(p)).join('\n') + '\n})();';
+// 絵：assets/art/*.webp（と png）を名前→dataURL にして埋めこむ（ソースには base64 を書かない）
+const artDir = join(root, 'assets/art');
+const ART = {};
+for (const f of readdirSync(artDir).sort()) {
+  const m = f.match(/^(.+)\.(webp|png)$/); if (!m) continue;
+  ART[m[1]] = `data:image/${m[2]};base64,` + readFileSync(join(artDir, f)).toString('base64');
+}
+const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\n" + ORDER.map(p => `/* ---- ${p} ---- */\n` + rd(p)).join('\n') + '\n})();';
 const frag = rd('src/shell.html')
   .replace('<!--STYLE-->', () => '<style>\n' + rd('src/style.css') + '</style>')
   .replace('<!--SCRIPT-->', () => '<script>\n' + js + '\n</script>');
@@ -35,6 +42,6 @@ ${body}
 </html>
 `;
 writeFileSync(join(root, 'index.html'), page);
-console.log('index.html', page.length);
+console.log('index.html', page.length, 'art', Object.keys(ART).length);
 const ai = process.argv.indexOf('--artifact');
 if (ai > 0 && process.argv[ai + 1]) { writeFileSync(process.argv[ai + 1], frag); console.log('artifact', frag.length); }

@@ -5,27 +5,28 @@
    shop 仕入れが+shop枚／coin ラウンドのおわりにコイン+coin
    ★：食材と道具は★1。食材★1＋★1をまぜると★2のお菓子、★2＋★2で★3のスペシャル（STAR_MUL 倍） */
 
-/* 材料：夜は食材カード、朝はレシピの材料。taste は昼のお客さんの好み、adj・noun はお菓子の名前、nr は名前の主役になる強さ */
+/* 材料：ぜんぶモンスター食材（11/17 しょーくん。お金で食材は買わない）。夜は食材カード、朝はレシピの材料
+   name はくわしい所で出すフルの名前、short はカードに出す短い名前。taste は昼のお客さんの好み、adj・noun はお菓子の名前、nr は名前の主役になる強さ */
 const MATS = {
-  komugi: { name: '小麦粉', taste: 'さくさく', adj: 'さくさく', noun: 'クッキー', nr: 3, value: 20, col: '#e4c58a', fx: { dmg: 4 } },
-  bata:   { name: 'バター', taste: 'こくまろ', adj: 'バター', noun: 'サブレ', nr: 2, value: 20, col: '#f6d36b', fx: { dmg: 2, nb: 3 } },
-  sato:   { name: '砂糖', taste: 'あまい', adj: 'あまあま', noun: 'キャンディ', nr: 1, value: 15, col: '#f28cab', fx: { dmg: 2, heat: 2 } },
-  tamago: { name: 'たまご', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'カステラ', nr: 4, value: 20, col: '#ffd75e', fx: { dmg: 3, next: 2 } },
-  choco:  { name: 'チョコ', taste: 'とろーり', adj: 'チョコ', noun: 'ブラウニー', nr: 5, value: 25, col: '#7a4424', fx: { dmg: 1, hd: 1 } },
+  komugi: { name: 'リーフフェアリーの粉', short: 'フェアリー粉', taste: 'さくさく', adj: 'さくさく', noun: 'クッキー', nr: 3, value: 20, col: '#e4c58a', fx: { dmg: 4 } },
+  bata:   { name: 'ゴーゴーヤギのバター', short: 'ヤギバター', taste: 'こくまろ', adj: 'バター', noun: 'サブレ', nr: 2, value: 20, col: '#f6d36b', fx: { dmg: 2, nb: 3 } },
+  sato:   { name: 'こんぺいトカゲの砂糖', short: 'トカゲ砂糖', taste: 'あまい', adj: 'あまあま', noun: 'キャンディ', nr: 1, value: 15, col: '#f28cab', fx: { dmg: 2, heat: 2 } },
+  tamago: { name: 'ほのお鳥のたまご', short: 'ほのおたまご', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'カステラ', nr: 4, value: 20, col: '#ffd75e', fx: { dmg: 3, next: 2 } },
+  choco:  { name: 'カカオゴーレムのかけら', short: 'ゴーレムチョコ', taste: 'とろーり', adj: 'チョコ', noun: 'ブラウニー', nr: 5, value: 25, col: '#7a4424', fx: { dmg: 1, hd: 1 } },
   koge:   { name: '焦げクッキー', taste: 'こんがり', adj: 'こんがり', noun: 'クッキー', nr: 3, value: 10, col: '#4a2c1c', fx: { dmg: 3, proof: 1, kd: 3 } },
   /* ふしぎな材料（食材モンスターが落とす） */
-  zeri:   { name: 'ゼリー', fushigi: true, taste: 'ぷるぷる', adj: 'ぷるぷる', noun: 'ゼリー', nr: 6, value: 60, col: '#7fd6e0', fx: { dmg: 3, again: 1 } },
-  hoippu: { name: 'ホイップ', fushigi: true, taste: 'ふわふわ', adj: 'ふわっと', noun: 'シュークリーム', nr: 6, value: 60, col: '#fff4f8', fx: { dmg: 3, set: 5 } },
+  zeri:   { name: 'ぷるぷるスライムのゼリー', short: 'スライムゼリー', fushigi: true, taste: 'ぷるぷる', adj: 'ぷるぷる', noun: 'ゼリー', nr: 6, value: 60, col: '#7fd6e0', fx: { dmg: 3, again: 1 } },
+  hoippu: { name: 'くもひつじのホイップ', short: 'ひつじホイップ', fushigi: true, taste: 'ふわふわ', adj: 'ふわっと', noun: 'シュークリーム', nr: 6, value: 60, col: '#fff4f8', fx: { dmg: 3, set: 5 } },
 };
 
 /* 道具：火力や仕入れを動かすカード（まぜられない） */
 const TOOLS = {
-  maki:     { name: 'まき', fx: { heat: 3 } },
-  uchiwa:   { name: 'うちわ', fx: { heat: 1, again: 1 } },
-  mizu:     { name: '水さし', fx: { heat: -4 } },
-  hiokoshi: { name: '火おこし', fx: { heat: 1, first: 5 } },
-  kago:     { name: '買い物かご', fx: { shop: 1 } },
-  chokin:   { name: 'ちょきん箱', fx: { coin: 2 } },
+  maki:     { name: 'おばけ樹木のまき', short: 'おばけまき', fx: { heat: 3 } },
+  uchiwa:   { name: 'ハネコウモリのうちわ', short: 'コウモリうちわ', fx: { heat: 1, again: 1 } },
+  mizu:     { name: 'しずくクラゲの水', short: 'クラゲの水', fx: { heat: -4 } },
+  hiokoshi: { name: 'ひだねサラマンダーの火種', short: '火種', fx: { heat: 1, first: 5 } },
+  kago:     { name: 'つるオバケのかご', short: 'つるかご', fx: { shop: 1 } },
+  chokin:   { name: 'コインガエルのちょきん箱', short: 'カエルちょきん', fx: { coin: 2 } },
 };
 
 /* 火力：0〜3 弱火・4〜7 中火・8〜10 強火・11〜 焦げ（ダメージ0、火力は4にもどる） */
@@ -86,6 +87,7 @@ function cardDef(cid) {
   else if (k === 'o') { const r = recipeOf(id); d = { kind: 'o', star: 2, food: true, name: r.name, fx: pairFx(r), mats: r.mats, cost: 6 }; }
   else { const [r1, r2] = id.split('|').map(recipeOf); const fx = mergeFx(pairFx(r1), pairFx(r2)); fx.proof = 1; d = { kind: 's', star: 3, food: true, name: specialName(r1, r2), fx, mats: [...r1.mats, ...r2.mats], keys: [r1.key, r2.key], cost: 0 }; }
   d.cid = cid;
+  d.short = (k === 'm' ? MATS[id].short : k === 't' ? TOOLS[id].short : null) || d.name;
   DEFS.set(cid, d);
   return d;
 }
