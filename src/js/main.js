@@ -9,13 +9,12 @@ function renderTop() {
 function renderTitle() {
   const saved = load();
   const chef = ART.honoka || big(CHEF_SPR[0], 5), mon = ART['mon-slime'] || big(MON_SPR.slime, 3);
-  $('screen').innerHTML = `<section class="title">
-    <h1>まぜまぜ<br>おかし屋</h1>
+  const bg = ART['bg-night'];
+  $('screen').innerHTML = `<section class="title${bg ? ' hasbg' : ''}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
+    <div class="t-logo"><small>夜のおかし屋カードバトル</small><h1>まぜまぜ<br>おかし屋</h1></div>
     <div class="hero"><img src="${chef}" alt="炎のシェフ ほのか"><img src="${mon}" alt="ぷるぷるスライム"></div>
-    <p>炎のシェフ ほのか（仮）の小さなおかし屋さん。<br>夜になると、食材モンスターがお店をおそいにくる！</p>
-    <ul class="howto"><li><b>夜</b>　カードを調理台に並べて、9ラウンドで撃退。食材★1どうしをまぜると★2のお菓子になって、レシピがひらめく</li>
-      <li><b>朝</b>　ひらめいたレシピでお菓子づくり。カードにするか、売るか</li>
-      <li><b>昼</b>　棚に並べて販売。すきな味だとお客さんが常連さんに</li></ul>
+    <p class="t-lead">夜になると、食材モンスターがお店をおそいにくる！</p>
+    <ul class="t-steps"><li><b>夜</b>カードを並べて撃退。まぜて★2へ</li><li><b>朝</b>ひらめいたレシピでお菓子づくり</li><li><b>昼</b>棚に並べてお店で販売</li></ul>
     ${saved && saved.phase !== 'title' ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button>
       <button class="sub" data-act="reset">${resetArm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>` : '<button class="big" data-act="start">はじめる</button>'}
   </section>`;

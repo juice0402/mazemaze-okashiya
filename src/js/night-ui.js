@@ -299,7 +299,7 @@ function renderNight() {
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}">
-    <div class="stage" id="stage" data-z="0"><i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i><i class="glow"></i>
+    <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0"${ART['bg-night'] ? ` style="--bgimg:url('${ART['bg-night']}')"` : ''}>${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
       ${heroImg(N.stage === 'end' ? (S.today.beaten ? 'joy' : 'surprise') : 'battle')}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
       <i class="smoke" id="smoke"></i><div id="floats"></div>
