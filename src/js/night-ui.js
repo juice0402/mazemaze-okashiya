@@ -97,23 +97,28 @@ function cutIn(cid, sub) {
   return ms;
 }
 
-/* まぜる演出：2枚がシュッと飛び出して、まんなかでガキーン → できたカードがあらわれて、調理台のマスへ飛んでいく。終わったら done */
+/* まぜる演出（約1.5秒）：まわりが暗く → 2枚がシュッと飛び出して、まんなかで止まって（ヒットストップ）ガキーン → 火花・光 → できたカードがくるっと出て名前の札 → マスへ。終わったら done */
 function cardSpot(p) {
   const el = document.querySelector(p.where === 'board' ? `.tslot[data-w="board"][data-i="${p.i}"] .pc` : `.handcard[data-w="${p.where}"][data-i="${p.i}"] .pc`);
   if (!el) return null;
   const r = el.getBoundingClientRect();
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: el.offsetWidth };
 }
-function mixFx(from, ca, cb, cr, to, done) {
+const SPARK = ['#fff6d8', '#ffd45a', '#ff9a3c', '#ffe9a8', '#8fe0c0', '#ff8f6a'];
+function mixFx(from, ca, cb, cr, to, done, isNew) {
   const tile = document.querySelector(to.where === 'board' ? `.tslot[data-w="board"][data-i="${to.i}"]` : `.handcard[data-w="held"][data-i="${to.i}"]`), tc = tile && tile.querySelector('.pc');
-  const end = () => { if (tc) { tc.style.visibility = ''; replay(tc, 'born'); } done(); };
-  if (REDUCED || !from[0] || !from[1] || !tc || !tc.animate) return end();
+  const end = skip => { if (tc) { tc.style.visibility = ''; replay(tc, 'born'); } done(skip); };   // skip＝演出なしで終わった
+  if (REDUCED || !from[0] || !from[1] || !tc || !tc.animate) return end(true);
   tc.style.visibility = 'hidden';
-  const W = innerWidth, H = innerHeight, cx = W / 2, cy = H * 0.44, S = Math.min(W * 0.26, 112);
-  const FLY = 460, HOLD = 560, LAND = 260;
+  const d = cardDef(cr), star = d.star || 2;
+  const W = innerWidth, H = innerHeight, cx = W / 2, cy = H * 0.42, S = Math.min(W * 0.3, 128), RW = S * 1.4;
+  const FLY = 440, STOP = 90, HOLD = 720, LAND = 280, HIT = FLY + STOP;
   const ov = document.createElement('div');
-  ov.className = 'mixfx'; ov.style.setProperty('--cy', cy + 'px');
-  ov.innerHTML = '<i class="mf-flash"></i><i class="mf-burst"></i><i class="mf-ring"></i><b class="mf-sfx">ガキーン！</b>';
+  ov.className = 'mixfx r' + star; ov.style.setProperty('--cy', cy + 'px'); ov.style.setProperty('--rh', RW * 1.4 + 'px');
+  const tw = [[-.62, -.5], [.6, -.36], [-.58, .42], [.64, .5]].map(([a, b], i) =>
+    `<i class="mf-tw" style="left:${cx + a * RW}px;top:${cy + b * RW * 1.4}px;animation-delay:${.25 + i * .12}s"></i>`).join('');
+  ov.innerHTML = `<i class="mf-dim"></i><i class="mf-lines"></i><i class="mf-burst"></i><i class="mf-flash"></i><i class="mf-ring"></i><i class="mf-ring b"></i>${tw}
+    <b class="mf-sfx">ガキーン！</b><p class="mf-name">${isNew ? '<b>レシピ ひらめき！</b>' : ''}<small>${'★'.repeat(star)}</small><span>${esc(d.name)}</span></p>`;
   document.body.appendChild(ov);
   const card = (cid, f, w, cls = '') => {
     const c = document.createElement('div');
@@ -121,15 +126,27 @@ function mixFx(from, ca, cb, cr, to, done) {
     Object.assign(c.style, { width: w + 'px', left: f.x - w / 2 + 'px', top: f.y - w * 0.7 + 'px' });
     ov.appendChild(c); return c;
   };
-  /* 1. シュッと飛び出す → 2. 加速してまんなかへ → 3. ぶつかる（残像が2枚ついてくる） */
+  /* 火花：x,y から n こ、まわりに飛びちる（少し下に落ちる） */
+  const sparks = (x, y, n, far) => {
+    for (let i = 0; i < n; i++) {
+      const e = document.createElement('i'), a = Math.PI * 2 * i / n + Math.random() * .6, r = far * (.5 + Math.random() * .7), z = 5 + Math.random() * 10;
+      e.className = 'mf-spark' + (i % 3 ? '' : ' st');
+      Object.assign(e.style, { left: x + 'px', top: y + 'px', width: z + 'px', height: z + 'px', background: SPARK[i % SPARK.length] });
+      ov.appendChild(e);
+      e.animate([{ transform: 'translate(-50%,-50%) scale(1.2) rotate(45deg)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${Math.cos(a) * r}px),calc(-50% + ${Math.sin(a) * r + far * .3}px)) scale(.2) rotate(${200 + Math.random() * 400}deg)`, opacity: 0 }],
+        { duration: 550 + Math.random() * 400, easing: 'cubic-bezier(.12,.8,.3,1)', fill: 'forwards' });
+    }
+  };
+  /* 1. うしろに引いて → 2. 加速してまんなかへ → 3. ぶつかって止まる（残像が2枚ついてくる） */
   const left = from[0].x <= from[1].x ? -1 : 1, moving = [];
   [[ca, from[0], left], [cb, from[1], -left]].forEach(([cid, f, side]) => {
     const k = S / f.w, ty = cy - f.y;
     const keys = [
       { transform: 'translate(0,0) scale(1) rotate(0deg)', easing: 'cubic-bezier(.2,1.6,.4,1)' },
-      { transform: `translate(0,-28px) scale(1.15) rotate(${side * 8}deg)`, offset: .32, easing: 'cubic-bezier(.6,0,1,.6)' },
-      { transform: `translate(${cx + side * S * 0.8 - f.x}px,${ty}px) scale(${k}) rotate(${side * 14}deg)`, offset: .82 },
-      { transform: `translate(${cx + side * S * 0.18 - f.x}px,${ty}px) scale(${k * 1.06}) rotate(${side * 4}deg)` },
+      { transform: `translate(${side * 12}px,-34px) scale(1.18) rotate(${side * 10}deg)`, offset: .3, easing: 'cubic-bezier(.7,0,1,.5)' },
+      { transform: `translate(${cx + side * S * 0.95 - f.x}px,${ty}px) scale(${k}) rotate(${side * 16}deg)`, offset: .84 },
+      { transform: `translate(${cx + side * S * 0.2 - f.x}px,${ty}px) scale(${k * 1.08},${k * .94}) rotate(${side * 3}deg)` },
     ];
     [2, 1, 0].forEach(g => {
       const el = card(cid, f, f.w, g ? 'ghost g' + g : '');
@@ -137,23 +154,33 @@ function mixFx(from, ca, cb, cr, to, done) {
       moving.push(el);
     });
   });
-  /* ガキーン：白く光って、ゆれて、光の線。できたカードがまんなかに出る */
+  setTimeout(() => ov.classList.add('touch'), FLY);   // ぶつかった所で光って止まる（ヒットストップ）
+  /* ガキーン：白く光って、大きくゆれて、光の輪と線と火花。できたカードがくるっと出て、名前の札 */
   let R;
   setTimeout(() => {
     ov.classList.add('hit');
-    replay(document.querySelector('.night'), 'quake');
-    moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }));
-    R = card(cr, { x: cx, y: cy }, S * 1.2, 'mf-res');
-    R.animate([{ transform: 'scale(.2) rotate(-12deg)', opacity: 0 }, { transform: 'scale(1.22) rotate(3deg)', opacity: 1, offset: .55 }, { transform: 'scale(1) rotate(0deg)', opacity: 1 }],
-      { duration: 380, easing: 'ease-out', fill: 'forwards' });
-  }, FLY + 50);
-  /* できたカードが、調理台のマスへ飛んでいく */
+    replay(document.querySelector('.night'), 'quake2');
+    heroFor('joy', HOLD + LAND + 300);
+    moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }));
+    sparks(cx, cy, star === 3 ? 28 : 20, S * 1.7);
+    R = card(cr, { x: cx, y: cy }, RW, 'mf-res');
+    R.insertAdjacentHTML('beforeend', '<i class="mf-shine"></i>');
+    R.animate([{ transform: 'perspective(700px) rotateY(-110deg) scale(.4)', opacity: 0 },
+      { transform: 'perspective(700px) rotateY(14deg) scale(1.2)', opacity: 1, offset: .6 },
+      { transform: 'perspective(700px) rotateY(0deg) scale(1)', opacity: 1 }], { duration: 460, easing: 'ease-out', fill: 'forwards' });
+  }, HIT);
+  /* できたカードが、調理台のマスへ飛んでいく → ついたら小さい火花 */
   setTimeout(() => {
-    const t = tc.getBoundingClientRect(), k = tc.offsetWidth / (S * 1.2);
-    R.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${t.left + t.width / 2 - cx}px,${t.top + t.height / 2 - cy}px) scale(${k})`, opacity: .85 }],
+    ov.classList.add('land');
+    const t = tc.getBoundingClientRect(), k = tc.offsetWidth / RW;
+    R.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${t.left + t.width / 2 - cx}px,${t.top + t.height / 2 - cy}px) scale(${k}) rotate(-6deg)`, opacity: .9 }],
       { duration: LAND, easing: 'cubic-bezier(.5,0,.9,.5)', fill: 'forwards' });
-  }, FLY + 50 + HOLD);
-  setTimeout(() => { ov.remove(); end(); }, FLY + 50 + HOLD + LAND);
+  }, HIT + HOLD);
+  setTimeout(() => {
+    const t = tc.getBoundingClientRect();
+    R.remove(); end(); sparks(t.left + t.width / 2, t.top + t.height / 2, 10, 46);
+    setTimeout(() => ov.remove(), 950);
+  }, HIT + HOLD + LAND);
 }
 
 /* ほのかの立ち絵：バトルは右向きのかまえ。表情の絵は左向きなので左右反転して右向きにする */
@@ -207,9 +234,12 @@ function handHTML() {
   return `<div class="hand" style="--n:${list.length};--ov:${list.length >= 4 ? .22 : .1}">${list.map(([w, i, cid], k) => `<button class="handcard${w === 'held' ? ' own' : ''}" style="--k:${k}" data-act="card" data-drag data-drop data-w="${w}" data-i="${i}">${cardMini(cid, { cost: w === 'held' ? null : N.round === 1 ? '無料' : cardDef(cid).cost })}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')}</div>`;
 }
 function barHTML() {
-  const orb = `<span class="orb" title="${N.round === 1 ? '無料でえらべる数' : 'コイン'}"><i>${N.round === 1 ? '無料' : 'コイン'}</i><b>${N.round === 1 ? N.picks : N.coins}</b></span>`;
-  return `${orb}
-    ${N.round === 1 ? '<span class="bar-hint">3まい えらんで 調理台へ</span>' : `<button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`}
+  /* 1ラウンド目は「むりょうで あと○まい」を文字で（コインの丸は2ラウンド目から） */
+  const left = N.round === 1
+    ? `<span class="bar-hint free">${N.picks ? `むりょうで あと<b>${N.picks}</b>まい<br>ドラッグで 調理台へ` : 'えらびおわり！<br>バトルを おしてね'}</span>`
+    : `<span class="orb" title="コイン"><i>コイン</i><b>${N.coins}</b></span>
+    <button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`;
+  return `${left}
     <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>バトル！</button>
     <div class="sellzone" data-drop data-w="sell" data-i="0"><b>ここで うる</b><span id="sellv"></span></div>`;
 }

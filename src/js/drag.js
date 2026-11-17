@@ -61,7 +61,8 @@ function dragBegin(D) {
 
 function dragMove(D, x, y) {
   D.x = x; D.y = y;
-  D.g.style.transform = `translate(${x - D.w / 2}px,${y - D.h * 0.8}px) rotate(-4deg)`;
+  /* 位置は translate・大きさは scale（指の所を中心に小さくなるだけ。transform に translate を書くと scale で位置までずれる） */
+  D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`; D.g.style.rotate = '-4deg';
   const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
   if (k !== D.k) { D.k = k; D.g.style.scale = k; }
   const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');
@@ -97,7 +98,7 @@ function dragFinish(D) {
   if (!Z || !Z.P) {   // 行き先がなければ、もとの場所へもどる
     const g = D.g; D.g = null; dragClean(D);
     if (g && D.x != null && g.animate) {
-      g.animate([{ transform: g.style.transform }, { transform: `translate(${D.home.x - D.w / 2}px,${D.home.y - D.h * 0.8}px)`, opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
+      g.animate([{ translate: g.style.translate, scale: String(D.k) }, { translate: `${D.home.x - D.w / 2}px ${D.home.y - D.h * 0.8}px`, scale: '1', opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
       setTimeout(() => g.remove(), 170);
     } else if (g) g.remove();
     return;

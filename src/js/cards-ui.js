@@ -42,5 +42,6 @@ function cardInfo(cid, cook) {
   const d = cardDef(cid);
   const recipe = d.kind === 'o' || d.kind === 's' ? `・${d.mats.map(m => MATS[m].short).join('＋')}` : '';
   const ck = d.dough ? `<p class="ci-cook">焼き加減 <b>${cook || 0}</b>/${COOK_MAX}　${cookName(cook || 0)}・×${fmtMul(cookMul(cook || 0))}</p>` : '';
-  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.name)}</p><p class="ci-type">${attrsOf(d).join('・')}${recipe}</p>${ck}</div>`;
+  const dm = Math.floor(cardDmg(d, cook)), dl = dm ? `<p class="ci-dmg"><i></i>ダメージ <b>${fmt(dm)}</b></p>` : '';   // 炎の紋章の数字＝ダメージ
+  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.name)}</p><p class="ci-type">${attrsOf(d).join('・')}${recipe}</p>${dl}${ck}</div>`;
 }

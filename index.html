@@ -177,9 +177,11 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 /* ★（右上） */
 .pc-star{position:absolute;left:0;right:0;top:1.5cqw;z-index:5;text-align:center;font-size:12cqw;line-height:1;letter-spacing:-1.5cqw;color:#ffe066;-webkit-text-stroke:.9cqw #7a4204;paint-order:stroke fill;text-shadow:0 0 2.5cqw rgba(255,220,90,.95)}
 /* ダメージの紋章（炎の丸・ふちはレア度の色） */
-.pc-pow{position:absolute;left:2.5cqw;top:43%;z-index:5;width:28cqw;height:28cqw;display:grid;place-items:center;border-radius:50%;
-  background:radial-gradient(circle at 40% 30%,#ffeaa8,#ff9c3c 38%,#c9381a 76%,#7a1a08);box-shadow:0 0 0 1.2cqw #3a1408,0 0 0 2.4cqw var(--rim),0 1.5cqw 2.5cqw rgba(0,0,0,.5);
+/* ダメージの紋章：炎の形（しずくを上向きに）。数字は炎のふくらみのまんなか */
+.pc-pow{position:absolute;left:2.5cqw;top:43%;z-index:5;width:28cqw;height:28cqw;display:grid;place-items:center;padding-top:14%;isolation:isolate;
   font-size:13cqw;line-height:1;font-weight:900;color:#fff;-webkit-text-stroke:1.1cqw #4a1404;paint-order:stroke fill}
+.pc-pow::before{content:"";position:absolute;left:15%;top:24%;z-index:-1;width:70%;height:70%;border-radius:50% 0 50% 50%;transform:rotate(-45deg);
+  background:radial-gradient(circle at 62% 38%,#fff2b8 0,#ffc04a 26%,#ff7a24 52%,#c9301a 80%,#7a1a08);box-shadow:0 0 0 1.1cqw #3a1408,0 0 0 2.2cqw var(--rim),.8cqw 1.4cqw 2.4cqw rgba(0,0,0,.5)}
 .pc-pow.l4{font-size:10cqw}.pc-pow.l5{font-size:8.5cqw}
 .pc.fire{animation:fire .38s}
 .pc.born{animation:born .6s ease-out}
@@ -320,6 +322,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .orb b{font-size:20px;font-weight:900;color:#3a1c08}
 .bar .bar-hint{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--milk)}
 .bar .bar-hint{font-size:11.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bar .bar-hint.free{font-size:12.5px;line-height:1.4}.bar .bar-hint.free b{margin:0 2px;font-size:20px;line-height:1;color:var(--gold)}
 .bar .sq{flex:none;width:44px;padding-inline:0}
 .bar .pill{flex:none;white-space:nowrap}
 .pill{border-radius:999px;padding:9px 16px}
@@ -336,6 +339,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .ci-chips{display:flex;flex-wrap:wrap;gap:4px}
 .ci-chips span{font-size:11px;font-weight:700;padding:3px 8px;border-radius:9px;background:var(--cream-2);color:#8a3a10}
 .ci-fx{font-size:14px;font-weight:700;line-height:1.45}
+.ci-dmg{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:700;color:#8a3a10}.ci-dmg b{color:#c4501a;font-size:17px}
+.ci-dmg i{width:11px;height:11px;margin:3px 2px 0;border-radius:50% 0 50% 50%;transform:rotate(-45deg);background:radial-gradient(circle at 62% 38%,#ffd36a,#ff7a24 55%,#c9301a)}
 .ci-cook{font-size:12px;font-weight:700;color:#8a3a10;text-align:center}.ci-cook b{color:#c4501a;font-size:15px}
 .ci-recipe{font-size:12px;color:var(--ink-soft)}
 .ci-flavor{font-size:11.5px;font-style:italic;color:var(--ink-soft);line-height:1.45}
@@ -432,28 +437,57 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .mx-fx{margin:0;font-size:12px;line-height:1.45;color:var(--milk-soft);text-align:center}
 .mx-flash{margin:0;font-size:12px;font-weight:900;color:#3a1c08;background:var(--gold);padding:3px 10px;border-radius:9px}
 
-/* まぜる演出：2枚がシュッと飛び出して、まんなか（--cy）でガキーン */
-.mixfx{position:fixed;inset:0;z-index:38;pointer-events:none;overflow:hidden}
-.mf-card{position:fixed;aspect-ratio:5/7;border-radius:12px;will-change:transform;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+/* まぜる演出：まわりが暗くなる → 2枚がシュッと飛び出して、まんなか（--cy）で止まって（ヒットストップ）ガキーン → 火花・光の輪・光の線 → できたカードがくるっと出て、名前の札 → マスへ。.r2/.r3 で★の色 */
+.mixfx{position:fixed;inset:0;z-index:38;pointer-events:none;overflow:hidden;--glow:255,236,190;--ray:255,240,205}
+.mixfx.r3{--glow:255,200,80;--ray:255,214,110}
+.mf-dim{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% var(--cy),rgba(60,24,6,.3) 0,rgba(22,9,3,.78) 72%);animation:mfin .22s ease-out forwards}
+.mixfx.land .mf-dim,.mixfx.hit.land .mf-burst,.mixfx.hit.land .mf-name,.mixfx.hit.land .mf-tw{animation:mfout .26s ease-in forwards}
+@keyframes mfin{from{opacity:0}to{opacity:1}}
+@keyframes mfout{from{opacity:1}to{opacity:0}}
+.mf-lines{position:absolute;left:50%;top:var(--cy);width:200vmax;height:200vmax;margin:-100vmax 0 0 -100vmax;opacity:0;
+  background:repeating-conic-gradient(rgba(255,240,210,0) 0 4.5deg,rgba(255,240,210,.32) 4.5deg 5.5deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 9%,#000 26%);mask:radial-gradient(circle,transparent 0 9%,#000 26%);animation:mflines .45s ease-in forwards}
+@keyframes mflines{from{opacity:0;transform:scale(1.5) rotate(-6deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+.mixfx.hit .mf-lines{animation:mfout .18s ease-out forwards}
+.mf-card{position:fixed;aspect-ratio:5/7;border-radius:12px;will-change:transform;filter:drop-shadow(0 8px 12px rgba(0,0,0,.55))}
 .mf-card .pc{width:100%;height:100%}
-.mf-card.ghost{filter:blur(1px) brightness(1.4)}
+.mf-card.ghost{filter:blur(1.5px) brightness(1.6)}
 .mf-card.g1{opacity:.45}
 .mf-card.g2{opacity:.22}
-.mf-res{border-radius:12px;box-shadow:0 0 0 3px #ffe08a,0 0 34px 12px rgba(255,200,90,.75)}
-.mf-flash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% var(--cy),#fff 0,rgba(255,244,210,.95) 16%,rgba(255,200,120,.35) 38%,rgba(255,200,120,0) 60%)}
-.mixfx.hit .mf-flash{animation:mfflash .5s ease-out}
-@keyframes mfflash{0%{opacity:1}100%{opacity:0}}
-.mf-ring{position:absolute;left:50%;top:var(--cy);width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:5px solid #fff3c0;opacity:0}
-.mixfx.hit .mf-ring{animation:mfring .5s ease-out forwards}
-@keyframes mfring{from{transform:scale(.3);opacity:1}to{transform:scale(7);opacity:0;border-width:1px}}
-.mf-burst{position:absolute;left:50%;top:var(--cy);width:360px;height:360px;margin:-180px 0 0 -180px;border-radius:50%;opacity:0;
-  background:repeating-conic-gradient(rgba(255,226,140,.9) 0 4deg,rgba(255,226,140,0) 4deg 18deg);
-  -webkit-mask:radial-gradient(circle,transparent 0 16%,#000 28%,transparent 70%);mask:radial-gradient(circle,transparent 0 16%,#000 28%,transparent 70%)}
-.mixfx.hit .mf-burst{animation:mfburst 1s ease-out forwards}
-@keyframes mfburst{0%{opacity:0;transform:scale(.4) rotate(0)}15%{opacity:1}100%{opacity:0;transform:scale(1.35) rotate(25deg)}}
-.mf-sfx{position:absolute;left:50%;top:calc(var(--cy) - 120px);z-index:2;font-size:36px;font-weight:900;font-style:italic;letter-spacing:1px;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:6px #5a2a04;paint-order:stroke fill;opacity:0}
-.mixfx.hit .mf-sfx{animation:mfsfx .9s cubic-bezier(.2,1.6,.4,1) forwards}
-@keyframes mfsfx{0%{opacity:0;transform:translateX(-50%) scale(2.4) rotate(-8deg)}22%{opacity:1;transform:translateX(-50%) scale(1) rotate(-8deg)}80%{opacity:1;transform:translateX(-50%) scale(1.04) rotate(-8deg)}100%{opacity:0;transform:translateX(-50%) translateY(-12px) scale(1.04) rotate(-8deg)}}
+.mixfx.touch .mf-card:not(.ghost):not(.mf-res){filter:brightness(1.7) drop-shadow(0 0 14px rgba(255,244,200,.95))}
+.mf-res{z-index:1;overflow:hidden;box-shadow:0 0 0 3px rgb(var(--glow)),0 0 44px 16px rgba(var(--glow),.8)}
+.mixfx.r3 .mf-res{box-shadow:0 0 0 3px #ffe08a,0 0 0 6px rgba(255,160,60,.7),0 0 60px 22px rgba(255,190,70,.85)}
+.mf-shine{position:absolute;inset:-20%;z-index:3;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.85) 48%,rgba(255,250,225,.4) 54%,transparent 62%);transform:translateX(-120%);animation:mfshine .7s .32s ease-in-out forwards}
+@keyframes mfshine{to{transform:translateX(120%)}}
+.mf-flash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% var(--cy),#fff 0,#fff 14%,rgba(255,244,210,.9) 30%,rgba(255,200,120,.35) 55%,rgba(255,200,120,0) 85%)}
+.mixfx.hit .mf-flash{animation:mfflash .55s ease-out}
+@keyframes mfflash{0%,12%{opacity:1}100%{opacity:0}}
+.mf-ring{position:absolute;left:50%;top:var(--cy);width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:7px solid #fff6d0;opacity:0}
+.mf-ring.b{border-color:rgb(var(--ray));animation-delay:.1s!important}
+.mixfx.hit .mf-ring{animation:mfring .55s ease-out forwards}
+@keyframes mfring{from{transform:scale(.3);opacity:1}to{transform:scale(9);opacity:0;border-width:1px}}
+.mf-burst{position:absolute;left:50%;top:var(--cy);width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;opacity:0;
+  background:repeating-conic-gradient(rgba(var(--ray),.95) 0 5deg,rgba(var(--ray),0) 5deg 15deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 12%,#000 24%,transparent 70%);mask:radial-gradient(circle,transparent 0 12%,#000 24%,transparent 70%)}
+.mixfx.hit .mf-burst{animation:mfburst 1.3s ease-out forwards}
+@keyframes mfburst{0%{opacity:0;transform:scale(.3) rotate(0)}12%{opacity:1;transform:scale(1) rotate(6deg)}100%{opacity:.75;transform:scale(1.15) rotate(40deg)}}
+.mf-spark{position:absolute;border-radius:2px;transform:translate(-50%,-50%) rotate(45deg);box-shadow:0 0 8px 2px rgba(255,236,180,.8)}
+.mf-spark.st{border-radius:0;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.mf-tw{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;opacity:0;background:#fffbe8;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);filter:drop-shadow(0 0 6px #ffe7a0)}
+.mixfx.hit .mf-tw{animation:mftw .6s ease-in-out infinite alternate}
+@keyframes mftw{from{opacity:.15;transform:scale(.4) rotate(0)}to{opacity:1;transform:scale(1.15) rotate(45deg)}}
+.mf-sfx{position:absolute;left:50%;top:calc(var(--cy) - var(--rh) / 2 - 62px);z-index:2;font-size:46px;font-weight:900;font-style:italic;letter-spacing:1px;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:7px #5a2a04;paint-order:stroke fill;text-shadow:0 4px 0 #5a2a04,0 0 18px rgba(255,200,90,.9);opacity:0}
+.mixfx.r3 .mf-sfx{color:#ffe08a}
+.mixfx.hit .mf-sfx{animation:mfsfx 1s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes mfsfx{0%{opacity:0;transform:translateX(-50%) scale(3) rotate(-8deg)}18%{opacity:1;transform:translateX(-50%) scale(1) rotate(-8deg)}24%{transform:translateX(calc(-50% - 5px)) scale(1.06) rotate(-6deg)}30%{transform:translateX(calc(-50% + 4px)) scale(1) rotate(-9deg)}36%,82%{opacity:1;transform:translateX(-50%) scale(1.04) rotate(-8deg)}100%{opacity:0;transform:translateX(-50%) translateY(-14px) scale(1.04) rotate(-8deg)}}
+.mf-name{position:absolute;left:50%;top:calc(var(--cy) + var(--rh) / 2 + 16px);z-index:2;margin:0;display:flex;flex-direction:column;align-items:center;gap:2px;white-space:nowrap;transform:translateX(-50%);opacity:0}
+.mixfx.hit .mf-name{animation:mfname .4s .28s cubic-bezier(.2,1.5,.4,1) forwards}
+.mf-name small{font-size:15px;line-height:1;letter-spacing:2px;color:var(--gold);-webkit-text-stroke:3px #4a2206;paint-order:stroke fill}
+.mf-name span{font-size:22px;font-weight:900;color:#fff8e8;-webkit-text-stroke:5px #4a2206;paint-order:stroke fill}
+.mf-name b{order:-1;margin-bottom:3px;padding:2px 10px;border-radius:999px;font-size:13px;color:#103a2c;background:#8fe0c0;box-shadow:0 0 12px 3px rgba(143,224,192,.7)}
+@keyframes mfname{from{opacity:0;transform:translateX(-50%) translateY(10px) scale(.7)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.night.quake2{animation:quake2 .42s linear}
+@keyframes quake2{0%,100%{transform:translate(0)}12%{transform:translate(-10px,5px)}26%{transform:translate(9px,-6px)}40%{transform:translate(-7px,4px)}55%{transform:translate(5px,-3px)}70%{transform:translate(-3px,2px)}85%{transform:translate(2px,-1px)}}
 .night.quake{animation:quake .32s linear}
 @keyframes quake{0%,100%{transform:translate(0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
 
@@ -1020,7 +1054,8 @@ function cardInfo(cid, cook) {
   const d = cardDef(cid);
   const recipe = d.kind === 'o' || d.kind === 's' ? `・${d.mats.map(m => MATS[m].short).join('＋')}` : '';
   const ck = d.dough ? `<p class="ci-cook">焼き加減 <b>${cook || 0}</b>/${COOK_MAX}　${cookName(cook || 0)}・×${fmtMul(cookMul(cook || 0))}</p>` : '';
-  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.name)}</p><p class="ci-type">${attrsOf(d).join('・')}${recipe}</p>${ck}</div>`;
+  const dm = Math.floor(cardDmg(d, cook)), dl = dm ? `<p class="ci-dmg"><i></i>ダメージ <b>${fmt(dm)}</b></p>` : '';   // 炎の紋章の数字＝ダメージ
+  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.name)}</p><p class="ci-type">${attrsOf(d).join('・')}${recipe}</p>${dl}${ck}</div>`;
 }
 
 /* ---- src/js/scene.js ---- */
@@ -1324,19 +1359,19 @@ function doMix(p, q, from) {
     N.held[P.to.i] = r;
   }
   unsel();
-  let msg = '';
+  let msg = '', isNew = false;   // できたカードの名前とひらめきは演出の札で見せる（演出なしのときだけ toast）
   if (d.star === 2 && d.food) {
     const key = r.cid.slice(2);
-    if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); msg = 'ひらめき！ ' + d.name; }
+    if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); isNew = true; msg = 'ひらめき！ ' + d.name; }
     else msg = d.name + 'ができた';
   } else if (d.star === 2) msg = d.name + 'ができた';
   save(); renderNight();
   busy = true;
-  mixFx(from, a.cid, b.cid, r.cid, P.to, () => {
+  mixFx(from, a.cid, b.cid, r.cid, P.to, skip => {
     busy = false;
-    if (msg) toast(msg);
+    if (msg && skip) toast(msg);
     if (d.star === 3) cutIn(r.cid, 'スペシャルができた！');
-  });
+  }, isNew);
 }
 /* 調理台のカードを、べつのマスへうごかす（カードがあれば入れかえ）。バトルを押すまで、いつでも */
 function moveTo(i, j) {
@@ -1561,23 +1596,28 @@ function cutIn(cid, sub) {
   return ms;
 }
 
-/* まぜる演出：2枚がシュッと飛び出して、まんなかでガキーン → できたカードがあらわれて、調理台のマスへ飛んでいく。終わったら done */
+/* まぜる演出（約1.5秒）：まわりが暗く → 2枚がシュッと飛び出して、まんなかで止まって（ヒットストップ）ガキーン → 火花・光 → できたカードがくるっと出て名前の札 → マスへ。終わったら done */
 function cardSpot(p) {
   const el = document.querySelector(p.where === 'board' ? `.tslot[data-w="board"][data-i="${p.i}"] .pc` : `.handcard[data-w="${p.where}"][data-i="${p.i}"] .pc`);
   if (!el) return null;
   const r = el.getBoundingClientRect();
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: el.offsetWidth };
 }
-function mixFx(from, ca, cb, cr, to, done) {
+const SPARK = ['#fff6d8', '#ffd45a', '#ff9a3c', '#ffe9a8', '#8fe0c0', '#ff8f6a'];
+function mixFx(from, ca, cb, cr, to, done, isNew) {
   const tile = document.querySelector(to.where === 'board' ? `.tslot[data-w="board"][data-i="${to.i}"]` : `.handcard[data-w="held"][data-i="${to.i}"]`), tc = tile && tile.querySelector('.pc');
-  const end = () => { if (tc) { tc.style.visibility = ''; replay(tc, 'born'); } done(); };
-  if (REDUCED || !from[0] || !from[1] || !tc || !tc.animate) return end();
+  const end = skip => { if (tc) { tc.style.visibility = ''; replay(tc, 'born'); } done(skip); };   // skip＝演出なしで終わった
+  if (REDUCED || !from[0] || !from[1] || !tc || !tc.animate) return end(true);
   tc.style.visibility = 'hidden';
-  const W = innerWidth, H = innerHeight, cx = W / 2, cy = H * 0.44, S = Math.min(W * 0.26, 112);
-  const FLY = 460, HOLD = 560, LAND = 260;
+  const d = cardDef(cr), star = d.star || 2;
+  const W = innerWidth, H = innerHeight, cx = W / 2, cy = H * 0.42, S = Math.min(W * 0.3, 128), RW = S * 1.4;
+  const FLY = 440, STOP = 90, HOLD = 720, LAND = 280, HIT = FLY + STOP;
   const ov = document.createElement('div');
-  ov.className = 'mixfx'; ov.style.setProperty('--cy', cy + 'px');
-  ov.innerHTML = '<i class="mf-flash"></i><i class="mf-burst"></i><i class="mf-ring"></i><b class="mf-sfx">ガキーン！</b>';
+  ov.className = 'mixfx r' + star; ov.style.setProperty('--cy', cy + 'px'); ov.style.setProperty('--rh', RW * 1.4 + 'px');
+  const tw = [[-.62, -.5], [.6, -.36], [-.58, .42], [.64, .5]].map(([a, b], i) =>
+    `<i class="mf-tw" style="left:${cx + a * RW}px;top:${cy + b * RW * 1.4}px;animation-delay:${.25 + i * .12}s"></i>`).join('');
+  ov.innerHTML = `<i class="mf-dim"></i><i class="mf-lines"></i><i class="mf-burst"></i><i class="mf-flash"></i><i class="mf-ring"></i><i class="mf-ring b"></i>${tw}
+    <b class="mf-sfx">ガキーン！</b><p class="mf-name">${isNew ? '<b>レシピ ひらめき！</b>' : ''}<small>${'★'.repeat(star)}</small><span>${esc(d.name)}</span></p>`;
   document.body.appendChild(ov);
   const card = (cid, f, w, cls = '') => {
     const c = document.createElement('div');
@@ -1585,15 +1625,27 @@ function mixFx(from, ca, cb, cr, to, done) {
     Object.assign(c.style, { width: w + 'px', left: f.x - w / 2 + 'px', top: f.y - w * 0.7 + 'px' });
     ov.appendChild(c); return c;
   };
-  /* 1. シュッと飛び出す → 2. 加速してまんなかへ → 3. ぶつかる（残像が2枚ついてくる） */
+  /* 火花：x,y から n こ、まわりに飛びちる（少し下に落ちる） */
+  const sparks = (x, y, n, far) => {
+    for (let i = 0; i < n; i++) {
+      const e = document.createElement('i'), a = Math.PI * 2 * i / n + Math.random() * .6, r = far * (.5 + Math.random() * .7), z = 5 + Math.random() * 10;
+      e.className = 'mf-spark' + (i % 3 ? '' : ' st');
+      Object.assign(e.style, { left: x + 'px', top: y + 'px', width: z + 'px', height: z + 'px', background: SPARK[i % SPARK.length] });
+      ov.appendChild(e);
+      e.animate([{ transform: 'translate(-50%,-50%) scale(1.2) rotate(45deg)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${Math.cos(a) * r}px),calc(-50% + ${Math.sin(a) * r + far * .3}px)) scale(.2) rotate(${200 + Math.random() * 400}deg)`, opacity: 0 }],
+        { duration: 550 + Math.random() * 400, easing: 'cubic-bezier(.12,.8,.3,1)', fill: 'forwards' });
+    }
+  };
+  /* 1. うしろに引いて → 2. 加速してまんなかへ → 3. ぶつかって止まる（残像が2枚ついてくる） */
   const left = from[0].x <= from[1].x ? -1 : 1, moving = [];
   [[ca, from[0], left], [cb, from[1], -left]].forEach(([cid, f, side]) => {
     const k = S / f.w, ty = cy - f.y;
     const keys = [
       { transform: 'translate(0,0) scale(1) rotate(0deg)', easing: 'cubic-bezier(.2,1.6,.4,1)' },
-      { transform: `translate(0,-28px) scale(1.15) rotate(${side * 8}deg)`, offset: .32, easing: 'cubic-bezier(.6,0,1,.6)' },
-      { transform: `translate(${cx + side * S * 0.8 - f.x}px,${ty}px) scale(${k}) rotate(${side * 14}deg)`, offset: .82 },
-      { transform: `translate(${cx + side * S * 0.18 - f.x}px,${ty}px) scale(${k * 1.06}) rotate(${side * 4}deg)` },
+      { transform: `translate(${side * 12}px,-34px) scale(1.18) rotate(${side * 10}deg)`, offset: .3, easing: 'cubic-bezier(.7,0,1,.5)' },
+      { transform: `translate(${cx + side * S * 0.95 - f.x}px,${ty}px) scale(${k}) rotate(${side * 16}deg)`, offset: .84 },
+      { transform: `translate(${cx + side * S * 0.2 - f.x}px,${ty}px) scale(${k * 1.08},${k * .94}) rotate(${side * 3}deg)` },
     ];
     [2, 1, 0].forEach(g => {
       const el = card(cid, f, f.w, g ? 'ghost g' + g : '');
@@ -1601,23 +1653,33 @@ function mixFx(from, ca, cb, cr, to, done) {
       moving.push(el);
     });
   });
-  /* ガキーン：白く光って、ゆれて、光の線。できたカードがまんなかに出る */
+  setTimeout(() => ov.classList.add('touch'), FLY);   // ぶつかった所で光って止まる（ヒットストップ）
+  /* ガキーン：白く光って、大きくゆれて、光の輪と線と火花。できたカードがくるっと出て、名前の札 */
   let R;
   setTimeout(() => {
     ov.classList.add('hit');
-    replay(document.querySelector('.night'), 'quake');
-    moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }));
-    R = card(cr, { x: cx, y: cy }, S * 1.2, 'mf-res');
-    R.animate([{ transform: 'scale(.2) rotate(-12deg)', opacity: 0 }, { transform: 'scale(1.22) rotate(3deg)', opacity: 1, offset: .55 }, { transform: 'scale(1) rotate(0deg)', opacity: 1 }],
-      { duration: 380, easing: 'ease-out', fill: 'forwards' });
-  }, FLY + 50);
-  /* できたカードが、調理台のマスへ飛んでいく */
+    replay(document.querySelector('.night'), 'quake2');
+    heroFor('joy', HOLD + LAND + 300);
+    moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }));
+    sparks(cx, cy, star === 3 ? 28 : 20, S * 1.7);
+    R = card(cr, { x: cx, y: cy }, RW, 'mf-res');
+    R.insertAdjacentHTML('beforeend', '<i class="mf-shine"></i>');
+    R.animate([{ transform: 'perspective(700px) rotateY(-110deg) scale(.4)', opacity: 0 },
+      { transform: 'perspective(700px) rotateY(14deg) scale(1.2)', opacity: 1, offset: .6 },
+      { transform: 'perspective(700px) rotateY(0deg) scale(1)', opacity: 1 }], { duration: 460, easing: 'ease-out', fill: 'forwards' });
+  }, HIT);
+  /* できたカードが、調理台のマスへ飛んでいく → ついたら小さい火花 */
   setTimeout(() => {
-    const t = tc.getBoundingClientRect(), k = tc.offsetWidth / (S * 1.2);
-    R.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${t.left + t.width / 2 - cx}px,${t.top + t.height / 2 - cy}px) scale(${k})`, opacity: .85 }],
+    ov.classList.add('land');
+    const t = tc.getBoundingClientRect(), k = tc.offsetWidth / RW;
+    R.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${t.left + t.width / 2 - cx}px,${t.top + t.height / 2 - cy}px) scale(${k}) rotate(-6deg)`, opacity: .9 }],
       { duration: LAND, easing: 'cubic-bezier(.5,0,.9,.5)', fill: 'forwards' });
-  }, FLY + 50 + HOLD);
-  setTimeout(() => { ov.remove(); end(); }, FLY + 50 + HOLD + LAND);
+  }, HIT + HOLD);
+  setTimeout(() => {
+    const t = tc.getBoundingClientRect();
+    R.remove(); end(); sparks(t.left + t.width / 2, t.top + t.height / 2, 10, 46);
+    setTimeout(() => ov.remove(), 950);
+  }, HIT + HOLD + LAND);
 }
 
 /* ほのかの立ち絵：バトルは右向きのかまえ。表情の絵は左向きなので左右反転して右向きにする */
@@ -1671,9 +1733,12 @@ function handHTML() {
   return `<div class="hand" style="--n:${list.length};--ov:${list.length >= 4 ? .22 : .1}">${list.map(([w, i, cid], k) => `<button class="handcard${w === 'held' ? ' own' : ''}" style="--k:${k}" data-act="card" data-drag data-drop data-w="${w}" data-i="${i}">${cardMini(cid, { cost: w === 'held' ? null : N.round === 1 ? '無料' : cardDef(cid).cost })}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')}</div>`;
 }
 function barHTML() {
-  const orb = `<span class="orb" title="${N.round === 1 ? '無料でえらべる数' : 'コイン'}"><i>${N.round === 1 ? '無料' : 'コイン'}</i><b>${N.round === 1 ? N.picks : N.coins}</b></span>`;
-  return `${orb}
-    ${N.round === 1 ? '<span class="bar-hint">3まい えらんで 調理台へ</span>' : `<button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`}
+  /* 1ラウンド目は「むりょうで あと○まい」を文字で（コインの丸は2ラウンド目から） */
+  const left = N.round === 1
+    ? `<span class="bar-hint free">${N.picks ? `むりょうで あと<b>${N.picks}</b>まい<br>ドラッグで 調理台へ` : 'えらびおわり！<br>バトルを おしてね'}</span>`
+    : `<span class="orb" title="コイン"><i>コイン</i><b>${N.coins}</b></span>
+    <button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`;
+  return `${left}
     <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>バトル！</button>
     <div class="sellzone" data-drop data-w="sell" data-i="0"><b>ここで うる</b><span id="sellv"></span></div>`;
 }
@@ -1777,7 +1842,8 @@ function dragBegin(D) {
 
 function dragMove(D, x, y) {
   D.x = x; D.y = y;
-  D.g.style.transform = `translate(${x - D.w / 2}px,${y - D.h * 0.8}px) rotate(-4deg)`;
+  /* 位置は translate・大きさは scale（指の所を中心に小さくなるだけ。transform に translate を書くと scale で位置までずれる） */
+  D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`; D.g.style.rotate = '-4deg';
   const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
   if (k !== D.k) { D.k = k; D.g.style.scale = k; }
   const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');
@@ -1813,7 +1879,7 @@ function dragFinish(D) {
   if (!Z || !Z.P) {   // 行き先がなければ、もとの場所へもどる
     const g = D.g; D.g = null; dragClean(D);
     if (g && D.x != null && g.animate) {
-      g.animate([{ transform: g.style.transform }, { transform: `translate(${D.home.x - D.w / 2}px,${D.home.y - D.h * 0.8}px)`, opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
+      g.animate([{ translate: g.style.translate, scale: String(D.k) }, { translate: `${D.home.x - D.w / 2}px ${D.home.y - D.h * 0.8}px`, scale: '1', opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
       setTimeout(() => g.remove(), 170);
     } else if (g) g.remove();
     return;

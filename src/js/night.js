@@ -194,19 +194,19 @@ function doMix(p, q, from) {
     N.held[P.to.i] = r;
   }
   unsel();
-  let msg = '';
+  let msg = '', isNew = false;   // できたカードの名前とひらめきは演出の札で見せる（演出なしのときだけ toast）
   if (d.star === 2 && d.food) {
     const key = r.cid.slice(2);
-    if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); msg = 'ひらめき！ ' + d.name; }
+    if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); isNew = true; msg = 'ひらめき！ ' + d.name; }
     else msg = d.name + 'ができた';
   } else if (d.star === 2) msg = d.name + 'ができた';
   save(); renderNight();
   busy = true;
-  mixFx(from, a.cid, b.cid, r.cid, P.to, () => {
+  mixFx(from, a.cid, b.cid, r.cid, P.to, skip => {
     busy = false;
-    if (msg) toast(msg);
+    if (msg && skip) toast(msg);
     if (d.star === 3) cutIn(r.cid, 'スペシャルができた！');
-  });
+  }, isNew);
 }
 /* 調理台のカードを、べつのマスへうごかす（カードがあれば入れかえ）。バトルを押すまで、いつでも */
 function moveTo(i, j) {
