@@ -145,26 +145,95 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.huge .pc-pow{font-size:40px;-webkit-text-stroke:3px #5a2a04}
 .pc.huge .pc-star{font-size:22px}
 
-/* 調理台（3×2・1〜6の順にうごく）：木のカウンターに並べる */
-.board{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 12px;padding:9px 12px;border-radius:14px;
+/* 調理台：アイコンのタイル6つを1行に（左から順に発動）。木のカウンターの上 */
+.night{--hh:clamp(112px,22vh,168px)}
+.tiles{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;padding:9px 9px 8px;border-radius:12px;
   background:linear-gradient(#a8784e,#7a5236);box-shadow:inset 0 2px 0 rgba(255,230,200,.35),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 rgba(0,0,0,.35)}
-.slot{position:relative;min-width:0;height:clamp(96px,17.5vh,150px);padding:0;border:none;border-radius:12px;box-shadow:inset 0 2px 6px rgba(0,0,0,.4);background:rgba(42,23,12,.3)}
-.slot::after{content:"";position:absolute;inset:22% 18%;border-radius:50%;border:2px dashed rgba(255,240,220,.28);pointer-events:none}
-.slot:has(.pc){background:transparent;box-shadow:none}
-.slot:has(.pc)::after{display:none}
-.slot .ord{position:absolute;left:-7px;top:-7px;z-index:4;width:20px;height:20px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:11px;font-weight:900;color:#3a1c08;background:var(--cream);box-shadow:0 0 0 1.5px #3a2318}
-.slot.sel .pc{outline:3px solid var(--gold);outline-offset:2px}
-.slot.can .pc{animation:canmix .9s ease-in-out infinite alternate}
+.tslot{position:relative;min-width:0;aspect-ratio:1;max-height:64px;padding:0;border:none;border-radius:10px;background:rgba(42,23,12,.32);box-shadow:inset 0 2px 5px rgba(0,0,0,.45)}
+.tslot::after{content:"";position:absolute;inset:26%;border-radius:50%;border:2px dashed rgba(255,240,220,.26);pointer-events:none}
+.tslot:has(.pc){background:transparent;box-shadow:none}
+.tslot:has(.pc)::after{display:none}
+.tslot .ord{position:absolute;left:-5px;top:-6px;z-index:4;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:9.5px;font-weight:900;color:#3a1c08;background:var(--cream);box-shadow:0 0 0 1.5px #3a2318}
+.tslot.sel .pc{outline:3px solid var(--gold);outline-offset:2px}
+.tslot.can .pc{animation:canmix .9s ease-in-out infinite alternate}
 @keyframes canmix{from{box-shadow:0 0 0 2px var(--rim),0 0 0 3.5px #2a170c,0 0 0 6px rgba(111,199,168,.95)}to{box-shadow:0 0 0 2px var(--rim),0 0 0 3.5px #2a170c,0 0 14px 6px rgba(111,199,168,.5)}}
-.slot:active .pc{transform:scale(.96)}
+.tslot:active .pc{transform:scale(.94)}
+.pc.tile{border-radius:10px;transition:filter .2s}
+.pc.tile .pc-art{inset:7%}
+.tl-star{position:absolute;left:0;right:0;top:0;z-index:3;text-align:center;font-size:9px;line-height:1;letter-spacing:-2px;color:#ffe066;-webkit-text-stroke:1px #7a4204;paint-order:stroke fill}
+.tl-pow{position:absolute;right:3px;bottom:1px;z-index:3;font-size:13px;line-height:1;font-weight:900;color:#fff3c0;-webkit-text-stroke:2px #5a2a04;paint-order:stroke fill}
+/* 発動：タイルがコンと跳ねて光る。発動しおわったタイルは少し暗く */
+.tslot.now{z-index:2}
+.tslot.now .pc{transform:translateY(-3px) scale(1.08);box-shadow:0 0 0 2px var(--rim),0 0 0 3.5px #2a170c,0 0 16px 4px var(--ember)}
+.tslot.now::before{content:"";position:absolute;inset:-5px;z-index:3;border-radius:14px;border:2.5px solid #ffe2a0;pointer-events:none;animation:ring .5s ease-out forwards}
+.tslot.done:not(.now) .pc{filter:saturate(.5) brightness(.75)}
+.pc.kon{animation:kon .42s cubic-bezier(.3,1.5,.5,1)}
+@keyframes kon{0%{transform:none}35%{transform:translateY(-11px) scale(1.22) rotate(-5deg)}65%{transform:translateY(1px) scale(.95)}100%{transform:translateY(-3px) scale(1.08)}}
+@keyframes ring{from{opacity:1;scale:.8}to{opacity:0;scale:1.4}}
 
-/* 手札（仕入れ）：扇形に重ねる */
-.hand{position:relative;flex:none;height:clamp(96px,16.5vh,132px);display:flex;justify-content:center;align-items:flex-end;padding-top:8px}
+/* タイル行の下の説明：ふだんは使い方。焼いている間は、発動したカードの名前・効果・火加減と、大きなダメージ */
+.callout{position:relative;flex:none;height:52px;border-radius:12px;isolation:isolate;background:var(--cream);color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.callout:empty{background:transparent;box-shadow:none}
+.co-hint{height:100%;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:0 12px;font-size:12.5px;font-weight:700;line-height:1.35;color:var(--ink)}
+.co-hint b{color:#c4501a}
+.co-hint small{font-size:10.5px;color:var(--ink-soft)}
+.co-ev{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 12px 0 7px;border-radius:12px}
+.co-ev::before{content:"";position:absolute;left:var(--x);top:-8px;translate:-50% 0;border:8px solid transparent;border-top:0;border-bottom-color:var(--cream)}
+.co-ev.burnt{background:#d9cfc5}.co-ev.burnt::before{border-bottom-color:#d9cfc5}
+.co-ic.pc{flex:none;width:40px;height:40px;border-radius:9px}
+.co-ic img{position:absolute;inset:7%;width:86%;height:86%;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(60,25,5,.4))}
+.co-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.co-name{font-size:13.5px;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.co-name em{font-style:normal;font-size:10px;color:#fff;background:var(--strawberry);padding:1px 6px;border-radius:8px;margin-right:4px;vertical-align:1px}
+.co-chips{display:flex;gap:4px;overflow:hidden}
+.co-chips span{flex:none;font-size:10px;font-weight:700;line-height:1.5;padding:0 7px;border-radius:8px;background:var(--cream-2);color:#8a3a10;white-space:nowrap}
+.co-chips .co-z{color:#fff;background:#c08a4a}
+.co-z.z1{background:var(--ember)!important}.co-z.z2{background:#e0402a!important}.co-z.z3{background:#4a3a32!important}
+.co-dmg{position:relative;flex:none;min-width:60px;text-align:right;font-size:30px;line-height:1;font-weight:900;color:#ffe680;-webkit-text-stroke:3px #7a2a04;paint-order:stroke fill;text-shadow:0 3px 0 #5a2004;font-variant-numeric:tabular-nums}
+.co-dmg.hot{font-size:36px;color:#fff1a8;text-shadow:0 3px 0 #5a2004,0 0 14px rgba(255,140,40,.9)}
+.co-dmg.koge{font-size:17px;color:#f0e8e0;-webkit-text-stroke:3px #3a2a22;text-shadow:none}
+.co-dmg.soft{font-size:15px;color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
+.co-dmg::before{content:"";position:absolute;right:-6px;top:50%;width:96px;height:96px;margin-top:-48px;z-index:-1;border-radius:50%;opacity:0;pointer-events:none;
+  background:repeating-conic-gradient(rgba(255,170,50,.75) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 68%);mask:radial-gradient(circle,#000 18%,transparent 68%)}
+.co-dmg.soft::before,.co-dmg.koge::before{display:none}
+.callout.pop{animation:coflash .45s ease-out}
+.callout.pop .co-ev{animation:coin .2s ease-out}
+.callout.pop .co-dmg{animation:dmgpop .5s cubic-bezier(.2,1.7,.4,1)}
+.callout.pop .co-dmg::before{animation:burst .65s ease-out}
+@keyframes coflash{0%{box-shadow:0 3px 0 rgba(0,0,0,.35),0 0 0 3px #ffe2a0,0 0 22px 6px rgba(255,138,61,.8)}}
+@keyframes coin{from{opacity:0;transform:translateY(-5px)}}
+@keyframes dmgpop{0%{transform:scale(2.7) rotate(-10deg);opacity:0}35%{opacity:1}100%{transform:none}}
+@keyframes burst{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.45) rotate(70deg)}}
+
+/* 手札（仕入れ）：扇形に重ねる。枚数で幅を決めて、はしのカードも画面に収める */
+.hand{position:relative;flex:none;height:var(--hh);display:flex;justify-content:center;align-items:flex-end;padding:10px 12px 0}
 .hand-lbl{position:absolute;left:0;top:0;z-index:5;font-size:11px;font-weight:700;color:#3a1c08;background:var(--gold);padding:2px 9px;border-radius:9px;box-shadow:0 2px 0 #5a2a04}
-.handcard{--mid:calc((var(--n) - 1) / 2);position:relative;flex:none;width:min(26%,100px);height:100%;margin:0 -5px;padding:0;border:none;background:transparent;box-shadow:none;
-  transform:rotate(calc((var(--k) - var(--mid)) * 5deg)) translateY(calc(max(var(--k) - var(--mid), var(--mid) - var(--k)) * 5px));transform-origin:50% 130%;transition:transform .15s}
+.handcard{--mid:calc((var(--n) - 1) / 2);--d:calc(var(--k) - var(--mid));position:relative;flex:none;width:min(calc((100% - 6px) / var(--n) + 6px),calc((var(--hh) - 16px) * .72),118px);aspect-ratio:5/7;height:auto;margin:0 -3px;padding:0;border:none;background:transparent;box-shadow:none;
+  transform:translateY(calc(var(--d) * var(--d) * 3px)) rotate(calc(var(--d) * 3deg));transform-origin:50% 100%;transition:transform .15s}
 .handcard.gone{visibility:hidden}
 .handcard.sel,.handcard:active{transform:translateY(-10px) scale(1.05);z-index:3}
+
+/* ★3 のカットイン：ななめの金の帯・ほのかが左から・カードが右から・名前を大きく（--cd がかかる時間） */
+.cutin{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden;display:grid;place-items:center;animation:cidim var(--cd) ease-out forwards}
+.ci-flash{position:absolute;inset:0;background:#fff6dc;opacity:0;animation:ciflash var(--cd) ease-out forwards}
+.ci-band{position:relative;width:100%;height:clamp(150px,30vh,230px);transform:skewY(-8deg) scaleY(0);animation:ciband var(--cd) cubic-bezier(.2,.9,.3,1) forwards;
+  background:linear-gradient(90deg,#5a1a04,#d8502a 16%,#ffb048 50%,#d8502a 84%,#5a1a04);box-shadow:0 0 0 3px #ffe7a0,0 0 0 6px #3a1404,0 0 50px rgba(255,160,60,.85)}
+.ci-lines{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.32) 0 2px,transparent 2px 23px,rgba(255,240,200,.18) 23px 26px,transparent 26px 61px);animation:cilines .35s linear infinite}
+.ci-in{position:absolute;inset:0;max-width:460px;margin:0 auto;transform:skewY(8deg)}
+.ci-hero{position:absolute;left:0;bottom:-8%;height:132%;max-width:48%;object-fit:contain;object-position:left bottom;filter:drop-shadow(0 4px 10px rgba(60,10,0,.7));animation:cihero var(--cd) cubic-bezier(.2,.9,.3,1) forwards}
+.ci-hero.flip{scale:-1 1}
+.ci-card.pc{position:absolute;right:7%;top:6%;width:30%;height:auto;aspect-ratio:1;border-radius:16px;animation:cicard var(--cd) cubic-bezier(.3,1.5,.5,1) forwards}
+.ci-card img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(60,25,5,.5))}
+.ci-title{position:absolute;right:4%;bottom:6%;max-width:66%;display:flex;flex-direction:column;align-items:flex-end;text-align:right;line-height:1.1;animation:cititle var(--cd) ease-out forwards}
+.ci-title small{font-size:13px;font-weight:900;color:#fff;-webkit-text-stroke:3px #5a1a04;paint-order:stroke fill}
+.ci-title span{font-size:clamp(20px,6.4vw,28px);font-weight:900;color:#fff1a8;-webkit-text-stroke:4px #5a1a04;paint-order:stroke fill;text-shadow:0 3px 0 #3a1004,0 0 16px rgba(255,200,80,.9)}
+@keyframes cidim{0%{background:rgba(24,10,4,0);opacity:1}12%,82%{background:rgba(24,10,4,.6);opacity:1}100%{background:rgba(24,10,4,0);opacity:0}}
+@keyframes ciflash{0%{opacity:.95}16%,100%{opacity:0}}
+@keyframes ciband{0%{transform:skewY(-8deg) scaleY(0)}12%{transform:skewY(-8deg) scaleY(1.12)}20%,84%{transform:skewY(-8deg) scaleY(1)}100%{transform:skewY(-8deg) scaleY(0)}}
+@keyframes cilines{to{background-position:-61px 0}}
+@keyframes cihero{0%,8%{translate:-115% 0}28%{translate:3% 0}84%{translate:0 0}100%{translate:-20% 0}}
+@keyframes cicard{0%,14%{transform:scale(0) rotate(-40deg)}34%{transform:scale(1.2) rotate(6deg)}46%,100%{transform:scale(1) rotate(0)}}
+@keyframes cititle{0%,22%{opacity:0;translate:40px 0}36%,100%{opacity:1;translate:0 0}}
 
 /* 下のボタン列：コインの丸・入れかえ・大きな「焼く！」 */
 .bar{flex:none;display:flex;align-items:center;gap:8px;min-height:58px}

@@ -1,4 +1,4 @@
-/* ==== 夜のバトルの画面：舞台（ほのか・モンスター・火力の光）・調理台3×2（①〜⑥の順）・仕入れ・下のボタン列
+/* ==== 夜のバトルの画面：舞台（ほのか・モンスター・火力の光）・調理台（アイコンのタイル6つを1行・左から順）・その下の説明・仕入れ・下のボタン列
    カードをタップすると大きな紙のカードがひらく（説明はそこで読む。テキストボックスはなし） ==== */
 const ORD = ['①', '②', '③', '④', '⑤', '⑥'];
 
@@ -19,16 +19,51 @@ function floatAt(el, text, cls = '') {
   el.appendChild(f); setTimeout(() => f.remove(), 1000);
 }
 function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+/* 発動：タイルがコンと跳ね、タイル行の下の説明に効果とダメージを大きく出す */
 function showEvent(e, run, q) {
-  const slot = document.querySelector(`[data-act="card"][data-w="board"][data-i="${e.i}"]`);
+  document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
+  const slot = document.querySelector(`.tslot[data-i="${e.i}"]`);
   const card = slot && slot.querySelector('.pc');
-  if (card) replay(card, 'fire');
+  if (slot) slot.classList.add('now', 'done');
+  if (card) replay(card, 'kon');
+  const co = $('callout');
+  if (co) { co.innerHTML = calloutHTML(e, q); replay(co, 'pop'); }
   setHeat(e.heat);
-  if (e.burnt) { replay($('smoke'), 'on'); heroFor('oops', 1100); floatAt(slot, '焦げた', 'koge'); setTimeout(() => setHeat(e.after), STEP_MS / 2); }
-  if (e.dmg > 0) { floatAt(slot, (e.again ? 'もう1回 ' : '') + fmt(e.dmg)); replay($('mon'), 'hit'); replay($('chef'), 'act'); floatAt($('floats'), fmt(e.dmg), 'big'); }
+  if (e.burnt) { replay($('smoke'), 'on'); heroFor('oops', 1100); setTimeout(() => setHeat(e.after), STEP_MS / 2); }
+  if (e.dmg > 0) { replay($('mon'), 'hit'); replay($('chef'), 'act'); floatAt($('floats'), fmt(e.dmg), 'big'); }
   $('score').textContent = fmt(N.score + run);
   $('qfill').style.width = Math.min(100, run / q * 100) + '%';
   $('qtext').textContent = `${fmt(run)} / ノルマ ${fmt(q)}`;
+}
+/* タイル行の下の説明：ふだんは使い方、焼いている間は発動したカード（名前・効果・火加減・ダメージ） */
+function calloutIdle() {
+  if (N.stage !== 'shop') return '';
+  if (N.mixing) return `<p class="co-hint">光っているカードと まぜるよ<small>★1の食材どうし → ★2のお菓子・★2どうし → ★3のスペシャル</small></p>`;
+  if (!N.board.some(Boolean)) return `<p class="co-hint">下の仕入れカードをタップして 調理台にならべよう</p>`;
+  return `<p class="co-hint"><span>「焼く！」で <b>左から順に</b> 発動するよ</span><small>カードをタップで 大きく見る・ならびかえ・まぜる</small></p>`;
+}
+function calloutHTML(e, q) {
+  const cid = N.board[e.i].cid, d = cardDef(cid), F = FIELDS[N.field], z = zoneOf(e.heat);
+  const chips = cardChips(d).slice(0, 2).map(c => `<span>${c}</span>`).join('');
+  const zone = e.burnt ? '<span class="co-z z3">焦げ！</span>' : `<span class="co-z z${z}">${ZONES[z]}${e.dmg > 0 ? ' ×' + F.mul[z] : ''}</span>`;
+  const num = e.dmg > 0 ? `<b class="co-dmg${e.dmg >= q / 3 ? ' hot' : ''}">${fmt(e.dmg)}</b>`
+    : e.burnt ? '<b class="co-dmg koge">焦げた…</b>' : `<b class="co-dmg soft">火力 ${e.after}</b>`;
+  return `<div class="co-ev${e.burnt ? ' burnt' : ''}" style="--x:${(e.i + .5) / SLOTS * 100}%">
+    <span class="co-ic pc k-${d.kind}">${artImg(cid)}</span>
+    <div class="co-main"><p class="co-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><p class="co-chips">${chips}${zone}</p></div>${num}</div>`;
+}
+/* ★3 のカットイン：ななめの金の帯に、ほのかが左から・カードが右から・名前を大きく。かかる時間（ms）を返す */
+function cutIn(cid, sub) {
+  const d = cardDef(cid), h = heroPick('battle'), ms = REDUCED ? 600 : 1500;
+  const el = document.createElement('div');
+  el.className = 'cutin'; el.style.setProperty('--cd', ms + 'ms');
+  el.innerHTML = `<i class="ci-flash"></i><div class="ci-band"><i class="ci-lines"></i><div class="ci-in">
+    <img class="ci-hero${h.flip ? ' flip' : ''}" src="${h.src}" alt="">
+    <div class="ci-card pc k-s s3">${artImg(cid)}<i class="pc-shine"></i></div>
+    <p class="ci-title"><small>${sub}</small><span>${esc(d.name)}</span></p></div></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), ms);
+  return ms;
 }
 
 /* ほのかの立ち絵：バトルは右向きのかまえ。表情の絵は左向きなので左右反転して右向きにする */
@@ -105,10 +140,11 @@ function renderNight() {
       </div><button class="big" data-act="toMorning">朝の仕込みへ</button>`;
   } else {
     const mx = N.mixing ? partners() : [];
-    body = `<div class="board">${N.board.map((c, i) => {
+    body = `<div class="tiles">${N.board.map((c, i) => {
         const on = N.sel && N.sel.where === 'board' && N.sel.i === i;
-        return `<button class="slot${on ? ' sel' : ''}${mx.includes(i) ? ' can' : ''}" data-act="card" data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardMini(c.cid, { born: c.born }) : ''}</button>`;
+        return `<button class="tslot${on ? ' sel' : ''}${mx.includes(i) ? ' can' : ''}" data-act="card" data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born }) : ''}</button>`;
       }).join('')}</div>
+      <div class="callout" id="callout">${calloutIdle()}</div>
       ${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;

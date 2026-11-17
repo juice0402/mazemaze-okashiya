@@ -4,7 +4,7 @@
    調理台6マス（①〜⑥の順にうごく）。冷蔵庫はなし（11/17 しょーくん）。画面は night-ui.js */
 const SLOTS = 6, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, SHOP_MAX = 5, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
-const STEP_MS = REDUCED ? 140 : 420;
+const STEP_MS = REDUCED ? 200 : 620;
 let N = null;          // S.night（夜のあいだの状態）
 let busy = false;      // 焼いている間は操作しない
 
@@ -117,9 +117,10 @@ function doMix(to) {
     const key = cid.slice(2);
     if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); toast('ひらめき！ ' + d.name); }
     else toast(d.name + 'ができた');
-  } else toast('スペシャル！ ' + d.name);
+  }
   save(); renderNight();
   delete area(to.where)[to.i].born;
+  if (d.star === 3) cutIn(cid, 'スペシャルができた！');
 }
 /* タップ：カードを大きくひらく。まぜる相手をえらんでいるときは、光っているカードでまぜる */
 function tapCard(where, i) {
@@ -180,8 +181,9 @@ function bake() {
   let k = 0, run = 0;
   const step = () => {
     if (k >= res.ev.length) return setTimeout(() => finishRound(res), STEP_MS);
-    const e = res.ev[k++];
-    run += e.dmg;
+    const e = res.ev[k], cid = N.board[e.i].cid;
+    if (!e.again && !e.cut && cardDef(cid).star === 3) { e.cut = true; return setTimeout(step, cutIn(cid, 'スペシャル発動！')); }
+    k++; run += e.dmg;
     showEvent(e, run, q);
     setTimeout(step, STEP_MS);
   };

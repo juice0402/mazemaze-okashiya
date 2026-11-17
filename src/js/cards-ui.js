@@ -37,6 +37,13 @@ function cardMini(cid, opt = {}) {
     ${dmg ? `<b class="pc-pow">${dmg}</b>` : ''}
   </div>`;
 }
+/* 調理台のタイル（アイコンだけ）：地の色・絵・★・右下に小さなダメージ */
+function cardTile(cid, opt = {}) {
+  const d = cardDef(cid), dmg = cardDmg(d);
+  return `<div class="pc tile k-${d.kind} s${d.star}${opt.born ? ' born' : ''}">
+    <div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i>
+    ${d.star > 1 ? `<span class="tl-star">${'★'.repeat(d.star)}</span>` : ''}${dmg ? `<b class="tl-pow">${dmg}</b>` : ''}</div>`;
+}
 function cardBig(cid) {
   const d = cardDef(cid), dmg = cardDmg(d);
   return `<div class="pc huge k-${d.kind} s${d.star}">
