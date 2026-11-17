@@ -176,6 +176,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .mx-dot{position:absolute;right:-5px;top:-6px;z-index:4;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:13px;font-weight:900;line-height:1;color:#103a2c;background:#8fe0c0;box-shadow:0 0 0 1.5px #1e4a3a;animation:dotbob .8s ease-in-out infinite alternate;pointer-events:none}
 @keyframes dotbob{to{transform:translateY(-2px)}}
 .mixmark{position:absolute;right:4%;top:-5px;z-index:4;padding:1px 6px;border-radius:8px;font-style:normal;font-size:10px;font-weight:900;line-height:1.35;color:#103a2c;background:#8fe0c0;box-shadow:0 0 0 1.5px #1e4a3a,0 2px 0 rgba(0,0,0,.3);pointer-events:none;animation:dotbob .8s ease-in-out infinite alternate}
+.handcard.can .pc{animation:canmix .9s ease-in-out infinite alternate}
+.handcard.can::after{content:"まぜる";position:absolute;left:50%;top:-8px;z-index:5;transform:translateX(-50%);padding:1px 6px;border-radius:7px;font-size:10px;font-weight:900;line-height:1.35;color:#103a2c;background:#8fe0c0;white-space:nowrap;box-shadow:0 0 0 1.5px #1e4a3a;pointer-events:none}
 .pc.tile{border-radius:10px;transition:filter .2s}
 .pc.tile .pc-art{inset:7%}
 .tl-star{position:absolute;left:0;right:0;top:0;z-index:3;text-align:center;font-size:9px;line-height:1;letter-spacing:-2px;color:#ffe066;-webkit-text-stroke:1px #7a4204;paint-order:stroke fill}
@@ -384,3 +386,28 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .mx-name{margin:0;font-size:15px;font-weight:900;color:var(--milk);text-align:center}
 .mx-fx{margin:0;font-size:12px;line-height:1.45;color:var(--milk-soft);text-align:center}
 .mx-flash{margin:0;font-size:12px;font-weight:900;color:#3a1c08;background:var(--gold);padding:3px 10px;border-radius:9px}
+
+/* まぜる演出：2枚がシュッと飛び出して、まんなか（--cy）でガキーン */
+.mixfx{position:fixed;inset:0;z-index:38;pointer-events:none;overflow:hidden}
+.mf-card{position:fixed;aspect-ratio:5/7;border-radius:12px;will-change:transform;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.mf-card .pc{width:100%;height:100%}
+.mf-card.ghost{filter:blur(1px) brightness(1.4)}
+.mf-card.g1{opacity:.45}
+.mf-card.g2{opacity:.22}
+.mf-res{border-radius:12px;box-shadow:0 0 0 3px #ffe08a,0 0 34px 12px rgba(255,200,90,.75)}
+.mf-flash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% var(--cy),#fff 0,rgba(255,244,210,.95) 16%,rgba(255,200,120,.35) 38%,rgba(255,200,120,0) 60%)}
+.mixfx.hit .mf-flash{animation:mfflash .5s ease-out}
+@keyframes mfflash{0%{opacity:1}100%{opacity:0}}
+.mf-ring{position:absolute;left:50%;top:var(--cy);width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:5px solid #fff3c0;opacity:0}
+.mixfx.hit .mf-ring{animation:mfring .5s ease-out forwards}
+@keyframes mfring{from{transform:scale(.3);opacity:1}to{transform:scale(7);opacity:0;border-width:1px}}
+.mf-burst{position:absolute;left:50%;top:var(--cy);width:360px;height:360px;margin:-180px 0 0 -180px;border-radius:50%;opacity:0;
+  background:repeating-conic-gradient(rgba(255,226,140,.9) 0 4deg,rgba(255,226,140,0) 4deg 18deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 16%,#000 28%,transparent 70%);mask:radial-gradient(circle,transparent 0 16%,#000 28%,transparent 70%)}
+.mixfx.hit .mf-burst{animation:mfburst 1s ease-out forwards}
+@keyframes mfburst{0%{opacity:0;transform:scale(.4) rotate(0)}15%{opacity:1}100%{opacity:0;transform:scale(1.35) rotate(25deg)}}
+.mf-sfx{position:absolute;left:50%;top:calc(var(--cy) - 120px);z-index:2;font-size:36px;font-weight:900;font-style:italic;letter-spacing:1px;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:6px #5a2a04;paint-order:stroke fill;opacity:0}
+.mixfx.hit .mf-sfx{animation:mfsfx .9s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes mfsfx{0%{opacity:0;transform:translateX(-50%) scale(2.4) rotate(-8deg)}22%{opacity:1;transform:translateX(-50%) scale(1) rotate(-8deg)}80%{opacity:1;transform:translateX(-50%) scale(1.04) rotate(-8deg)}100%{opacity:0;transform:translateX(-50%) translateY(-12px) scale(1.04) rotate(-8deg)}}
+.night.quake{animation:quake .32s linear}
+@keyframes quake{0%,100%{transform:translate(0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}

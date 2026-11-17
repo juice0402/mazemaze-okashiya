@@ -115,19 +115,32 @@ function reroll() {
   N.coins -= REROLL; rollShop(); unsel(); save(); renderNight();
 }
 
-/* ---------- まぜる：同じ★で、属性の合うものどうし（cards.js の mixable）。仕入れのカードを調理台のカードにかさねても、まぜられる ---------- */
+/* ---------- まぜる：同じ★で、属性の合うものどうし（cards.js の mixable）。調理台どうし・仕入れどうし・仕入れと調理台、どれでもまぜられる（仕入れのカードは買いながら） ---------- */
 const canMix = (a, b) => mixable(cardDef(a.cid), cardDef(b.cid));
 const asCard = cid => cardDef(cid).dough ? { cid, cook: 0 } : { cid };   // 仕入れの生地は生（焼き加減0）
-/* えらんでいるカード（仕入れか調理台） */
-function mixSrc() {
-  const s = N.sel; if (!s) return null;
-  if (s.where === 'shop') return N.shop[s.i] ? asCard(N.shop[s.i]) : null;
-  return s.where === 'board' ? N.board[s.i] : null;
+/* その場所のカード（仕入れは買う前の形） */
+function cardAt(p) {
+  if (!p) return null;
+  if (p.where === 'shop') return N.shop[p.i] ? asCard(N.shop[p.i]) : null;
+  return p.where === 'board' ? N.board[p.i] : null;
 }
+const mixSrc = () => cardAt(N.sel);
 /* まぜてできるカード。焼き加減は、低いほうを引きつぐ */
 function mixResult(a, b) {
   const cid = mixCid(a.cid, b.cid), cooks = [a, b].filter(x => x.cook != null).map(x => x.cook);
   return cardDef(cid).dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 } : { cid };
+}
+/* まぜるときの代金（仕入れのカードの分）と、できたカードを置くマス（調理台のカードがあればそのマス・仕入れどうしはあいている左のマス。-1 は置けない） */
+function mixPlan(p, q) {
+  const shop = [p, q].filter(x => x.where === 'shop');
+  return { n: shop.length, cost: shop.reduce((t, x) => t + cardDef(N.shop[x.i]).cost, 0), to: q.where === 'board' ? q.i : p.where === 'board' ? p.i : N.board.indexOf(null) };
+}
+/* まぜられないわけ（なければ空） */
+function mixNg(P) {
+  if (P.to < 0) return '調理台がいっぱい。うるか、まぜてから';
+  if (!P.n) return '';
+  if (N.round === 1) return N.picks >= P.n ? '' : N.picks ? `無料はあと${N.picks}まい` : '3まい えらんだよ。バトルしてみよう';
+  return N.coins >= P.cost ? '' : 'コインがたりない';
 }
 /* 調理台のほかのカードとまぜられるか（手札とタイルの「まぜ」の目じるし） */
 const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
@@ -137,9 +150,9 @@ function mixRule(d) {
   if (d.star >= 3) return '★3は完成。もう まぜられない';
   return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : '生地か素材'}の★${d.star}と まぜると★${d.star + 1}`;
 }
-/* えらんだカードの行き先：put（置く・うごかす）・mix（まぜる）・field（場に置く） */
+/* えらんだカードの行き先：put（置く・うごかす）・mix（調理台のまぜる相手）・hand（仕入れのまぜる相手）・field（場に置く） */
 function targets() {
-  const T = { put: [], mix: [], field: false }, s = N.sel, a = mixSrc();
+  const T = { put: [], mix: [], hand: [], field: false }, s = N.sel, a = mixSrc();
   if (!s || !a || N.stage !== 'shop') return T;
   const d = cardDef(a.cid);
   if (d.cat === 'field') { T.field = true; return T; }
@@ -147,24 +160,33 @@ function targets() {
     if (s.where === 'board' && i === s.i) return;
     (x && mixable(d, cardDef(x.cid)) ? T.mix : T.put).push(i);
   });
+  N.shop.forEach((c, i) => { if (c && !(s.where === 'shop' && i === s.i) && mixable(d, cardDef(c))) T.hand.push(i); });
   return T;
 }
+/* まぜる（「まぜる？」で決めたあと）。2枚がシュッと飛び出してガキーン（mixFx）→ できたカードがマスへ */
 function doMix() {
-  const s = N.sel, to = N.ask, a = mixSrc(), b = N.board[to];
+  const p = N.sel, q = N.ask, a = cardAt(p), b = q && cardAt(q);
   if (busy || !a || !b || !canMix(a, b)) return unsel(), renderNight();
-  if (s.where === 'shop') { const d0 = cardDef(a.cid); if (!canPay(d0)) return; pay(d0); N.shop[s.i] = null; }
-  else N.board[s.i] = null;
+  const P = mixPlan(p, q), ng = mixNg(P); if (ng) return toast(ng);
+  const from = [cardSpot(p), cardSpot(q)];   // 演出のために、動く前の場所をおぼえる
+  if (P.n) { if (N.round === 1) N.picks -= P.n; else N.coins -= P.cost; }
+  for (const x of [p, q]) { if (x.where === 'shop') N.shop[x.i] = null; else N.board[x.i] = null; }
   const r = mixResult(a, b), d = cardDef(r.cid);
-  N.board[to] = Object.assign(r, { born: true });
+  N.board[P.to] = r;
   unsel();
+  let msg = '';
   if (d.star === 2 && d.food) {
     const key = r.cid.slice(2);
-    if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); toast('ひらめき！ ' + d.name); }
-    else toast(d.name + 'ができた');
-  } else if (d.star === 2) toast(d.name + 'ができた');
+    if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); msg = 'ひらめき！ ' + d.name; }
+    else msg = d.name + 'ができた';
+  } else if (d.star === 2) msg = d.name + 'ができた';
   save(); renderNight();
-  delete N.board[to].born;
-  if (d.star === 3) cutIn(r.cid, 'スペシャルができた！');
+  busy = true;
+  mixFx(from, a.cid, b.cid, r.cid, P.to, () => {
+    busy = false;
+    if (msg) toast(msg);
+    if (d.star === 3) cutIn(r.cid, 'スペシャルができた！');
+  });
 }
 /* 調理台のカードを、べつのマスへうごかす（カードがあれば入れかえ） */
 function moveTo(j) {
@@ -172,7 +194,7 @@ function moveTo(j) {
   [N.board[j], N.board[s.i]] = [N.board[s.i], N.board[j]];
   unsel(); save(); renderNight();
 }
-function swapAsk() { const j = N.ask; N.ask = null; moveTo(j); }
+function swapAsk() { const j = N.ask.i; N.ask = null; moveTo(j); }
 function closeView() { N.view = false; N.ask = null; renderNight(); }
 function choose(where, i) {
   const has = where === 'field' ? !!N.field : where === 'board' ? !!N.board[i] : !!N.shop[i];
@@ -184,21 +206,14 @@ function tapCard(where, i) {
   if (busy || N.stage !== 'shop') return;
   const s = N.sel;
   if (s && s.where === where && s.i === i) { N.view = true; return renderNight(); }
-  const a = mixSrc();
+  const a = mixSrc(), here = cardAt({ where, i });
+  if (a && here && canMix(a, here)) { N.ask = { where, i }; return renderNight(); }   // 光るカード → まぜる？
   if (a && s.where === 'shop') {
     const d = cardDef(a.cid);
     if (d.cat === 'field' && where === 'field') return buy(s.i);
-    if (d.cat !== 'field' && where === 'board') {
-      const here = N.board[i];
-      if (!here) return buy(s.i, i);
-      if (mixable(d, cardDef(here.cid))) { N.ask = i; return renderNight(); }
-    }
+    if (d.cat !== 'field' && where === 'board' && !here) return buy(s.i, i);
   }
-  if (a && s.where === 'board' && where === 'board') {
-    const here = N.board[i];
-    if (here && canMix(a, here)) { N.ask = i; return renderNight(); }
-    return moveTo(i);
-  }
+  if (a && s.where === 'board' && where === 'board') return moveTo(i);
   choose(where, i);
 }
 

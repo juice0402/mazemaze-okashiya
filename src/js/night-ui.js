@@ -97,6 +97,65 @@ function cutIn(cid, sub) {
   return ms;
 }
 
+/* まぜる演出：2枚がシュッと飛び出して、まんなかでガキーン → できたカードがあらわれて、調理台のマスへ飛んでいく。終わったら done */
+function cardSpot(p) {
+  const el = document.querySelector(p.where === 'shop' ? `.handcard[data-i="${p.i}"] .pc` : `.tslot[data-w="board"][data-i="${p.i}"] .pc`);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: el.offsetWidth };
+}
+function mixFx(from, ca, cb, cr, to, done) {
+  const tile = document.querySelector(`.tslot[data-w="board"][data-i="${to}"]`), tc = tile && tile.querySelector('.pc');
+  const end = () => { if (tc) { tc.style.visibility = ''; replay(tc, 'born'); } done(); };
+  if (REDUCED || !from[0] || !from[1] || !tc || !tc.animate) return end();
+  tc.style.visibility = 'hidden';
+  const W = innerWidth, H = innerHeight, cx = W / 2, cy = H * 0.44, S = Math.min(W * 0.26, 112);
+  const FLY = 460, HOLD = 560, LAND = 260;
+  const ov = document.createElement('div');
+  ov.className = 'mixfx'; ov.style.setProperty('--cy', cy + 'px');
+  ov.innerHTML = '<i class="mf-flash"></i><i class="mf-burst"></i><i class="mf-ring"></i><b class="mf-sfx">ガキーン！</b>';
+  document.body.appendChild(ov);
+  const card = (cid, f, w, cls = '') => {
+    const c = document.createElement('div');
+    c.className = 'mf-card ' + cls; c.innerHTML = cardMini(cid);
+    Object.assign(c.style, { width: w + 'px', left: f.x - w / 2 + 'px', top: f.y - w * 0.7 + 'px' });
+    ov.appendChild(c); return c;
+  };
+  /* 1. シュッと飛び出す → 2. 加速してまんなかへ → 3. ぶつかる（残像が2枚ついてくる） */
+  const left = from[0].x <= from[1].x ? -1 : 1, moving = [];
+  [[ca, from[0], left], [cb, from[1], -left]].forEach(([cid, f, side]) => {
+    const k = S / f.w, ty = cy - f.y;
+    const keys = [
+      { transform: 'translate(0,0) scale(1) rotate(0deg)', easing: 'cubic-bezier(.2,1.6,.4,1)' },
+      { transform: `translate(0,-28px) scale(1.15) rotate(${side * 8}deg)`, offset: .32, easing: 'cubic-bezier(.6,0,1,.6)' },
+      { transform: `translate(${cx + side * S * 0.8 - f.x}px,${ty}px) scale(${k}) rotate(${side * 14}deg)`, offset: .82 },
+      { transform: `translate(${cx + side * S * 0.18 - f.x}px,${ty}px) scale(${k * 1.06}) rotate(${side * 4}deg)` },
+    ];
+    [2, 1, 0].forEach(g => {
+      const el = card(cid, f, f.w, g ? 'ghost g' + g : '');
+      el.animate(keys, { duration: FLY, delay: g * 45, fill: 'both' });
+      moving.push(el);
+    });
+  });
+  /* ガキーン：白く光って、ゆれて、光の線。できたカードがまんなかに出る */
+  let R;
+  setTimeout(() => {
+    ov.classList.add('hit');
+    replay(document.querySelector('.night'), 'quake');
+    moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }));
+    R = card(cr, { x: cx, y: cy }, S * 1.2, 'mf-res');
+    R.animate([{ transform: 'scale(.2) rotate(-12deg)', opacity: 0 }, { transform: 'scale(1.22) rotate(3deg)', opacity: 1, offset: .55 }, { transform: 'scale(1) rotate(0deg)', opacity: 1 }],
+      { duration: 380, easing: 'ease-out', fill: 'forwards' });
+  }, FLY + 50);
+  /* できたカードが、調理台のマスへ飛んでいく */
+  setTimeout(() => {
+    const t = tile.getBoundingClientRect(), k = tile.offsetWidth / (S * 1.2);
+    R.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${t.left + t.width / 2 - cx}px,${t.top + t.height / 2 - cy}px) scale(${k})`, opacity: .85 }],
+      { duration: LAND, easing: 'cubic-bezier(.5,0,.9,.5)', fill: 'forwards' });
+  }, FLY + 50 + HOLD);
+  setTimeout(() => { ov.remove(); end(); }, FLY + 50 + HOLD + LAND);
+}
+
 /* ほのかの立ち絵：バトルは右向きのかまえ。表情の絵は左向きなので左右反転して右向きにする */
 const HERO = { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true] };
 function heroPick(k) { const [n, flip] = HERO[k]; return ART[n] ? { src: ART[n], flip } : { src: ART.honoka || big(CHEF_SPR[0], 8), flip: !!ART.honoka }; }
@@ -153,22 +212,23 @@ function sellBtn() {
 }
 /* まぜる？：2枚と、できるカードを並べて見せる（できるものがわかってから決める） */
 function askHTML() {
-  const s = N.sel, a = mixSrc(), b = N.board[N.ask]; if (!a || !b) return '';
-  const r = mixResult(a, b), d = cardDef(r.cid), shop = s.where === 'shop', free = N.round === 1, cost = cardDef(a.cid).cost;
+  const p = N.sel, q = N.ask, a = cardAt(p), b = cardAt(q); if (!a || !b) return '';
+  const r = mixResult(a, b), d = cardDef(r.cid), P = mixPlan(p, q), ng = mixNg(P), free = N.round === 1;
   const flash = d.star === 2 && d.food && S.recipes[r.cid.slice(2)] == null;
   const cook = d.dough ? `<p class="mx-fx">焼き加減 ${r.cook}/${COOK_MAX}（2枚の低いほう）</p>` : '';
+  const price = P.n ? ` <small>${free ? `無料${P.n}まい` : 'コイン' + P.cost}</small>` : '';
   return `<div class="viewer soft" data-act="noAsk"><div class="vbox mixbox" data-act="noop">
     <p class="mx-ttl">まぜる？</p>
     <div class="mx-row"><div class="mx-in">${cardMini(a.cid)}</div><b class="mx-op">+</b><div class="mx-in">${cardMini(b.cid)}</div><b class="mx-op">→</b><div class="mx-out">${cardMini(r.cid)}</div></div>
     <p class="mx-name">${'★'.repeat(d.star)} ${esc(d.name)}</p>
-    <p class="mx-fx">${esc(d.cat === 'field' ? '' : fxText(d.fx, d.star))}</p>${cook}
-    ${flash ? '<p class="mx-flash">はじめての組み合わせ！ レシピがひらめく</p>' : ''}
-    <div class="vbtns"><button class="pill sub" data-act="noAsk">やめる</button>${shop ? '' : '<button class="pill sub" data-act="swapAsk">入れかえ</button>'}<button class="pill go2" data-act="mixOk" ${shop && !free && N.coins < cost ? 'disabled' : ''}>まぜる${shop ? ` <small>${free ? '無料' : 'コイン' + cost}</small>` : ''}</button></div></div></div>`;
+    <p class="mx-fx">${esc(fxText(d.fx, d.star))}</p>${cook}
+    ${flash ? '<p class="mx-flash">はじめての組み合わせ！ レシピがひらめく</p>' : ''}${ng ? `<p class="vhint">${ng}</p>` : ''}
+    <div class="vbtns"><button class="pill sub" data-act="noAsk">やめる</button>${p.where === 'board' && q.where === 'board' ? '<button class="pill sub" data-act="swapAsk">入れかえ</button>' : ''}<button class="pill go2" data-act="mixOk" ${ng ? 'disabled' : ''}>まぜる${price}</button></div></div></div>`;
 }
-/* 手札（仕入れ）：残っているカードだけを扇形に並べる。調理台のカードとまぜられるものには「まぜ」の目じるし */
-function handHTML() {
+/* 手札（仕入れ）：残っているカードだけを扇形に並べる。調理台のカードとまぜられるものには「まぜ」の目じるし・えらんだカードとまぜられるものは光る */
+function handHTML(T) {
   const left = N.shop.map((c, i) => [c, i]).filter(([c]) => c);
-  return `<div class="hand" style="--n:${left.length}"><span class="hand-lbl">仕入れ</span>${left.map(([c, i], k) => `<button class="handcard${N.sel && N.sel.where === 'shop' && N.sel.i === i ? ' sel' : ''}" style="--k:${k}" data-act="card" data-w="shop" data-i="${i}">${cardMini(c, { cost: N.round === 1 ? '無料' : cardDef(c).cost })}${!N.sel && mixesWithBoard(c) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')}</div>`;
+  return `<div class="hand" style="--n:${left.length}"><span class="hand-lbl">仕入れ</span>${left.map(([c, i], k) => `<button class="handcard${N.sel && N.sel.where === 'shop' && N.sel.i === i ? ' sel' : ''}${T.hand.includes(i) ? ' can' : ''}" style="--k:${k}" data-act="card" data-w="shop" data-i="${i}">${cardMini(c, { cost: N.round === 1 ? '無料' : cardDef(c).cost })}${!N.sel && mixesWithBoard(c) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')}</div>`;
 }
 /* えらんだときの案内（行き先は光っている） */
 function guideText() {
@@ -176,7 +236,7 @@ function guideText() {
   const d = cardDef(a.cid), T = targets();
   if (s.where === 'field') return 'いつでも効いている。新しいのを買うと入れかわる';
   if (d.cat === 'field') return '左の「場」をタップで置く';
-  if (T.mix.length) return `光るカードで まぜる・マスへ ${s.where === 'board' ? 'うごかす' : '置く'}`;
+  if (T.mix.length || T.hand.length) return `光るカードで まぜる・マスへ ${s.where === 'board' ? 'うごかす' : '置く'}`;
   const who = d.star >= 3 ? '★3は完成' : `まぜる相手は ${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : '生地か素材'}の★${d.star}`;
   if (s.where === 'board') return `マスへ うごかす・${who}`;
   return T.put.length ? `マスに置く・${who}` : '調理台がいっぱい。うるか、まぜてから';
@@ -210,7 +270,7 @@ function renderNight() {
         const on = N.sel && N.sel.where === 'board' && N.sel.i === i, put = !c && T.put.includes(i);
         return `<button class="tslot${on ? ' sel' : ''}${T.mix.includes(i) ? ' can' : ''}${put ? ' put' : ''}" data-act="card" data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook }) : ''}${c && idle && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`;
       }).join('')}</div>
-      <div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}</div>
+      <div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML(T) : '<div class="hand"></div>'}</div>
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
   }
