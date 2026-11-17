@@ -555,3 +555,101 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .night.dragging .hand.put{border-radius:12px;box-shadow:inset 0 0 0 2px rgba(255,214,120,.7);background:rgba(244,194,78,.12)}
 .night.dragging .hand.put.over{background:rgba(244,194,78,.3)}
 .bar .bake{flex:1;margin-left:0}
+
+/* ===== 今どきのゲームの見た目（11/17 夜 しょーくん「近代のゲームレベルに」・コードで描く C） =====
+   ・見出しと大きな数字は Dela Gothic One（OFL）。本文は Zen Maru Gothic のまま
+   ・木のお店：くるみの壁＋真ちゅうの縁。ショップはいちごとクリームのしましまの日よけ。手札はギンガムの布の上
+   ・ボタンは光沢と厚み・ときどき光が走る。バトル！は炎のオレンジ */
+:root{--disp:"Dela Gothic One","Zen Maru Gothic","Hiragino Sans",sans-serif;--brass:#d9a85a;--brass-hi:#ffe2a0;--brass-lo:#7a4e1c}
+body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transparent 62%),radial-gradient(150% 90% at 50% 120%,rgba(0,0,0,.6),transparent 60%),repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,rgba(255,220,180,.03) 2px 3px,transparent 3px 64px),linear-gradient(#5e3c28,#3a2418)}
+
+/* 舞台：真ちゅうの額ぶち・内がわの影（すみを暗く） */
+.stage{border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),inset 0 0 40px 8px rgba(20,8,2,.55),0 4px 0 rgba(0,0,0,.4),0 12px 24px rgba(0,0,0,.45)}
+.stage::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;background:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(20,8,2,.45))}
+.stage .chef,.stage .mon{z-index:2}
+.stage::before{content:"";position:absolute;left:4%;right:4%;bottom:3%;height:12%;z-index:1;pointer-events:none;
+  background:radial-gradient(30% 50% at 22% 50%,rgba(0,0,0,.45),transparent 70%),radial-gradient(22% 45% at 82% 50%,rgba(0,0,0,.4),transparent 70%)}
+.ov-top{z-index:6}
+.ov-top>span{padding:2px 9px;border-radius:9px;background:linear-gradient(rgba(42,23,12,.78),rgba(42,23,12,.6));box-shadow:inset 0 0 0 1px rgba(255,214,140,.45)}
+.ov-top .score b{font-family:var(--disp);font-weight:400;font-size:21px;color:#ffe08a;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
+.ov-heat{z-index:6}
+.stage .float.dmg{z-index:7;font-family:var(--disp);font-weight:400;font-size:30px;color:#fff3c0;-webkit-text-stroke:5px #7a1a04;paint-order:stroke fill;text-shadow:0 3px 0 #3a0c02,0 0 16px rgba(255,140,40,.9);animation:dmgfly .9s cubic-bezier(.2,1.4,.4,1) forwards}
+.stage .float.dmg.big{font-size:42px}
+.stage .float.dmg.huge{font-size:54px;color:#ffe066}
+@keyframes dmgfly{0%{opacity:0;transform:translateX(-50%) scale(2.6) rotate(-8deg)}18%{opacity:1;transform:translateX(-50%) scale(1) rotate(-4deg)}75%{opacity:1;transform:translateX(-50%) translateY(-18px) scale(1) rotate(-4deg)}100%{opacity:0;transform:translateX(-50%) translateY(-34px) scale(.9) rotate(-4deg)}}
+
+/* バトルの演出：ほのかの火の玉 → モンスターに当たって、光の輪と火花（hitFx） */
+.fx-ball{position:absolute;z-index:6;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 40% 40%,#fffbe0 0,#ffd45a 28%,#ff7a24 56%,rgba(220,60,20,0) 72%);box-shadow:0 0 18px 8px rgba(255,140,40,.65)}
+.fx-ball::after{content:"";position:absolute;right:60%;top:30%;width:60px;height:40%;border-radius:999px;background:linear-gradient(90deg,transparent,rgba(255,170,60,.75));filter:blur(2px)}
+.fx-hit{position:absolute;z-index:6;width:120px;height:120px;margin:-60px 0 0 -60px;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,#fff 0,rgba(255,240,190,.95) 14%,rgba(255,150,50,.7) 34%,rgba(255,90,30,0) 62%);animation:fxhit .42s ease-out forwards}
+.fx-hit.big{width:190px;height:190px;margin:-95px 0 0 -95px}
+.fx-hit::before{content:"";position:absolute;inset:-30%;border-radius:50%;background:repeating-conic-gradient(rgba(255,226,140,.9) 0 4deg,transparent 4deg 20deg);-webkit-mask:radial-gradient(circle,transparent 0 22%,#000 32%,transparent 66%);mask:radial-gradient(circle,transparent 0 22%,#000 32%,transparent 66%)}
+.fx-hit::after{content:"";position:absolute;inset:18%;border-radius:50%;border:4px solid #fff3c0;animation:fxring .42s ease-out forwards}
+@keyframes fxhit{0%{opacity:1;transform:scale(.3) rotate(0)}60%{opacity:1}100%{opacity:0;transform:scale(1.25) rotate(30deg)}}
+@keyframes fxring{from{transform:scale(.4);opacity:1}to{transform:scale(1.9);opacity:0;border-width:1px}}
+.fx-spark{position:absolute;z-index:6;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:2px;pointer-events:none;background:#ffd45a;box-shadow:0 0 6px 2px rgba(255,170,60,.85)}
+.stage.quake{animation:quake .32s linear}
+.stage.quake2{animation:quake2 .42s linear}
+.mon.hit{animation:hit2 .34s}
+@keyframes hit2{0%{filter:brightness(3) saturate(.3) drop-shadow(0 6px 6px rgba(0,0,0,.45))}20%{translate:10px -2px;scale:1.04 .96}45%{translate:-6px 0;scale:.98 1.03}70%{translate:3px 0}100%{translate:0;scale:1}}
+
+/* ノルマのゲージ：真ちゅうの枠と金のつや */
+.quota{font-weight:700}
+.qbar{height:10px;border-radius:6px;background:linear-gradient(#24130a,#3a2418);box-shadow:inset 0 1px 2px rgba(0,0,0,.7),0 0 0 1.5px rgba(217,168,90,.65)}
+.qbar i{border-radius:6px;background:linear-gradient(#ffe9a8,var(--gold) 45%,#e08a2a);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 8px rgba(255,190,80,.7)}
+#qtext{font-family:var(--disp);font-weight:400;font-size:11px;color:var(--milk);letter-spacing:.5px}
+
+/* 調理台：真ちゅうのふちの天板。マスは丸みのあるくぼみ。番号は金貨 */
+.tiles{background:radial-gradient(100% 140% at 50% 0%,rgba(255,226,170,.18),transparent 60%),repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 40px),linear-gradient(#7a5236,#4a2f20);
+  box-shadow:inset 0 0 0 2px rgba(255,214,140,.55),inset 0 2px 0 rgba(255,240,210,.35),inset 0 -4px 0 rgba(0,0,0,.35),0 4px 0 #24130a,0 10px 18px rgba(0,0,0,.4)}
+.tslot{background:radial-gradient(70% 60% at 50% 40%,rgba(255,220,170,.08),rgba(20,8,2,.35));box-shadow:inset 0 3px 7px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,214,140,.18)}
+.tslot .ord{font-family:var(--disp);font-weight:400;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 55%,#b97a12);box-shadow:0 0 0 1.5px #3a1c08,0 1px 2px rgba(0,0,0,.5)}
+
+/* 手札：ギンガムの布の上に並べる（いちごとクリーム・ステッチのふち） */
+.night .handwrap{border-radius:14px;
+  background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);
+  box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
+.night .handwrap::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}
+.hand-n{right:12px;bottom:9px;padding:1px 8px;border-radius:8px;background:rgba(42,20,10,.6);color:var(--milk)}
+.hand-empty{padding:8px 14px;border-radius:10px;background:rgba(42,20,10,.45);color:var(--milk)}
+
+/* ボタン：光沢と厚み。ときどき光が走る */
+button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);color:#fff4e4;border:2px solid #2a170c;box-shadow:inset 0 2px 0 rgba(255,236,200,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 #2a170c;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+.go2,button.go2{background:linear-gradient(#ffb3c2,#f0708a 50%,#c8445e);border:2px solid #5a1424;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),inset 0 -3px 0 rgba(90,10,30,.35),0 3px 0 #5a1424}
+.big{font-family:var(--disp);font-weight:400;letter-spacing:2px;background:linear-gradient(#ffd27a,#ffa04a 45%,#e0782a);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -4px 0 rgba(120,40,0,.35),0 4px 0 #3a1c08}
+.bake{position:relative;overflow:hidden;height:56px;font-family:var(--disp);font-weight:400;font-size:25px;letter-spacing:6px;color:#fff;-webkit-text-stroke:4px #6a1c04;paint-order:stroke fill;text-shadow:0 3px 0 #4a1002;
+  border:3px solid #3a1004;background:linear-gradient(#ffe08a 0%,#ffa848 30%,#f46a2a 62%,#c43c18 100%);
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.6),inset 0 -6px 0 rgba(120,24,0,.45),0 5px 0 #3a1004,0 10px 22px rgba(255,110,40,.45)}
+.bake::before{content:"";position:absolute;left:10%;right:10%;top:4px;height:38%;border-radius:999px;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,0));pointer-events:none}
+.bake::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);animation:btnshine 3.2s ease-in-out infinite;pointer-events:none}
+@keyframes btnshine{0%,70%{left:-40%}100%{left:130%}}
+.bake:disabled{opacity:1;filter:grayscale(.65) brightness(.75)}
+.bake:disabled::after{display:none}
+.bake:active:not(:disabled){transform:translateY(3px);box-shadow:inset 0 3px 0 rgba(255,255,255,.6),inset 0 -4px 0 rgba(120,24,0,.45),0 2px 0 #3a1004}
+
+/* ショップ：いちごとクリームのしましまの日よけ・看板・あたたかい明かり */
+.shopov{padding-top:24px;background:radial-gradient(80% 55% at 50% 30%,rgba(255,214,150,.32),transparent 72%),repeating-linear-gradient(90deg,rgba(0,0,0,.1) 0 2px,transparent 2px 38px),linear-gradient(#8a5a38,#5a3824)}
+.shopov::before{content:"";position:absolute;left:0;right:0;top:0;height:22px;border-radius:11px 11px 0 0;
+  background:repeating-linear-gradient(90deg,#e8607a 0 24px,#fff4e4 24px 48px);
+  -webkit-mask:radial-gradient(12px 9px at 12px 13px,#000 98%,transparent) 0 0/24px 22px repeat-x,linear-gradient(#000 0 13px,transparent 13px);mask:radial-gradient(12px 9px at 12px 13px,#000 98%,transparent) 0 0/24px 22px repeat-x,linear-gradient(#000 0 13px,transparent 13px);
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.sh-ttl{font-family:var(--disp);font-weight:400;font-size:15px;letter-spacing:3px;color:#ffe9b0;padding:3px 12px;border-radius:7px;background:linear-gradient(#5a3822,#3a2214);box-shadow:inset 0 0 0 1.5px var(--brass),0 2px 0 rgba(0,0,0,.4);-webkit-text-stroke:0}
+.sh-coin b,.sh-free b{font-family:var(--disp);font-weight:400}
+.sh-coin{padding:2px 10px 2px 6px;border-radius:999px;background:rgba(42,20,10,.55);box-shadow:inset 0 0 0 1px rgba(255,214,140,.4)}
+.sh-price{font-family:var(--disp);font-weight:400;background:linear-gradient(#fffaf0,#f4e0c0);box-shadow:0 0 0 2px #3a1c08,inset 0 1px 0 #fff,0 3px 0 rgba(0,0,0,.35)}
+.shcard:not(.sold)::after{content:"";position:absolute;left:8%;right:8%;bottom:-6px;height:10px;z-index:-1;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(3px)}
+
+/* 大きく見る画面・バトルの説明・結果：羊皮紙と真ちゅうのふち */
+.viewer{background:radial-gradient(90% 70% at 50% 40%,rgba(60,26,8,.6),rgba(14,6,2,.88))}
+.cinfo,.callout{background:linear-gradient(#fffaf0,#f6e4c8);box-shadow:inset 0 0 0 1.5px rgba(217,168,90,.8),0 3px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35)}
+.ci-name{font-family:var(--disp);font-weight:400;font-size:17px;letter-spacing:1px}
+.vbox.result{background:radial-gradient(90% 60% at 50% 0%,rgba(255,214,150,.25),transparent 70%),linear-gradient(#8a5a38,#5a3824);box-shadow:inset 0 0 0 2px var(--brass),0 6px 0 rgba(0,0,0,.4),0 14px 30px rgba(0,0,0,.5)}
+.r-num{font-family:var(--disp);font-weight:400;font-size:46px;color:#ffe08a;-webkit-text-stroke:5px #4a1a04;text-shadow:0 4px 0 #2a0c02,0 0 20px rgba(255,180,60,.6)}
+.r-msg{font-family:var(--disp);font-weight:400;letter-spacing:1px}
+.co-dmg{font-family:var(--disp);font-weight:400}
+.pc-pow{font-family:var(--disp);font-weight:400}
+.mf-sfx,.mf-name span,.ci-title span{font-family:var(--disp);font-weight:400}
+.title h1{font-family:var(--disp);font-weight:400;letter-spacing:2px;color:#ffd27a;-webkit-text-stroke:6px #4a1a04;paint-order:stroke fill;text-shadow:0 5px 0 #2a0c02,0 0 24px rgba(255,170,60,.5)}
+#floats{z-index:6}

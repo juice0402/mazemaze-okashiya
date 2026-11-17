@@ -28,6 +28,30 @@ function floatAt(el, text, cls = '') {
   el.appendChild(f); setTimeout(() => f.remove(), 1000);
 }
 function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+/* バトルの一撃：ほのかの手から火の玉 → モンスターに当たって光の輪と火花 → 大きな数字。ノルマにくらべて大きいほど派手に（big・huge） */
+function hitFx(dmg, q) {
+  const st = $('stage'), fl = $('floats'), mon = $('mon'), chef = $('chef');
+  replay(chef, 'act');
+  const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '';
+  const land = () => { replay(mon, 'hit'); floatAt(fl, fmt(dmg), 'dmg ' + size); if (size) replay(st, size === 'huge' ? 'quake2' : 'quake'); };
+  if (REDUCED || !st || !fl || !mon || !chef || !st.animate) return land();
+  const S = st.getBoundingClientRect(), c = chef.getBoundingClientRect(), m = mon.getBoundingClientRect();
+  const x0 = c.right - S.left - c.width * 0.18, y0 = c.top - S.top + c.height * 0.32, x1 = m.left - S.left + m.width * 0.45, y1 = m.top - S.top + m.height * 0.5;
+  const add = (cls, x, y) => { const e = document.createElement('i'); e.className = cls; e.style.left = x + 'px'; e.style.top = y + 'px'; fl.appendChild(e); return e; };
+  const ball = add('fx-ball', x0, y0), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+  ball.animate([{ transform: `translate(0,0) rotate(${ang}deg) scale(.5)` }, { transform: `translate(${(x1 - x0) / 2}px,${(y1 - y0) / 2 - 18}px) rotate(${ang}deg) scale(1.1)`, offset: .5 }, { transform: `translate(${x1 - x0}px,${y1 - y0}px) rotate(${ang}deg) scale(1.2)` }],
+    { duration: 190, easing: 'ease-in', fill: 'forwards' });
+  setTimeout(() => {
+    ball.remove(); land();
+    const h = add('fx-hit' + (size ? ' big' : ''), x1, y1); setTimeout(() => h.remove(), 460);
+    for (let i = 0, n = size ? 14 : 8; i < n; i++) {
+      const sp = add('fx-spark', x1, y1), a = Math.random() * Math.PI * 2, r = 30 + Math.random() * (size ? 70 : 40);
+      sp.animate([{ transform: 'translate(0,0) rotate(45deg)', opacity: 1 }, { transform: `translate(${Math.cos(a) * r}px,${Math.sin(a) * r + 14}px) rotate(225deg) scale(.3)`, opacity: 0 }],
+        { duration: 380 + Math.random() * 200, easing: 'cubic-bezier(.15,.8,.3,1)', fill: 'forwards' });
+      setTimeout(() => sp.remove(), 620);
+    }
+  }, 190);
+}
 /* バトルの演出：はじめの「焼き」は生地のタイルがいっせいにジュッ。発動はタイルがコンと跳ね、タイル行の下の説明に効果とダメージを大きく出す */
 function showEvent(e, run, q) {
   document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
@@ -52,7 +76,7 @@ function showEvent(e, run, q) {
     if (c2) replay(c2, 'sear');
     if (e.sear.burnt) burntFx(c2 && c2.parentNode);
   }
-  if (e.dmg > 0) { replay($('mon'), 'hit'); replay($('chef'), 'act'); floatAt($('floats'), fmt(e.dmg), 'dmg'); }
+  if (e.dmg > 0) hitFx(e.dmg, q);
   $('score').textContent = fmt(N.score + run);
   $('qfill').style.width = Math.min(100, run / q * 100) + '%';
   $('qtext').textContent = `${fmt(run)} / ノルマ ${fmt(q)}`;
