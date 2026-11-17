@@ -160,10 +160,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.s2 .pc-shine{opacity:1;animation:shine 3.6s ease-in-out infinite}
 .pc.s3 .pc-shine{opacity:.9;background:linear-gradient(115deg,transparent 18%,rgba(255,170,90,.4) 34%,rgba(255,250,200,.45) 50%,rgba(210,140,255,.4) 64%,transparent 80%);background-size:250% 100%;mix-blend-mode:overlay;animation:shine 2.4s linear infinite}
 /* 名前のリボン（両はしが切れこんだ帯・上下に金の線） */
-.pc-name{position:absolute;left:2.5cqw;right:2.5cqw;top:64.5%;height:11%;z-index:3;display:flex;align-items:center;justify-content:center;padding:0 8cqw;
+.pc-name{position:absolute;left:2.5cqw;right:2.5cqw;top:64.5%;height:11%;z-index:3;display:flex;align-items:center;justify-content:center;padding:0 5.5cqw;
   background:linear-gradient(var(--rim) 0 1px,transparent 1px calc(100% - 1px),var(--rim) calc(100% - 1px)),linear-gradient(#6a3c22,#3a1e10 55%,#2a1309);
   clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,5% 50%)}
-.pc-name span{min-width:0;font-size:10cqw;font-weight:900;line-height:1;color:#fff4dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000}
+.pc-name span{min-width:0;font-size:9.8cqw;letter-spacing:-.02em;font-weight:900;line-height:1;color:#fff4dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000}
 /* 効果の紙（2行まで） */
 .pc-text{position:absolute;left:5.5cqw;right:5.5cqw;top:77%;bottom:4.2%;z-index:2;margin:0;display:flex;align-items:center;justify-content:center;padding:0 3cqw;border-radius:3.5cqw;
   background:linear-gradient(#fffaf0,#f0d9b6);box-shadow:inset 0 0 0 1px rgba(90,50,20,.4),inset 0 1.5cqw 0 rgba(255,255,255,.6)}
@@ -174,11 +174,13 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc-cost::before{content:"";position:absolute;inset:3.5cqw;z-index:-1;transform:rotate(45deg);border-radius:4cqw;background:radial-gradient(circle at 35% 30%,#fff7cc,#f4c24e 45%,#b0700c);box-shadow:0 0 0 1.2cqw #4a2408,0 0 0 2cqw #ffe9b0,0 2px 3px rgba(0,0,0,.45)}
 .pc-cost.txt{left:2.5cqw;top:2.5cqw;width:auto;height:15cqw;padding:0 3.5cqw;font-size:8.5cqw;-webkit-text-stroke:.8cqw #3a1408}
 .pc-cost.txt::before{inset:0;transform:none;border-radius:8cqw}
+.pc:not(.np) .pc-cost{top:25cqw;width:22cqw;height:22cqw;font-size:11.5cqw}
+.pc:not(.np) .pc-cost.txt{top:28cqw;width:auto;height:13cqw;font-size:7.5cqw}
 /* ★（右上） */
 .pc-star{position:absolute;left:0;right:0;top:1.5cqw;z-index:5;text-align:center;font-size:12cqw;line-height:1;letter-spacing:-1.5cqw;color:#ffe066;-webkit-text-stroke:.9cqw #7a4204;paint-order:stroke fill;text-shadow:0 0 2.5cqw rgba(255,220,90,.95)}
 /* ダメージの紋章（炎の丸・ふちはレア度の色） */
-/* ダメージの紋章：炎の形（しずくを上向きに）。数字は炎のふくらみのまんなか */
-.pc-pow{position:absolute;left:2.5cqw;top:43%;z-index:5;width:28cqw;height:28cqw;display:grid;place-items:center;padding-top:14%;isolation:isolate;
+/* ダメージの紋章：左上に炎の形（しずくを上向きに。右上は手札の重なりでかくれるので左上・11/17 しょーくん）。数字は炎のふくらみのまんなか。コストの宝石はその下へ */
+.pc-pow{position:absolute;left:-2cqw;top:-2cqw;z-index:5;width:28cqw;height:28cqw;display:grid;place-items:center;padding-top:14%;isolation:isolate;
   font-size:13cqw;line-height:1;font-weight:900;color:#fff;-webkit-text-stroke:1.1cqw #4a1404;paint-order:stroke fill}
 .pc-pow::before{content:"";position:absolute;left:15%;top:24%;z-index:-1;width:70%;height:70%;border-radius:50% 0 50% 50%;transform:rotate(-45deg);
   background:radial-gradient(circle at 62% 38%,#fff2b8 0,#ffc04a 26%,#ff7a24 52%,#c9301a 80%,#7a1a08);box-shadow:0 0 0 1.1cqw #3a1408,0 0 0 2.2cqw var(--rim),.8cqw 1.4cqw 2.4cqw rgba(0,0,0,.5)}
@@ -188,7 +190,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes fire{50%{transform:translateY(-6px) scale(1.07);filter:brightness(1.25) drop-shadow(0 0 8px var(--ember))}}
 @keyframes born{0%{transform:scale(.4) rotate(-10deg);filter:brightness(2.2)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 /* 手札などの小さいカードは、重なっても見えるように左よせ（名前・効果）。大きく見るカードはまんなか */
-.pc.mini .pc-name{justify-content:flex-start;padding-left:7cqw}
+.pc.mini .pc-name{justify-content:flex-start;padding-left:6cqw}
 .pc.mini .pc-text{justify-content:flex-start}
 .pc.mini .pc-text span{text-align:left}
 /* 大きなカード */
@@ -341,8 +343,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .ci-fx{font-size:14px;font-weight:700;line-height:1.45}
 .ci-dmg{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:700;color:#8a3a10}.ci-dmg b{color:#c4501a;font-size:17px}
 .ci-dmg i{width:11px;height:11px;margin:3px 2px 0;border-radius:50% 0 50% 50%;transform:rotate(-45deg);background:radial-gradient(circle at 62% 38%,#ffd36a,#ff7a24 55%,#c9301a)}
+.ci-sub{margin-top:-3px;font-size:11px;color:var(--ink-soft);text-align:center}
+.cinfo .ci-chips{justify-content:center}.cinfo .ci-chips span{font-size:12px;line-height:1.35}
 .ci-cook{font-size:12px;font-weight:700;color:#8a3a10;text-align:center}.ci-cook b{color:#c4501a;font-size:15px}
-.ci-recipe{font-size:12px;color:var(--ink-soft)}
+.ci-recipe{font-size:11px;line-height:1.4;color:var(--ink-soft);text-align:center}
 .ci-flavor{font-size:11.5px;font-style:italic;color:var(--ink-soft);line-height:1.45}
 .vbtns{width:100%;display:flex;gap:8px;justify-content:center}
 .vbtns .pill{flex:1}
@@ -661,13 +665,13 @@ const MATS = {
   dosshiri: { cat: 'dough', name: 'ゴーレム粉のどっしり生地', short: 'どっしり生地', taste: 'こくまろ', adj: 'どっしり', noun: 'クッキー', nr: 9, value: 25, col: '#a8743c', fx: { dmg: 60, spd: -1 } },
   hinoko:   { cat: 'dough', name: 'サラマンダーのひのこ生地', short: 'ひのこ生地', taste: 'こんがり', adj: 'ひのこ', noun: 'クッキー', nr: 9, value: 20, col: '#f0702a', fx: { dmg: 20, spd: 1 } },
   ichiban:  { cat: 'dough', name: 'いちばんのりクッキー生地', short: 'いちばん生地', taste: 'さくさく', adj: 'いちばん', noun: 'クッキー', nr: 9, value: 20, col: '#f6d36b', fx: { dmg: 30, lead: 2 } },
-  shime:    { cat: 'dough', name: 'しめくくりクッキー生地', short: 'しめくくり生地', taste: 'さくさく', adj: 'しめくくり', noun: 'クッキー', nr: 9, value: 20, col: '#e8a0b0', fx: { dmg: 20, sai: 2 } },
+  shime:    { cat: 'dough', name: 'しめくくりクッキー生地', short: 'しめくくり生地', taste: 'さくさく', adj: 'しめの', noun: 'クッキー', nr: 9, value: 20, col: '#e8a0b0', fx: { dmg: 20, sai: 2 } },
   horoniga: { cat: 'dough', name: 'ほろにがココア生地', short: 'ほろにが生地', taste: 'こんがり', adj: 'ほろにが', noun: 'クッキー', nr: 9, value: 20, col: '#6b3a1e', fx: { dmg: 30, bitter: 1 } },
   /* ほのかの素材（支援・ほのかのビルドどうしで共通） */
   bata:   { cat: 'mat', name: 'ゴーゴーヤギのバター', short: 'ヤギバター', taste: 'こくまろ', adj: 'バター', noun: 'サブレ', nr: 2, value: 20, col: '#f6d36b', fx: { nb: 30 } },
   sato:   { cat: 'mat', name: 'こんぺいトカゲの砂糖', short: 'トカゲ砂糖', taste: 'あまい', adj: 'あまあま', noun: 'キャンディ', nr: 1, value: 15, col: '#f28cab', fx: { next: 2 } },
   tamago: { cat: 'mat', name: 'ほのお鳥のたまご', short: 'ほのおたまご', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'カステラ', nr: 4, value: 20, col: '#ffd75e', fx: { fin: 1.5 } },
-  choco:  { cat: 'mat', name: 'カカオゴーレムのかけら', short: 'ゴーレムチョコ', taste: 'とろーり', adj: 'チョコ', noun: 'ブラウニー', nr: 5, value: 25, col: '#7a4424', fx: { rally: 20 } },
+  choco:  { cat: 'mat', name: 'カカオゴーレムのかけら', short: 'ゴーレムチョコ', twin: 'ガトーショコラ', taste: 'とろーり', adj: 'チョコ', noun: 'ブラウニー', nr: 5, value: 25, col: '#7a4424', fx: { rally: 20 } },
   mitsu:  { cat: 'mat', name: 'ハチドラゴンのはちみつ', short: 'はちみつ', taste: 'あまい', adj: 'はちみつ', noun: 'キャンディ', nr: 1, value: 20, col: '#f2b33a', fx: { again: 1 } },
   /* ふしぎな材料（食材モンスターが落とす素材） */
   zeri:   { cat: 'mat', name: 'ぷるぷるスライムのゼリー', short: 'スライムゼリー', fushigi: true, taste: 'ぷるぷる', adj: 'ぷるぷる', noun: 'ゼリー', nr: 6, value: 60, col: '#7fd6e0', fx: { again: 1, nb: 20 } },
@@ -676,11 +680,11 @@ const MATS = {
 
 /* ほのかの道具（ほのかのビルドどうしで共通） */
 const TOOLS = {
-  maki:     { name: 'おばけ樹木のまき', short: 'おばけまき', role: '火力', fx: { heat: 1 } },
-  hiokoshi: { name: 'ひだねサラマンダーの火種', short: '火種', role: '火力', fx: { heat: 2 } },
-  mizu:     { name: 'しずくクラゲの水', short: 'クラゲの水', role: '火力', fx: { heat: -2 } },
-  yakigote: { name: 'サラマンダーのやきごて', short: 'やきごて', role: '火力', fx: { sear: 3 } },
-  yobirin:  { name: 'かまど職人のよびりん', short: 'よびりん', role: '仕入れ', fx: { call: 1 } },
+  maki:     { name: 'おばけ樹木のまき', short: 'おばけまき', mini: 'まき', role: '火力', fx: { heat: 1 } },
+  hiokoshi: { name: 'ひだねサラマンダーの火種', short: '火種', mini: '火種', role: '火力', fx: { heat: 2 } },
+  mizu:     { name: 'しずくクラゲの水', short: 'クラゲの水', mini: '水', role: '火力', fx: { heat: -2 } },
+  yakigote: { name: 'サラマンダーのやきごて', short: 'やきごて', mini: 'こて', role: '火力', fx: { sear: 3 } },
+  yobirin:  { name: 'かまど職人のよびりん', short: 'よびりん', mini: 'よびりん', role: '仕入れ', fx: { call: 1 } },
 };
 
 /* 焼きすぎでできるカード（仕入れには出ない）。焦げどうしでまぜて育てる */
@@ -752,12 +756,16 @@ const DMG_CAP = 9999999;           // 1回のダメージとスコアの上限
 
 /* ---------- レシピ（生地・素材の★2＝お菓子。朝に作って昼に売れる） ---------- */
 const recipeKey = (a, b) => [a, b].sort().join('+');
+/* カードの名前は8文字まで（11/17 しょーくん）。長い形の名前は、名前のときだけ短く（noun は絵をさがす名前なのでそのまま） */
+const NAME_MAX = 8;
+const NOUN_NAME = { 'シュークリーム': 'シュー', 'ブラウニー': 'ショコラ', 'キャンディ': 'ドロップ' };
+const nounName = n => NOUN_NAME[n] || n;
 function recipeOf(key) {
   const [a, b] = key.split('+'), A = MATS[a], B = MATS[b];
   const main = B.nr > A.nr ? B : A, other = main === A ? B : A;
   return {
     key, mats: [a, b],
-    name: a === b ? A.adj + A.noun : other.adj + main.noun, noun: main.noun,
+    name: a === b ? A.twin || A.adj + nounName(A.noun) : other.adj + nounName(main.noun), noun: main.noun, nr: main.nr,
     tastes: [...new Set([A.taste, B.taste])],
     price: A.value + B.value,
     needs: [a, b].filter(m => MATS[m].fushigi),
@@ -782,8 +790,13 @@ function mergeFx(a, b) {
 const CAT_NAME = { dough: '生地', mat: '素材', tool: '道具', burnt: '焦げ', field: 'フィールド' };
 const ROLE = { dough: '攻撃', mat: '支援', burnt: '攻撃' };
 const foodCat = mats => mats.some(m => MATS[m].cat === 'dough') ? 'dough' : 'mat';
-function specialName(r1, r2) { return r1.noun === r2.noun ? `特製${r1.noun}タワー` : `特製${r1.noun}＆${r2.noun}`; }
-function toolSetName(a, b) { return a === b ? 'ダブル' + TOOLS[a].short : TOOLS[a].short + '＆' + TOOLS[b].short; }
+/* ★3：同じ形どうしは「○○タワー」、ちがう形どうしは2つの形をつなげる（主役の形をうしろに） */
+function specialName(r1, r2) {
+  if (r1.noun === r2.noun) return nounName(r1.noun) + 'タワー';
+  const [x, y] = r1.nr > r2.nr || (r1.nr === r2.nr && r1.noun > r2.noun) ? [r2, r1] : [r1, r2];
+  return nounName(x.noun) + nounName(y.noun);
+}
+function toolSetName(a, b) { return a === b ? 'ダブル' + TOOLS[a].short : TOOLS[a].mini + '＆' + TOOLS[b].mini; }
 const DEFS = new Map();
 function cardDef(cid) {
   if (DEFS.has(cid)) return DEFS.get(cid);
@@ -801,7 +814,7 @@ function cardDef(cid) {
     d = { kind: 's', cat, star: 3, name: specialName(r1, r2), fx, mats, keys: [r1.key, r2.key], cost: 0 };
   }
   else if (k === 'u') { const [a, b] = id.split('+'); d = { kind: 't', cat: 'tool', role: TOOLS[a].role, star: 2, name: toolSetName(a, b), fx: mergeFx(TOOLS[a].fx, TOOLS[b].fx), mats: [], parts: [a, b], cost: 0 }; }
-  else { const [p, q] = id.split('|').map(x => cardDef('u:' + x)); d = { kind: 't', cat: 'tool', role: p.role, star: 3, name: 'ほのかの特製道具セット', fx: mergeFx(p.fx, q.fx), mats: [], parts: [...p.parts, ...q.parts], cost: 0 }; }
+  else { const [p, q] = id.split('|').map(x => cardDef('u:' + x)); d = { kind: 't', cat: 'tool', role: p.role, star: 3, name: '特製道具セット', fx: mergeFx(p.fx, q.fx), mats: [], parts: [...p.parts, ...q.parts], cost: 0 }; }
   d.cid = cid;
   d.role = d.role || ROLE[d.cat] || '';
   d.food = d.cat === 'dough' || d.cat === 'mat';
@@ -824,22 +837,23 @@ function mixCid(a, b) {
 }
 
 /* カードの効果のことば（短く。生地は焼ける・道具は発動で効く、などビルドの前提は書かない）。ダメージはカードの数字で見せる */
+/* 大事な順（カードの紙には先頭の2つだけ。ぜんぶは大きく見る画面で）。焦げない★3には「焦げると」は出さない */
 function fxList(fx, star = 1) {
   const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-  if (fx.spd) p.push(fx.spd > 0 ? '早く焼ける' : 'ゆっくり焼ける');
   if (fx.lead) p.push(`先頭で×${fx.lead}`);
   if (fx.sai) p.push(`最後：サイコー1枚×${fx.sai + 0.5 * (star - 1)}`);
-  if (fx.bitter) p.push('焦げると★2');
-  if (fx.nb) p.push(`となり+${f(fx.nb)}`);
-  if (fx.next) p.push(`つぎ×${fx.next}`);
   if (fx.fin) p.push(`最後：合計×${fx.fin}`);
   if (fx.rally) p.push(`先頭：攻撃ぜんぶ+${f(fx.rally)}`);
+  if (fx.next) p.push(`つぎ×${fx.next}`);
+  if (fx.nb) p.push(`となり+${f(fx.nb)}`);
   if (fx.again) p.push(`右がもう${fx.again}回`);
-  if (fx.heat) p.push(`火力${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
-  if (fx.sear) p.push(`右の生地を焼く+${fx.sear}`);
-  if (fx.call) p.push('次にフィールドが出る');
-  if (fx.noburn) p.push('焦げない');
   if (fx.stop) p.push('ほかの生地はサイコーで止まる');
+  if (fx.noburn) p.push('焦げない');
+  if (fx.sear) p.push(`右の生地を焼く+${fx.sear}`);
+  if (fx.heat) p.push(`火力${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
+  if (fx.call) p.push('次にフィールドが出る');
+  if (fx.bitter && !fx.noburn) p.push('焦げると★2');
+  if (fx.spd) p.push(fx.spd > 0 ? '早く焼ける' : 'ゆっくり焼ける');
   return p;
 }
 function fxText(fx, star = 1) { return fxList(fx, star).join('・'); }
@@ -1030,7 +1044,7 @@ const starGems = d => d.star > 1 ? `<span class="pc-star">${'★'.repeat(d.star)
 function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-pow l${Math.min(t.length, 5)}">${t}</b>`; }
 /* カードの形（mini と huge は同じ形で大きさだけちがう） */
 function cardFace(cid, cls, opt = {}) {
-  const d = cardDef(cid), dmg = cardDmg(d, opt.cook), text = cardChips(d).join('・');
+  const d = cardDef(cid), dmg = cardDmg(d, opt.cook), text = cardChips(d).slice(0, 2).join('・');   // 紙には大事な2つまで
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i></div>
@@ -1052,10 +1066,13 @@ function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook }); }
 /* 大きなカードの下：種類と、生地は焼き加減・お菓子は材料だけ（効果はカードに書いてある） */
 function cardInfo(cid, cook) {
   const d = cardDef(cid);
-  const recipe = d.kind === 'o' || d.kind === 's' ? `・${d.mats.map(m => MATS[m].short).join('＋')}` : '';
+  /* カードの名前（8文字まで）→ 種類 → 効果ぜんぶ（1つずつ札で）→ ダメージ・焼き加減 → 材料。★1の長い名前は、どんな材料かの小さな説明に */
+  const sub = d.name !== d.short ? `<p class="ci-sub">${esc(d.name)}</p>` : '';
+  const fx = cardChips(d), fl = fx.length ? `<p class="ci-chips">${fx.map(t => `<span>${esc(t)}</span>`).join('')}</p>` : '';
   const ck = d.dough ? `<p class="ci-cook">焼き加減 <b>${cook || 0}</b>/${COOK_MAX}　${cookName(cook || 0)}・×${fmtMul(cookMul(cook || 0))}</p>` : '';
   const dm = Math.floor(cardDmg(d, cook)), dl = dm ? `<p class="ci-dmg"><i></i>ダメージ <b>${fmt(dm)}</b></p>` : '';   // 炎の紋章の数字＝ダメージ
-  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.name)}</p><p class="ci-type">${attrsOf(d).join('・')}${recipe}</p>${dl}${ck}</div>`;
+  const mats = d.kind === 'o' || d.kind === 's' ? `<p class="ci-recipe">材料：${d.mats.map(m => MATS[m].short).join('＋')}</p>` : '';
+  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.short)}</p>${sub}<p class="ci-type">${attrsOf(d).join('・')}</p>${fl}${dl}${ck}${mats}</div>`;
 }
 
 /* ---- src/js/scene.js ---- */
@@ -1590,7 +1607,7 @@ function cutIn(cid, sub) {
   el.innerHTML = `<i class="ci-flash"></i><div class="ci-band"><i class="ci-lines"></i><div class="ci-in">
     <img class="ci-hero${h.flip ? ' flip' : ''}" src="${h.src}" alt="">
     <div class="ci-card pc k-s s3">${artImg(cid)}<i class="pc-shine"></i></div>
-    <p class="ci-title"><small>${sub}</small><span>${esc(d.name)}</span></p></div></div>`;
+    <p class="ci-title"><small>${sub}</small><span>${esc(d.short)}</span></p></div></div>`;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), ms);
   return ms;
@@ -1617,7 +1634,7 @@ function mixFx(from, ca, cb, cr, to, done, isNew) {
   const tw = [[-.62, -.5], [.6, -.36], [-.58, .42], [.64, .5]].map(([a, b], i) =>
     `<i class="mf-tw" style="left:${cx + a * RW}px;top:${cy + b * RW * 1.4}px;animation-delay:${.25 + i * .12}s"></i>`).join('');
   ov.innerHTML = `<i class="mf-dim"></i><i class="mf-lines"></i><i class="mf-burst"></i><i class="mf-flash"></i><i class="mf-ring"></i><i class="mf-ring b"></i>${tw}
-    <b class="mf-sfx">ガキーン！</b><p class="mf-name">${isNew ? '<b>レシピ ひらめき！</b>' : ''}<small>${'★'.repeat(star)}</small><span>${esc(d.name)}</span></p>`;
+    <b class="mf-sfx">ガキーン！</b><p class="mf-name">${isNew ? '<b>レシピ ひらめき！</b>' : ''}<small>${'★'.repeat(star)}</small><span>${esc(d.short)}</span></p>`;
   document.body.appendChild(ov);
   const card = (cid, f, w, cls = '') => {
     const c = document.createElement('div');
@@ -1843,7 +1860,7 @@ function dragBegin(D) {
 function dragMove(D, x, y) {
   D.x = x; D.y = y;
   /* 位置は translate・大きさは scale（指の所を中心に小さくなるだけ。transform に translate を書くと scale で位置までずれる） */
-  D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`; D.g.style.rotate = '-4deg';
+  D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`;   // まっすぐ持つ（11/17 しょーくん）
   const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
   if (k !== D.k) { D.k = k; D.g.style.scale = k; }
   const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');

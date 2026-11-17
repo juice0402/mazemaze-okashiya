@@ -18,7 +18,7 @@ const starGems = d => d.star > 1 ? `<span class="pc-star">${'★'.repeat(d.star)
 function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-pow l${Math.min(t.length, 5)}">${t}</b>`; }
 /* カードの形（mini と huge は同じ形で大きさだけちがう） */
 function cardFace(cid, cls, opt = {}) {
-  const d = cardDef(cid), dmg = cardDmg(d, opt.cook), text = cardChips(d).join('・');
+  const d = cardDef(cid), dmg = cardDmg(d, opt.cook), text = cardChips(d).slice(0, 2).join('・');   // 紙には大事な2つまで
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i></div>
@@ -40,8 +40,11 @@ function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook }); }
 /* 大きなカードの下：種類と、生地は焼き加減・お菓子は材料だけ（効果はカードに書いてある） */
 function cardInfo(cid, cook) {
   const d = cardDef(cid);
-  const recipe = d.kind === 'o' || d.kind === 's' ? `・${d.mats.map(m => MATS[m].short).join('＋')}` : '';
+  /* カードの名前（8文字まで）→ 種類 → 効果ぜんぶ（1つずつ札で）→ ダメージ・焼き加減 → 材料。★1の長い名前は、どんな材料かの小さな説明に */
+  const sub = d.name !== d.short ? `<p class="ci-sub">${esc(d.name)}</p>` : '';
+  const fx = cardChips(d), fl = fx.length ? `<p class="ci-chips">${fx.map(t => `<span>${esc(t)}</span>`).join('')}</p>` : '';
   const ck = d.dough ? `<p class="ci-cook">焼き加減 <b>${cook || 0}</b>/${COOK_MAX}　${cookName(cook || 0)}・×${fmtMul(cookMul(cook || 0))}</p>` : '';
   const dm = Math.floor(cardDmg(d, cook)), dl = dm ? `<p class="ci-dmg"><i></i>ダメージ <b>${fmt(dm)}</b></p>` : '';   // 炎の紋章の数字＝ダメージ
-  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.name)}</p><p class="ci-type">${attrsOf(d).join('・')}${recipe}</p>${dl}${ck}</div>`;
+  const mats = d.kind === 'o' || d.kind === 's' ? `<p class="ci-recipe">材料：${d.mats.map(m => MATS[m].short).join('＋')}</p>` : '';
+  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.short)}</p>${sub}<p class="ci-type">${attrsOf(d).join('・')}</p>${fl}${dl}${ck}${mats}</div>`;
 }

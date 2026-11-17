@@ -91,7 +91,7 @@ function cutIn(cid, sub) {
   el.innerHTML = `<i class="ci-flash"></i><div class="ci-band"><i class="ci-lines"></i><div class="ci-in">
     <img class="ci-hero${h.flip ? ' flip' : ''}" src="${h.src}" alt="">
     <div class="ci-card pc k-s s3">${artImg(cid)}<i class="pc-shine"></i></div>
-    <p class="ci-title"><small>${sub}</small><span>${esc(d.name)}</span></p></div></div>`;
+    <p class="ci-title"><small>${sub}</small><span>${esc(d.short)}</span></p></div></div>`;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), ms);
   return ms;
@@ -118,7 +118,7 @@ function mixFx(from, ca, cb, cr, to, done, isNew) {
   const tw = [[-.62, -.5], [.6, -.36], [-.58, .42], [.64, .5]].map(([a, b], i) =>
     `<i class="mf-tw" style="left:${cx + a * RW}px;top:${cy + b * RW * 1.4}px;animation-delay:${.25 + i * .12}s"></i>`).join('');
   ov.innerHTML = `<i class="mf-dim"></i><i class="mf-lines"></i><i class="mf-burst"></i><i class="mf-flash"></i><i class="mf-ring"></i><i class="mf-ring b"></i>${tw}
-    <b class="mf-sfx">ガキーン！</b><p class="mf-name">${isNew ? '<b>レシピ ひらめき！</b>' : ''}<small>${'★'.repeat(star)}</small><span>${esc(d.name)}</span></p>`;
+    <b class="mf-sfx">ガキーン！</b><p class="mf-name">${isNew ? '<b>レシピ ひらめき！</b>' : ''}<small>${'★'.repeat(star)}</small><span>${esc(d.short)}</span></p>`;
   document.body.appendChild(ov);
   const card = (cid, f, w, cls = '') => {
     const c = document.createElement('div');

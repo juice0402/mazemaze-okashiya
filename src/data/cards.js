@@ -18,13 +18,13 @@ const MATS = {
   dosshiri: { cat: 'dough', name: 'ゴーレム粉のどっしり生地', short: 'どっしり生地', taste: 'こくまろ', adj: 'どっしり', noun: 'クッキー', nr: 9, value: 25, col: '#a8743c', fx: { dmg: 60, spd: -1 } },
   hinoko:   { cat: 'dough', name: 'サラマンダーのひのこ生地', short: 'ひのこ生地', taste: 'こんがり', adj: 'ひのこ', noun: 'クッキー', nr: 9, value: 20, col: '#f0702a', fx: { dmg: 20, spd: 1 } },
   ichiban:  { cat: 'dough', name: 'いちばんのりクッキー生地', short: 'いちばん生地', taste: 'さくさく', adj: 'いちばん', noun: 'クッキー', nr: 9, value: 20, col: '#f6d36b', fx: { dmg: 30, lead: 2 } },
-  shime:    { cat: 'dough', name: 'しめくくりクッキー生地', short: 'しめくくり生地', taste: 'さくさく', adj: 'しめくくり', noun: 'クッキー', nr: 9, value: 20, col: '#e8a0b0', fx: { dmg: 20, sai: 2 } },
+  shime:    { cat: 'dough', name: 'しめくくりクッキー生地', short: 'しめくくり生地', taste: 'さくさく', adj: 'しめの', noun: 'クッキー', nr: 9, value: 20, col: '#e8a0b0', fx: { dmg: 20, sai: 2 } },
   horoniga: { cat: 'dough', name: 'ほろにがココア生地', short: 'ほろにが生地', taste: 'こんがり', adj: 'ほろにが', noun: 'クッキー', nr: 9, value: 20, col: '#6b3a1e', fx: { dmg: 30, bitter: 1 } },
   /* ほのかの素材（支援・ほのかのビルドどうしで共通） */
   bata:   { cat: 'mat', name: 'ゴーゴーヤギのバター', short: 'ヤギバター', taste: 'こくまろ', adj: 'バター', noun: 'サブレ', nr: 2, value: 20, col: '#f6d36b', fx: { nb: 30 } },
   sato:   { cat: 'mat', name: 'こんぺいトカゲの砂糖', short: 'トカゲ砂糖', taste: 'あまい', adj: 'あまあま', noun: 'キャンディ', nr: 1, value: 15, col: '#f28cab', fx: { next: 2 } },
   tamago: { cat: 'mat', name: 'ほのお鳥のたまご', short: 'ほのおたまご', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'カステラ', nr: 4, value: 20, col: '#ffd75e', fx: { fin: 1.5 } },
-  choco:  { cat: 'mat', name: 'カカオゴーレムのかけら', short: 'ゴーレムチョコ', taste: 'とろーり', adj: 'チョコ', noun: 'ブラウニー', nr: 5, value: 25, col: '#7a4424', fx: { rally: 20 } },
+  choco:  { cat: 'mat', name: 'カカオゴーレムのかけら', short: 'ゴーレムチョコ', twin: 'ガトーショコラ', taste: 'とろーり', adj: 'チョコ', noun: 'ブラウニー', nr: 5, value: 25, col: '#7a4424', fx: { rally: 20 } },
   mitsu:  { cat: 'mat', name: 'ハチドラゴンのはちみつ', short: 'はちみつ', taste: 'あまい', adj: 'はちみつ', noun: 'キャンディ', nr: 1, value: 20, col: '#f2b33a', fx: { again: 1 } },
   /* ふしぎな材料（食材モンスターが落とす素材） */
   zeri:   { cat: 'mat', name: 'ぷるぷるスライムのゼリー', short: 'スライムゼリー', fushigi: true, taste: 'ぷるぷる', adj: 'ぷるぷる', noun: 'ゼリー', nr: 6, value: 60, col: '#7fd6e0', fx: { again: 1, nb: 20 } },
@@ -33,11 +33,11 @@ const MATS = {
 
 /* ほのかの道具（ほのかのビルドどうしで共通） */
 const TOOLS = {
-  maki:     { name: 'おばけ樹木のまき', short: 'おばけまき', role: '火力', fx: { heat: 1 } },
-  hiokoshi: { name: 'ひだねサラマンダーの火種', short: '火種', role: '火力', fx: { heat: 2 } },
-  mizu:     { name: 'しずくクラゲの水', short: 'クラゲの水', role: '火力', fx: { heat: -2 } },
-  yakigote: { name: 'サラマンダーのやきごて', short: 'やきごて', role: '火力', fx: { sear: 3 } },
-  yobirin:  { name: 'かまど職人のよびりん', short: 'よびりん', role: '仕入れ', fx: { call: 1 } },
+  maki:     { name: 'おばけ樹木のまき', short: 'おばけまき', mini: 'まき', role: '火力', fx: { heat: 1 } },
+  hiokoshi: { name: 'ひだねサラマンダーの火種', short: '火種', mini: '火種', role: '火力', fx: { heat: 2 } },
+  mizu:     { name: 'しずくクラゲの水', short: 'クラゲの水', mini: '水', role: '火力', fx: { heat: -2 } },
+  yakigote: { name: 'サラマンダーのやきごて', short: 'やきごて', mini: 'こて', role: '火力', fx: { sear: 3 } },
+  yobirin:  { name: 'かまど職人のよびりん', short: 'よびりん', mini: 'よびりん', role: '仕入れ', fx: { call: 1 } },
 };
 
 /* 焼きすぎでできるカード（仕入れには出ない）。焦げどうしでまぜて育てる */
@@ -109,12 +109,16 @@ const DMG_CAP = 9999999;           // 1回のダメージとスコアの上限
 
 /* ---------- レシピ（生地・素材の★2＝お菓子。朝に作って昼に売れる） ---------- */
 const recipeKey = (a, b) => [a, b].sort().join('+');
+/* カードの名前は8文字まで（11/17 しょーくん）。長い形の名前は、名前のときだけ短く（noun は絵をさがす名前なのでそのまま） */
+const NAME_MAX = 8;
+const NOUN_NAME = { 'シュークリーム': 'シュー', 'ブラウニー': 'ショコラ', 'キャンディ': 'ドロップ' };
+const nounName = n => NOUN_NAME[n] || n;
 function recipeOf(key) {
   const [a, b] = key.split('+'), A = MATS[a], B = MATS[b];
   const main = B.nr > A.nr ? B : A, other = main === A ? B : A;
   return {
     key, mats: [a, b],
-    name: a === b ? A.adj + A.noun : other.adj + main.noun, noun: main.noun,
+    name: a === b ? A.twin || A.adj + nounName(A.noun) : other.adj + nounName(main.noun), noun: main.noun, nr: main.nr,
     tastes: [...new Set([A.taste, B.taste])],
     price: A.value + B.value,
     needs: [a, b].filter(m => MATS[m].fushigi),
@@ -139,8 +143,13 @@ function mergeFx(a, b) {
 const CAT_NAME = { dough: '生地', mat: '素材', tool: '道具', burnt: '焦げ', field: 'フィールド' };
 const ROLE = { dough: '攻撃', mat: '支援', burnt: '攻撃' };
 const foodCat = mats => mats.some(m => MATS[m].cat === 'dough') ? 'dough' : 'mat';
-function specialName(r1, r2) { return r1.noun === r2.noun ? `特製${r1.noun}タワー` : `特製${r1.noun}＆${r2.noun}`; }
-function toolSetName(a, b) { return a === b ? 'ダブル' + TOOLS[a].short : TOOLS[a].short + '＆' + TOOLS[b].short; }
+/* ★3：同じ形どうしは「○○タワー」、ちがう形どうしは2つの形をつなげる（主役の形をうしろに） */
+function specialName(r1, r2) {
+  if (r1.noun === r2.noun) return nounName(r1.noun) + 'タワー';
+  const [x, y] = r1.nr > r2.nr || (r1.nr === r2.nr && r1.noun > r2.noun) ? [r2, r1] : [r1, r2];
+  return nounName(x.noun) + nounName(y.noun);
+}
+function toolSetName(a, b) { return a === b ? 'ダブル' + TOOLS[a].short : TOOLS[a].mini + '＆' + TOOLS[b].mini; }
 const DEFS = new Map();
 function cardDef(cid) {
   if (DEFS.has(cid)) return DEFS.get(cid);
@@ -158,7 +167,7 @@ function cardDef(cid) {
     d = { kind: 's', cat, star: 3, name: specialName(r1, r2), fx, mats, keys: [r1.key, r2.key], cost: 0 };
   }
   else if (k === 'u') { const [a, b] = id.split('+'); d = { kind: 't', cat: 'tool', role: TOOLS[a].role, star: 2, name: toolSetName(a, b), fx: mergeFx(TOOLS[a].fx, TOOLS[b].fx), mats: [], parts: [a, b], cost: 0 }; }
-  else { const [p, q] = id.split('|').map(x => cardDef('u:' + x)); d = { kind: 't', cat: 'tool', role: p.role, star: 3, name: 'ほのかの特製道具セット', fx: mergeFx(p.fx, q.fx), mats: [], parts: [...p.parts, ...q.parts], cost: 0 }; }
+  else { const [p, q] = id.split('|').map(x => cardDef('u:' + x)); d = { kind: 't', cat: 'tool', role: p.role, star: 3, name: '特製道具セット', fx: mergeFx(p.fx, q.fx), mats: [], parts: [...p.parts, ...q.parts], cost: 0 }; }
   d.cid = cid;
   d.role = d.role || ROLE[d.cat] || '';
   d.food = d.cat === 'dough' || d.cat === 'mat';
@@ -181,22 +190,23 @@ function mixCid(a, b) {
 }
 
 /* カードの効果のことば（短く。生地は焼ける・道具は発動で効く、などビルドの前提は書かない）。ダメージはカードの数字で見せる */
+/* 大事な順（カードの紙には先頭の2つだけ。ぜんぶは大きく見る画面で）。焦げない★3には「焦げると」は出さない */
 function fxList(fx, star = 1) {
   const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-  if (fx.spd) p.push(fx.spd > 0 ? '早く焼ける' : 'ゆっくり焼ける');
   if (fx.lead) p.push(`先頭で×${fx.lead}`);
   if (fx.sai) p.push(`最後：サイコー1枚×${fx.sai + 0.5 * (star - 1)}`);
-  if (fx.bitter) p.push('焦げると★2');
-  if (fx.nb) p.push(`となり+${f(fx.nb)}`);
-  if (fx.next) p.push(`つぎ×${fx.next}`);
   if (fx.fin) p.push(`最後：合計×${fx.fin}`);
   if (fx.rally) p.push(`先頭：攻撃ぜんぶ+${f(fx.rally)}`);
+  if (fx.next) p.push(`つぎ×${fx.next}`);
+  if (fx.nb) p.push(`となり+${f(fx.nb)}`);
   if (fx.again) p.push(`右がもう${fx.again}回`);
-  if (fx.heat) p.push(`火力${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
-  if (fx.sear) p.push(`右の生地を焼く+${fx.sear}`);
-  if (fx.call) p.push('次にフィールドが出る');
-  if (fx.noburn) p.push('焦げない');
   if (fx.stop) p.push('ほかの生地はサイコーで止まる');
+  if (fx.noburn) p.push('焦げない');
+  if (fx.sear) p.push(`右の生地を焼く+${fx.sear}`);
+  if (fx.heat) p.push(`火力${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
+  if (fx.call) p.push('次にフィールドが出る');
+  if (fx.bitter && !fx.noburn) p.push('焦げると★2');
+  if (fx.spd) p.push(fx.spd > 0 ? '早く焼ける' : 'ゆっくり焼ける');
   return p;
 }
 function fxText(fx, star = 1) { return fxList(fx, star).join('・'); }

@@ -145,10 +145,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.s2 .pc-shine{opacity:1;animation:shine 3.6s ease-in-out infinite}
 .pc.s3 .pc-shine{opacity:.9;background:linear-gradient(115deg,transparent 18%,rgba(255,170,90,.4) 34%,rgba(255,250,200,.45) 50%,rgba(210,140,255,.4) 64%,transparent 80%);background-size:250% 100%;mix-blend-mode:overlay;animation:shine 2.4s linear infinite}
 /* 名前のリボン（両はしが切れこんだ帯・上下に金の線） */
-.pc-name{position:absolute;left:2.5cqw;right:2.5cqw;top:64.5%;height:11%;z-index:3;display:flex;align-items:center;justify-content:center;padding:0 8cqw;
+.pc-name{position:absolute;left:2.5cqw;right:2.5cqw;top:64.5%;height:11%;z-index:3;display:flex;align-items:center;justify-content:center;padding:0 5.5cqw;
   background:linear-gradient(var(--rim) 0 1px,transparent 1px calc(100% - 1px),var(--rim) calc(100% - 1px)),linear-gradient(#6a3c22,#3a1e10 55%,#2a1309);
   clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,5% 50%)}
-.pc-name span{min-width:0;font-size:10cqw;font-weight:900;line-height:1;color:#fff4dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000}
+.pc-name span{min-width:0;font-size:9.8cqw;letter-spacing:-.02em;font-weight:900;line-height:1;color:#fff4dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000}
 /* 効果の紙（2行まで） */
 .pc-text{position:absolute;left:5.5cqw;right:5.5cqw;top:77%;bottom:4.2%;z-index:2;margin:0;display:flex;align-items:center;justify-content:center;padding:0 3cqw;border-radius:3.5cqw;
   background:linear-gradient(#fffaf0,#f0d9b6);box-shadow:inset 0 0 0 1px rgba(90,50,20,.4),inset 0 1.5cqw 0 rgba(255,255,255,.6)}
@@ -159,11 +159,13 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc-cost::before{content:"";position:absolute;inset:3.5cqw;z-index:-1;transform:rotate(45deg);border-radius:4cqw;background:radial-gradient(circle at 35% 30%,#fff7cc,#f4c24e 45%,#b0700c);box-shadow:0 0 0 1.2cqw #4a2408,0 0 0 2cqw #ffe9b0,0 2px 3px rgba(0,0,0,.45)}
 .pc-cost.txt{left:2.5cqw;top:2.5cqw;width:auto;height:15cqw;padding:0 3.5cqw;font-size:8.5cqw;-webkit-text-stroke:.8cqw #3a1408}
 .pc-cost.txt::before{inset:0;transform:none;border-radius:8cqw}
+.pc:not(.np) .pc-cost{top:25cqw;width:22cqw;height:22cqw;font-size:11.5cqw}
+.pc:not(.np) .pc-cost.txt{top:28cqw;width:auto;height:13cqw;font-size:7.5cqw}
 /* ★（右上） */
 .pc-star{position:absolute;left:0;right:0;top:1.5cqw;z-index:5;text-align:center;font-size:12cqw;line-height:1;letter-spacing:-1.5cqw;color:#ffe066;-webkit-text-stroke:.9cqw #7a4204;paint-order:stroke fill;text-shadow:0 0 2.5cqw rgba(255,220,90,.95)}
 /* ダメージの紋章（炎の丸・ふちはレア度の色） */
-/* ダメージの紋章：炎の形（しずくを上向きに）。数字は炎のふくらみのまんなか */
-.pc-pow{position:absolute;left:2.5cqw;top:43%;z-index:5;width:28cqw;height:28cqw;display:grid;place-items:center;padding-top:14%;isolation:isolate;
+/* ダメージの紋章：左上に炎の形（しずくを上向きに。右上は手札の重なりでかくれるので左上・11/17 しょーくん）。数字は炎のふくらみのまんなか。コストの宝石はその下へ */
+.pc-pow{position:absolute;left:-2cqw;top:-2cqw;z-index:5;width:28cqw;height:28cqw;display:grid;place-items:center;padding-top:14%;isolation:isolate;
   font-size:13cqw;line-height:1;font-weight:900;color:#fff;-webkit-text-stroke:1.1cqw #4a1404;paint-order:stroke fill}
 .pc-pow::before{content:"";position:absolute;left:15%;top:24%;z-index:-1;width:70%;height:70%;border-radius:50% 0 50% 50%;transform:rotate(-45deg);
   background:radial-gradient(circle at 62% 38%,#fff2b8 0,#ffc04a 26%,#ff7a24 52%,#c9301a 80%,#7a1a08);box-shadow:0 0 0 1.1cqw #3a1408,0 0 0 2.2cqw var(--rim),.8cqw 1.4cqw 2.4cqw rgba(0,0,0,.5)}
@@ -173,7 +175,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes fire{50%{transform:translateY(-6px) scale(1.07);filter:brightness(1.25) drop-shadow(0 0 8px var(--ember))}}
 @keyframes born{0%{transform:scale(.4) rotate(-10deg);filter:brightness(2.2)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 /* 手札などの小さいカードは、重なっても見えるように左よせ（名前・効果）。大きく見るカードはまんなか */
-.pc.mini .pc-name{justify-content:flex-start;padding-left:7cqw}
+.pc.mini .pc-name{justify-content:flex-start;padding-left:6cqw}
 .pc.mini .pc-text{justify-content:flex-start}
 .pc.mini .pc-text span{text-align:left}
 /* 大きなカード */
@@ -326,8 +328,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .ci-fx{font-size:14px;font-weight:700;line-height:1.45}
 .ci-dmg{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:700;color:#8a3a10}.ci-dmg b{color:#c4501a;font-size:17px}
 .ci-dmg i{width:11px;height:11px;margin:3px 2px 0;border-radius:50% 0 50% 50%;transform:rotate(-45deg);background:radial-gradient(circle at 62% 38%,#ffd36a,#ff7a24 55%,#c9301a)}
+.ci-sub{margin-top:-3px;font-size:11px;color:var(--ink-soft);text-align:center}
+.cinfo .ci-chips{justify-content:center}.cinfo .ci-chips span{font-size:12px;line-height:1.35}
 .ci-cook{font-size:12px;font-weight:700;color:#8a3a10;text-align:center}.ci-cook b{color:#c4501a;font-size:15px}
-.ci-recipe{font-size:12px;color:var(--ink-soft)}
+.ci-recipe{font-size:11px;line-height:1.4;color:var(--ink-soft);text-align:center}
 .ci-flavor{font-size:11.5px;font-style:italic;color:var(--ink-soft);line-height:1.45}
 .vbtns{width:100%;display:flex;gap:8px;justify-content:center}
 .vbtns .pill{flex:1}

@@ -62,7 +62,7 @@ function dragBegin(D) {
 function dragMove(D, x, y) {
   D.x = x; D.y = y;
   /* 位置は translate・大きさは scale（指の所を中心に小さくなるだけ。transform に translate を書くと scale で位置までずれる） */
-  D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`; D.g.style.rotate = '-4deg';
+  D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`;   // まっすぐ持つ（11/17 しょーくん）
   const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
   if (k !== D.k) { D.k = k; D.g.style.scale = k; }
   const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');
