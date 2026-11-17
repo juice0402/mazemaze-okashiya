@@ -524,7 +524,7 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .dt-flash{display:inline-block;margin:3px 0 0;font-size:11px;font-weight:900;background:var(--gold);color:#3a1c08;padding:1px 8px;border-radius:8px}
 
 /* 夜の画面のあまった高さは手札に：カードの大きさを手札の高さと幅で決める（container の単位） */
-.night .stage{flex:1.3 1 0;max-height:calc((min(100vw, 460px) - 32px) * .75)}
+.night .stage{flex:1.6 1 0;max-height:calc((min(100vw, 460px) - 32px) * 1.02)}
 .night .chef{height:min(88%,calc((min(100vw, 460px) - 32px) * .4))}
 .night .handwrap{flex:1 1 0;min-height:var(--hh);display:flex;flex-direction:column}
 .night .handwrap>.hand{flex:1;height:auto;container-type:size;padding-inline:10px}
@@ -532,6 +532,44 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 /* カードの幅：手札の幅に重なり（--ov。枚数が多いと深く）で収まる・高さに収まる・大きすぎない、の小さいほう */
 .night .handcard{--w:min(calc((100cqw - 6px) / (var(--n) * (1 - 2 * var(--ov, .1)) + 2 * var(--ov, .1))),calc((100cqh - 24px) * .72),164px);width:var(--w);margin:0 calc(var(--w) * var(--ov, .1) * -1)}
 .night .handcard:first-child{margin-left:0}.night .handcard:last-child{margin-right:0}
+
+/* ショップ（11/17 しょーくん「ゼンゼロのようにショップを挟む。舞台にかぶせる」）：準備のあいだ舞台の上にかぶせ、バトルのときはとじる。
+   上にコインと入れかえ・まんなかに3まい（1ラウンド目は無料の5まいを3＋2で）・値札は下。自分のカードを持ってくると、下に「はなすと うる」 */
+.shopov{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;gap:4px;padding:7px 8px 12px;border-radius:11px;
+  background:radial-gradient(90% 60% at 50% 0%,rgba(255,214,150,.28),transparent 70%),repeating-linear-gradient(90deg,rgba(0,0,0,.1) 0 2px,transparent 2px 38px),linear-gradient(#8a5a38,#5e3c28);
+  box-shadow:inset 0 0 0 2px rgba(255,226,170,.25);animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
+@keyframes shopin{from{opacity:0;transform:translateY(-10px)}}
+.sh-top{flex:none;display:flex;align-items:center;gap:8px;min-height:30px}
+.sh-ttl{font-size:15px;letter-spacing:2px;color:var(--milk);padding:1px 10px;border-radius:8px;background:rgba(42,23,12,.45)}
+.sh-coin{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:12px;font-weight:700;color:var(--milk)}
+.sh-coin b{font-size:20px;color:var(--gold);font-variant-numeric:tabular-nums;text-shadow:0 1px 0 #2a170c}
+.sh-coin i,.sh-price i{flex:none;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 1.5px #5a2a04}
+.sh-roll{padding:5px 11px;font-size:13px}
+.sh-free{margin-left:auto;font-size:13px;font-weight:700;color:var(--milk)}
+.sh-free b{margin:0 3px;font-size:20px;color:var(--gold)}
+.sh-cards{flex:1;min-height:0;container-type:size;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:12px 10px}
+.shcard{--w:min(calc((100cqw - 20px) / 3),calc((100cqh - 16px) * .714),132px);position:relative;flex:none;width:var(--w);aspect-ratio:5/7;padding:0;border:none;background:transparent;box-shadow:none}
+.shopov.many .shcard{--w:min(calc((100cqw - 20px) / 3),calc((100cqh - 12px) / 2 * .714),132px)}
+.shcard:active:not(.sold){transform:scale(.96)}
+.shcard.sold{border-radius:10px;border:2px dashed rgba(255,232,200,.25);background:rgba(42,23,12,.25)}
+.shcard.lifted .sh-price{opacity:.3}
+.sh-price{position:absolute;left:50%;bottom:-9px;z-index:6;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:1px 9px 1px 5px;border-radius:999px;font-size:14px;font-weight:900;color:#3a1c08;background:var(--cream);box-shadow:0 0 0 2px #3a1c08,0 2px 0 rgba(0,0,0,.35);font-variant-numeric:tabular-nums}
+.sh-price.ng{color:#a03a2a;background:#e8d6c4}
+.shcard.can .pc{animation:canmix .9s ease-in-out infinite alternate}
+.shcard.cant .pc{filter:grayscale(.7) brightness(.75)}
+.shcard.over .pc{transform:scale(1.08)}
+.sh-sell{position:absolute;left:8px;right:8px;bottom:6px;z-index:8;display:none;align-items:center;justify-content:center;gap:8px;min-height:40px;border-radius:999px;border:2.5px dashed #ffd0a0;background:rgba(110,36,18,.92);color:#fff3e0;font-size:15px;font-weight:900;pointer-events:none}
+.sh-sell span{font-size:14px;color:var(--gold)}
+.night.drag-own .sh-sell{display:flex}
+.night.drag-own .shopov.over .sh-sell{background:rgba(190,58,36,.97);transform:scale(1.03)}
+.night.drag-own .shopov.over{box-shadow:inset 0 0 0 3px #ffd0a0}
+/* 手札：自分のカードだけ（5まいまで）。空いている所は「手札へ」の行き先 */
+.hand.empty{align-items:center}
+.hand-empty{margin:0 auto;font-size:12px;color:var(--milk-soft);text-align:center}
+.hand-n{position:absolute;right:4px;bottom:2px;z-index:4;font-size:10.5px;font-weight:700;color:var(--milk-soft);pointer-events:none}
+.night.dragging .hand.put{border-radius:12px;box-shadow:inset 0 0 0 2px rgba(255,214,120,.7);background:rgba(244,194,78,.12)}
+.night.dragging .hand.put.over{background:rgba(244,194,78,.3)}
+.bar .bake{flex:1;margin-left:0}
 </style>
 </head>
 <body>
@@ -1181,18 +1219,20 @@ function drawDay(g, t, dt) {
 
 /* ---- src/js/night.js ---- */
 /* ==== 夜：食材モンスターの襲撃を9ラウンドで撃退する（ゼンゼロのオバケ屋敷の形が土台・仕様は claude/okashi-battle-spec.md） ====
-   1ラウンド：仕入れ（毎回3枚・入れかえ・コインで買う）→ 並べる・まぜる → バトル
+   1ラウンド：ショップ（舞台にかぶせる。毎回3枚・有料の入れかえ・コインで買う・うる）＋ 手札と調理台で並べる・まぜる → バトル（ショップがとじて舞台でバトル）
+   買ったカードは手札へ（5まいまで）。お金とコインはショップの中だけに出す（11/17 しょーくん「ゼンゼロのようにショップを挟む」）
    バトル：はじめに「焼き」（フィールドがあれば、鉄板の生地がいっせいに火力のぶん焼ける）→ 左から順に発動
    生地は場に残り、ラウンドをまたいで焼けていく（9でサイコー・サイコーのまま焼かれると焦げる）
    鉄板の火力（N.heat 1〜4）はラウンドをまたいで残る。火力カードが発動すると変わり、次のラウンドの焼きに効く
    フィールドも仕入れから。買うと調理台の左の「場」に入る（1つだけ・置きかえOK）。ラウンド1だけ、5まいから3まい えらんで無料
    調理台5マス。画面は night-ui.js */
-const SLOTS = 5, HELD_MAX = 3, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
+const SLOTS = 5, HELD_MAX = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
 const START_HEAT = 2;           // 夜のはじめの鉄板（中火）
 const STEP_MS = REDUCED ? 200 : 620;
 let N = null;          // S.night（夜のあいだの状態）
-let busy = false;      // バトルの間は操作しない
+let busy = false;      // バトルとまぜる演出の間は操作しない
+let fighting = false;  // バトルの間（ショップをとじて、舞台でバトルを見せる）
 
 function startNight() {
   S.phase = 'night';
@@ -1265,17 +1305,26 @@ function payNg(n, cost) {
   return N.coins >= cost ? '' : 'コインがたりない';
 }
 function pay(n, cost) { if (!n) return; if (N.round === 1) N.picks -= n; else N.coins -= cost; }
-/* 仕入れのカードを買う。at があればそのマスに置く（なければあいている左のマス） */
-function buy(i, at) {
+/* ショップのカードを買う。to が調理台のマスならそこへ、ほかは手札へ（フィールドは「場」へ） */
+const handFull = () => N.held.length >= HELD_MAX;
+const HAND_FULL = `手札がいっぱい（${HELD_MAX}まいまで）。うるか、まぜてから買おう`;
+function buy(i, to) {
   const cid = N.shop[i]; if (!cid || busy || N.stage !== 'shop') return;
   const d = cardDef(cid), ng = payNg(1, d.cost);
   if (ng) return toast(ng);
   if (d.cat === 'field') {
     if (N.field) toast('フィールドを入れかえた');
     N.field = cid.slice(2); N.heat = FIELDS[N.field].start;
-  } else if (!place(cid, at)) return toast('調理台がいっぱい。うるか、まぜてから買おう');
+  } else if (to && to.where === 'board') { if (!place(cid, to.i)) return; }
+  else if (handFull()) return toast(HAND_FULL);
+  else N.held.push(asCard(cid));
   pay(1, d.cost); N.shop[i] = null; unsel();
   save(); renderNight();
+}
+/* 調理台のカードを手札にもどす */
+function takeBack(i) {
+  if (!N.board[i] || handFull()) return;
+  N.held.push(N.board[i]); N.board[i] = null; unsel(); save(); renderNight();
 }
 /* 手札にあるカード（まぜてできた・自分のもの）を調理台へ */
 function placeHeld(h, at) {
@@ -1323,7 +1372,7 @@ function mixPlan(p, q) {
   const to = bd ? { where: 'board', i: bd.i } : hd.length ? { where: 'held', i: Math.min(...hd) } : { where: 'held', i: N.held.length < HELD_MAX ? N.held.length : -1 };
   return { n: shop.length, cost, to };
 }
-function mixNg(P) { return P.to.i < 0 ? `手札がいっぱい（手持ちは${HELD_MAX}まいまで）` : payNg(P.n, P.cost); }
+function mixNg(P) { return P.to.i < 0 ? `手札がいっぱい（${HELD_MAX}まいまで）` : payNg(P.n, P.cost); }
 /* 調理台のほかのカードとまぜられるか（手札とタイルの「まぜ」の目じるし） */
 const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
 /* まぜられる相手の決まり（ドラッグの案内・大きく見る画面） */
@@ -1340,6 +1389,11 @@ function dropPlan(p, q) {
   if (q.where === 'sell') return p.where === 'shop' ? null : { kind: 'sell', v: sellValue(d) };
   if (d.cat === 'field') return q.where === 'field' && p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : null;
   if (q.where === 'field') return null;
+  if (q.where === 'hand') {   // 手札の空いている所：ショップのカードは買って手札へ・調理台のカードは手札にもどす
+    if (p.where === 'held') return null;
+    const full = handFull() ? HAND_FULL : '';
+    return p.where === 'shop' ? { kind: 'buy', ng: full || payNg(1, d.cost), cost: d.cost } : { kind: 'take', ng: full };
+  }
   const b = cardAt(q);
   if (b && canMix(a, b)) { const P = mixPlan(p, q); return { kind: 'mix', P, ng: mixNg(P), r: mixResult(a, b) }; }
   if (q.where !== 'board') return null;
@@ -1352,7 +1406,8 @@ function dropCard(p, q, from) {
   const P = dropPlan(p, q); if (!P || busy || N.stage !== 'shop') return false;
   if (P.ng) { toast(P.ng); return false; }
   if (P.kind === 'mix') doMix(p, q, from);
-  else if (P.kind === 'buy') buy(p.i, q.where === 'board' ? q.i : undefined);
+  else if (P.kind === 'buy') buy(p.i, q.where === 'board' ? q : null);
+  else if (P.kind === 'take') takeBack(p.i);
   else if (P.kind === 'place') placeHeld(p.i, q.i);
   else if (P.kind === 'move') moveTo(p.i, q.i);
   else if (P.kind === 'sell') sellAt(p);
@@ -1475,7 +1530,7 @@ function bake() {
   if (!N.board.some(Boolean)) return toast('調理台にカードを置いてからバトルしよう');
   if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
   const res = resolveRound();
-  busy = true; unsel(); renderNight();
+  busy = true; fighting = true; unsel(); renderNight();
   const q = quota(N.round, S.day);
   let k = 0, run = 0;
   const step = () => {
@@ -1494,7 +1549,7 @@ function finishRound(res) {
   N.score += res.total; N.burnt += res.burnt;
   if (ok) N.met++;
   N.last = { round: N.round, total: res.total, q, ok };
-  N.stage = 'roundEnd'; busy = false;
+  N.stage = 'roundEnd'; busy = false; fighting = false;
   save(); renderNight();
 }
 function nextRound() {
@@ -1731,8 +1786,8 @@ function viewerHTML() {
   if (s.where === 'shop') {
     const cid = N.shop[s.i]; if (!cid) return '';
     const d = cardDef(cid), free = N.round === 1;
-    return box(cid, null, `<button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'えらぶ' : `買う <small>コイン${d.cost}</small>`}</button>`,
-      d.cat === 'field' ? 'ドラッグで「場」へ' : 'ドラッグで置く・かさねて まぜる');
+    return box(cid, null, `<button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'もらう' : `買う <small>コイン${d.cost}</small>`}</button>`,
+      d.cat === 'field' ? 'ドラッグで「場」へ' : '買うと手札へ・ドラッグで調理台へ・かさねて まぜる');
   }
   if (s.where === 'field') return N.field ? box('b:' + N.field, null, sellBtn(), '新しいのを買うと入れかわる') : '';
   const c = cardAt(s); if (!c) return '';
@@ -1744,20 +1799,28 @@ function sellBtn() {
   const s = N.sel, c = s.where === 'field' ? { cid: 'b:' + N.field } : cardAt(s);
   return `<button class="pill sub" data-act="sell">${sellLabel(cardDef(c.cid))}</button>`;
 }
-/* 手札：左に手持ち（まぜてできた自分のカード・ふちが金）、右に仕入れ。扇形に並べる。ドラッグで調理台へ・カードどうしをかさねるとまぜる */
+/* 手札：自分のカード（買った・まぜた。5まいまで）を扇形に。手札の空いている所は「手札へ」の行き先（data-w="hand"） */
+const mixesWithMine = (cid, skip) => mixesWithBoard(cid) || N.held.some((x, i) => i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
 function handHTML() {
-  const list = [...N.held.map((c, i) => ['held', i, c.cid]), ...N.shop.map((c, i) => ['shop', i, c]).filter(x => x[2])];
-  return `<div class="hand" style="--n:${list.length};--ov:${list.length >= 4 ? .22 : .1}">${list.map(([w, i, cid], k) => `<button class="handcard${w === 'held' ? ' own' : ''}" style="--k:${k}" data-act="card" data-drag data-drop data-w="${w}" data-i="${i}">${cardMini(cid, { cost: w === 'held' ? null : N.round === 1 ? '無料' : cardDef(cid).cost })}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')}</div>`;
+  const n = N.held.length;
+  return `<div class="hand${n ? '' : ' empty'}" data-drop data-w="hand" data-i="0" style="--n:${Math.max(n, 3)};--ov:${n >= 5 ? .14 : .08}">${n ? N.held.map((c, i) => `<button class="handcard" style="--k:${i + (3 - Math.min(n, 3)) / 2}" data-act="card" data-drag data-drop data-w="held" data-i="${i}">${cardMini(c.cid)}${mixesWithMine(c.cid, i) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')
+    : '<p class="hand-empty">ショップで買ったカードが ここに入るよ</p>'}<span class="hand-n">手札 ${n}/${HELD_MAX}</span></div>`;
 }
 function barHTML() {
-  /* 1ラウンド目は「むりょうで あと○まい」を文字で（コインの丸は2ラウンド目から） */
-  const left = N.round === 1
-    ? `<span class="bar-hint free">${N.picks ? `むりょうで あと<b>${N.picks}</b>まい<br>ドラッグで 調理台へ` : 'えらびおわり！<br>バトルを おしてね'}</span>`
-    : `<span class="orb" title="コイン"><i>コイン</i><b>${N.coins}</b></span>
-    <button class="pill sub" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>${REROLL}</small></button>`;
-  return `${left}
-    <button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>バトル！</button>
-    <div class="sellzone" data-drop data-w="sell" data-i="0"><b>ここで うる</b><span id="sellv"></span></div>`;
+  return `<button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>バトル！</button>`;
+}
+/* ショップ：準備のあいだ、舞台にかぶせる（バトルのときはとじる）。3まい（1ラウンド目は無料の5まい）・コイン・有料の入れかえ・うる
+   カードはドラッグで手札・調理台へ（かさねると買いながら まぜる）。自分のカードをショップへ持ってくると うる */
+function shopHTML() {
+  const r1 = N.round === 1, list = N.shop;
+  const head = r1 ? `<span class="sh-free">むりょうで あと<b>${N.picks}</b>まい</span>`
+    : `<span class="sh-coin"><i></i>コイン <b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small>コイン${REROLL}</small></button>`;
+  return `<div class="shopov${list.length > 3 ? ' many' : ''}" data-drop data-w="sell" data-i="0">
+    <div class="sh-top"><b class="sh-ttl">ショップ</b>${head}</div>
+    <div class="sh-cards">${list.map((cid, i) => cid
+      ? `<button class="shcard" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid)}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithMine(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
+      : '<span class="shcard sold"></span>').join('')}</div>
+    <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
 }
 
 /* ---------- 夜の画面 ---------- */
@@ -1788,7 +1851,8 @@ function renderNight() {
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
       <i class="smoke" id="smoke"></i><div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">スコア <b id="score">${fmt(N.score)}</b></span></div>
-      <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div></div>
+      <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div>
+      ${N.stage === 'shop' && !fighting ? shopHTML() : ''}</div>
     <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}ノルマ ${fmt(q)}</span></div>
     ${body}</section>`;
   setHeat(N.heat);
@@ -1850,7 +1914,7 @@ function dragBegin(D) {
     return { z, q, P };
   });
   const v = sellValue(cardDef(D.cid)), sv = $('sellv');
-  if (sv) sv.textContent = v ? `+${v}` : '（無料の枠がもどる）';
+  if (sv) { sv.textContent = v ? `コイン+${v}` : '（無料の枠がもどる）'; sv.previousElementSibling.textContent = v ? 'はなすと うる' : 'はなすと もどす'; }
   /* 調理台の上では、つかんだカードを調理台のマスと同じ大きさに（調理台が見えるように） */
   const tl = document.querySelector('.tiles'), sl = document.querySelector('.tslot');
   D.tiles = tl && tl.getBoundingClientRect(); D.small = sl ? sl.offsetWidth / D.w : 1; D.k = 1;

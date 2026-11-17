@@ -52,7 +52,7 @@ function dragBegin(D) {
     return { z, q, P };
   });
   const v = sellValue(cardDef(D.cid)), sv = $('sellv');
-  if (sv) sv.textContent = v ? `+${v}` : '（無料の枠がもどる）';
+  if (sv) { sv.textContent = v ? `コイン+${v}` : '（無料の枠がもどる）'; sv.previousElementSibling.textContent = v ? 'はなすと うる' : 'はなすと もどす'; }
   /* 調理台の上では、つかんだカードを調理台のマスと同じ大きさに（調理台が見えるように） */
   const tl = document.querySelector('.tiles'), sl = document.querySelector('.tslot');
   D.tiles = tl && tl.getBoundingClientRect(); D.small = sl ? sl.offsetWidth / D.w : 1; D.k = 1;

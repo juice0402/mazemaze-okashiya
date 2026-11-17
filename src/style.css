@@ -509,7 +509,7 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .dt-flash{display:inline-block;margin:3px 0 0;font-size:11px;font-weight:900;background:var(--gold);color:#3a1c08;padding:1px 8px;border-radius:8px}
 
 /* 夜の画面のあまった高さは手札に：カードの大きさを手札の高さと幅で決める（container の単位） */
-.night .stage{flex:1.3 1 0;max-height:calc((min(100vw, 460px) - 32px) * .75)}
+.night .stage{flex:1.6 1 0;max-height:calc((min(100vw, 460px) - 32px) * 1.02)}
 .night .chef{height:min(88%,calc((min(100vw, 460px) - 32px) * .4))}
 .night .handwrap{flex:1 1 0;min-height:var(--hh);display:flex;flex-direction:column}
 .night .handwrap>.hand{flex:1;height:auto;container-type:size;padding-inline:10px}
@@ -517,3 +517,41 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 /* カードの幅：手札の幅に重なり（--ov。枚数が多いと深く）で収まる・高さに収まる・大きすぎない、の小さいほう */
 .night .handcard{--w:min(calc((100cqw - 6px) / (var(--n) * (1 - 2 * var(--ov, .1)) + 2 * var(--ov, .1))),calc((100cqh - 24px) * .72),164px);width:var(--w);margin:0 calc(var(--w) * var(--ov, .1) * -1)}
 .night .handcard:first-child{margin-left:0}.night .handcard:last-child{margin-right:0}
+
+/* ショップ（11/17 しょーくん「ゼンゼロのようにショップを挟む。舞台にかぶせる」）：準備のあいだ舞台の上にかぶせ、バトルのときはとじる。
+   上にコインと入れかえ・まんなかに3まい（1ラウンド目は無料の5まいを3＋2で）・値札は下。自分のカードを持ってくると、下に「はなすと うる」 */
+.shopov{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;gap:4px;padding:7px 8px 12px;border-radius:11px;
+  background:radial-gradient(90% 60% at 50% 0%,rgba(255,214,150,.28),transparent 70%),repeating-linear-gradient(90deg,rgba(0,0,0,.1) 0 2px,transparent 2px 38px),linear-gradient(#8a5a38,#5e3c28);
+  box-shadow:inset 0 0 0 2px rgba(255,226,170,.25);animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
+@keyframes shopin{from{opacity:0;transform:translateY(-10px)}}
+.sh-top{flex:none;display:flex;align-items:center;gap:8px;min-height:30px}
+.sh-ttl{font-size:15px;letter-spacing:2px;color:var(--milk);padding:1px 10px;border-radius:8px;background:rgba(42,23,12,.45)}
+.sh-coin{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:12px;font-weight:700;color:var(--milk)}
+.sh-coin b{font-size:20px;color:var(--gold);font-variant-numeric:tabular-nums;text-shadow:0 1px 0 #2a170c}
+.sh-coin i,.sh-price i{flex:none;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 1.5px #5a2a04}
+.sh-roll{padding:5px 11px;font-size:13px}
+.sh-free{margin-left:auto;font-size:13px;font-weight:700;color:var(--milk)}
+.sh-free b{margin:0 3px;font-size:20px;color:var(--gold)}
+.sh-cards{flex:1;min-height:0;container-type:size;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:12px 10px}
+.shcard{--w:min(calc((100cqw - 20px) / 3),calc((100cqh - 16px) * .714),132px);position:relative;flex:none;width:var(--w);aspect-ratio:5/7;padding:0;border:none;background:transparent;box-shadow:none}
+.shopov.many .shcard{--w:min(calc((100cqw - 20px) / 3),calc((100cqh - 12px) / 2 * .714),132px)}
+.shcard:active:not(.sold){transform:scale(.96)}
+.shcard.sold{border-radius:10px;border:2px dashed rgba(255,232,200,.25);background:rgba(42,23,12,.25)}
+.shcard.lifted .sh-price{opacity:.3}
+.sh-price{position:absolute;left:50%;bottom:-9px;z-index:6;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:1px 9px 1px 5px;border-radius:999px;font-size:14px;font-weight:900;color:#3a1c08;background:var(--cream);box-shadow:0 0 0 2px #3a1c08,0 2px 0 rgba(0,0,0,.35);font-variant-numeric:tabular-nums}
+.sh-price.ng{color:#a03a2a;background:#e8d6c4}
+.shcard.can .pc{animation:canmix .9s ease-in-out infinite alternate}
+.shcard.cant .pc{filter:grayscale(.7) brightness(.75)}
+.shcard.over .pc{transform:scale(1.08)}
+.sh-sell{position:absolute;left:8px;right:8px;bottom:6px;z-index:8;display:none;align-items:center;justify-content:center;gap:8px;min-height:40px;border-radius:999px;border:2.5px dashed #ffd0a0;background:rgba(110,36,18,.92);color:#fff3e0;font-size:15px;font-weight:900;pointer-events:none}
+.sh-sell span{font-size:14px;color:var(--gold)}
+.night.drag-own .sh-sell{display:flex}
+.night.drag-own .shopov.over .sh-sell{background:rgba(190,58,36,.97);transform:scale(1.03)}
+.night.drag-own .shopov.over{box-shadow:inset 0 0 0 3px #ffd0a0}
+/* 手札：自分のカードだけ（5まいまで）。空いている所は「手札へ」の行き先 */
+.hand.empty{align-items:center}
+.hand-empty{margin:0 auto;font-size:12px;color:var(--milk-soft);text-align:center}
+.hand-n{position:absolute;right:4px;bottom:2px;z-index:4;font-size:10.5px;font-weight:700;color:var(--milk-soft);pointer-events:none}
+.night.dragging .hand.put{border-radius:12px;box-shadow:inset 0 0 0 2px rgba(255,214,120,.7);background:rgba(244,194,78,.12)}
+.night.dragging .hand.put.over{background:rgba(244,194,78,.3)}
+.bar .bake{flex:1;margin-left:0}
