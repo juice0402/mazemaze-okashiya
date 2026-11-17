@@ -77,7 +77,7 @@ function showEvent(e, run, q) {
     if (e.sear.burnt) burntFx(c2 && c2.parentNode);
   }
   if (e.dmg > 0) hitFx(e.dmg, q);
-  $('score').textContent = fmt(N.score + run);
+  $('score').textContent = fmt(N.score + run); if (e.dmg > 0) replay($('score'), 'tick');
   $('qfill').style.width = Math.min(100, run / q * 100) + '%';
   $('qtext').textContent = `${fmt(run)} / ノルマ ${fmt(q)}`;
 }
