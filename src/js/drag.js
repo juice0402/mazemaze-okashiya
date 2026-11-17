@@ -38,7 +38,7 @@ function dragBegin(D) {
   D.w = Math.max(r.width, 78); D.h = D.w * 1.4;
   D.home = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   const g = document.createElement('div');
-  g.className = 'dragghost'; g.innerHTML = cardMini(D.cid); g.style.width = D.w + 'px';
+  g.className = 'dragghost'; g.innerHTML = cardMini(D.cid, { cook: p.where === 'field' ? 0 : cardAt(p).cook }); g.style.width = D.w + 'px';
   document.body.appendChild(g); D.g = g;
   const tip = document.createElement('div');
   tip.className = 'dragtip'; document.body.appendChild(tip); D.tip = tip;

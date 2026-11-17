@@ -9,7 +9,16 @@
 const SLOTS = 5, HELD_MAX = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
 const START_HEAT = 2;           // 夜のはじめの鉄板（中火）
-const STEP_MS = REDUCED ? 200 : 620;
+/* バトルの速さ（11/18 しょーくん「一瞬すぎて何が起きているかわからない」）：ふつうはゆっくり見せて、はやおくり ×2 も選べる（この端末に覚える） */
+let bSpeed = (() => { try { return +localStorage.getItem('mazemaze-okashiya-spd') === 2 ? 2 : 1; } catch (e) { return 1; } })();
+const T = ms => REDUCED ? Math.min(ms, 200) : ms / bSpeed;
+function toggleSpd(el) {
+  bSpeed = bSpeed === 1 ? 2 : 1;
+  try { localStorage.setItem('mazemaze-okashiya-spd', bSpeed); } catch (e) { /* なくてよい */ }
+  if (el) { el.innerHTML = spdLabel(); el.classList.toggle('on', bSpeed > 1); }
+}
+const spdLabel = () => bSpeed > 1 ? 'はやおくり中 <small>×2</small>' : 'はやおくり <small>×2</small>';
+let dealAnim = true, resultAnim = false;   // ショップのカードを配る・ラウンドの結果をかぞえる（その1回だけ）
 let N = null;          // S.night（夜のあいだの状態）
 let busy = false;      // バトルとまぜる演出の間は操作しない
 let fighting = false;  // バトルの間（ショップをとじて、舞台でバトルを見せる）
@@ -23,7 +32,7 @@ function startNight() {
     flashes: [], held: [], sel: null, view: false, last: null,
   };
   scn.flee = 0; scn.heat = START_HEAT;
-  N = S.night; rollShop();
+  N = S.night; rollShop(); dealAnim = true;
   save(); render();
 }
 /* 前の形のセーブ（6マス・前のカード）は、その夜をはじめからにする */
@@ -284,18 +293,27 @@ function resolveRound() {
       }
       let dmg = 0;
       if (fx.dmg) {
+        /* 計算の中身を parts に残す（バトルの画面で、数字が1つずつかかっていくのを見せる） */
+        const parts = [];
         let base = fx.dmg * sm;
-        if (d.dough) { base *= cookMul(c.cook || 0); if (F && F.best && c.cook >= COOK_MAX) base *= F.best; }
-        if (fx.lead && i === first) { base *= fx.lead; e.lead = true; }
-        if (fx.sai && i === last) { const n = board.filter(o => o && cardDef(o.cid).dough && o.cook >= COOK_MAX).length; base *= Math.pow(fx.sai + 0.5 * (d.star - 1), n); e.sai = n; }
-        for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid); if (od.fx.nb) base += od.fx.nb * STAR_MUL[od.star]; } }
-        base += rally;
-        base *= pend; pend = 1;
+        if (d.dough) {
+          const cm = cookMul(c.cook || 0); base *= cm; if (cm !== 1) parts.push(['×', cm, '焼き加減']);
+          if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
+        }
+        if (fx.lead && i === first) { base *= fx.lead; e.lead = true; parts.push(['×', fx.lead, 'スタート']); }
+        if (fx.sai && i === last) { const n = board.filter(o => o && cardDef(o.cid).dough && o.cook >= COOK_MAX).length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n); base *= v; e.sai = n; if (n) parts.push(['×', v, `サイコー${n}枚`]); }
+        let nb = 0;
+        for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid); if (od.fx.nb) nb += od.fx.nb * STAR_MUL[od.star]; } }
+        if (nb) { base += nb; parts.push(['+', nb, 'となり']); }
+        if (rally) { base += rally; parts.push(['+', rally, 'スタート']); }
+        if (pend !== 1) { base *= pend; parts.push(['×', pend, '次の攻撃']); }
+        pend = 1;
         dmg = Math.min(DMG_CAP, Math.floor(base));
+        e.base = fx.dmg * sm; e.parts = parts;
       }
-      if (fx.next) pend *= fx.next;
+      if (fx.next) { pend *= fx.next; e.next = fx.next; }
       total += dmg;
-      if (fx.fin && i === last) { const add = Math.floor(total * (fx.fin - 1)); dmg += add; total += add; e.fin = true; }
+      if (fx.fin && i === last) { const add = Math.floor(total * (fx.fin - 1)); dmg += add; total += add; e.fin = [fx.fin, add]; }
       total = Math.min(DMG_CAP, total);
       if (fx.again && t === 0 && i + 1 < SLOTS) extra[i + 1] += fx.again;
       if (fx.call) { call = true; e.call = true; }
@@ -305,23 +323,27 @@ function resolveRound() {
   }
   return { ev, total, burnt, board, heat, call };
 }
+/* バトル！：ショップがあがる → ラウンドの帯 → 焼き → 左から1枚ずつ（計算を見せる）→ 結果。時間は T()（はやおくりで半分） */
 function bake() {
   if (busy || N.stage !== 'shop') return;
   if (!N.board.some(Boolean)) return toast('調理台にカードを置いてからバトルしよう');
   if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
-  const res = resolveRound();
-  busy = true; fighting = true; unsel(); renderNight();
-  const q = quota(N.round, S.day);
-  let k = 0, run = 0;
-  const step = () => {
-    if (k >= res.ev.length) return setTimeout(() => finishRound(res), STEP_MS);
-    const e = res.ev[k];
-    if (e.type === 'act' && !e.again && !e.cut && cardDef(e.cid).star === 3) { e.cut = true; return setTimeout(step, cutIn(e.cid, 'スペシャル発動！')); }
-    k++; run += e.dmg || 0;
-    showEvent(e, run, q);
-    setTimeout(step, e.type === 'bake' ? STEP_MS * 1.6 : STEP_MS);
-  };
-  setTimeout(step, 200);
+  const res = resolveRound(), q = quota(N.round, S.day);
+  busy = true; unsel(); hideKw();
+  shopOut(() => {
+    fighting = true; renderNight();
+    battleIntro(q, () => {
+      let k = 0, run = 0;
+      const step = () => {
+        if (k >= res.ev.length) return setTimeout(() => finishRound(res), T(650));
+        const e = res.ev[k];
+        if (e.type === 'act' && !e.again && !e.cut && cardDef(e.cid).star === 3) { e.cut = true; return setTimeout(step, cutIn(e.cid, 'スペシャル発動！')); }
+        k++; run += e.dmg || 0;
+        setTimeout(step, T(showEvent(e, run, q)));
+      };
+      step();
+    });
+  });
 }
 function finishRound(res) {
   const q = quota(N.round, S.day), ok = res.total >= q;
@@ -329,14 +351,14 @@ function finishRound(res) {
   N.score += res.total; N.burnt += res.burnt;
   if (ok) N.met++;
   N.last = { round: N.round, total: res.total, q, ok };
-  N.stage = 'roundEnd'; busy = false; fighting = false;
+  N.stage = 'roundEnd'; busy = false; fighting = false; resultAnim = true;
   save(); renderNight();
 }
 function nextRound() {
   if (N.stage !== 'roundEnd') return;
   if (N.round >= ROUNDS) return endNight();
   N.coins += INCOME + (N.last.ok ? QUOTA_BONUS : 0);
-  N.round++; N.stage = 'shop'; unsel();
+  N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
   rollShop(); save(); renderNight();
 }
 function endNight() {

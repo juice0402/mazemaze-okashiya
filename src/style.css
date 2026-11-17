@@ -716,7 +716,6 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 .at-etc{background:#7a5a44}
 /* ことば（スタート・アンカー・サイコーなど）は黄色。大きく見る画面ではタップで説明 */
 .kw{font-weight:900;color:#8a3c00;background:linear-gradient(transparent 50%,rgba(255,206,40,.9) 50% 92%,transparent 92%);padding:0 .06em}
-.ci-fx .kw,.ci-stat .kw{color:#a84400;background:linear-gradient(transparent 42%,#ffd84a 42% 94%,transparent 94%)}
 .kw[data-act]{cursor:pointer;text-decoration:underline dotted rgba(168,68,0,.65);text-decoration-thickness:1.5px;text-underline-offset:3px}
 .kwtip{position:absolute;left:50%;z-index:30;width:min(calc(100% - 8px),290px);translate:-50% 0;padding:9px 12px 10px;border-radius:12px;background:linear-gradient(#4a2a18,#2e190e);color:#fff4e0;text-align:left;box-shadow:inset 0 0 0 1.5px var(--brass),0 6px 16px rgba(0,0,0,.5);animation:kwin .16s ease-out}
 .kwtip b{display:inline-block;margin-bottom:4px;padding:1px 7px;border-radius:5px;font-size:13px;font-weight:900;color:#3a1c08;background:#ffd84a}
@@ -725,16 +724,110 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 .kwtip.dn::before{top:-6px;box-shadow:inset 1.5px 1.5px 0 var(--brass)}
 .kwtip.up::before{bottom:-6px;background:#2e190e;box-shadow:inset -1.5px -1.5px 0 var(--brass)}
 @keyframes kwin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-/* 大きく見る画面の下：名前は出さず、効果の文（1つずつ）→ ダメージ・焼き加減 → 材料 */
-.cinfo{width:min(100%,300px);gap:6px;padding:10px 14px}
-.ci-fx{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
-.ci-fx li{position:relative;padding-left:15px;font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
-.ci-fx li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;rotate:45deg;border-radius:1.5px;background:linear-gradient(135deg,#ffe27c,#d69c1e);box-shadow:0 0 0 1px #7a4a10}
-.ci-stat{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 14px;margin:0;padding-top:7px;border-top:1.5px dashed rgba(170,110,50,.4)}
-.ci-stat .ci-dmg,.ci-stat .ci-cook{display:inline-flex;align-items:center;gap:4px}
 /* 手札：カードを布の内側（ステッチ）に収める。扇は外のカードを下の線にそろえ、まんなかを持ち上げる */
 .night .handwrap>.hand{padding:18px 10px 13px}
 .night .handcard{--w:min(calc((100cqw - 6px) / (var(--n) * (1 - 2 * var(--ov, .1)) + 2 * var(--ov, .1))),calc((100cqh - 8px) * .72),164px)}
 .handcard{transform:translateY(calc((var(--d) * var(--d) - var(--mid) * var(--mid)) * 2.5px)) rotate(calc(var(--d) * 3deg))}
 /* つかんでいるあいだの札：上ではなく、指から遠いほう（ショップの上なら下のボタンの所・調理台や手札の上ならノルマの帯の所）。drag.js が top を決める */
 .dragtip{translate:0 -100%;min-height:58px}
+
+/* ==== 11/18 その2：カードの紙・焼き加減の炎・大きく見る画面の札・バトルの流れ・画面の切りかえ ==== */
+/* カードの紙：1つの効果を1行（字は1行に収まる大きさ・cards-ui.js の fitFs）。生地は左に焼き加減の炎 */
+.pc-text{gap:1.5cqw;padding:0 3cqw}
+.pc-text span.pl{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center;gap:.8cqw;-webkit-line-clamp:unset;overflow:visible}
+.pc-text span.ln{display:block;white-space:nowrap;overflow:hidden;font-weight:900;line-height:1.2;color:#4a2414;text-align:center}
+.pc.mini .pc-text span.ln{text-align:left}
+.pc-text span.ln.plain{font-size:8cqw;font-weight:700;color:#9a7458}
+/* 焼き加減の炎：生＝白・半焼け＝黄・こんがり＝オレンジ・サイコー＝金に光る。数字が焼き加減（--u がひとめもり） */
+.ck{--u:1cqw;position:relative;flex:none;width:calc(var(--u) * 14);height:calc(var(--u) * 17);display:grid;place-items:center;padding-top:calc(var(--u) * 4.4);isolation:isolate;font-style:normal}
+.ck::before{content:"";position:absolute;left:calc(var(--u) * 1.6);top:calc(var(--u) * 4.6);z-index:-1;width:calc(var(--u) * 10.8);height:calc(var(--u) * 10.8);border-radius:50% 0 50% 50%;transform:rotate(-45deg);background:var(--ckb);box-shadow:0 0 0 calc(var(--u) * .8) #3a1408}
+.ck b{font-family:var(--disp);font-weight:400;font-size:calc(var(--u) * 7.4);line-height:1;color:#fff;-webkit-text-stroke:calc(var(--u) * 1) #3a1408;paint-order:stroke fill}
+.ck.c0{--ckb:radial-gradient(circle at 58% 42%,#ffffff,#eee2cf 55%,#b3a088)}
+.ck.c1{--ckb:radial-gradient(circle at 58% 42%,#fff7c8,#ffd34a 55%,#d48f14)}
+.ck.c2{--ckb:radial-gradient(circle at 58% 42%,#ffe2b0,#ff8a2a 55%,#c23c14)}
+.ck.c3{--ckb:radial-gradient(circle at 58% 42%,#fffbe0,#ffd23a 45%,#ff5a1a 88%)}
+.ck.c3::before{box-shadow:0 0 0 calc(var(--u) * .8) #3a1408,0 0 calc(var(--u) * 4) calc(var(--u) * 1.4) rgba(255,214,80,.95);animation:ckglow 1.1s ease-in-out infinite alternate}
+@keyframes ckglow{to{filter:brightness(1.3) saturate(1.2)}}
+.pc.tile .ck{--u:1.9cqw;position:absolute;left:3cqw;bottom:2cqw;z-index:5}
+.pc.tile .cook{left:31cqw;right:8cqw;bottom:11cqw}
+.pc.tile:has(.cook) .pc-star{top:4cqw;bottom:auto}
+.dt-card .ck{display:none}
+/* 大きく見る画面の下：[いつ] なにが起きる を1行ずつ（ゼンゼロの形）。いつの札とことばはタップで説明 */
+.cinfo{width:min(100%,320px);padding:12px 12px 12px 10px}
+.cinfo .ci-fx{display:grid;grid-template-columns:auto 1fr;gap:9px 10px;align-items:start;margin:0}
+.ci-fx .tg{display:block;min-width:4.8em;margin-top:1px;padding:3px 8px;border-radius:7px;text-align:center;font-size:11.5px;font-weight:900;line-height:1.35;white-space:nowrap;color:#fff4e0;background:linear-gradient(#6e442a,#3e2416);box-shadow:inset 0 0 0 1px rgba(255,214,140,.45),0 2px 0 rgba(0,0,0,.25);cursor:pointer}
+.ci-fx .tg.pos{color:#3a1c08;background:linear-gradient(#ffe48a,#e3a52a);box-shadow:inset 0 0 0 1px rgba(120,70,0,.55),0 2px 0 rgba(0,0,0,.2)}
+.ci-fx p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
+.ci-fx .kw{color:#a84400;background:linear-gradient(transparent 42%,#ffd84a 42% 94%,transparent 94%)}
+
+/* バトルの下のパネル（手札の所にまるごとかぶせる）：左にカード・名前と計算の札（1つずつハンコのように出る）・右に大きなダメージ */
+.night .callout{inset:0;top:0;height:auto;z-index:8;border-radius:14px}
+.bp{position:absolute;inset:0;display:flex;align-items:center;gap:10px;padding:10px 12px 10px 10px;border-radius:14px}
+.bp::before{content:"";position:absolute;left:var(--x);top:-9px;translate:-50% 0;border:9px solid transparent;border-top:0;border-bottom-color:#fffaf0}
+.callout.pop .bp{animation:bpin .26s cubic-bezier(.2,1.2,.4,1)}
+@keyframes bpin{from{opacity:0;transform:translateX(26px)}}
+.bp-card{flex:none;width:min(26%,100px);aspect-ratio:5/7}
+.bp-card .pc{width:100%;height:100%}
+.bp-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.bp-name{margin:0;font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.2;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bp-name em{font-family:var(--font);font-style:normal;font-size:11px;font-weight:900;color:#fff;background:var(--strawberry);padding:1px 7px;border-radius:8px;margin-right:5px;vertical-align:2px}
+.bp-sub{margin:-3px 0 0;font-size:11px;line-height:1.4;color:var(--ink-soft)}
+.bp-f{display:flex;flex-wrap:wrap;gap:5px}
+.f-chip{display:inline-flex;flex-direction:column;align-items:center;min-width:44px;padding:3px 7px 4px;border-radius:9px;color:#fff4e0;background:linear-gradient(#7a4a2c,#4a2a18);box-shadow:inset 0 0 0 1px rgba(255,214,140,.5),0 2px 0 rgba(0,0,0,.3);opacity:0}
+.f-chip.in{animation:fchip .28s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes fchip{0%{opacity:0;transform:scale(1.8) rotate(-8deg)}100%{opacity:1;transform:none}}
+.f-chip b{font-family:var(--disp);font-weight:400;font-size:16px;line-height:1.1;color:#ffe9a8;white-space:nowrap}
+.f-chip small{font-size:9.5px;font-weight:700;line-height:1.25;color:#f0d8b8;white-space:nowrap}
+.f-chip.base{background:linear-gradient(#ffb35a,#e0641e)}.f-chip.base b{color:#fff}
+.f-chip.pos,.f-chip.best,.f-chip.c3{background:linear-gradient(#ffeb9a,#dda020)}
+.f-chip.pos b,.f-chip.best b,.f-chip.c3 b{color:#3a1c08}.f-chip.pos small,.f-chip.best small,.f-chip.c3 small{color:#5a3008}
+.f-chip.next{background:linear-gradient(#f590b0,#c4446c)}
+.f-chip.koge{background:linear-gradient(#6a5248,#2e2018)}
+.f-chip.h1{background:linear-gradient(#f0c070,#c08030)}.f-chip.h2{background:linear-gradient(#ffa25a,#e0641e)}.f-chip.h3{background:linear-gradient(#ff7a5a,#c8301e)}.f-chip.h4{background:linear-gradient(#ff5a3a,#a8140a)}
+.f-chip.c0{background:linear-gradient(#cdb89e,#8e765c)}.f-chip.c1{background:linear-gradient(#ffd75e,#c89010)}.f-chip.c2{background:linear-gradient(#ffa25a,#d0601a)}
+.bp-dmg{flex:none;min-width:80px;text-align:right;opacity:0}
+.bp-dmg.in{animation:bpdmg .45s cubic-bezier(.2,1.7,.4,1) forwards}
+@keyframes bpdmg{0%{opacity:0;transform:scale(1.8) rotate(-10deg)}40%{opacity:1}100%{opacity:1;transform:none}}
+.bp-dmg b{font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;color:#ff8a24;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;text-shadow:0 3px 0 #3a1004;font-variant-numeric:tabular-nums}
+.bp-dmg.hot b{font-size:40px;color:#ff5a1a;text-shadow:0 3px 0 #3a1004,0 0 14px rgba(255,140,40,.9)}
+.bp-dmg.soft b{font-size:20px;color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
+.tslot .float{top:14%;z-index:6;font-size:12px}
+.float.cookup{color:#ffb35a}
+.float.best{color:#ffe066;font-size:14px;text-shadow:0 0 8px rgba(255,214,80,.9),1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
+.fx-ball.big{filter:brightness(1.2) drop-shadow(0 0 12px #ff8a3d)}
+.mon.roar{animation:roar .6s ease-out}
+@keyframes roar{30%{transform:scale(1.16) translateY(-6px);filter:brightness(1.35) drop-shadow(0 6px 6px rgba(0,0,0,.45))}60%{transform:scale(.96)}}
+.quota.reach .qbar i{animation:reach .7s ease-out}
+@keyframes reach{0%{filter:brightness(2.2);box-shadow:0 0 12px 4px #ffe680}100%{filter:none}}
+/* バトル！で、ショップのカードが上へはけて、ショップがのれんのように上がる・次のラウンドは下りてきてカードが配られる */
+.shopov.out{pointer-events:none;animation:shopup .36s .2s cubic-bezier(.55,0,.8,.35) forwards}
+.shopov.out .shcard{animation:shcardup .26s cubic-bezier(.5,0,.9,.4) forwards;animation-delay:calc(var(--k,0) * 55ms)}
+.shopov.out .sh-top{animation:fadeout .2s forwards}
+@keyframes shopup{to{transform:translateY(-108%)}}
+@keyframes shcardup{to{transform:translateY(-46px) scale(.82) rotate(-4deg);opacity:0}}
+@keyframes fadeout{to{opacity:0}}
+.shopov.deal{animation:shopdown .44s cubic-bezier(.2,1.1,.35,1) backwards}
+.shopov.deal .shcard{animation:shcardin .36s cubic-bezier(.2,1.3,.4,1) backwards;animation-delay:calc(.3s + var(--k,0) * 90ms)}
+@keyframes shopdown{from{transform:translateY(-108%)}}
+@keyframes shcardin{from{opacity:0;transform:translateY(-30px) rotate(-8deg) scale(.6)}}
+/* ラウンドの帯：ななめの帯が走って「ラウンド」「バトル！」「ノルマ」（--bd がかかる時間） */
+.bintro{position:absolute;inset:0;z-index:9;pointer-events:none;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.bi-band{position:absolute;left:-10%;right:-10%;top:24%;height:52%;background:linear-gradient(90deg,rgba(60,18,4,0),rgba(110,34,10,.94) 14%,rgba(214,82,34,.96) 50%,rgba(110,34,10,.94) 86%,rgba(60,18,4,0));box-shadow:inset 0 2px 0 #ffd88a,inset 0 -2px 0 #ffd88a;transform:skewY(-7deg) scaleY(0);animation:biband var(--bd) cubic-bezier(.2,.9,.3,1) forwards}
+@keyframes biband{0%{transform:skewY(-7deg) scaleY(0)}14%{transform:skewY(-7deg) scaleY(1.12)}22%,82%{transform:skewY(-7deg) scaleY(1)}100%{transform:skewY(-7deg) scaleY(0)}}
+.bi-r,.bi-t,.bi-q{position:relative;margin:0;line-height:1.05;white-space:nowrap;animation:bitext var(--bd) cubic-bezier(.2,1,.3,1) both}
+@keyframes bitext{0%,10%{opacity:0;transform:translateX(70px) skewX(-12deg)}26%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-90px) skewX(-12deg)}}
+.bi-r{font-size:13px;font-weight:900;color:#fff1d0;letter-spacing:2px;text-shadow:0 1px 0 #3a1004}.bi-r b{font-family:var(--disp);font-weight:400;font-size:18px;color:#ffe680}
+.bi-t{font-family:var(--disp);font-weight:400;font-size:46px;letter-spacing:3px;color:#fff3c0;-webkit-text-stroke:6px #4a1404;paint-order:stroke fill;text-shadow:0 4px 0 #3a1004,0 0 18px rgba(255,180,80,.9)}
+.bi-q{font-size:12px;font-weight:900;color:#fff1d0;text-shadow:0 1px 0 #3a1004}.bi-q b{font-family:var(--disp);font-weight:400;font-size:17px;color:#ffe680}
+/* ラウンドの結果：合計をかぞえ上げて、たっせいのハンコ */
+.r-q{margin-top:-4px;font-size:12px;color:var(--milk-soft)}
+.vbox.result .r-msg{display:inline-block;margin:4px 0 2px;padding:2px 14px;border-radius:10px;animation:stamp .5s .7s cubic-bezier(.2,1.6,.4,1) backwards}
+.vbox.result.ok .r-msg{border:2.5px solid var(--mint);transform:rotate(-4deg)}
+@keyframes stamp{from{opacity:0;transform:scale(2.4) rotate(-14deg)}}
+/* バトル中の下のボタン：はやおくり ×2 */
+.bar .spd{flex:1;height:52px;font-size:17px}
+.bar .spd.on{background:linear-gradient(#ffc06a,var(--ember) 55%,#e0582a);color:#3a1404;border-color:#3a1404}
+/* 押したときの光（main.js の pressFx）と、画面の切りかえの幕（wipe） */
+.pressfx{position:fixed;z-index:70;pointer-events:none;box-shadow:0 0 0 3px #fff8e0,0 0 16px 5px rgba(255,236,190,.8);animation:pressfx .46s ease-out forwards}
+@keyframes pressfx{0%{opacity:1;background:rgba(255,250,230,.5);transform:none}100%{opacity:0;background:rgba(255,250,230,0);transform:scale(1.12,1.45)}}
+#wipe{position:fixed;inset:0;width:100%;height:100%;z-index:9999;pointer-events:none;display:none}

@@ -36,6 +36,7 @@ const ACTS = {
   card: el => tapCard(el.dataset.w, +el.dataset.i),
   close: () => closeView(),
   kw: el => showKw(el),
+  spd: el => toggleSpd(el),
   noop: () => {},
   buy: el => buy(+el.dataset.i),
   sell: () => sell(),
@@ -60,11 +61,48 @@ function boot(data) {
     const el = e.target.closest('[data-act]');
     if (!el || el.dataset.act !== 'kw') hideKw();   // ことばの説明は、ほかの所をタップでとじる
     if (!el || el.disabled) return;
-    const f = ACTS[el.dataset.act]; if (f) f(el);
+    const f = ACTS[el.dataset.act]; if (!f) return;
+    if (el.tagName === 'BUTTON' && el.dataset.act !== 'noop') pressFx(el);   // 押したときの光（ぜんぶのせシップの形）
+    const ph = S.phase;
+    f(el);
+    if (S.phase !== ph) wipe();   // 夜・朝・昼・まとめの切りかえは、タイルの幕でさっと
     renderTop();
   });
   dragInit($('screen'));
   render();
+}
+/* 押したときの光（ぜんぶのせシップの fxBuy の形）：ボタンの形の白い輪が広がって消える。画面を描きなおしても残るよう body に出す */
+function pressFx(el) {
+  if (REDUCED || !el.matches('.big,.bake,.pill,.go2,.sub,.vclose')) return;
+  const r = el.getBoundingClientRect(), fx = document.createElement('i');
+  fx.className = 'pressfx';
+  Object.assign(fx.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: getComputedStyle(el).borderRadius });
+  document.body.appendChild(fx); setTimeout(() => fx.remove(), 500);
+}
+/* 画面の切りかえ（ぜんぶのせシップの pixWipe を、お菓子屋さんの形に）：ギンガムのタイルが左上から右下へ順に小さくなって、新しい画面が見える */
+let wipeRaf = 0;
+function wipe(ms = 620) {
+  if (REDUCED) return;
+  let cv = document.getElementById('wipe');
+  if (!cv) { cv = document.createElement('canvas'); cv.id = 'wipe'; cv.setAttribute('aria-hidden', 'true'); document.body.appendChild(cv); }
+  const dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight, B = 36;
+  cv.width = W * dpr; cv.height = H * dpr; cv.style.display = 'block';
+  const g = cv.getContext('2d'), cols = Math.ceil(W / B), rows = Math.ceil(H / B), span = Math.max(1, cols + rows - 2), t0 = performance.now();
+  cancelAnimationFrame(wipeRaf);
+  const step = () => {
+    const t = (performance.now() - t0) / ms;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    if (t >= 1) { cv.style.display = 'none'; return; }
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const p = Math.min(1, Math.max(0, (t - (c + r) / span * .55) / .45));
+      if (p >= 1) continue;
+      const sz = (1 - p) * (B + 1), o = (B - sz) / 2;
+      g.fillStyle = p > .06 && p < .4 ? '#f4c24e' : (r + c) % 2 ? '#4a2618' : r % 2 ? '#e8607a' : '#f6e4c8';   // 小さくなりはじめは金に光る
+      g.beginPath(); if (g.roundRect) g.roundRect(c * B + o, r * B + o, sz, sz, sz * .24); else g.rect(c * B + o, r * B + o, sz, sz); g.fill();
+    }
+    wipeRaf = requestAnimationFrame(step);
+  };
+  step();
 }
 /* アーティファクトを開いたまま更新されたとき、遊んでいる所から続ける */
 try { if (window.claude && window.claude.hot) window.claude.hot.snapshot(() => ({ S })); } catch (e) { /* なくてよい */ }
