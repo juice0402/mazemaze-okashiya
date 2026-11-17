@@ -13,7 +13,7 @@ function renderTitle() {
     <h1>まぜまぜ<br>おかし屋</h1>
     <div class="hero"><img src="${chef}" alt="炎のシェフ ほのか"><img src="${mon}" alt="ぷるぷるスライム"></div>
     <p>炎のシェフ ほのか（仮）の小さなおかし屋さん。<br>夜になると、食材モンスターがお店をおそいにくる！</p>
-    <ul class="howto"><li><b>夜</b>　カードを調理台に並べて、9ラウンドで撃退。となりの食材がまざるとレシピがひらめく</li>
+    <ul class="howto"><li><b>夜</b>　カードを調理台に並べて、9ラウンドで撃退。食材★1どうしをまぜると★2のお菓子になって、レシピがひらめく</li>
       <li><b>朝</b>　ひらめいたレシピでお菓子づくり。カードにするか、売るか</li>
       <li><b>昼</b>　棚に並べて販売。すきな味だとお客さんが常連さんに</li></ul>
     ${saved && saved.phase !== 'title' ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button>
@@ -35,10 +35,12 @@ const ACTS = {
   continue: () => { const s = load(); if (s) { S = s; if (S.phase === 'night' && S.night && S.night.stage === 'roundEnd') busy = false; render(); } },
   reset: () => { if (!resetArm) { resetArm = true; return renderTitle(); } resetArm = false; S = newState(); startNight(); },
   field: el => chooseField(el.dataset.id),
-  slot: el => tapSlot(+el.dataset.i),
+  card: el => tapCard(el.dataset.w, +el.dataset.i),
   shop: el => tapShop(+el.dataset.i),
   buy: el => buy(+el.dataset.i),
-  sell: el => sell(+el.dataset.i),
+  sell: () => sell(),
+  mix: () => startMix(),
+  cancelMix: () => { N.mixing = false; renderNight(); },
   reroll: () => reroll(),
   bake: () => bake(),
   next: () => nextRound(),

@@ -71,9 +71,9 @@ function toggleFast() {
 }
 function renderDay() {
   const R = S.dayRun;
-  $('screen').innerHTML = `<section class="day">
+  $('screen').innerHTML = `<section class="day fit">
     <div class="scene-wrap"><canvas id="scene" width="${SW}" height="${SH}"></canvas></div>
-    <div class="panel"><h2>お昼の販売</h2><p id="dayInfo"></p></div>
+    <div class="panel tight"><h2>お昼の販売</h2><p id="dayInfo"></p></div>
     <div class="shelf"><span class="lbl">棚</span><div id="shelfList"></div></div>
     <ol class="log" id="dayLog">${R.log.slice().reverse().map(([t, c]) => `<li class="${c}">${esc(t)}</li>`).join('')}</ol>
     ${R.done ? '<button class="big" data-act="toResult">1日のまとめへ</button>' : `<div class="row"><button class="sub" data-act="fast">${scn.speed === 1 ? 'はやおくり' : 'ふつうの速さ'}</button></div>`}

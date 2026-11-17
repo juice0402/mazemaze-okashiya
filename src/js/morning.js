@@ -46,8 +46,8 @@ function renderMorning() {
       <p>カードにすると：${fxText(d.fx)}</p><p>売ると：1こ ${r.price}円（すきな味のお客さんには倍）</p></div></div>
       <div class="row two"><button data-act="toCard">カードにする</button><button data-act="toShelf">お昼に売る（${BATCH}こ）</button></div>`;
   }
-  $('screen').innerHTML = `<section class="morning">
-    <div class="panel"><h2>朝の仕込み</h2><p>ひらめいたレシピでお菓子を作ろう。カードにすると夜の仕入れに出てきて、売るとお金になるよ</p></div>
+  $('screen').innerHTML = `<section class="morning fit">
+    <div class="panel tight"><h2>朝の仕込み</h2><p>ひらめいたレシピでお菓子を作ろう。カードにすると夜の仕入れに出てきて、売るとお金になるよ</p></div>
     <div class="stockline"><span>オーブン あと<b>${M.ovens}</b>回</span>
       <span class="fus">${fus.length ? fus.map(m => `<img src="${matURL(m)}" alt="">${MATS[m].name}×${S.stock[m]}`).join(' ') : 'ふしぎな材料はなし'}</span></div>
     ${fus.some(m => !keys.some(k => recipeOf(k).needs.includes(m))) ? `<p class="muted">${fus.filter(m => !keys.some(k => recipeOf(k).needs.includes(m))).map(m => MATS[m].name).join('・')}のレシピは、夜にそのカードを食材のとなりに置くとひらめくよ</p>` : ''}

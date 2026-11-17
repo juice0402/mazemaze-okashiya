@@ -14,6 +14,8 @@ const ICON_MAPS = {
   maki: [['..........', '..........', '.ooooooo..', 'oybbbbbbo.', '.ooooooooo', '.oybbbbbbo', 'ooooooooo.', 'oybbbbbbo.', '.ooooooo..', '..........'], { o: '#3a2318', y: '#e8c48a', b: '#8a5a3b' }],
   uchiwa: [['..oooooo..', '.orrrrrro.', 'orrwrrrrro', 'orrrrrwrro', 'orrrrrrrro', '.orrrrrro.', '..oooooo..', '....hh....', '....hh....', '....hh....'], { o: '#7a2a2a', r: '#f07a5a', w: '#ffd6c8', h: '#8a5a3b' }],
   mizu: [['....oo....', '...obbo...', '...obbo...', '..obbbbo..', '.obwbbbbo.', '.obwbbbbo.', '.obbbbbbo.', '.obbbbbbo.', '..obbbbo..', '...oooo...'], { o: '#2a4a7a', b: '#6fa8e0', w: '#dff0ff' }],
+  kago: [['...oooo...', '..o....o..', '.o......o.', 'oooooooooo', 'obybybybyo', 'oybybybybo', '.obybybyo.', '.oybybybo.', '..oooooo..', '..........'], { o: '#7a4b2e', b: '#c98a4b', y: '#e4b273' }],
+  chokin: [['..........', '....oo....', '..oookoo..', '.oPPPPPPo.', 'oPwPPPPPPo', 'oPkPPPPPPo', 'opPPPPPPPo', '.oPPPPPPo.', '.oo.oo.oo.', '..........'], { o: '#8a3a5a', P: '#f9a8c0', p: '#e07aa0', w: '#ffffff', k: '#3a1e2a' }],
   hiokoshi: [['....o.....', '...oro....', '...orro.o.', '..orrrooro', '..orryrrro', '.orryyyrro', '.oryyyyyro', '.oryywyyro', '..oryyyro.', '...ooooo..'], { o: '#7a1e10', r: '#f0502a', y: '#ffc94a', w: '#fff6d0' }],
 };
 const ICON = {};
@@ -40,13 +42,22 @@ function candyCanvas(key) {
   return fromMap(CANDY_MAPS[main.noun], pal);
 }
 
+/* ★3 スペシャル：お菓子の絵に金のふちと、きらきら */
+function specialCanvas(id) {
+  const [k1, k2] = id.split('|'), c = mk(14, 14), x = c.getContext('2d');
+  x.drawImage(candyCanvas(k2), 4, 1); x.drawImage(candyCanvas(k1), 0, 4);
+  const o = outline(c, '#f6c94c'), g = o.getContext('2d');
+  g.fillStyle = '#fff6d0'; for (const [a, b] of [[12, 0], [13, 1], [11, 1], [12, 2], [1, 1]]) g.fillRect(a, b, 1, 1);
+  return o;
+}
+
 /* ---------- カードの絵（dataURL にして使いまわす） ---------- */
 const URLS = new Map();
 function cardIconURL(cid) {
   if (URLS.has(cid)) return URLS.get(cid);
   const k = cid[0], id = cid.slice(2);
-  const src = k === 'o' ? candyCanvas(id) : ICON[id];
-  const u = big(src, 4);
+  const src = k === 'o' ? candyCanvas(id) : k === 's' ? specialCanvas(id) : ICON[id];
+  const u = big(src, k === 's' ? 3 : 4);
   URLS.set(cid, u);
   return u;
 }

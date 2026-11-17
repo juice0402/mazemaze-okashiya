@@ -8,7 +8,7 @@ const MONSTERS = [
 
 /* ラウンドごとのノルマ（たっせいするとコイン+2と、ふしぎな材料1つ）。日がたつほど強くなる */
 const ROUNDS = 9;
-const quota = (r, day) => Math.round(15 * Math.pow(1.6, r - 1) * (1 + 0.6 * (day - 1)));
+const quota = (r, day) => Math.round(30 * Math.pow(1.8, r - 1) * (1 + 0.6 * (day - 1)));
 function nightHP(day) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day); return s; }
 
 /* お昼のお客さん：すきな味が1つでも入ったお菓子は2倍の値段で買ってハート。ハート3つで常連さん（あとで仲間に） */
