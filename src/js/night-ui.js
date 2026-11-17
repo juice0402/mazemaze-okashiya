@@ -86,7 +86,7 @@ function showEvent(e, run, q) {
   document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
   const co = $('callout');
   if (e.type === 'bake') {
-    if (co) { co.innerHTML = bakePanel(e); replay(co, 'pop'); }
+    if (co) { co.innerHTML = bakePanel(e); fitPanel(co); replay(co, 'pop'); }
     replay($('stage'), 'sizzle'); replay(document.querySelector('.tiles'), 'bakefx');   // 鉄板の下から炎がゆらっと上がる
     const t0 = 420, gap = 260;
     e.list.forEach((x, n) => setTimeout(() => {
@@ -106,7 +106,7 @@ function showEvent(e, run, q) {
   /* 1. 発動したカードが跳ねる（★1 ぽん・★2 大きく・★3 縦にくるっと1回転してズドン） */
   const lead = card ? actBounce(card, d.star) : 300;
   if (co) {
-    co.innerHTML = actPanel(e, q); replay(co, 'pop');
+    co.innerHTML = actPanel(e, q); fitPanel(co); replay(co, 'pop');
     const bc = co.querySelector('.bp-card .pc'); if (bc) { bc.style.setProperty('--ad', T(d.star >= 3 ? 700 : 480) + 'ms'); replay(bc, 'bpon'); }
   }
   /* 2. 計算と効果の札を1つずつ、ぽんと出す。いま効いている札が光り、右の数字がその札の分だけ変わる。ほかのカードとの効果はオーラが飛ぶ */
@@ -160,12 +160,19 @@ function bakePanel(e) {
   return `<div class="bp" style="${tileX(0)}"><div class="bp-card">${cardMini('b:' + N.field)}</div>
     <div class="bp-main"><p class="bp-name">${esc(F.name)}で焼く！</p><p class="bp-sub">バトル開始時・調理台の生地がいっせいに焼ける</p><div class="bp-f">${ch.join('')}</div></div><b class="bp-dmg soft in"><b>ジュッ</b></b></div>`;
 }
+/* 札が多いときは小さく（4まいまで ふつう・5〜6 ひとまわり小さく・7から もっと小さく）。数字は右の幅に収まる大きさ（--len＝いちばん長い数字の字の幅・em） */
+function fitPanel(co) {   // 札が枠に入りきらないときだけ、少しずつ小さくする（11/18）
+  const m = co.querySelector('.bp-main'), f = co.querySelector('.bp-f'); if (!m || !f) return;
+  for (let k = .92; m.scrollHeight > m.clientHeight + 1 && k > .5; k -= .08) f.style.setProperty('--fit', k.toFixed(2));
+}
+const chipsCls = n => n >= 7 ? ' lots' : n >= 5 ? ' many' : '';
+const numLen = v => [...fmt(Math.floor(v))].reduce((a, c) => a + (/[0-9]/.test(c) ? .8 : /[,.]/.test(c) ? .38 : 1.05), .3).toFixed(2);
 function actPanel(e, q) {
   const d = cardDef(e.cid), ch = [], out = k => { const n = (e.out || []).findIndex(o => o.k === k); return n < 0 ? null : n; };
-  let v = 0;
+  let v = 0, top = e.dmg || 0;
   if (e.dmg > 0 && e.base) { v = e.base; ch.push(`<span class="f-chip base calc"${chipData({ v })}><b>${fmt(e.base)}</b><small>ダメージ</small></span>`); }
   for (const [op, x, label, src] of e.parts || []) {
-    const p = v; v = op === '×' ? v * x : v + x;
+    const p = v; v = op === '×' ? v * x : v + x; top = Math.max(top, v);
     ch.push(fchip(op, x, label, 'calc ' + (label === 'スタート' ? 'pos' : label.startsWith('サイコー') ? 'best' : label === '次の攻撃' ? 'next' : ''), chipData({ v, p, src: src && src.join(','), k: src && PART_K(label) })));
   }
   if (e.fin) ch.push(fchip('×', e.fin[0], 'アンカー：合計', 'calc pos', chipData({ v: e.dmg, p: v, out: out('fin') })));
@@ -176,9 +183,9 @@ function actPanel(e, q) {
   if (e.next) ch.push(fchip('×', e.next, '次の攻撃へ', 'next', chipData({ out: out('next') })));
   if (fxOn(d, 'again') && !e.again) ch.push(`<span class="f-chip"${chipData({ out: out('again') })}><b>もう1回</b><small>右どなり</small></span>`);
   if (e.call) ch.push('<span class="f-chip"><b>フィールド</b><small>次のショップ</small></span>');
-  const dmg = e.dmg > 0 ? `<b class="bp-dmg${e.dmg >= q / 3 ? ' hot' : ''}"><b>0</b></b>` : '';
+  const dmg = e.dmg > 0 ? `<b class="bp-dmg${e.dmg >= q / 3 ? ' hot' : ''}" style="--len:${numLen(top)}"><b>0</b></b>` : '';
   return `<div class="bp" style="${tileX(e.i + 1)}"><div class="bp-card">${cardMini(e.cid, { cook: e.cook })}</div>
-    <div class="bp-main"><p class="bp-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><div class="bp-f">${ch.join('')}</div></div>${dmg}</div>`;
+    <div class="bp-main"><p class="bp-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><div class="bp-f${chipsCls(ch.length)}">${ch.join('')}</div></div>${dmg}</div>`;
 }
 const fxOn = (d, k) => !!d.fx[k];
 const cookStage = c => (c || 0) >= COOK_MAX ? 3 : (c || 0) >= 6 ? 2 : (c || 0) >= 3 ? 1 : 0;

@@ -541,23 +541,24 @@ mix-blend-mode:screen;transform-origin:50% 100%}
 .ci-fx .tg.pos{color:#3a1c08;background:linear-gradient(#ffe48a,#e3a52a);box-shadow:inset 0 0 0 1px rgba(120,70,0,.55),0 2px 0 rgba(0,0,0,.2)}
 .ci-fx p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
 .ci-fx .kw{color:#a84400;background:linear-gradient(transparent 42%,#ffd84a 42% 94%,transparent 94%)}
-.night .callout{inset:0;top:0;height:auto;z-index:8;border-radius:14px}
-.bp{position:absolute;inset:0;display:flex;align-items:center;gap:10px;padding:10px 12px 10px 10px;border-radius:14px}
+.night .callout{inset:0;top:0;height:auto;z-index:8;border-radius:14px;container-type:size}
+.bp{position:absolute;inset:0;display:grid;grid-template-columns:min(28%,112px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:12px;row-gap:2px;padding:12px 14px 10px 12px;border-radius:14px;--ch:1}
 .bp::before{content:"";position:absolute;left:var(--x);top:-9px;translate:-50% 0;border:9px solid transparent;border-top:0;border-bottom-color:#fffaf0}
 .callout.pop .bp{animation:bpin .26s cubic-bezier(.2,1.2,.4,1)}
 @keyframes bpin{from{opacity:0;transform:translateX(26px)}}
-.bp-card{flex:none;width:min(26%,100px);aspect-ratio:5/7}
+.bp-card{grid-row:1/3;align-self:center;width:100%;aspect-ratio:5/7}
 .bp-card .pc{width:100%;height:100%}
-.bp-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
-.bp-name{margin:0;font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.2;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bp-main{grid-column:2;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px;padding:4px 2px}
+.bp-main>:first-child{margin-top:auto}.bp-main>:last-child{margin-bottom:auto}
+.bp-name{flex:none;margin:0;font-family:var(--disp);font-weight:400;font-size:19px;line-height:1.2;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bp-name em{font-family:var(--font);font-style:normal;font-size:11px;font-weight:900;color:#fff;background:var(--strawberry);padding:1px 7px;border-radius:8px;margin-right:5px;vertical-align:2px}
 .bp-sub{margin:-3px 0 0;font-size:11px;line-height:1.4;color:var(--ink-soft)}
-.bp-f{display:flex;flex-wrap:wrap;gap:5px}
-.f-chip{display:inline-flex;flex-direction:column;align-items:center;min-width:44px;padding:3px 7px 4px;border-radius:9px;color:#fff4e0;background:linear-gradient(#7a4a2c,#4a2a18);box-shadow:inset 0 0 0 1px rgba(255,214,140,.5),0 2px 0 rgba(0,0,0,.3);opacity:0}
-.f-chip.in{animation:fchip .28s cubic-bezier(.2,1.6,.4,1) forwards}
-@keyframes fchip{0%{opacity:0;transform:scale(1.8) rotate(-8deg)}100%{opacity:1;transform:none}}
-.f-chip b{font-family:var(--disp);font-weight:400;font-size:16px;line-height:1.1;color:#ffe9a8;white-space:nowrap}
-.f-chip small{font-size:9.5px;font-weight:700;line-height:1.25;color:#f0d8b8;white-space:nowrap}
+.bp-f{--cs:calc(var(--ch) * var(--fit,1));display:flex;flex-wrap:wrap;gap:calc(6px * var(--cs)) calc(11px * var(--cs))}
+.bp-f.many{--cs:calc(var(--ch) * .84 * var(--fit,1))}
+.bp-f.lots{--cs:calc(var(--ch) * .72 * var(--fit,1))}
+.f-chip{display:inline-flex;flex-direction:column;align-items:center;min-width:calc(54px * var(--cs,1));padding:calc(4px * var(--cs,1)) calc(9px * var(--cs,1)) calc(5px * var(--cs,1));border-radius:10px;color:#fff4e0;background:linear-gradient(#7a4a2c,#4a2a18);box-shadow:inset 0 0 0 1px rgba(255,214,140,.5),0 2px 0 rgba(0,0,0,.3);opacity:0}
+.f-chip b{font-family:var(--disp);font-weight:400;font-size:calc(20px * var(--cs,1));line-height:1.1;color:#ffe9a8;white-space:nowrap}
+.f-chip small{font-size:calc(11px * var(--cs,1));font-weight:700;line-height:1.25;color:#f0d8b8;white-space:nowrap}
 .f-chip.base{background:linear-gradient(#ffb35a,#e0641e)}.f-chip.base b{color:#fff}
 .f-chip.pos,.f-chip.best,.f-chip.c3{background:linear-gradient(#ffeb9a,#dda020)}
 .f-chip.pos b,.f-chip.best b,.f-chip.c3 b{color:#3a1c08}.f-chip.pos small,.f-chip.best small,.f-chip.c3 small{color:#5a3008}
@@ -565,12 +566,15 @@ mix-blend-mode:screen;transform-origin:50% 100%}
 .f-chip.koge{background:linear-gradient(#6a5248,#2e2018)}
 .f-chip.h1{background:linear-gradient(#f0c070,#c08030)}.f-chip.h2{background:linear-gradient(#ffa25a,#e0641e)}.f-chip.h3{background:linear-gradient(#ff7a5a,#c8301e)}.f-chip.h4{background:linear-gradient(#ff5a3a,#a8140a)}
 .f-chip.c0{background:linear-gradient(#cdb89e,#8e765c)}.f-chip.c1{background:linear-gradient(#ffd75e,#c89010)}.f-chip.c2{background:linear-gradient(#ffa25a,#d0601a)}
-.bp-dmg{flex:none;min-width:80px;text-align:right;opacity:0}
+.bp-dmg{grid-column:2;min-width:0;text-align:right;line-height:1;container-type:inline-size;opacity:0}
 .bp-dmg.in{animation:bpdmg .45s cubic-bezier(.2,1.7,.4,1) forwards}
 @keyframes bpdmg{0%{opacity:0;transform:scale(1.8) rotate(-10deg)}40%{opacity:1}100%{opacity:1;transform:none}}
-.bp-dmg b{font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;color:#ff8a24;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;text-shadow:0 3px 0 #3a1004;font-variant-numeric:tabular-nums}
-.bp-dmg.hot b{font-size:40px;color:#ff5a1a;text-shadow:0 3px 0 #3a1004,0 0 14px rgba(255,140,40,.9)}
+.bp-dmg b{font-family:var(--disp);font-weight:400;font-size:min(calc(40px * var(--ch)),calc(100cqw / var(--len,4)));line-height:1;color:#ff8a24;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;text-shadow:0 3px 0 #3a1004;font-variant-numeric:tabular-nums}
+.bp-dmg.hot b{font-size:min(calc(46px * var(--ch)),calc(100cqw / var(--len,4)));color:#ff5a1a;text-shadow:0 3px 0 #3a1004,0 0 14px rgba(255,140,40,.9)}
 .bp-dmg.soft b{font-size:20px;color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
+@container (max-height:214px){.bp{--ch:.88}.bp-name{font-size:17px}}
+@container (max-height:180px){.bp{--ch:.76;row-gap:0;padding-block:9px 7px}.bp-name{font-size:15px}.bp-main{gap:4px}}
+@container (max-height:150px){.bp{--ch:.66}.bp-name{font-size:14px}}
 .tslot .float{top:14%;z-index:6;font-size:12px}
 .float.cookup{color:#ffb35a}
 .float.best{color:#ffe066;font-size:14px;text-shadow:0 0 8px rgba(255,214,80,.9),1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
@@ -676,7 +680,6 @@ filter:drop-shadow(0 3px 3px rgba(0,0,0,.5));animation:dchop 1.7s ease-in-out in
 @keyframes tquake{10%,50%{transform:translate(0,5px)}30%,70%{transform:translate(0,-4px)}90%{transform:translate(0,2px)}}
 .bp-card .pc.bpon{animation:bpon var(--ad,.48s) cubic-bezier(.25,1.5,.45,1)}
 @keyframes bpon{0%{transform:translateY(16px) scale(.6) rotate(-10deg);opacity:0}45%{transform:translateY(-10px) scale(1.12) rotate(4deg);opacity:1}100%{transform:none}}
-.bp-f{gap:6px 11px}
 .f-chip{position:relative}
 .f-chip.in{animation:chipon var(--ad,.36s) cubic-bezier(.2,1.7,.4,1) forwards}
 @keyframes chipon{0%{opacity:0;transform:translateY(12px) scale(.4)}55%{opacity:1;transform:translateY(-8px) scale(1.2)}100%{opacity:1;transform:none}}
@@ -712,15 +715,6 @@ background:var(--bc);box-shadow:0 0 0 1.5px #2a1408,0 0 9px 2px var(--bc);animat
 @keyframes buffout{35%{transform:scale(1.45)}100%{opacity:0;transform:translateY(22px) scale(.2)}}
 #heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
 @media (prefers-reduced-motion:reduce){.dc{animation:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
-.bp{gap:12px;padding:12px 14px 12px 12px}
-.bp-card{width:min(30%,118px)}
-.bp-name{font-size:19px}
-.f-chip{min-width:54px;padding:4px 9px 5px;border-radius:10px}
-.f-chip b{font-size:20px}
-.f-chip small{font-size:11px}
-.bp-dmg{min-width:92px}
-.bp-dmg b{font-size:40px}
-.bp-dmg.hot b{font-size:46px}
 .stockline{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
 .stockline .fus{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .stockline img,.rm img{width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle}
@@ -1771,7 +1765,7 @@ function showEvent(e, run, q) {
 document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
 const co = $('callout');
 if (e.type === 'bake') {
-if (co) { co.innerHTML = bakePanel(e); replay(co, 'pop'); }
+if (co) { co.innerHTML = bakePanel(e); fitPanel(co); replay(co, 'pop'); }
 replay($('stage'), 'sizzle'); replay(document.querySelector('.tiles'), 'bakefx');   // 鉄板の下から炎がゆらっと上がる
 const t0 = 420, gap = 260;
 e.list.forEach((x, n) => setTimeout(() => {
@@ -1789,7 +1783,7 @@ if (slot) slot.classList.add('now', 'done');
 if (e.again) takeBuff(e.i, e.i - 1, 'again');
 const lead = card ? actBounce(card, d.star) : 300;
 if (co) {
-co.innerHTML = actPanel(e, q); replay(co, 'pop');
+co.innerHTML = actPanel(e, q); fitPanel(co); replay(co, 'pop');
 const bc = co.querySelector('.bp-card .pc'); if (bc) { bc.style.setProperty('--ad', T(d.star >= 3 ? 700 : 480) + 'ms'); replay(bc, 'bpon'); }
 }
 const chips = co ? [...co.querySelectorAll('.f-chip')] : [], num = co && co.querySelector('.bp-dmg');
@@ -1839,12 +1833,18 @@ if (nb) ch.push(`<span class="f-chip in koge"><b>焦げ</b><small>${nb}枚</smal
 return `<div class="bp" style="${tileX(0)}"><div class="bp-card">${cardMini('b:' + N.field)}</div>
 <div class="bp-main"><p class="bp-name">${esc(F.name)}で焼く！</p><p class="bp-sub">バトル開始時・調理台の生地がいっせいに焼ける</p><div class="bp-f">${ch.join('')}</div></div><b class="bp-dmg soft in"><b>ジュッ</b></b></div>`;
 }
+function fitPanel(co) {   // 札が枠に入りきらないときだけ、少しずつ小さくする（11/18）
+const m = co.querySelector('.bp-main'), f = co.querySelector('.bp-f'); if (!m || !f) return;
+for (let k = .92; m.scrollHeight > m.clientHeight + 1 && k > .5; k -= .08) f.style.setProperty('--fit', k.toFixed(2));
+}
+const chipsCls = n => n >= 7 ? ' lots' : n >= 5 ? ' many' : '';
+const numLen = v => [...fmt(Math.floor(v))].reduce((a, c) => a + (/[0-9]/.test(c) ? .8 : /[,.]/.test(c) ? .38 : 1.05), .3).toFixed(2);
 function actPanel(e, q) {
 const d = cardDef(e.cid), ch = [], out = k => { const n = (e.out || []).findIndex(o => o.k === k); return n < 0 ? null : n; };
-let v = 0;
+let v = 0, top = e.dmg || 0;
 if (e.dmg > 0 && e.base) { v = e.base; ch.push(`<span class="f-chip base calc"${chipData({ v })}><b>${fmt(e.base)}</b><small>ダメージ</small></span>`); }
 for (const [op, x, label, src] of e.parts || []) {
-const p = v; v = op === '×' ? v * x : v + x;
+const p = v; v = op === '×' ? v * x : v + x; top = Math.max(top, v);
 ch.push(fchip(op, x, label, 'calc ' + (label === 'スタート' ? 'pos' : label.startsWith('サイコー') ? 'best' : label === '次の攻撃' ? 'next' : ''), chipData({ v, p, src: src && src.join(','), k: src && PART_K(label) })));
 }
 if (e.fin) ch.push(fchip('×', e.fin[0], 'アンカー：合計', 'calc pos', chipData({ v: e.dmg, p: v, out: out('fin') })));
@@ -1855,9 +1855,9 @@ if (e.sear) ch.push(e.sear.burnt ? `<span class="f-chip koge"${chipData({ out: o
 if (e.next) ch.push(fchip('×', e.next, '次の攻撃へ', 'next', chipData({ out: out('next') })));
 if (fxOn(d, 'again') && !e.again) ch.push(`<span class="f-chip"${chipData({ out: out('again') })}><b>もう1回</b><small>右どなり</small></span>`);
 if (e.call) ch.push('<span class="f-chip"><b>フィールド</b><small>次のショップ</small></span>');
-const dmg = e.dmg > 0 ? `<b class="bp-dmg${e.dmg >= q / 3 ? ' hot' : ''}"><b>0</b></b>` : '';
+const dmg = e.dmg > 0 ? `<b class="bp-dmg${e.dmg >= q / 3 ? ' hot' : ''}" style="--len:${numLen(top)}"><b>0</b></b>` : '';
 return `<div class="bp" style="${tileX(e.i + 1)}"><div class="bp-card">${cardMini(e.cid, { cook: e.cook })}</div>
-<div class="bp-main"><p class="bp-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><div class="bp-f">${ch.join('')}</div></div>${dmg}</div>`;
+<div class="bp-main"><p class="bp-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><div class="bp-f${chipsCls(ch.length)}">${ch.join('')}</div></div>${dmg}</div>`;
 }
 const fxOn = (d, k) => !!d.fx[k];
 const cookStage = c => (c || 0) >= COOK_MAX ? 3 : (c || 0) >= 6 ? 2 : (c || 0) >= 3 ? 1 : 0;

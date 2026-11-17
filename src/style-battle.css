@@ -74,7 +74,6 @@
 @keyframes bpon{0%{transform:translateY(16px) scale(.6) rotate(-10deg);opacity:0}45%{transform:translateY(-10px) scale(1.12) rotate(4deg);opacity:1}100%{transform:none}}
 
 /* ---------- 下のパネルの札：ぽんと跳ねて出る・いま効いている札が光る・計算の札は › でつながる・右の数字がはねる ---------- */
-.bp-f{gap:6px 11px}
 .f-chip{position:relative}
 .f-chip.in{animation:chipon var(--ad,.36s) cubic-bezier(.2,1.7,.4,1) forwards}
 @keyframes chipon{0%{opacity:0;transform:translateY(12px) scale(.4)}55%{opacity:1;transform:translateY(-8px) scale(1.2)}100%{opacity:1;transform:none}}
@@ -113,13 +112,3 @@
 #heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
 
 @media (prefers-reduced-motion:reduce){.dc{animation:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
-/* 下のパネルは手札の所いっぱいなので、札と数字を大きく（どの順番で効いているか見やすく） */
-.bp{gap:12px;padding:12px 14px 12px 12px}
-.bp-card{width:min(30%,118px)}
-.bp-name{font-size:19px}
-.f-chip{min-width:54px;padding:4px 9px 5px;border-radius:10px}
-.f-chip b{font-size:20px}
-.f-chip small{font-size:11px}
-.bp-dmg{min-width:92px}
-.bp-dmg b{font-size:40px}
-.bp-dmg.hot b{font-size:46px}

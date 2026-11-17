@@ -6,6 +6,7 @@
 - 1つの画面は `$('screen').innerHTML = '<section class="morning fit">…</section>'` の形（昼は `day fit`）。`.fit` でスマホ1画面に収まる（ページはスクロールしない）。長いリストだけ、中でスクロールさせる：`flex:1;min-height:0;overflow-y:auto`
 - 画面の切りかえの幕（ギンガムのタイル）は**自分で呼ばない**。ボタン（data-act）の中で S.phase が変わると main.js が出す。朝から昼へは `goDay()`、昼からまとめへは `goResult()`（flow.js）を呼ぶだけ
 - 描きなおしは `render()`（いまの S.phase の画面）。状態を変えたら `save()`
+- 中に入る物の数が変わる枠（札・リスト・名前）は、数が多くても・画面が低くても枠からはみ出さない形に（小さくする・中でスクロール）。例：夜の下のパネル（style.css の `@container` と night-ui.js の `fitPanel`）。いちばん長い名前・いちばん大きな数字・小さいスマホ（高さ600くらい）で確かめる
 
 ## 色と文字（src/style.css の :root）
 - 色：`--wood` `--wood-2`（床と壁の板）・`--board` `--board-2`（棚板・パネル）・`--line`・`--cream` `--cream-2`（カードの紙）・`--milk` `--milk-soft`（板の上の文字）・`--ink` `--ink-soft`（紙の上の文字）・`--strawberry`・`--mint`・`--caramel`・`--gold`・`--ember`・真ちゅう `--brass` `--brass-hi` `--brass-lo`。**青は使わない**。新しい色がほしいときはお願いで
