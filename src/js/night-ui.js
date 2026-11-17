@@ -91,9 +91,9 @@ function bakeCallout(e) {
 function calloutHTML(e, q) {
   const d = cardDef(e.cid), tags = [];
   if (d.dough) tags.push(`<span class="co-z c${cookStage(e.cook)}">${cookName(e.cook || 0)} ×${fmtMul(cookMul(e.cook || 0))}</span>`);
-  if (e.lead) tags.push('<span class="co-z">先頭！</span>');
+  if (e.lead) tags.push('<span class="co-z">スタート！</span>');
   if (e.sai) tags.push(`<span class="co-z best">サイコー${e.sai}枚 ×${fmtMul(Math.pow(d.fx.sai + 0.5 * (d.star - 1), e.sai))}</span>`);
-  if (e.fin) tags.push('<span class="co-z">しめくくり！</span>');
+  if (e.fin) tags.push('<span class="co-z">アンカー！</span>');
   if (e.rally) tags.push('<span class="co-z">攻撃ぜんぶ+</span>');
   if (e.heat) tags.push(`<span class="co-z h${e.heat[1]}">${HEAT[e.heat[0]]}→${HEAT[e.heat[1]]}</span>`);
   if (e.sear) tags.push(e.sear.burnt ? '<span class="co-z koge">右の生地が焦げた</span>' : `<span class="co-z c${cookStage(e.sear.to)}">右の生地 ${cookName(e.sear.to)}</span>`);

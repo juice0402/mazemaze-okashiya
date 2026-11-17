@@ -134,7 +134,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.s3::after{opacity:1;background:linear-gradient(115deg,transparent 12%,rgba(255,160,80,.6) 30%,rgba(255,255,210,.85) 44%,rgba(110,230,190,.55) 58%,rgba(220,140,255,.55) 70%,transparent 86%);background-size:260% 100%;animation:shine 2.4s linear infinite}
 @keyframes shine{from{background-position:150% 0}to{background-position:-100% 0}}
 /* 絵の窓 */
-.pc-win{position:absolute;left:5.5cqw;right:5.5cqw;top:5.5cqw;bottom:30%;z-index:1;border-radius:4.5cqw;overflow:hidden;
+.pc-win{position:absolute;left:5.5cqw;right:5.5cqw;top:5.5cqw;bottom:37%;z-index:1;border-radius:4.5cqw;overflow:hidden;
   background:radial-gradient(115% 90% at 50% 36%,var(--g1),var(--g2));box-shadow:inset 0 0 0 1px rgba(42,20,8,.75),inset 0 -8cqw 12cqw rgba(42,20,8,.28)}
 .pc-win::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.6),transparent 52%),repeating-conic-gradient(from 0deg at 50% 44%,rgba(255,255,255,.1) 0 5deg,transparent 5deg 15deg)}
 .pc-art{position:absolute;inset:5% 5% 7%;display:flex;align-items:center;justify-content:center}
@@ -145,7 +145,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.s2 .pc-shine{opacity:1;animation:shine 3.6s ease-in-out infinite}
 .pc.s3 .pc-shine{opacity:.9;background:linear-gradient(115deg,transparent 18%,rgba(255,170,90,.4) 34%,rgba(255,250,200,.45) 50%,rgba(210,140,255,.4) 64%,transparent 80%);background-size:250% 100%;mix-blend-mode:overlay;animation:shine 2.4s linear infinite}
 /* 名前のリボン（両はしが切れこんだ帯・上下に金の線） */
-.pc-name{position:absolute;left:2.5cqw;right:2.5cqw;top:64.5%;height:11%;z-index:3;display:flex;align-items:center;justify-content:center;padding:0 5.5cqw;
+.pc-name{position:absolute;left:2.5cqw;right:2.5cqw;top:57.5%;height:10.5%;z-index:3;display:flex;align-items:center;justify-content:center;padding:0 5.5cqw;
   background:linear-gradient(var(--rim) 0 1px,transparent 1px calc(100% - 1px),var(--rim) calc(100% - 1px)),linear-gradient(#6a3c22,#3a1e10 55%,#2a1309);
   clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,5% 50%)}
 .pc-name span{min-width:0;font-size:9.8cqw;letter-spacing:-.02em;font-weight:900;line-height:1;color:#fff4dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000}
@@ -499,7 +499,7 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .dragtip{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 44px);z-index:46;transform:translateX(-50%);width:min(calc(100vw - 24px),400px);min-height:62px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:var(--cream);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35);pointer-events:none}
 .dt-card{flex:none;width:42px;aspect-ratio:5/7}
 .dt-card .pc{width:100%;height:100%}
-.dt-card .pc-name,.dt-card .pc-text,.dt-card .pc-pow,.dt-card .pc-cost,.dt-card .pc-star{display:none}
+.dt-card .pc-name,.dt-card .pc-attr,.dt-card .pc-text,.dt-card .pc-pow,.dt-card .pc-cost,.dt-card .pc-star{display:none}
 .dt-card .pc-win{bottom:5.5cqw}
 .dt-body{min-width:0;flex:1}
 .dt-main{margin:0;font-size:14px;font-weight:900;line-height:1.3}
@@ -698,3 +698,43 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 .tiles.bakefx::after{animation:bakeflame .9s ease-out}
 @keyframes bakeflame{0%{opacity:0;transform:scaleY(.2)}25%{opacity:1;transform:scaleY(1.1)}55%{opacity:.85;transform:scaleY(.9)}100%{opacity:0;transform:scaleY(.6) translateY(-6px)}}
 .hand-n{left:14px;right:auto;top:10px;bottom:auto}
+
+/* ==== 11/18 しょーくんの感想（ゼンゼロを参考に） ==== */
+/* 属性の帯：名前の下に、左が役目・右が種類。色で見分ける */
+.pc-attr{position:absolute;left:5.5cqw;right:5.5cqw;top:68.4%;height:7.6%;z-index:3;margin:0;display:flex;border-radius:2.5cqw;overflow:hidden;box-shadow:0 0 0 .9cqw #2a1408,0 1cqw 1.5cqw rgba(0,0,0,.35)}
+.pc-attr span{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;font-size:7.8cqw;font-weight:900;line-height:1;color:#fff;letter-spacing:.02em;white-space:nowrap;text-shadow:0 .5cqw 0 rgba(40,10,0,.55);box-shadow:inset 0 1cqw 0 rgba(255,255,255,.3)}
+.pc-attr span+span{border-left:.9cqw solid #2a1408}
+.at-atk{background:linear-gradient(#f26a4c,#c8361e)}
+.at-sup{background:linear-gradient(#62c47e,#2f8a4c)}
+.at-fire{background:linear-gradient(#ffa43a,#e0640e)}
+.at-buy{background:linear-gradient(#b884e0,#7a46b0)}
+.at-dough{background:linear-gradient(#ffd46a,#d99a26);color:#3a1c08;text-shadow:0 .5cqw 0 rgba(255,250,220,.5)}
+.at-mat{background:linear-gradient(#f590b0,#cf4e7a)}
+.at-tool{background:linear-gradient(#b88a60,#7a5232)}
+.at-koge{background:linear-gradient(#7a5e50,#3e2a20)}
+.at-field{background:linear-gradient(#e89a3a,#a85a14)}
+.at-etc{background:#7a5a44}
+/* ことば（スタート・アンカー・サイコーなど）は黄色。大きく見る画面ではタップで説明 */
+.kw{font-weight:900;color:#8a3c00;background:linear-gradient(transparent 50%,rgba(255,206,40,.9) 50% 92%,transparent 92%);padding:0 .06em}
+.ci-fx .kw,.ci-stat .kw{color:#a84400;background:linear-gradient(transparent 42%,#ffd84a 42% 94%,transparent 94%)}
+.kw[data-act]{cursor:pointer;text-decoration:underline dotted rgba(168,68,0,.65);text-decoration-thickness:1.5px;text-underline-offset:3px}
+.kwtip{position:absolute;left:50%;z-index:30;width:min(calc(100% - 8px),290px);translate:-50% 0;padding:9px 12px 10px;border-radius:12px;background:linear-gradient(#4a2a18,#2e190e);color:#fff4e0;text-align:left;box-shadow:inset 0 0 0 1.5px var(--brass),0 6px 16px rgba(0,0,0,.5);animation:kwin .16s ease-out}
+.kwtip b{display:inline-block;margin-bottom:4px;padding:1px 7px;border-radius:5px;font-size:13px;font-weight:900;color:#3a1c08;background:#ffd84a}
+.kwtip p{margin:0;font-size:12.5px;font-weight:700;line-height:1.55}
+.kwtip::before{content:"";position:absolute;left:var(--ax,50%);width:12px;height:12px;margin-left:-6px;background:#3e2314;rotate:45deg}
+.kwtip.dn::before{top:-6px;box-shadow:inset 1.5px 1.5px 0 var(--brass)}
+.kwtip.up::before{bottom:-6px;background:#2e190e;box-shadow:inset -1.5px -1.5px 0 var(--brass)}
+@keyframes kwin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+/* 大きく見る画面の下：名前は出さず、効果の文（1つずつ）→ ダメージ・焼き加減 → 材料 */
+.cinfo{width:min(100%,300px);gap:6px;padding:10px 14px}
+.ci-fx{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.ci-fx li{position:relative;padding-left:15px;font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
+.ci-fx li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;rotate:45deg;border-radius:1.5px;background:linear-gradient(135deg,#ffe27c,#d69c1e);box-shadow:0 0 0 1px #7a4a10}
+.ci-stat{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 14px;margin:0;padding-top:7px;border-top:1.5px dashed rgba(170,110,50,.4)}
+.ci-stat .ci-dmg,.ci-stat .ci-cook{display:inline-flex;align-items:center;gap:4px}
+/* 手札：カードを布の内側（ステッチ）に収める。扇は外のカードを下の線にそろえ、まんなかを持ち上げる */
+.night .handwrap>.hand{padding:18px 10px 13px}
+.night .handcard{--w:min(calc((100cqw - 6px) / (var(--n) * (1 - 2 * var(--ov, .1)) + 2 * var(--ov, .1))),calc((100cqh - 8px) * .72),164px)}
+.handcard{transform:translateY(calc((var(--d) * var(--d) - var(--mid) * var(--mid)) * 2.5px)) rotate(calc(var(--d) * 3deg))}
+/* つかんでいるあいだの札：上ではなく、指から遠いほう（ショップの上なら下のボタンの所・調理台や手札の上ならノルマの帯の所）。drag.js が top を決める */
+.dragtip{translate:0 -100%;min-height:58px}

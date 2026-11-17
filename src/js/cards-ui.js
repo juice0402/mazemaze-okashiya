@@ -14,6 +14,37 @@ function cardChips(d) { return d.cat === 'field' ? FIELDS[d.cid.slice(2)].chips.
 const artImg = cid => `<img${hiArt(cid) ? ' class="hi"' : ''} src="${cardIconURL(cid)}" alt="">`;
 const starGems = d => d.star > 1 ? `<span class="pc-star">${'★'.repeat(d.star)}</span>` : '';
 
+/* 属性の帯（ゼンゼロの形・11/18 しょーくん）：左が役目・右が種類。色で見分ける */
+const ATTR_C = { 攻撃: 'atk', 支援: 'sup', 火力: 'fire', 仕入れ: 'buy', 生地: 'dough', 素材: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };
+function attrBar(d) {
+  const a = d.cat === 'field' ? ['フィールド'] : [d.role, CAT_NAME[d.cat]].filter(Boolean);
+  return `<p class="pc-attr">${a.map(t => `<span class="at-${ATTR_C[t] || 'etc'}">${t}</span>`).join('')}</p>`;
+}
+/* 効果のない★1の紙（役目だけ） */
+const plainLine = d => d.role === '攻撃' ? 'ダメージを出す' : attrsOf(d).join('・');
+/* ことば（KW）を黄色に。tap なら、タップで説明が出る（大きく見る画面だけ） */
+const kwTag = (w, tap, show = w) => `<b class="kw"${tap ? ` data-act="kw" data-kw="${w}"` : ''}>${show}</b>`;
+const KW_SHORT = /スタート|アンカー|サイコー|火力|焦げ/g;   // カードの紙（「」なし）
+const KW_LONG = new RegExp(`「(${Object.keys(KW).join('|')})」`, 'g');   // 効果の文（「」つき）
+const kwShort = (t, tap) => esc(t).replace(KW_SHORT, w => kwTag(w, tap));
+const kwLong = (t, tap) => esc(t).replace(KW_LONG, (s, w) => kwTag(w, tap, s));
+/* ことばの説明の吹き出し（もう一度タップ・ほかの所をタップでとじる） */
+function showKw(el) {
+  const box = el.closest('.vbox') || $('screen'), w = el.dataset.kw, old = box.querySelector('.kwtip');
+  if (old) { old.remove(); if (old.dataset.kw === w) return; }
+  const t = document.createElement('div');
+  t.className = 'kwtip'; t.dataset.kw = w; t.dataset.act = 'noop';
+  t.innerHTML = `<b>${esc(w)}</b><p>${esc(KW[w] || '')}</p>`;
+  box.appendChild(t);
+  const B = box.getBoundingClientRect(), r = el.getBoundingClientRect(), h = t.offsetHeight;
+  const below = r.bottom + 8 + h < B.bottom || r.top - B.top < h + 8;
+  t.style.top = (below ? r.bottom - B.top + 8 : r.top - B.top - h - 8) + 'px';
+  t.classList.add(below ? 'dn' : 'up');
+  const left = (B.width - t.offsetWidth) / 2;
+  t.style.setProperty('--ax', Math.max(16, Math.min(t.offsetWidth - 16, r.left + r.width / 2 - B.left - left)) + 'px');
+}
+function hideKw() { for (const t of document.querySelectorAll('.kwtip')) t.remove(); }
+
 /* ダメージの紋章（けた数で文字を小さく） */
 function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-pow l${Math.min(t.length, 5)}">${t}</b>`; }
 /* カードの形（mini と huge は同じ形で大きさだけちがう） */
@@ -22,8 +53,8 @@ function cardFace(cid, cls, opt = {}) {
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div><i class="pc-shine"></i></div>
-    <div class="pc-name"><span>${esc(d.short)}</span></div>
-    <p class="pc-text${text ? '' : ' none'}"><span>${esc(text || attrsOf(d).join('・'))}</span></p>
+    <div class="pc-name"><span>${esc(d.short)}</span></div>${attrBar(d)}
+    <p class="pc-text${text ? '' : ' none'}"><span>${text ? kwShort(text, opt.tap) : esc(plainLine(d))}</span></p>
     ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}
   </div>`;
 }
@@ -36,15 +67,17 @@ function cardTile(cid, opt = {}) {
     ${starGems(d)}${dmg ? powBadge(dmg) : ''}
     ${cook != null ? `<i class="cook c${cookStage(cook)}" style="--c:${cook}"></i>` : ''}</div>`;
 }
-function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook }); }
-/* 大きなカードの下：種類と、生地は焼き加減・お菓子は材料だけ（効果はカードに書いてある） */
+function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook, tap: true }); }
+/* 大きなカードの下（ゼンゼロの形・11/18 しょーくん）：名前と属性はカードに出ているので書かない
+   効果の文（1つずつ・「」のことばは黄色でタップすると説明）→ ダメージ・焼き加減 → 材料 */
 function cardInfo(cid, cook) {
   const d = cardDef(cid);
-  /* カードの名前（8文字まで）→ 種類 → 効果ぜんぶ（1つずつ札で）→ ダメージ・焼き加減 → 材料。★1の長い名前は、どんな材料かの小さな説明に */
-  const sub = d.name !== d.short ? `<p class="ci-sub">${esc(d.name)}</p>` : '';
-  const fx = cardChips(d), fl = fx.length ? `<p class="ci-chips">${fx.map(t => `<span>${esc(t)}</span>`).join('')}</p>` : '';
-  const ck = d.dough ? `<p class="ci-cook">焼き加減 <b>${cook || 0}</b>/${COOK_MAX}　${cookName(cook || 0)}・×${fmtMul(cookMul(cook || 0))}</p>` : '';
-  const dm = Math.floor(cardDmg(d, cook)), dl = dm ? `<p class="ci-dmg"><i></i>ダメージ <b>${fmt(dm)}</b></p>` : '';   // 炎の紋章の数字＝ダメージ
+  let lines = d.cat === 'field' ? [FIELDS[d.cid.slice(2)].text] : fxLong(d.fx, d.star);
+  if (!lines.length) lines = [plainLine(d)];
+  const fx = `<ul class="ci-fx">${lines.map(t => `<li>${kwLong(t, true)}</li>`).join('')}</ul>`;
+  const dm = Math.floor(cardDmg(d, cook)), c = cook || 0;   // 炎の紋章の数字＝ダメージ
+  const st = (dm ? `<span class="ci-dmg"><i></i>ダメージ <b>${fmt(dm)}</b></span>` : '')
+    + (d.dough ? `<span class="ci-cook">${kwTag('焼き加減', true)} <b>${c}</b>/${COOK_MAX}・${cookName(c)} ×${fmtMul(cookMul(c))}</span>` : '');
   const mats = d.kind === 'o' || d.kind === 's' ? `<p class="ci-recipe">材料：${d.mats.map(m => MATS[m].short).join('＋')}</p>` : '';
-  return `<div class="cinfo k-${d.kind}"><p class="ci-name">${esc(d.short)}</p>${sub}<p class="ci-type">${attrsOf(d).join('・')}</p>${fl}${dl}${ck}${mats}</div>`;
+  return `<div class="cinfo k-${d.kind}">${fx}${st ? `<p class="ci-stat">${st}</p>` : ''}${mats}</div>`;
 }

@@ -35,6 +35,7 @@ const ACTS = {
   reset: () => { if (!resetArm) { resetArm = true; return renderTitle(); } resetArm = false; S = newState(); startNight(); },
   card: el => tapCard(el.dataset.w, +el.dataset.i),
   close: () => closeView(),
+  kw: el => showKw(el),
   noop: () => {},
   buy: el => buy(+el.dataset.i),
   sell: () => sell(),
@@ -57,6 +58,7 @@ function boot(data) {
   $('screen').addEventListener('click', e => {
     if (Date.now() - dragEnd < 350) return;   // ドラッグのあとのクリックは無視
     const el = e.target.closest('[data-act]');
+    if (!el || el.dataset.act !== 'kw') hideKw();   // ことばの説明は、ほかの所をタップでとじる
     if (!el || el.disabled) return;
     const f = ACTS[el.dataset.act]; if (f) f(el);
     renderTop();

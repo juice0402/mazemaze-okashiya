@@ -42,6 +42,10 @@ function dragBegin(D) {
   document.body.appendChild(g); D.g = g;
   const tip = document.createElement('div');
   tip.className = 'dragtip'; document.body.appendChild(tip); D.tip = tip;
+  /* 札の置き場（11/18 しょーくん「上に出るとショップのカードやコインが見えない」）：指がショップ（舞台）の上なら下のボタンの所、
+     調理台・手札の上ならノルマの帯の所（舞台の下はし）。指の所や行き先をかくさない */
+  const rb = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect().bottom; };
+  D.stageB = rb('#stage') || innerHeight / 2; D.upY = rb('.night .quota') || D.stageB; D.downY = rb('.night .bar') || innerHeight - 8; D.dock = null;
   D.el.classList.add('lifted');
   const sec = document.querySelector('.night');
   if (sec) { sec.classList.add('dragging'); if (p.where !== 'shop') sec.classList.add('drag-own'); }
@@ -65,6 +69,8 @@ function dragMove(D, x, y) {
   D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`;   // まっすぐ持つ（11/17 しょーくん）
   const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
   if (k !== D.k) { D.k = k; D.g.style.scale = k; }
+  const dock = y > D.stageB + 12 ? 'up' : y < D.stageB - 12 ? 'down' : D.dock || (y > D.stageB ? 'up' : 'down');   // さかい目でゆれないように
+  if (dock !== D.dock) { D.dock = dock; D.tip.style.top = (dock === 'up' ? D.upY : D.downY) + 'px'; }
   const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');
   const Z = D.zones.find(o => o.z === z && o.P) || null;
   if (Z === D.over) return;
@@ -82,7 +88,7 @@ function tipHTML(cid, P) {
     const price = P.P.n ? `（${N.round === 1 ? `無料${P.P.n}まい` : `コイン${P.P.cost}`}）` : '';
     return `<span class="dt-card">${cardMini(P.r.cid)}</span><div class="dt-body"><p class="dt-main">${'★'.repeat(r.star)} ${esc(r.name)}</p>
       <p class="dt-sub">${P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと まぜる${price}${P.P.to.where === 'held' ? '・手札へ' : ''}`}</p>
-      <p class="dt-fx">${esc(fxText(r.fx, r.star))}</p>${flash ? '<p class="dt-flash">レシピがひらめく！</p>' : ''}</div>`;
+      <p class="dt-fx">${kwShort(fxText(r.fx, r.star))}</p>${flash ? '<p class="dt-flash">レシピがひらめく！</p>' : ''}</div>`;
   }
   const t = !P ? (d.cat === 'field' ? '左の「場」へ' : mixRule(d))
     : P.kind === 'buy' ? (P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと ${N.round === 1 ? 'えらぶ（無料）' : `買う（コイン${P.cost}）`}`)
