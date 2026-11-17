@@ -2,6 +2,7 @@
 使い方：
   python3 tools/prep_art.py one  <もとの PNG> <名前> <高さ or 幅の上限>      … 1枚の絵（立ち絵など）
   python3 tools/prep_art.py three <もとの PNG> <名前1> <名前2> <名前3> <上限> … 横に3つ並んだ絵（カード）
+  python3 tools/prep_art.py two <もとの PNG> <名前1> <名前2> <上限>           … 横に2つ並んだ絵（モンスター）
 できた絵は assets/art/<名前>.webp。もとの PNG は assets/art/raw/ に残しておく（docs/ART.md に書く）
 """
 import sys
@@ -48,9 +49,10 @@ if __name__ == '__main__':
     src = Image.open(sys.argv[2])
     if mode == 'one':
         save(trim_fit(key_green(src), int(sys.argv[4])), sys.argv[3])
-    elif mode == 'three':
-        names, limit = sys.argv[3:6], int(sys.argv[6])
-        w3 = src.width // 3
+    elif mode in ('two', 'three'):
+        n = 2 if mode == 'two' else 3
+        names, limit = sys.argv[3:3 + n], int(sys.argv[3 + n])
+        w3 = src.width // n
         for i, n in enumerate(names):
             if n == '-':
                 continue

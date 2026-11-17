@@ -17,13 +17,15 @@
 | tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL） | |
 | src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
 | src/js/scene.js | 場面の絵（96×48）：夜 drawNight（火力でコンロの火・モンスターのゆれ）・昼 drawDay（棚・お客さん scn.cust） | |
-| src/js/night.js | 夜のバトル：仕入れ（rollShop・buy・sell・reroll）・まぜる（canMix・mixResult・startMix・doMix・tapCard）・焼く（resolveRound が計算、bake/showEvent が演出）・finishRound/nextRound/endNight・画面（actionHTML・renderNight） | resolveRound 150行目あたり |
+| src/js/night.js | 夜のバトルのしくみ：仕入れ（rollShop・buy・sell・reroll）・まぜる（canMix・mixResult・startMix・doMix）・タップ（tapCard・closeView・moveSel）・焼く（resolveRound が計算・bake）・finishRound/nextRound/endNight | 冷蔵庫はなし |
+| src/js/night-ui.js | 夜のバトルの画面：舞台（ほのか heroImg/heroFor・モンスター monURL・火力の光 setHeat）・演出 showEvent・大きなカード viewerHTML・下のボタン列 barHTML・renderNight（調理台3×2・仕入れ） | |
+| src/js/cards-ui.js | 紙のカード：cardMini（調理台・仕入れ）・cardBig（タップでひらく）・ステータスの札 cardChips・種類の行 typeLine | 枠の色は style.css の .pc.k-* |
 | src/js/morning.js | 朝の仕込み：bakeRecipe・toCard（S.pool へ）・toShelf（S.shelf へ）・renderMorning | |
 | src/js/day.js | 昼の販売：serve（好みとハート）・runCustomers・renderDay／1日のまとめ renderResult | |
 | src/js/main.js | 画面の切りかえ render・タイトル・タップの表 ACTS・boot（hot のつづき） | |
 
 ## データの形（S・セーブは localStorage `mazemaze-okashiya` の v:4）
 - phase：title → night → morning → day → result → （day+1）night
-- night：board（調理台6マス {cid}）・fridge（冷蔵庫3マス）・shop・coins・round・score・met（ノルマたっせい数）・burnt・flashes・sel・mixing・stage（field/shop/roundEnd/end）
+- night：board（調理台6マス {cid}・①〜⑥の順）・shop・coins・round・score・met（ノルマたっせい数）・burnt・flashes・sel・mixing・stage（field/shop/roundEnd/end）
 - カードの id：`m:材料`・`t:道具`（★1）・`o:材料+材料`（★2 お菓子）・`s:お菓子|お菓子`（★3 スペシャル）
 - recipes：{ 'a+b': ひらめいた日 }（0 は最初から）／stock：ふしぎな材料／shelf：[{key, n}]／pool：お菓子のカード

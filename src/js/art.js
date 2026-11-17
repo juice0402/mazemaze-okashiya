@@ -56,7 +56,14 @@ const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンデ�
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
   if (k === 'm' || k === 't') return ART['card-' + id] || null;
-  if (k === 'o') return ART['candy-' + NOUN_ID[recipeOf(id).noun]] || null;
+  if (k === 'o') {   // 形（noun）ともう1つの材料で絵をさがす（candy-cookie-bata など）。なければ形だけの絵
+    const r = recipeOf(id), nid = NOUN_ID[r.noun], other = r.mats.find(m => MATS[m].noun !== r.noun);
+    return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || null;
+  }
+  if (k === 's') {   // ★3：同じ形どうしは「特製○○タワー」の絵
+    const [r1, r2] = id.split('|').map(recipeOf);
+    return r1.noun === r2.noun ? ART[`special-${NOUN_ID[r1.noun]}-tower`] || null : null;
+  }
   return null;
 }
 

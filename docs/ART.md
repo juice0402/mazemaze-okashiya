@@ -9,7 +9,7 @@
 - 立ち絵は、画風が変わらないうちにある程度作り置きする（11/17 しょーくん）。会話と戦闘は右向き
 
 ## 取りこみ方
-- `python3 tools/prep_art.py one|three <もとの PNG> <名前…> <上限>` で緑を抜いて `assets/art/<名前>.webp` に。ビルドが名前→絵の表（ART）にして埋めこむ。カードは `card-<材料>`・お菓子は `candy-<形>`・モンスターは `mon-<id>`
+- `python3 tools/prep_art.py one|three <もとの PNG> <名前…> <上限>` で緑を抜いて `assets/art/<名前>.webp` に。ビルドが名前→絵の表（ART）にして埋めこむ。カードは `card-<材料>`・お菓子は `candy-<形>-<もう1つの材料>`（なければ `candy-<形>`）・★3 は `special-<形>-tower`・モンスターは `mon-<id>`
 
 ## 一覧（A＝AI で言葉から作った絵・C＝コードで描いた絵）
 | 名前 | 分類 | 道具 | 作った日 | 依頼書・出どころ | 使う所 |
@@ -21,6 +21,9 @@
 | honoka-battle（右向きの戦闘ポーズ） | A | Codex | 2026-11-17 | art-irai `requests/okashi/honoka-faces.md`（step4）・もとの PNG `assets/art/raw/honoka-faces_step4.png` | 夜の舞台 |
 | card-komugi・card-bata・card-maki（リーフフェアリーの粉・ゴーゴーヤギのバター・おばけ樹木のまき） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards2.md`・もとの PNG `assets/art/raw/cards2.png` | ★1のカード |
 | candy-cookie（クッキー） | A | Codex | 2026-11-17 | cards1 のまんなか | ★2 の「〜クッキー」のカード |
+| mon-slime・mon-hitsuji（ぷるぷるスライム・くもひつじ） | A | Codex | 2026-11-17 | art-irai `requests/okashi/monsters1.md`・もとの PNG `assets/art/raw/monsters1.png` | 夜の舞台のモンスター・タイトル |
+| candy-cookie-bata・candy-cookie-sato（★2 バタークッキー・あまあまクッキー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cookies1.md`・もとの PNG `assets/art/raw/cookies1.png` | ★2 のカード |
+| special-cookie-tower（★3 特製クッキータワー） | A | Codex | 2026-11-17 | 同上 | ★3 のカード |
 
 ## これから頼む絵（組み合わせ式で枚数をおさえる）
 - ★1（ぜんぶモンスター食材）：食材6（リーフフェアリーの粉・ゴーゴーヤギのバター・こんぺいトカゲの砂糖・ほのお鳥のたまご・カカオゴーレムのかけら・焦げクッキー）＋ふしぎ2（ぷるぷるスライムのゼリー・くもひつじのホイップ）＋道具6（おばけ樹木のまき・ハネコウモリのうちわ・しずくクラゲの水・ひだねサラマンダーの火種・つるオバケのかご・コインガエルのちょきん箱）
