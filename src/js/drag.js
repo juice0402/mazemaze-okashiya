@@ -107,7 +107,7 @@ function dragFinish(D) {
   const from = [{ x: gr.left + gr.width / 2, y: gr.top + gr.height / 2, w: D.w * D.k }, cardSpot(Z.q)];
   dragClean(D);
   if (dropCard(D.p, Z.q, from) && Z.P.kind === 'buy') {
-    const t = document.querySelector(Z.q.where === 'board' ? `.tslot[data-w="board"][data-i="${Z.q.i}"] .pc` : '.fslot .pc');
+    const t = document.querySelector(Z.q.where === 'board' ? `.tslot[data-w="board"][data-i="${Z.q.i}"] .pc` : Z.q.where === 'hand' ? '.handcard[data-w="held"]:last-of-type .pc' : '.fslot .pc');
     if (t) replay(t, 'born');
   }
 }
