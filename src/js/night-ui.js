@@ -58,7 +58,7 @@ function showEvent(e, run, q) {
   const co = $('callout');
   if (co) { co.innerHTML = e.type === 'bake' ? bakeCallout(e) : calloutHTML(e, q); replay(co, 'pop'); }
   if (e.type === 'bake') {
-    replay($('stage'), 'sizzle');
+    replay($('stage'), 'sizzle'); replay(document.querySelector('.tiles'), 'bakefx');   // 鉄板の下から炎がゆらっと上がる
     for (const x of e.list) {
       const card = updTile(x.i, x.cid, x.burnt ? undefined : x.to);
       if (card) replay(card, 'sear');

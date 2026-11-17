@@ -690,3 +690,10 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 #score{display:inline-block}
 #score.tick{animation:scoretick .32s cubic-bezier(.2,1.6,.4,1)}
 @keyframes scoretick{0%{transform:scale(1.45);color:#fff}100%{transform:scale(1)}}
+/* 焼き：調理台の下から炎がゆらっと上がる */
+.tiles{position:relative}
+.tiles::after{content:"";position:absolute;left:4px;right:4px;bottom:2px;height:70%;z-index:3;border-radius:0 0 10px 10px;pointer-events:none;opacity:0;
+  background:radial-gradient(10% 70% at 8% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 80% at 25% 100%,rgba(255,120,40,.85),transparent 70%),radial-gradient(10% 70% at 42% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 85% at 59% 100%,rgba(255,120,40,.85),transparent 70%),radial-gradient(10% 70% at 76% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 80% at 93% 100%,rgba(255,120,40,.85),transparent 70%);
+  mix-blend-mode:screen;transform-origin:50% 100%}
+.tiles.bakefx::after{animation:bakeflame .9s ease-out}
+@keyframes bakeflame{0%{opacity:0;transform:scaleY(.2)}25%{opacity:1;transform:scaleY(1.1)}55%{opacity:.85;transform:scaleY(.9)}100%{opacity:0;transform:scaleY(.6) translateY(-6px)}}

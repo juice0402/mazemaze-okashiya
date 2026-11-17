@@ -30,6 +30,8 @@
 | card-mitsu・card-zeri・card-hoippu（はちみつ・スライムゼリー・ひつじホイップ） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards6.md`・もとの PNG `assets/art/raw/cards6.png` | ★1 の素材カード（ゼリーとホイップはふしぎな素材） |
 | card-hiokoshi・card-mizu・card-yakigote（火種・クラゲの水・やきごて） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards7.md`・もとの PNG `assets/art/raw/cards7.png` | ★1 の道具カード |
 | card-yobirin・field-teppan・field-ishigama（よびりん・ほのかの鉄板・ごうごう石窯） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards8.md`・もとの PNG `assets/art/raw/cards8.png` | 道具カードとフィールド（hiArt が b: を field-○○ で引く） |
+| burnt-1・burnt-2・burnt-3（焦げクッキー・焦げ焦げクッキー・すみびクッキー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards9.md`・もとの PNG `assets/art/raw/cards9.png` | 焦げのカード（hiArt が k: を burnt-★ で引く） |
+| bg-night（夜のおかし屋さんの厨房） | A | Codex | 2026-11-17 | art-irai `requests/okashi/bg1.md`・もとの PNG `assets/art/raw/bg1.png`（緑は抜かず、横960の webp に） | 夜の舞台とタイトルの背景 |
 
 ## これから頼む絵（組み合わせ式で枚数をおさえる）
 - ★1（ぜんぶモンスター食材）：食材6（リーフフェアリーの粉・ゴーゴーヤギのバター・こんぺいトカゲの砂糖・ほのお鳥のたまご・カカオゴーレムのかけら・焦げクッキー）＋ふしぎ2（ぷるぷるスライムのゼリー・くもひつじのホイップ）＋道具6（おばけ樹木のまき・ハネコウモリのうちわ・しずくクラゲの水・ひだねサラマンダーの火種・つるオバケのかご・コインガエルのちょきん箱）
