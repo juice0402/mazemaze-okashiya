@@ -9,7 +9,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rd = p => readFileSync(join(root, p), 'utf8');
 const ORDER = [
   'src/js/core.js', 'src/data/cards.js', 'src/data/world.js',
-  'src/js/art.js', 'src/js/cards-ui.js', 'src/js/scene.js', 'src/js/night.js', 'src/js/night-ui.js', 'src/js/morning.js', 'src/js/day.js', 'src/js/main.js',
+  'src/js/art.js', 'src/js/cards-ui.js', 'src/js/scene.js', 'src/js/night.js', 'src/js/night-ui.js', 'src/js/drag.js', 'src/js/morning.js', 'src/js/day.js', 'src/js/main.js',
 ];
 // 絵：assets/art/*.webp（と png）を名前→dataURL にして埋めこむ（ソースには base64 を書かない）
 const artDir = join(root, 'assets/art');

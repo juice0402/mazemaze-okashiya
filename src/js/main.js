@@ -39,11 +39,6 @@ const ACTS = {
   noop: () => {},
   buy: el => buy(+el.dataset.i),
   sell: () => sell(),
-  view: () => { N.view = true; renderNight(); },
-  desel: () => { unsel(); renderNight(); },
-  mixOk: () => doMix(),
-  swapAsk: () => swapAsk(),
-  noAsk: () => { N.ask = null; renderNight(); },
   reroll: () => reroll(),
   bake: () => bake(),
   next: () => nextRound(),
@@ -61,11 +56,13 @@ function boot(data) {
   S = s || newState();
   if (!s) S.phase = 'title';
   $('screen').addEventListener('click', e => {
+    if (Date.now() - dragEnd < 350) return;   // ドラッグのあとのクリックは無視
     const el = e.target.closest('[data-act]');
     if (!el || el.disabled) return;
     const f = ACTS[el.dataset.act]; if (f) f(el);
     renderTop();
   });
+  dragInit($('screen'));
   render();
 }
 /* アーティファクトを開いたまま更新されたとき、遊んでいる所から続ける */

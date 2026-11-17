@@ -268,7 +268,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes cititle{0%,22%{opacity:0;translate:40px 0}36%,100%{opacity:1;translate:0 0}}
 
 /* 下のボタン列：コインの丸・入れかえ・大きな「焼く！」 */
-.bar{flex:none;display:flex;align-items:center;gap:8px;min-height:58px}
+.bar{position:relative;flex:none;display:flex;align-items:center;gap:8px;min-height:58px}
 .orb{flex:none;width:52px;height:52px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;
   background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 2.5px #5a2a04,0 3px 0 #3a1c08}
 .orb i{font-style:normal;font-size:9px;font-weight:700;color:#5a2a04}
@@ -411,3 +411,39 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 @keyframes mfsfx{0%{opacity:0;transform:translateX(-50%) scale(2.4) rotate(-8deg)}22%{opacity:1;transform:translateX(-50%) scale(1) rotate(-8deg)}80%{opacity:1;transform:translateX(-50%) scale(1.04) rotate(-8deg)}100%{opacity:0;transform:translateX(-50%) translateY(-12px) scale(1.04) rotate(-8deg)}}
 .night.quake{animation:quake .32s linear}
 @keyframes quake{0%,100%{transform:translate(0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
+
+/* ドラッグ：つかんだカード（ghost）・行き先の光（put・swap・can・cant・over）・上の札（dragtip）・下の「ここで うる」 */
+[data-drag]{touch-action:none;-webkit-touch-callout:none}
+[data-drag] img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+.dragghost{position:fixed;left:0;top:0;z-index:45;aspect-ratio:5/7;pointer-events:none;will-change:transform;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5))}
+.dragghost .pc{width:100%;height:100%}
+.dragghost.hot .pc{box-shadow:0 0 0 3px #8fe0c0,0 0 20px 7px rgba(111,199,168,.75)}
+.lifted .pc{opacity:.28}
+.tslot.swap .pc{outline:2px dashed rgba(255,226,160,.85);outline-offset:2px}
+.tslot.over .pc,.handcard.over .pc{transform:scale(1.12)}
+.tslot.put.over{background:rgba(244,194,78,.5)}
+.tslot.cant .pc,.handcard.cant .pc{filter:grayscale(.7) brightness(.75)}
+.handcard.own .pc{box-shadow:0 0 0 2.5px var(--gold),0 0 12px 3px rgba(244,194,78,.5)}
+.sellzone{position:absolute;inset:3px 0;z-index:6;display:none;align-items:center;justify-content:center;gap:8px;border-radius:999px;border:2.5px dashed #ffd0a0;background:rgba(110,36,18,.92);color:#fff3e0;font-size:16px;font-weight:900}
+.sellzone span{font-size:14px;color:var(--gold)}
+.night.drag-own .sellzone{display:flex}
+.sellzone.over{background:rgba(190,58,36,.97);transform:scale(1.03)}
+.dragtip{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 44px);z-index:46;transform:translateX(-50%);width:min(calc(100vw - 24px),400px);min-height:62px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:var(--cream);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35);pointer-events:none}
+.dt-card{flex:none;width:42px;aspect-ratio:5/7}
+.dt-card .pc{width:100%;height:100%}
+.dt-card .pc-plate,.dt-card .pc-pow,.dt-card .pc-tag{display:none}
+.dt-body{min-width:0;flex:1}
+.dt-main{margin:0;font-size:14px;font-weight:900;line-height:1.3}
+.dt-sub{margin:1px 0 0;font-size:12px;font-weight:700;color:#7a4a2a}
+.dt-sub em{font-style:normal;color:#b8321e}
+.dt-fx{margin:2px 0 0;font-size:11px;line-height:1.35;color:#6a4a3a;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dt-flash{display:inline-block;margin:3px 0 0;font-size:11px;font-weight:900;background:var(--gold);color:#3a1c08;padding:1px 8px;border-radius:8px}
+
+/* 夜の画面のあまった高さは手札に：カードの大きさを手札の高さと幅で決める（container の単位） */
+.night .stage{flex:1.3 1 0;max-height:calc((min(100vw, 460px) - 32px) * .75)}
+.night .chef{height:min(88%,calc((min(100vw, 460px) - 32px) * .4))}
+.night .handwrap{flex:1 1 0;min-height:var(--hh);display:flex;flex-direction:column}
+.night .handwrap>.hand{flex:1;height:auto;container-type:size;padding-inline:4px}
+.night .hand-lbl{display:none}
+/* カードの幅：手札の幅に重なり（--ov。枚数が多いと深く）で収まる・高さに収まる・大きすぎない、の小さいほう */
+.night .handcard{--w:min(calc((100cqw - 4px) / (var(--n) * (1 - 2 * var(--ov, .1)) + 2 * var(--ov, .1))),calc((100cqh - 24px) * .72),164px);width:var(--w);margin:0 calc(var(--w) * var(--ov, .1) * -1)}
