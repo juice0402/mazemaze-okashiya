@@ -8,7 +8,6 @@ const ICON_MAPS = {
   sato: [['..oooooo..', '..oppppo..', '.oPPPPPPo.', '.oPwPPwPo.', 'oPPPPPPPPo', 'oPPwPPPwPo', 'oPPPPwPPPo', 'oPwPPPPPPo', 'oPPPPPPPPo', '.oooooooo.'], { o: '#8a3a5a', p: '#e07aa0', P: '#f9c6d6', w: '#ffffff' }],
   bata: [['..........', '..........', '...oooooo.', '..oYYYYYyo', '.oYYYYYyyo', '.ooooooyyo', '.oyyyyyoyo', '.oyyyyyyo.', 'WooooooooW', '.WWWWWWWW.'], { o: '#a5761c', Y: '#fff3a8', y: '#f6d36b', W: '#b9cad6' }],
   choco: [['..........', '.oooooooo.', '.olbbolbo.', '.obbbobbo.', '.oooooooo.', '.olbbolbo.', '.obbbobbo.', '.oooooooo.', '.WWWWWWWW.', '..........'], { o: '#3a1e10', b: '#7a4424', l: '#a8643a', W: '#c9d0d8' }],
-  koge: [['..........', '..oooooo..', '.olllbbbo.', 'olcllbbcbo', 'obllbbbbbo', 'obbbbcbbbo', 'ocbbbbbbbo', 'obbbcbbcbo', '.obbbbbbo.', '..oooooo..'], { o: '#1e120b', b: '#5a3a26', l: '#7a5034', c: '#1e120b' }],
   zeri: [['..........', '..........', '..oooooo..', '.owwaaaao.', '.owaaaaao.', '.oaaaaaao.', '.oaaaaaao.', '.oAAAAAAo.', '..oooooo..', '..........'], { o: '#2f6b78', a: '#7fd6e0', A: '#4fb0c0', w: '#e6fbff' }],
   hoippu: [['....oo....', '...owwo...', '..owwgwo..', '.owwwwwgo.', '.oggwwwwo.', 'owwwwwgwwo', 'owggwwwwgo', 'oooooooooo', '.WWWWWWWW.', '..........'], { o: '#9a7a8a', w: '#ffffff', g: '#f0dde6', W: '#b9cad6' }],
   maki: [['..........', '..........', '.ooooooo..', 'oybbbbbbo.', '.ooooooooo', '.oybbbbbbo', 'ooooooooo.', 'oybbbbbbo.', '.ooooooo..', '..........'], { o: '#3a2318', y: '#e8c48a', b: '#8a5a3b' }],
@@ -16,9 +15,20 @@ const ICON_MAPS = {
   mizu: [['....oo....', '...obbo...', '...obbo...', '..obbbbo..', '.obwbbbbo.', '.obwbbbbo.', '.obbbbbbo.', '.obbbbbbo.', '..obbbbo..', '...oooo...'], { o: '#2a4a7a', b: '#6fa8e0', w: '#dff0ff' }],
   kago: [['...oooo...', '..o....o..', '.o......o.', 'oooooooooo', 'obybybybyo', 'oybybybybo', '.obybybyo.', '.oybybybo.', '..oooooo..', '..........'], { o: '#7a4b2e', b: '#c98a4b', y: '#e4b273' }],
   chokin: [['..........', '....oo....', '..oookoo..', '.oPPPPPPo.', 'oPwPPPPPPo', 'oPkPPPPPPo', 'opPPPPPPPo', '.oPPPPPPo.', '.oo.oo.oo.', '..........'], { o: '#8a3a5a', P: '#f9a8c0', p: '#e07aa0', w: '#ffffff', k: '#3a1e2a' }],
-  chubi: [['..........', 'oooooooooo', 'oSSSSSSSSo', 'oSwSSSSSSo', 'oSSSSSSSSo', '.oSSSSSSo.', '..oooooo..', '..r.rr.r..', '.ryrryyry.', '.oooooooo.'], { o: '#3a2318', S: '#c9a27a', w: '#f0dcc0', r: '#f0702a', y: '#ffc94a' }],
-  max: [['....r.....', '...rr..r..', '..rrr.rr..', '..rryrrr.r', '.rryyyrrrr', '.ryyyyyrr.', 'rryywwyyrr', 'ryywwwwyyr', '.ryywwyyr.', '..rrrrrr..'], { r: '#e0402a', y: '#ffb84a', w: '#fff3c0' }],
-  maze: [['...oooo...', '..o.oo.o..', '.o.o..o.o.', '.o.o..o.o.', '.o.o..o.o.', '..o.oo.o..', '...oooo...', '....hh....', '....hh....', '....hh....'], { o: '#9a8a7a', h: '#8a5a3b' }],
+  /* 生地（クッキーのビルド）・焦げ・新しい道具・フィールド（ハイグラの絵ができるまでの仮の絵） */
+  dosshiri: [['..........', '..........', '.oooooooo.', 'oDDDDDDDDo', 'oDLDDDDDDo', 'oDDDDDDDDo', 'oDDDDDDDDo', 'osssssssso', '.oooooooo.', '..........'], { o: '#5a3418', D: '#c08a52', L: '#e0b07a', s: '#9a6a3a' }],
+  hinoko: [['..r....r..', '...oooo.y.', '..oDDDDo..', '.oDLDDrDo.', '.oDDDDDDo.', 'oDDrDDDDDo', 'oDDDDDyDDo', '.oDDDDDDo.', '..oooooo..', '..........'], { o: '#7a3a18', D: '#f0b070', L: '#ffe0b0', r: '#f0402a', y: '#ffc94a' }],
+  ichiban: [['....of....', '....offf..', '....o.....', '...oooo...', '..oDDDDo..', '.oDLDDDDo.', 'oDDDDDDDDo', 'oDDDDDDDDo', '.oooooooo.', '..........'], { o: '#7a5228', D: '#f6d39a', L: '#fff0d0', f: '#e0402a' }],
+  shime: [['..........', '...oooo...', '..oDDDDo..', '.oDLDDDDo.', 'oppppppppo', 'oDDDDDDDDo', 'oDDDDDDDDo', '.oDDDDDDo.', '..oooooo..', '..........'], { o: '#7a5228', D: '#f6d39a', L: '#fff0d0', p: '#e8607a' }],
+  horoniga: [['..........', '...oooo...', '..oDDDDo..', '.oDLDDDDo.', '.oDDDdDDo.', 'oDdDDDDDDo', 'oDDDDDdDDo', '.oDDDDDDo.', '..oooooo..', '..........'], { o: '#2a1408', D: '#7a4424', L: '#a8643a', d: '#4a2414' }],
+  koge1: [['..........', '..oooooo..', '.olllbbbo.', 'olcllbbcbo', 'obllbbbbbo', 'obbbbcbbbo', 'ocbbbbbbbo', 'obbbcbbcbo', '.obbbbbbo.', '..oooooo..'], { o: '#1e120b', b: '#5a3a26', l: '#7a5034', c: '#1e120b' }],
+  koge2: [['..oooooo..', '.obbcbbbo.', 'obbbbbcbbo', '.obbbbbbo.', '..oooooo..', '.obbbcbbo.', 'obcbbbbbbo', 'obbbbbcbbo', '.obbbbbbo.', '..oooooo..'], { o: '#120a06', b: '#3a2416', c: '#0a0604' }],
+  koge3: [['...oooo...', '..obrbbo..', '.obbbbrbo.', 'obrbbbbbbo', 'obbbrrbbbo', 'obbbbbbrbo', 'obrbbbbbbo', '.obbbrbbo.', '..obbbbo..', '...oooo...'], { o: '#120a06', b: '#2a1a10', r: '#ff7a2a' }],
+  yakigote: [['......oo..', '.....oRRo.', '....oRRRRo', '....oRRRRo', '.....oRRo.', '....oo....', '...oho....', '..oho.....', '.oho......', '.oo.......'], { o: '#3a1c08', R: '#f0502a', h: '#8a5a3b' }],
+  yobirin: [['....oo....', '...oYYo...', '..oYwYYo..', '..oYYYYo..', '.oYYYYYYo.', '.oYYYYYYo.', 'oYYYYYYYYo', 'oooooooooo', '....oo....', '..........'], { o: '#7a5214', Y: '#f6c94c', w: '#fff6d0' }],
+  teppan: [['..........', '..........', '..........', 'oooooooooo', 'oGGGGGGGGo', 'oGgGGGGgGo', 'oooooooooo', '.r.y.r.y..', 'ryryryryr.', '..........'], { o: '#2a1a12', G: '#5a4a42', g: '#7a6a62', r: '#f0502a', y: '#ffc94a' }],
+  ishigama: [['...oooo...', '..oSSSSo..', '.oSSsSSSo.', 'oSSSSSSsSo', 'oSoooooSSo', 'oSoryroSSo', 'oSoyyyoSSo', 'oSSSSSSSSo', 'oooooooooo', '..........'], { o: '#3a2a22', S: '#a89080', s: '#c8b0a0', r: '#f0502a', y: '#ffc94a' }],
+  mitsu: [['...oooo...', '..oWWWWo..', '..oooooo..', '.oYYYYYYo.', 'oYYwYYYYYo', 'oYwYYYYYYo', 'oYYYYYYYYo', 'oYYYYYYYYo', '.oooooooo.', '..........'], { o: '#7a4a14', Y: '#f2b33a', w: '#ffe08a', W: '#e8d0a0' }],
   hiokoshi: [['....o.....', '...oro....', '...orro.o.', '..orrrooro', '..orryrrro', '.orryyyrro', '.oryyyyyro', '.oryywyyro', '..oryyyro.', '...ooooo..'], { o: '#7a1e10', r: '#f0502a', y: '#ffc94a', w: '#fff6d0' }],
 };
 const ICON = {};
@@ -40,7 +50,7 @@ function candyCanvas(key) {
   const acc = a === b ? '#ffffff' : other.col;
   const pal = { o: OL, b: '#c98a4b', l: '#e4b273', a: acc, w: '#fff6ea', c: '#9a5a2a', y: '#f6d36b', d: '#4a2414', W: '#b9cad6' };
   if (main.noun === 'ブラウニー') pal.b = '#6b3a1e';
-  if (main.noun === 'クッキー' && main === MATS.koge) { pal.b = '#5a3a26'; pal.l = '#7a5034'; }
+  if (main.noun === 'クッキー') pal.b = main.col;   // 生地の色のクッキー
   if (main.noun === 'キャンディ' || main.noun === 'ゼリー') pal.a = a === b ? main.col : (other.col === '#fff4f8' ? main.col : other.col);
   return fromMap(CANDY_MAPS[main.noun], pal);
 }
@@ -59,6 +69,7 @@ const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンデ�
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
   if (k === 'm' || k === 't') return ART['card-' + id] || null;
+  if (k === 'u' || k === 'w') return ART['card-' + id.split(/[+|]/)[0]] || null;   // 道具の★2・★3は、1つめの道具の絵
   if (k === 'o') {   // 形（noun）ともう1つの材料で絵をさがす（candy-cookie-bata など）。なければ形だけの絵
     const r = recipeOf(id), nid = NOUN_ID[r.noun], other = r.mats.find(m => MATS[m].noun !== r.noun);
     return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || null;
@@ -76,7 +87,7 @@ function cardIconURL(cid) {
   const hi = hiArt(cid); if (hi) return hi;
   if (URLS.has(cid)) return URLS.get(cid);
   const k = cid[0], id = cid.slice(2);
-  const src = k === 'o' ? candyCanvas(id) : k === 's' ? specialCanvas(id) : ICON[id];
+  const src = k === 'o' ? candyCanvas(id) : k === 's' ? specialCanvas(id) : k === 'k' ? ICON['koge' + id] : k === 'u' || k === 'w' ? ICON[id.split(/[+|]/)[0]] : ICON[id];
   const u = big(src, k === 's' ? 3 : 4);
   URLS.set(cid, u);
   return u;

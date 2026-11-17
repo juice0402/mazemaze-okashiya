@@ -69,6 +69,16 @@ function sanitize(o) {
   if (!Array.isArray(o.shelf)) o.shelf = [];
   if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
   if (!Number.isFinite(o.money)) o.money = 0;
+  /* カードやレシピの形が変わっても読めるように、いまはないカード・材料を落とす（11/17 夕方 バトルの作りかえ） */
+  const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(m => MATS[m]);
+  const okCard = c => { try { cardDef(c); return true; } catch (e) { return false; } };
+  o.pool = o.pool.filter(okCard);
+  for (const k in o.recipes) if (!okKey(k)) delete o.recipes[k];
+  if (!Object.keys(o.recipes).length) o.recipes = { 'komugi+sato': 0 };
+  o.shelf = o.shelf.filter(s => s && okKey(s.key));
+  for (const m in o.stock) if (!MATS[m]) delete o.stock[m];
+  if (o.today) for (const k of ['flashes', 'made']) if (Array.isArray(o.today[k])) o.today[k] = o.today[k].filter(okKey);
+  if (o.morning && o.morning.cur && !okKey(o.morning.cur)) o.morning.cur = null;
   return o;
 }
 function load() {

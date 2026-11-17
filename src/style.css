@@ -66,8 +66,11 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .st-floor{position:absolute;inset:auto 0 0;height:20%;background:repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,transparent 2px 46px),linear-gradient(#8a5a3a,#6a4228);box-shadow:inset 0 3px 0 rgba(0,0,0,.25)}
 .glow{position:absolute;left:0;bottom:0;width:44%;height:90%;pointer-events:none;mix-blend-mode:screen;opacity:.25;transition:opacity .25s,filter .25s;
   background:radial-gradient(ellipse 60% 55% at 42% 100%,#ff7a2a,rgba(255,90,30,.35) 45%,transparent 72%)}
-.stage[data-z="1"] .glow{opacity:.5}.stage[data-z="2"] .glow{opacity:.95;filter:saturate(1.3)}
-.stage[data-z="3"] .glow{opacity:.55;filter:grayscale(1) brightness(.6)}
+.stage[data-z="0"] .glow{opacity:.12;filter:grayscale(.6)}
+.stage[data-z="1"] .glow{opacity:.35}.stage[data-z="2"] .glow{opacity:.6}
+.stage[data-z="3"] .glow{opacity:.9;filter:saturate(1.3)}.stage[data-z="4"] .glow{opacity:1;filter:saturate(1.6) brightness(1.2)}
+.stage.sizzle .glow{animation:sizzle .6s ease-out}
+@keyframes sizzle{30%{opacity:1;filter:saturate(1.8) brightness(1.5)}}
 .chef{position:absolute;left:1%;bottom:4%;height:88%;max-width:38%;object-fit:contain;object-position:left bottom;transform-origin:center bottom;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));animation:breathe 3.2s ease-in-out infinite}
 .chef.flip{transform:scaleX(-1)}
 .chef:not(.hi){image-rendering:pixelated}
@@ -95,12 +98,12 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .stage .float.dmg{left:84%;top:18%;font-size:26px}
 @keyframes up{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -24px}}
 
-/* 火力 */
-.heat-bar{flex:1;display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
-.heat-bar i{height:7px;background:rgba(42,23,12,.7);border-radius:2px}
-.heat-bar i.on.z0{background:#f6d29a}.heat-bar i.on.z1{background:var(--ember)}.heat-bar i.on.z2{background:#e8402a}.heat-bar i.on.z3{background:#1a120c;box-shadow:inset 0 0 0 1px #e0d6cc}
-.heat-label{min-width:4.2em}
-.heat-label.z1{color:var(--ember)}.heat-label.z2{color:#ff6a4a}.heat-label.z3{color:#e0d6cc}
+/* 鉄板の火力（ほのかの固有特性）：弱火・中火・強火・火力マックスの4段 */
+.heat-bar{flex:1;max-width:46%;display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+.heat-bar i{height:8px;background:rgba(42,23,12,.7);border-radius:3px}
+.heat-bar i.on.h1{background:#f6d29a}.heat-bar i.on.h2{background:var(--ember)}.heat-bar i.on.h3{background:#e8402a}.heat-bar i.on.h4{background:#ff2a1a;box-shadow:0 0 6px #ff7a2a}
+.heat-label{min-width:4.2em;color:#e0d6cc}
+.heat-label.h1{color:#f6d29a}.heat-label.h2{color:var(--ember)}.heat-label.h3{color:#ff6a4a}.heat-label.h4{color:#ff4a2a}
 
 /* ノルマ */
 .quota{flex:none;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--milk-soft)}
@@ -114,6 +117,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.k-f{--g1:#c8f2df;--g2:#46a988;--rim:#d8fff0}
 .pc.k-t{--g1:#d8b08a;--g2:#6e4528;--rim:#e9cfae}
 .pc.k-b{--g1:#ffd08a;--g2:#b8401e;--rim:#ffe2a8}
+.pc.k-d{--g1:#fff0cc;--g2:#d8a050;--rim:#fff4d8}
+.pc.k-k{--g1:#8a6a5a;--g2:#2a1a12;--rim:#b8a090}
 .pc.k-o{--g1:#ffd0da;--g2:#d9587a;--rim:#ffe0e8}
 .pc.k-s{--g1:#fff2b8;--g2:#d49a22;--rim:#fff0a8}
 .pc::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.6),transparent 55%)}
@@ -148,7 +153,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* 調理台：左にフィールドの「場」、そのあとにアイコンのタイル6つ（左から順に発動）を1行に。木のカウンターの上 */
 .night{--hh:clamp(112px,22vh,168px)}
-.tiles{flex:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:9px 7px 7px;border-radius:12px;
+.tiles{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:9px 8px 8px;border-radius:12px;
   background:linear-gradient(#a8784e,#7a5236);box-shadow:inset 0 2px 0 rgba(255,230,200,.35),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 rgba(0,0,0,.35)}
 .tslot{position:relative;min-width:0;aspect-ratio:1;max-height:64px;padding:0;border:none;border-radius:10px;background:rgba(42,23,12,.32);box-shadow:inset 0 2px 5px rgba(0,0,0,.45)}
 .tslot::after{content:"";position:absolute;inset:26%;border-radius:50%;border:2px dashed rgba(255,240,220,.26);pointer-events:none}
@@ -165,7 +170,17 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .pc.tile{border-radius:10px;transition:filter .2s}
 .pc.tile .pc-art{inset:7%}
 .tl-star{position:absolute;left:0;right:0;top:0;z-index:3;text-align:center;font-size:9px;line-height:1;letter-spacing:-2px;color:#ffe066;-webkit-text-stroke:1px #7a4204;paint-order:stroke fill}
-.tl-pow{position:absolute;right:3px;bottom:1px;z-index:3;font-size:13px;line-height:1;font-weight:900;color:#fff3c0;-webkit-text-stroke:2px #5a2a04;paint-order:stroke fill}
+.tl-pow{position:absolute;right:3px;bottom:6px;z-index:3;font-size:13px;line-height:1;font-weight:900;color:#fff3c0;-webkit-text-stroke:2px #5a2a04;paint-order:stroke fill}
+/* 焼き加減のメーター（9段階）：生は白・半焼けは黄・こんがりはオレンジ・サイコーは金に光る */
+.cook{position:absolute;left:6%;right:6%;bottom:3px;z-index:3;height:5px;border-radius:3px;background:rgba(42,23,12,.6);overflow:hidden;
+  box-shadow:0 0 0 1px rgba(42,23,12,.8)}
+.cook::after{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--c) / 9 * 100%);background:repeating-linear-gradient(90deg,var(--cc) 0 calc(100% / var(--c) - 1px),transparent 0 calc(100% / var(--c)));transition:width .3s}
+.cook.c0{--cc:#fff6e8}.cook.c1{--cc:#ffd75e}.cook.c2{--cc:#f08a3c}.cook.c3{--cc:#ffe680}
+.pc.tile:has(.cook) .tl-pow{bottom:10px}
+.pc.tile.best{box-shadow:0 0 0 2px #ffe680,0 0 0 3.5px #2a170c,0 0 12px 3px rgba(255,214,90,.9);animation:bestglow 1.2s ease-in-out infinite alternate}
+@keyframes bestglow{to{box-shadow:0 0 0 2px #fff3c0,0 0 0 3.5px #2a170c,0 0 18px 5px rgba(255,214,90,1)}}
+.pc.sear{animation:sear .5s ease-out}
+@keyframes sear{0%{filter:brightness(1)}30%{filter:brightness(1.9) saturate(1.6);transform:scale(1.12)}100%{filter:none}}
 /* 発動：タイルがコンと跳ねて光る。発動しおわったタイルは少し暗く */
 .tslot.now{z-index:2}
 .tslot.now .pc{transform:translateY(-3px) scale(1.08);box-shadow:0 0 0 2px var(--rim),0 0 0 3.5px #2a170c,0 0 16px 4px var(--ember)}
@@ -192,7 +207,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .co-chips{display:flex;gap:4px;overflow:hidden}
 .co-chips span{flex:none;font-size:10px;font-weight:700;line-height:1.5;padding:0 7px;border-radius:8px;background:var(--cream-2);color:#8a3a10;white-space:nowrap}
 .co-chips .co-z{color:#fff;background:#c08a4a}
-.co-z.z1{background:var(--ember)!important}.co-z.z2{background:#e0402a!important}.co-z.z3{background:#4a3a32!important}
+.co-z.h1{background:#d8a050!important}.co-z.h2{background:var(--ember)!important}.co-z.h3{background:#e0402a!important}.co-z.h4{background:#c01a10!important}
+.co-z.c0{background:#b8a088!important}.co-z.c1{background:#d8a020!important}.co-z.c2{background:#e0782a!important}.co-z.c3,.co-z.best{background:linear-gradient(#ffd75e,#e0a020)!important;color:#5a2a04!important}
+.co-z.koge{background:#4a3a32!important}
 .co-dmg{position:relative;flex:none;min-width:60px;text-align:right;font-size:30px;line-height:1;font-weight:900;color:#ffe680;-webkit-text-stroke:3px #7a2a04;paint-order:stroke fill;text-shadow:0 3px 0 #5a2004;font-variant-numeric:tabular-nums}
 .co-dmg.hot{font-size:36px;color:#fff1a8;text-shadow:0 3px 0 #5a2004,0 0 14px rgba(255,140,40,.9)}
 .co-dmg.koge{font-size:17px;color:#f0e8e0;-webkit-text-stroke:3px #3a2a22;text-shadow:none}
@@ -260,6 +277,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .ci-chips{display:flex;flex-wrap:wrap;gap:4px}
 .ci-chips span{font-size:11px;font-weight:700;padding:3px 8px;border-radius:9px;background:var(--cream-2);color:#8a3a10}
 .ci-fx{font-size:14px;font-weight:700;line-height:1.45}
+.ci-cook{font-size:12px;font-weight:700;color:#8a3a10}.ci-cook b{color:#c4501a;font-size:15px}
 .ci-recipe{font-size:12px;color:var(--ink-soft)}
 .ci-flavor{font-size:11.5px;font-style:italic;color:var(--ink-soft);line-height:1.45}
 .vbtns{width:100%;display:flex;gap:8px;justify-content:center}

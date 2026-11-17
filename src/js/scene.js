@@ -38,7 +38,7 @@ function nightBg() {
 function drawNight(g, t, dt) {
   const r = painter(g);
   g.drawImage(nightBg(), 0, 0);
-  const z = zoneOf(scn.heat), fh = [2, 4, 7, 2][z];
+  const z = zoneOf(scn.heat), fh = [2, 4, 7][z];
   for (let i = 0; i < 8; i++) {
     const h = fh + (Math.sin(t * 13 + i * 1.9) > 0.2 ? 1 : 0);
     r(z === 3 ? '#5a3a26' : '#f0502a', 27 + i, 34 - h, 1, h);
