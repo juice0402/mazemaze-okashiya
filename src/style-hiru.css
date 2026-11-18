@@ -31,7 +31,12 @@
 .mm-nm{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
 .mm-flash{position:absolute;left:50%;top:-14px;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;font-family:var(--disp);font-size:12px;color:#3a1c08;background:linear-gradient(var(--brass-hi),var(--gold));border:1.5px solid var(--brass-lo);border-radius:999px;padding:1px 10px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 /* 雑貨屋（お店のグッズだけ・別の画面 .mzakka）：夜のショップ .shopov（日よけ）の形を .mz-wrap いっぱいに。背景は店の中 bg-zakka */
-.mz-wrap{position:relative;flex:1;min-height:0;border-radius:14px;overflow:hidden}
+.mz-wrap{position:relative;flex:1 1 0;min-height:0;border-radius:14px;overflow:hidden;border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4)}
+.mz-wrap .shopov{border-radius:0}
+.morning .mz-foot{flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px;overflow:hidden}
+.mz-wallet{font-size:13px;font-weight:700;color:var(--milk);text-shadow:0 1px 0 rgba(0,0,0,.5)}
+.mz-wallet b{font-family:var(--disp);font-weight:400;font-size:24px;color:var(--brass-hi);margin:0 2px}
+.mz-hint{margin:0;font-size:11px;color:var(--milk-soft);text-align:center;text-shadow:0 1px 0 rgba(0,0,0,.5)}
 .mshop{padding:26px 10px 10px;gap:6px}
 .shopov.mshop.ms-bg{background:linear-gradient(rgba(36,16,6,.58),rgba(36,16,6,.1) 28%,rgba(36,16,6,.1) 72%,rgba(36,16,6,.72)),var(--msbg) 50% 50%/cover no-repeat,#5a3824}
 .ms-top{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
@@ -53,8 +58,14 @@
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
 @keyframes mspent{0%{opacity:0;transform:translateY(-6px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
 /* 材料だな：共通の部品 .gingham（ギンガムの布）の上に素材。持っていれば数（赤い丸）・なければ下に値札 */
-.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px 6px;padding:12px;min-height:84px}
-.mt{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 1px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
+/* 朝の3つの画面（キッチン・商品を並べる・雑貨屋）は同じ形：上の舞台（flex 1・同じふち）・下のトレー（同じ高さ --mtrayH）・いちばん下のボタン
+   11/18 16時 しょーくん「キッチンと並べるで、舞台とトレーの大きさ・位置がちがって、行き来するとズレが目立つ」。トレーは1段で、多いときは横にスクロール */
+.morning{--mtrayH:112px}
+.mtray,.md-wait,.mz-foot{position:relative;flex:none;height:var(--mtrayH);display:flex;align-items:flex-end;gap:6px;padding:22px 10px 10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain}
+.mtray::-webkit-scrollbar,.md-wait::-webkit-scrollbar{display:none}
+.mtray.more::after,.md-wait.more::after{content:'›';position:sticky;right:-10px;flex:none;align-self:stretch;width:28px;margin-left:-28px;display:grid;place-items:center;font-size:24px;font-weight:700;color:var(--milk);background:linear-gradient(90deg,transparent,rgba(58,20,10,.9) 70%);pointer-events:none}
+.mt-lbl,.mw-lbl{position:absolute;left:10px;top:3px;font-size:11px;font-weight:700;color:var(--milk);text-shadow:0 1px 0 rgba(0,0,0,.5);pointer-events:none}
+.mt{position:relative;flex:none;width:64px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 1px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
 .mt .hico{width:34px;height:34px}
 .mt-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden}
 .mt-n{position:absolute;right:-5px;top:-6px;min-width:19px;height:19px;border-radius:10px;padding:0 4px;font-style:normal;font-size:11px;font-weight:700;line-height:19px;text-align:center;color:#fff;background:var(--strawberry);border:1.5px solid #fff}
@@ -86,19 +97,16 @@
 .md-case .dslot.empty{cursor:default}
 .md-case .dslot .hico{height:min(64px,52%)}
 .md-case .d-nm{font-size:12px}
-.md-wait{flex:none;position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;padding:20px 10px 10px;min-height:96px}
-.mw-lbl{position:absolute;left:10px;top:3px;font-size:11px;font-weight:700;color:var(--milk);text-shadow:0 1px 0 rgba(0,0,0,.5)}
-.mw{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
+.mw{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
 .mw .hico{width:40px;height:40px}
 .mw-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mw-empty{grid-column:1 / -1;margin:auto;font-size:12px;color:var(--milk-soft)}
+.mw-empty{flex:1;align-self:center;text-align:center;margin:0;font-size:12px;color:var(--milk-soft)}
 /* つかんで動かす */
 .mghost{position:fixed;z-index:50;margin:0;pointer-events:none;box-shadow:0 10px 18px rgba(0,0,0,.4);transition:none;animation:none}
 .morning .lift{opacity:.35}
 .morning [data-mdrop].can{outline:2px dashed var(--gold);outline-offset:2px}
 .morning [data-mdrop].hot{outline:3px solid #ffe08a;outline-offset:2px}
 .mtip{position:fixed;left:50%;top:0;z-index:60;max-width:92vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;font-size:13px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.92);border:1.5px solid var(--brass);border-radius:999px;padding:6px 14px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
-
 .hico{display:block;width:32px;height:32px;object-fit:contain;flex:none}
 
 /* ==== 昼：カウンター越しの舞台（上）・ショーケース（下）・下のボタン（11/18 作りなおし）

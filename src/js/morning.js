@@ -36,8 +36,8 @@ const placedN = () => S.shelf.filter(s => s.n > 0).length;
 const mRoomN = () => shelfMaxN() - placedN() - mState().baked.length;   // あと何回焼けるか（棚のマス − 棚にある − 天板にある）
 const shelfRoom = () => mRoomN() > 0;
 const isNewRecipe = key => !(key in S.recipes);
-/* 下の材料だなに出す素材：基本素材（仲間の素材は来てから）＋倉庫にあるモンスター素材 */
-const trayMats = () => [...shopMats(), ...Object.keys(MATS).filter(m => isMonMat(m) && (S.stock[m] || 0) > 0)];
+/* 下の材料だなに出す素材：倉庫にあるモンスター素材（だいじなので先頭）＋基本素材（仲間の素材は来てから） */
+const trayMats = () => [...Object.keys(MATS).filter(m => isMonMat(m) && (S.stock[m] || 0) > 0), ...shopMats()];
 const mNeed = list => list.reduce((o, m) => (o[m] = (o[m] || 0) + 1, o), {});
 /* list の素材を使うのに足りない分の代金（買えない素材が足りなければ null） */
 function mCost(list) {
@@ -235,7 +235,8 @@ function mDown(e) {
   if (e.button > 0 || mBusy || talking() || MD) return;
   const el = e.target.closest('[data-mdrag]'); if (!el) return;
   e.preventDefault();
-  MD = { el, src: el.dataset.mdrag, id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false, g: null, over: null, can: null, tip: null };
+  const tray = el.closest('.mtray, .md-wait');
+  MD = { el, src: el.dataset.mdrag, id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false, g: null, over: null, can: null, tip: null, tray, sl0: tray ? tray.scrollLeft : 0, scroll: false };
   window.addEventListener('pointermove', mMove);
   window.addEventListener('pointerup', mUp);
   window.addEventListener('pointercancel', mEnd);
@@ -255,7 +256,13 @@ function mGrab() {
 function mMove(e) {
   if (!MD || e.pointerId !== MD.id) return;
   const dx = e.clientX - MD.x0, dy = e.clientY - MD.y0;
-  if (!MD.moved) { if (Math.hypot(dx, dy) < 8) return; mGrab(); }
+  /* トレーが横にはみ出しているとき、横にすべらせたらスクロール（上へ動かしたら、つかむ） */
+  if (MD.scroll) { MD.tray.scrollLeft = MD.sl0 - dx; return; }
+  if (!MD.moved) {
+    if (Math.hypot(dx, dy) < 8) return;
+    if (MD.tray && MD.tray.scrollWidth > MD.tray.clientWidth + 2 && Math.abs(dx) > Math.abs(dy) * 1.2) { MD.scroll = true; return; }
+    mGrab();
+  }
   MD.g.style.transform = `translate(${dx}px,${dy}px) scale(1.08)`;
   const hit = document.elementFromPoint(e.clientX, e.clientY), t = hit && hit.closest('[data-mdrop]');
   const ok = t && MD.can(t.dataset.mdrop) ? t : null;
@@ -284,7 +291,8 @@ function mEnd() {
 }
 function mUp(e) {
   if (!MD || e.pointerId !== MD.id) return;
-  const { src, moved, over } = MD; mEnd();
+  const { src, moved, over, scroll } = MD; mEnd();
+  if (scroll) return;
   if (!moved) return mTap(src);
   if (over) mDrop(src, over.dataset.mdrop);
 }
@@ -332,7 +340,7 @@ function kitchenHTML(M) {
       <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
       <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
     </div>
-    <div class="mtray gingham" data-mdrop="tray">${trayMats().map(mTile).join('')}</div>
+    <div class="mtray gingham" data-mdrop="tray"><span class="mt-lbl">材料だな</span>${trayMats().map(mTile).join('')}</div>
     <div class="m-bar"><button class="sub" data-act="m-zakka">雑貨屋</button><button class="big" data-act="m-disp"${mBusy ? ' disabled' : ''}>商品を並べる</button></div>
   </section>`;
 }
@@ -365,10 +373,10 @@ function zakkaHTML() {
   const sbg = ART['bg-zakka'];
   return `<section class="morning mzakka fit" id="msec">
     <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
-      <div class="ms-top"><span class="ms-ttl">雑貨屋</span><span class="ms-wallet">お財布 <b>${fmt(S.money)}</b>円</span></div>
+      <div class="ms-top"><span class="ms-ttl">雑貨屋</span></div>
       ${body}
-      <p class="ms-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p>
     </div></div>
+    <div class="mz-foot gingham"><span class="mz-wallet">お財布 <b>${fmt(S.money)}</b>円</span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
     <div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
   </section>`;
 }
@@ -376,6 +384,11 @@ function renderMorning() {
   const M = mState(), v = M.view;
   $('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : kitchenHTML(M);
   $('msec').addEventListener('pointerdown', mDown);
+  /* トレーの右にまだあるときは、右はしに「›」 */
+  document.querySelectorAll('#msec .mtray, #msec .md-wait').forEach(el => {
+    const f = () => el.classList.toggle('more', el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+    f(); el.addEventListener('scroll', f, { passive: true });
+  });
   if (v === 'kitchen' && !M.talked && !talking()) {
     M.talked = true;
     const tut = S.day === 1 && !S.seen.mOven ? (S.seen.mOven = 1, STORY.mTut.oven) : [];
