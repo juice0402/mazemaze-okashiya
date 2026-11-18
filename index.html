@@ -879,7 +879,7 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .mshelf .d-nm{font-size:9.5px}
 .mshelf .dslot .hico{height:min(30px,54%)}
 .mshelf .d-dots{display:none}
-.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;padding:9px;min-height:72px;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
+.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;padding:11px;min-height:72px}
 .mt{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 1px 4px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
 .mt .hico{width:30px;height:30px}
 .mt-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden}
@@ -3235,7 +3235,7 @@ ${made}
 ${M.shop ? shopHTMLm() : ''}
 </div>
 <div class="mshelf" data-mdrop="shelf" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => slotHTML(o, i, ks, false)).join('')}</div>
-<div class="mtray" data-mdrop="tray">${mats.length ? mats.map(mTile).join('') : '<p class="mt-empty">倉庫はからっぽ。仕入れで素材を買ってね</p>'}</div>
+<div class="mtray gingham" data-mdrop="tray">${mats.length ? mats.map(mTile).join('') : '<p class="mt-empty">倉庫はからっぽ。仕入れで素材を買ってね</p>'}</div>
 <div class="m-bar"><button class="sub" data-act="m-shop" data-o="1">仕入れ</button>${M.made ? `<button class="big" data-act="toShelf"${mBusy ? ' disabled' : ''}>お菓子を棚へ</button>` : `<button class="big" data-act="openShop"${mBusy ? ' disabled' : ''}>お店をあけに行く</button>`}</div>
 </section>`;
 $('msec').addEventListener('pointerdown', mDown);
