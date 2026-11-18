@@ -727,3 +727,38 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .tslot .ord{left:0;right:0;top:46%;z-index:1;width:auto;height:auto;transform:translateY(-50%);background:none;box-shadow:none;border-radius:0;font-size:min(24px,6.6vw);line-height:1;color:rgba(255,230,186,.30);text-shadow:0 -1px 0 rgba(16,6,2,.6),0 1px 0 rgba(255,236,200,.16);pointer-events:none}
 .fslot .ord{top:42%;color:rgba(255,214,130,.40);background:none}
 .tslot:has(.pc) .ord{display:none}
+/* ==== UI の絵 その4（11/18 art-irai ui-parts・ui-icons）==== */
+/* 焼き加減の炎（ui-cook0〜3・128×152）：まんなかの丸い穴に数字。穴は ::before で色をしき、炎の絵は ::after */
+.ck{height:calc(var(--u) * 16.6);padding:calc(var(--u) * 5.6) calc(var(--u) * .5) 0 0}
+.ck.ck::before{left:calc(var(--u) * 2.8);top:calc(var(--u) * 7.2);width:calc(var(--u) * 7.8);height:calc(var(--u) * 7.8);border-radius:50%;transform:none;box-shadow:none;background:var(--ckh,#fff8ec)}
+.ck.ck::after{content:"";position:absolute;left:0;top:0;z-index:-1;width:100%;height:100%;border-radius:0;transform:none;box-shadow:none;filter:none;opacity:1;animation:none;background:var(--ckimg) center/contain no-repeat}
+.ck b{font-size:calc(var(--u) * 6.6)}
+.ck.c0{--ckimg:var(--ui-cook0);--ckh:#fff8ec}.ck.c1{--ckimg:var(--ui-cook1);--ckh:#fff1b8}.ck.c2{--ckimg:var(--ui-cook2);--ckh:#ffdcae}
+.ck.c3{--ckimg:var(--ui-cook3);--ckh:radial-gradient(circle,#fffbe0,#ffe27a)}
+.ck.c3::before{opacity:.75;animation:ckglow 1.1s ease-in-out infinite alternate}   /* サイコーは穴の光だけ濃さが動く */
+/* 味パワーの紋章（ui-pow・160×173）：数字は紋章のまんなかのクリーム色の丸に */
+.pc-pow.pc-pow::before{left:0;top:0;width:100%;height:100%;border-radius:0;transform:none;box-shadow:none;background:var(--ui-pow) center/contain no-repeat}
+/* ★（ui-star）：星の数だけ絵を並べる */
+.pc-star{color:transparent;-webkit-text-stroke:0;text-shadow:none;letter-spacing:0;white-space:nowrap}
+.pc-star i{display:inline-block;width:1.1em;height:1.04em;margin:0 -.1em;vertical-align:top;background:var(--ui-star) center/contain no-repeat}
+/* おもてなしのはじめの帯（ui-band・640×135）：左右の折り返しはそのまま、まんなかだけ横にのびる。ななめはコードで回す */
+/* 帯の布（上の84%）のまんなかが舞台のまんなか */
+.bi-band{left:-17%;right:-17%;top:calc(50% - 49px);height:116px;background:none;box-shadow:none;border:solid transparent;border-width:0 103px;border-image:var(--ui-band) 0 120 fill/0 103px stretch;transform:rotate(-5deg) scaleY(0)}
+@keyframes biband{0%{transform:rotate(-5deg) scaleY(0)}14%{transform:rotate(-5deg) scaleY(1.12)}22%,82%{transform:rotate(-5deg) scaleY(1)}100%{transform:rotate(-5deg) scaleY(0)}}
+@keyframes bitext{0%,10%{opacity:0;transform:translateX(70px) rotate(-5deg) skewX(-12deg)}26%,80%{opacity:1;transform:rotate(-5deg)}100%{opacity:0;transform:translateX(-90px) rotate(-5deg) skewX(-12deg)}}
+.bi-r,.bi-q{-webkit-text-stroke:3px #4a1c08;paint-order:stroke fill;text-shadow:none}
+/* まんぞく！のハンコ（ui-stamp・240×225）：花の形の赤いハンコの中に字 */
+.vbox.result.ok .r-msg{display:grid;place-items:center;width:96px;height:90px;margin:-8px 0 -10px;padding:0;border:0;border-radius:0;background:var(--ui-stamp) center/contain no-repeat;color:#c4302a;font-size:14px;font-weight:900;letter-spacing:-.5px;transform:rotate(-10deg)}
+/* 吹き出し（ui-bubble・480×160 を9分割 34・しっぽは ui-bubble-tail 128×96 を重ねる）：夜のヒント #tipb とお客さんの .cu-bub */
+#tipb,.cu-bub.cu-bub{background:none;border:solid transparent;border-width:3px;border-radius:0;border-image:var(--ui-bubble) 34 fill/15px stretch;box-shadow:none;filter:drop-shadow(0 3px 2px rgba(42,20,8,.4))}
+#tipb{padding:7px 24px 8px 12px}
+#tipb .tip-x{right:5px;top:5px}
+#tipb::before,.cu-bub.cu-bub::after{content:"";position:absolute;width:18px;height:13.5px;margin:0;border:0;background:var(--ui-bubble-tail) center/100% 100% no-repeat}
+#tipb::before{left:-14px;bottom:11px;transform:rotate(90deg)}   /* 左のほのかを指す */
+#tipb::after{content:none}
+#tipb.down::before{left:50%;bottom:-12px;margin-left:-9px;transform:none}
+.cu-bub.cu-bub{padding:4px 11px 4px 8px}
+.cu-bub.cu-bub::after{left:10px;bottom:-12px;transform:none}
+/* ヒントの指（ui-finger・160×176）：指先は左上のすみ（tips.js の at が指先を目あての所に） */
+.tipf{width:44px;height:48px;transform-origin:2px 2px;background:var(--ui-finger) center/contain no-repeat}
+.tipf-ring{left:2px;top:2px}

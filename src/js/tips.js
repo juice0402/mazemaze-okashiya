@@ -124,12 +124,10 @@ function tipDraw() {
   if (!h || !h[0] || (h.length > 1 && !h[1])) return;
   const f = document.createElement('div');
   f.id = 'tipf'; f.className = 'tipf';
-  f.innerHTML = `<i class="tipf-ring"></i><svg viewBox="0 0 44 54" aria-hidden="true"><g fill="#fff" stroke="#4a2a14" stroke-width="2.6" stroke-linejoin="round">
-    <rect x="3" y="25" width="15" height="9.5" rx="4.75" transform="rotate(-28 10 30)"/><rect x="10" y="20" width="28" height="28" rx="9"/>
-    <rect x="16" y="1.5" width="10.5" height="31" rx="5.25"/></g><path d="M27 29v8M32.5 28v8" stroke="#4a2a14" stroke-width="2" stroke-linecap="round" opacity=".55"/></svg>`;
+  f.innerHTML = '<i class="tipf-ring"></i>';   // 指は描き下ろしの絵（ui-finger・左上を指す。指先は左上のすみ）
   scr.appendChild(f);
   const A = tipMid(h[0]), B = h[1] ? tipMid(h[1]) : null;
-  const at = (p, k) => `translate(${Math.round(p.x - 19)}px, ${Math.round(p.y - 2)}px) scale(${k})`;
+  const at = (p, k) => `translate(${Math.round(p.x - 2)}px, ${Math.round(p.y - 2)}px) scale(${k})`;
   const ring = f.firstElementChild;
   if (REDUCED || !f.animate) { f.style.transform = at(B || A, 1); return; }
   if (B) {

@@ -6,7 +6,7 @@ function cardDmg(d, cook) { return d.fx.dmg ? Math.floor(d.fx.dmg * STAR_MUL[d.s
 /* 効果のことば（短く） */
 function cardChips(d) { return d.cat === 'field' ? FIELDS[d.cid.slice(2)].chips.slice() : fxList(d.fx, d.star); }
 const artImg = cid => `<img${hiArt(cid) ? ' class="hi"' : ''} src="${cardIconURL(cid)}" alt="">`;
-const starGems = d => d.star > 1 ? `<span class="pc-star">${'★'.repeat(d.star)}</span>` : '';
+const starGems = d => d.star > 1 ? `<span class="pc-star" aria-label="★${d.star}">${'<i></i>'.repeat(d.star)}</span>` : '';   // 星は描き下ろしの絵（ui-star）
 
 /* 属性の帯（ゼンゼロの形・11/18 しょーくん）：左が役目・右が種類。色で見分ける */
 const ATTR_C = { 主役: 'atk', 支援: 'sup', 火力: 'fire', 仕入れ: 'buy', 生地: 'dough', 素材: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };

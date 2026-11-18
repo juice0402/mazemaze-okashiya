@@ -27,6 +27,7 @@
 - `<div class="panel"><h2>見出し</h2><p>…</p></div>`（木の板・見出しは金の Dela Gothic One）。小さめは `panel tight`
 - 紙のパネル（11/18 ui-panels・まんなかはクリーム色の紙なので字はこげ茶）：ui-panel（四すみにお菓子）＝ラウンドの結果 `.vbox.result`・おもてなしの結果 `.panel.end`／ui-window（真ちゅうのびょう）＝会話の窓 `.tk-win`・大きく見る画面の説明 `.cinfo`／ui-nameplate＝会話の名前の札 `.tk-name`（人ごとの色は filter で回す）／ui-diary＋ui-diary-tape＝日記の紙 `.diary`（線は字の行にそろえてコード）。ほかの所で使うときは、style.css の「UI の絵」の .vbox.result の行（border と border-image）をまねずに、リーダーにお願いする
 - ショップの板・調理台・マス・おなかの帯・火力のメーター・コイン・値札・まぜの札も絵（11/18 ui-shop・ui-board。style.css のいちばん下「UI の絵 その3」）。`.tiles`・`.tslot`・`.qbar`・`.heat-bar`・`.sh-price`・`.mixmark` に背景・影・角の丸みを自分でつけない。夜のショップの絵は `.night .shopov` だけ（朝の仕入れ .mshop はまだ前の形）
+- 吹き出し・焼き加減の炎・味パワーの紋章・★・はじめの帯・まんぞく！のハンコ・ヒントの指も絵（11/18 ui-parts・ui-icons。style.css のいちばん下「UI の絵 その4」）。お客さんの吹き出し `.cu-bub` と夜のヒント `#tipb` は ui-bubble の9分割＋しっぽ ui-bubble-tail（`.cu-bub::after`・`#tipb::before`）なので、背景・ふち・影・角の丸み・しっぽを自分でつけない（吹き出しは中の並べ方と字だけ直してよい）。★は `starGems` が `<i>` を星の数だけ出す
 - 横ならび `class="row"`（2つを同じ幅で `row two`）・うすい字 `class="muted"`・小さい説明 `class="hint"`
 - ギンガムの布（前の夜の手札の布・11/18）：`class="gingham"`（いちごのしましまの布・内側に点線。大きさ・並べ方は使う側で）
 - お知らせ：`toast('…')`（画面の上にしばらく出る）
