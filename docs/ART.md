@@ -38,9 +38,10 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/bg3.md`（朝の仕入れの背景：市場＝外の朝市・雑貨屋＝店の中 → bg-market・bg-zakka）・`ui-buttons.md`（全画面のボタン）が依頼中
-- 待ち（2つずつ依頼中に）：`ui-panels`（パネル・会話の窓・名前の札・日記の紙）・`ui-stage`（夜の舞台の額縁）・`ui-shop`（ショップの日よけと板）・`ui-board`（調理台・おなかの帯・マス・コイン・火力のメーター・値札）・`ui-cards`（カードのふち4つ）・`ui-parts`（紋章・星・ななめの帯・ハンコ）・`ui-day`（棚・オーブン・看板・びん）
-- 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる。のびる物は border-image で9つに切る
+- art-irai `requests/okashi/ui-buttons2.md`（ボタンの押した形・使えない形。ui-buttons を編集して2段 → ui-<部品>-down・ui-<部品>-off）・`ui-panels.md`（パネル・会話の窓・名前の札・日記の紙）が依頼中
+- 待ち（2つずつ依頼中に）：`ui-stage`（夜の舞台の額縁＋別の部品のメダル）・`ui-shop`（ショップの日よけと板）・`ui-board`（調理台・おなかの帯・マス・コイン・火力のメーター・値札）・`ui-cards`（カードのふち4つ）・`ui-parts`（紋章・星・まっすぐな帯・ハンコ）・`ui-day`（棚・オーブン・看板・びん）
+- 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
+- 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
 
 ## これから頼む絵
 - ★3：クッキー以外の形の「○○タワー」（サブレ・カステラ・ショコラ・ドロップ・ゼリー・シュー）と、ちがう形どうしの★3（いまはコードで描いた仮の絵）
@@ -57,3 +58,6 @@
 | cust-kodomo・cust-gakusei・cust-otona・cust-obaachan（お客さん：こども・学生さん・おとなの人・おばあちゃんの正面・胸から上・ふつう） | A | Codex | 2026-11-18 | art-irai `requests/okashi/customers1.md`（step1〜4・PR #43）・`prep_art.py one … 480`（4まいとも高さ480。こどもを小さく見せるのはコードで） | 昼のカウンターの前のお客さん（昼のチャット）・会話の部品（こどもは⑬） |
 | cust-<id>-happy・cust-<id>-sad（お客さん4人の うれしい・ざんねん。id＝kodomo・gakusei・otona・obaachan） | A | Codex | 2026-11-18 | art-irai `requests/okashi/customers2.md`（step1〜8・PR #45・cust-* のもとの絵から編集）・`prep_art.py one … 480`（ふつうの絵と同じ大きさ） | 昼のお客さん（すきな味があった・なかった） |
 | honoka-<表情>-clean（すすなしの立ち絵6まい：yaruki・joy・fuan・kangaeru・wakuwaku・kandou） | A | Codex（のち色合わせで、すすを消した） | 2026-11-18 | もとの立ち絵（honoka-poses・honoka-faces）から、ほっぺのすすを消した（昼のチャット・枝 hiru/susu） | はじめて焼くまで（1日目の朝・プロローグ）の会話の立ち絵（morning.js の mSusuOn が TALKERS.honoka.faces を -clean に読みかえる） |
+| bg-market・bg-zakka（朝の仕入れの背景：外の朝市・店の中の雑貨屋） | A | Codex | 2026-11-18 | art-irai `requests/okashi/bg3.md`（step1＝市場・step2＝雑貨屋・PR #48）・`prep_art.py bg`（16:9 の横960） | 朝の仕入れのタブの背景（昼のチャット） |
+| ui-btn-red・ui-btn-wood・ui-pill-cream・ui-pill-choco・ui-tab-on・ui-tab-off・ui-round（全画面のボタン） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-buttons.md`（PR #49）・`prep_art.py parts … 640`（緑で区切られた7つを上の段から順に） | 共通のボタン .big・.bake・.go2（赤）・.sub（木）・.pill（クリーム）・.pill.sub（チョコ）・.tab・.round（style.css の「UI の絵」・border-image） |
+| ui-tab-bow（えらんだタブのいちごのリボン） | A | Codex（切りわけ） | 2026-11-18 | ui-tab-on のまんなかのリボンを切りわけた（9分割でのびないように）。タブの面のリボンの下は、日よけを左からうつしてつないだ | .tab.on の上のまんなか（::before） |

@@ -13,9 +13,12 @@
 - 文字：ふつうは `var(--font)`（Zen Maru Gothic）。見出しと大きな数字は `font-family:var(--disp);font-weight:400`（Dela Gothic One）
 - ゲームの画面に絵文字は入れない。ハートは `HEART`（core.js の ♥︎ の文字）
 
-## ボタン（押すと白い輪は自動）
-- `<button class="big" data-act="…">` …下の大きなキャラメルのボタン（画面に1つ・親指の届く下に）
-- `class="sub"`（板の色のひかえめなボタン）・`class="pill"`（まるい札）・`class="go2"`（いちご）・`class="sq"`（四角いアイコン）
+## ボタン（押すと白い輪は自動・11/18〜 絵のボタン）
+- 絵は art-irai の ui-buttons（木と真ちゅう＋お菓子）。style.css のいちばん下の「UI の絵」が border-image（9分割）ではる。**背景・影・ふちの色を自分でつけない**（絵が消える・角が出る）。大きさは padding と高さで決める（絵は高さに合わせて小さくなる）
+- `<button class="big" data-act="…">` …下の大きな赤いボタン（左にいちご・右にクッキー。画面に1つ・親指の届く下に）
+- `class="sub"`（木の板のボタン）・`class="pill"`（クリームのまるい札）・`class="pill sub"`（チョコのまるい札）・`class="go2"`・`class="pill go2"`（赤＝買う・おわる）・`class="pill … on"`（えらんでいる札＝赤）
+- タブ：`class="tab"`・えらんでいるのは `class="tab on"`（上にしましまの日よけ・えらんでいるタブは赤い布といちごのリボン）。朝の仕入れの市場／雑貨屋のタブはこれで
+- まるいボタン：`class="round"`（44px のまる。とじる × など）。`class="sq"`（四角いアイコン）は絵なし
 - 押したときの白い輪は、`.big .pill .go2 .sub` に data-act があれば main.js が出す。押せないときは `disabled`
 - ボタンの動きは data-act の名前で：朝は morning.js の `MORNING_ACTS`、昼は day.js の `DAY_ACTS` に `名前: el => …` を足す（main.js の ACTS に入る）。ほかの名前とかぶらないように
 

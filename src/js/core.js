@@ -12,7 +12,7 @@ const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduc
    起動のときに一度だけ blob URL（短い名前）にかえる。blob の絵が出せない所では dataURL のまま。かえおわってから done() */
 function artBlobs(done) {
   const keys = Object.keys(ART);
-  let fin = false; const end = () => { if (!fin) { fin = true; done(); } };
+  let fin = false; const end = () => { if (!fin) { fin = true; uiVars(); done(); } };
   try {
     if (!keys.length || !URL.createObjectURL) return end();
     const blob = d => {
@@ -26,6 +26,12 @@ function artBlobs(done) {
     img.src = blob(ART[keys[0]]);
     setTimeout(end, 400);   // 待ちすぎない（そのときは dataURL のまま）
   } catch (e) { end(); }
+}
+
+/* UI の絵（ui-* の名前の絵）を CSS の変数 --ui-<名前> に入れる。style.css の「UI の絵」が border-image に使う（昼の画面も同じ変数） */
+function uiVars() {
+  const st = document.documentElement.style;
+  for (const k of Object.keys(ART)) if (k.startsWith('ui-')) st.setProperty('--' + k, `url("${ART[k]}")`);
 }
 
 /* 大きな数字：10万からは「万・億・兆・京」 */

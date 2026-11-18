@@ -473,7 +473,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 /* 手札：ギンガムの布の上に並べる（いちごとクリーム・ステッチのふち） */
 
 /* ボタン：光沢と厚み。ときどき光が走る */
-button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);color:#fff4e4;border:2px solid #2a170c;box-shadow:inset 0 2px 0 rgba(255,236,200,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 #2a170c;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);color:#fff4e4;border:2px solid #2a170c;box-shadow:inset 0 2px 0 rgba(255,236,200,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 #2a170c;text-shadow:0 1px 0 rgba(0,0,0,.4)}
 .go2,button.go2{background:linear-gradient(#ffb3c2,#f0708a 50%,#c8445e);border:2px solid #5a1424;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),inset 0 -3px 0 rgba(90,10,30,.35),0 3px 0 #5a1424}
 .big{font-family:var(--disp);font-weight:400;background:linear-gradient(#ffd27a,#ffa04a 45%,#e0782a);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -4px 0 rgba(120,40,0,.35),0 4px 0 #3a1c08}
 .bake{position:relative;color:#fff;border:3px solid #3a1004;background:linear-gradient(#ffe08a 0%,#ffa848 30%,#f46a2a 62%,#c43c18 100%);box-shadow:inset 0 3px 0 rgba(255,255,255,.6),inset 0 -6px 0 rgba(120,24,0,.45),0 5px 0 #3a1004,0 10px 22px rgba(255,110,40,.45)}
@@ -677,7 +677,6 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 @keyframes stamp{from{opacity:0;transform:scale(2.4) rotate(-14deg)}}
 /* バトル中の下のボタン：はやおくり ×2 */
 .bar .spd{flex:1;height:52px;font-size:17px}
-.bar .spd.on{background:linear-gradient(#ffc06a,var(--ember) 55%,#e0582a);color:#3a1404;border-color:#3a1404}
 /* 押したときの光（main.js の pressFx）と、画面の切りかえの幕（wipe） */
 .pressfx{position:fixed;z-index:70;pointer-events:none;box-shadow:0 0 0 3px #fff8e0,0 0 16px 5px rgba(255,236,190,.8);animation:pressfx .46s ease-out forwards}
 @keyframes pressfx{0%{opacity:1;background:rgba(255,250,230,.5);transform:none}100%{opacity:0;background:rgba(255,250,230,0);transform:scale(1.12,1.45)}}
@@ -696,3 +695,23 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 /* 共通の部品：ギンガムの布（11/18 H-010 の7。前の夜の手札の布。朝の倉庫などで class="gingham" をつけて使う） */
 .gingham{position:relative;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
 .gingham::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}
+
+/* ==== UI の絵（11/18 art-irai ui-buttons・Codex で描き下ろし）====
+   ボタンの絵は border-image の9分割：上下はまんなかで2つに切り（49%）、左右のはし（飾り）はそのまま、まんなかだけ横にのびる。
+   width:auto なので、ボタンの高さに合わせて絵がまるごと小さくなる（はしの飾りがゆがまない）。字はコードで重ねる。
+   絵の URL は CSS の変数 --ui-<名前>（core.js の uiVars が ART から入れる）。絵のボタンは背景と影を持たない（!important は、ほかの皮の色を消すため） */
+button.big,button.bake,button.go2,button.sub,button.pill,button.tab,button.round{background:none!important;box-shadow:none!important;border:2px solid transparent;border-radius:999px;border-image-repeat:stretch;border-image-width:auto}
+button.big,button.bake,button.go2,button.pill.on{border-image-source:var(--ui-btn-red);border-image-slice:49% 16% 49% 15% fill;color:#fff;-webkit-text-stroke:3px #7a1a0c;paint-order:stroke fill;text-shadow:0 2px 0 #5a0e06}
+button.go2{padding-left:28px;padding-right:28px}
+button.sub{border-image-source:var(--ui-btn-wood);border-image-slice:49% 10% 49% 10% fill;color:#fff4e4;text-shadow:0 1px 0 rgba(30,12,4,.7)}
+button.pill{border-image-source:var(--ui-pill-cream);border-image-slice:49% 15% 49% 15% fill;color:#4a2814;text-shadow:none}
+button.pill.sub{border-image-source:var(--ui-pill-choco);color:#fff0d8;text-shadow:0 1px 0 rgba(20,8,2,.7)}
+button.pill.go2,button.pill.on{border-image-source:var(--ui-btn-red);border-image-slice:49% 16% 49% 15% fill;color:#fff;-webkit-text-stroke:2.5px #7a1a0c}
+.bake::before{display:none}
+.title .big{border-radius:999px}
+/* タブ（えらぶ・えらんでいる .on）：上にしましまの日よけ。えらんでいるタブには、いちごのリボン（別の絵 ui-tab-bow を上のまんなかに） */
+button.tab{position:relative;border-image-source:var(--ui-tab-off);border-image-slice:49% 11% 49% 11% fill;color:#5a3418;font-weight:700;padding:11px 18px 6px;text-shadow:0 1px 0 rgba(255,244,220,.6)}
+button.tab.on{border-image-source:var(--ui-tab-on);color:#fff;text-shadow:0 1px 0 rgba(90,14,10,.8)}
+button.tab.on::before{content:"";position:absolute;left:50%;top:-20%;height:55%;aspect-ratio:164/88;transform:translateX(-50%);background:var(--ui-tab-bow) center/contain no-repeat;pointer-events:none}
+/* まるいボタン（とじる × など） */
+button.round{width:44px;height:44px;padding:0;flex:none;border-image:none;background:var(--ui-round) center/100% 100% no-repeat!important;color:#4a2814;font-size:18px;line-height:1}
