@@ -38,8 +38,8 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/monsters2.md`（しずくクラゲ・こんぺいトカゲ・ほのお鳥のひよこの大きい立ち姿 → mon-kurage・mon-tokage・mon-hiyoko）・`cards12.md`（しずく寒天・ほしくずシュガー・ほのおカラメル → card-kanten・card-hoshi・card-karamel）が依頼中（11/18 15時・H-016）。ui-shop・ui-board・ui-stage・op1・op2 は済
-- 待ち（2つずつ依頼中に・この順）：`ui-parts`（味パワーの紋章・星・まっすぐな帯・ハンコ）と `ui-icons`（焼き加減の炎4つ・ヒントの指）→ `cards13`〜`cards15`（こね生地の菓子パン6・パン種・めん棒2）と `ui-flame`（鉄板の炎・黒い背景・mix-blend-mode: screen で重ねる）→ `ui-cards`（カードのふち4つ）・`ui-day`（棚・オーブン・看板・びん）。11/18 しょーくん「火力の炎やチュートリアルの指、攻撃力のアイコンなんかも全て描き下ろして欲しい」
+- 依頼中（11/18 16時〜）：art-irai `requests/okashi/ui-parts.md`・`ui-icons.md`。monsters2・cards12（PR #63・#62）・ui-shop・ui-board・ui-stage・op1・op2 は済
+- 待ち（2つずつ依頼中に・この順）：`cards13`〜`cards15`（こね生地の菓子パン6・パン種・めん棒2）と `ui-flame`（鉄板の炎・黒い背景・mix-blend-mode: screen で重ねる）→ `ui-cards`（カードのふち4つ）・`ui-day`（棚・オーブン・看板・びん）。11/18 しょーくん「火力の炎やチュートリアルの指、攻撃力のアイコンなんかも全て描き下ろして欲しい」
 - 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
 - 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
 
@@ -70,3 +70,5 @@
 | logo-ma・logo-ze・logo-o・logo-ka・logo-shi・logo-ya・logo-san・logo-ma-g・logo-ze-g（タイトルロゴの文字・-g は残像と光の型） | C | フォントで描いた文字（Mochiy Pop One・OFL）。AI の絵ではない | 2026-11-18 | 昼のチャット（枝 hiru/logo-tab・H-014）。3倍の大きさの絵（フォントのファイルはビルドが埋めこめないので絵にした） | タイトルのロゴ（src/js/logo.js の logoHTML） |
 | op-mix・op-shop-night（オープニング：朝の厨房でまぜるほのか・夜のお店の外観） | A | Codex | 2026-11-18 | art-irai `requests/okashi/op1.md`（step1・step3・PR #54）・`prep_art.py bg`（16:9 の横960）。op-shop-night は bg-shop-out と同じお店を夜に。op-forest（step2）は不合格で op2 に出しなおし | オープニング（昼のチャット・H-015） |
 | op-forest（オープニング：厨房の窓から夕方の森へ流れる横長の景色） | A | Codex | 2026-11-18 | art-irai `requests/okashi/op2.md`（PR #58・2172×724）。上64px・下49px を切って 32:9 → 横1920×540 の webp（quality 76）。人・生き物・字なし | オープニングの②③で横に流す背景（昼のチャットが使う・H-015） |
+| mon-tokage・mon-hiyoko・mon-kurage（こんぺいトカゲ・ほのお鳥のひよこ・しずくクラゲの大きい立ち姿・左向き） | A | Codex | 2026-11-18 | art-irai `requests/okashi/monsters2.md`（PR #63・1536×1024）。トカゲのしっぽが3等分の線をこえるので、すき間（x=543・1040）で切って trim_fit 520。トカゲは緑の星を残すため --strict | 夜の舞台のお客さん（monURL が mon-<id> を見る） |
+| card-kanten・card-hoshi・card-karamel（しずく寒天・ほしくずシュガー・ほのおカラメル） | A | Codex | 2026-11-18 | art-irai `requests/okashi/cards12.md`（PR #62）・`prep_art.py three … 300` | 夜のふしぎな素材のカード（MATS の alt より先） |
