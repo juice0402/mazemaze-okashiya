@@ -790,3 +790,9 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* 思っている吹き出し（ui-think・480×215 を9分割 70・しっぽは ui-think-tail の小さな丸2つ〔左右反転で左下へ〕） */
 .cu-bub.cu-bub.think{border-image:var(--ui-think) 70 fill/21px stretch;padding:9px 14px 8px}
 .cu-bub.cu-bub.think::after{width:22px;height:20px;left:0;bottom:-19px;transform:scaleX(-1);background-image:var(--ui-think-tail)}
+/* ==== UI の絵 その7（11/18 夜 art-irai ui-flame）==== */
+/* 鉄板の炎（ui-flame-tall 97×240・-mid 196×240・-wide 240×233・黒い背景のまま）：.tfire の mix-blend-mode: screen で黒がぬける。ゆらすのは今までどおり tf のアニメ */
+.tiles .tf.tf{border-radius:0;background:var(--ui-flame-tall) center bottom/contain no-repeat}
+.tiles .tf.tf.x{background-image:var(--ui-flame-mid)}
+.tiles[data-z="4"] .tf.tf{background-image:var(--ui-flame-mid);filter:brightness(1.15)}
+.tiles[data-z="4"] .tf.tf.x{background-image:var(--ui-flame-wide)}

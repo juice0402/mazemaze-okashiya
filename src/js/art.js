@@ -65,7 +65,8 @@ function specialCanvas(id) {
 }
 
 /* ---------- ハイグラの絵：ART はビルドが assets/art/*.webp から作る（名前→dataURL）。まだない絵はドット絵の仮の絵 ---------- */
-const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンディ': 'candy', 'カステラ': 'castella', 'ブラウニー': 'brownie', 'ゼリー': 'jelly', 'シュークリーム': 'puff' };
+const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンディ': 'candy', 'カステラ': 'castella', 'ブラウニー': 'brownie', 'ゼリー': 'jelly', 'シュークリーム': 'puff',
+  'メロンパン': 'melonpan', 'クリームパン': 'creampan', 'ロール': 'roll', 'あんパン': 'anpan', 'コロネ': 'koronet', 'パン': 'pan' };   // パンは こね生地（11/18 夜）
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
   if (k === 'm' || k === 't') return ART['card-' + id] || (MATS[id] && ART[MATS[id].alt]) || null;   // alt＝絵が届くまでの仮の絵
@@ -74,12 +75,13 @@ function hiArt(cid) {
   if (k === 'u' || k === 'w') return ART['card-' + id.split(/[+|]/)[0]] || null;   // 道具の★2・★3は、1つめの道具の絵
   if (k === 'o') {   // 形（noun）ともう1つの材料で絵をさがす（candy-cookie-bata など）。なければ形だけの絵
     const r = recipeOf(id), nid = NOUN_ID[r.noun], other = r.mats.find(m => MATS[m].noun !== r.noun);
-    const mm = MATS[r.mats.find(m => MATS[m].noun === r.noun)];   // 菓子パンの★2は、絵が届くまで主役の素材の仮の絵（alt）
-    return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || (mm && ART[mm.alt]) || null;
+    const mid = r.mats.find(m => MATS[m].noun === r.noun), mm = MATS[mid];   // 菓子パンの★2は、主役の素材のカードの絵（なければ仮の絵 alt）
+    return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || ART['card-' + mid] || (mm && ART[mm.alt]) || null;
   }
   if (k === 's') {   // ★3：同じ形どうしは「特製○○タワー」の絵
     const [r1, r2] = id.split('|').map(recipeOf);
-    return r1.noun === r2.noun ? ART[`special-${NOUN_ID[r1.noun]}-tower`] || null : null;
+    if (r1.noun === r2.noun) return ART[`special-${NOUN_ID[r1.noun]}-tower`] || null;
+    return ART[`special-${NOUN_ID[r2.noun]}-tower`] || ART[`special-${NOUN_ID[r1.noun]}-tower`] || null;   // ちがう形どうしは、主役（うしろ）の形のタワーの絵
   }
   return null;
 }
