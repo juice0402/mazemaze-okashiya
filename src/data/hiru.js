@@ -15,6 +15,7 @@ const HIRU_MATS = {
 };
 const BASE_IDS = ['mugi', 'hachimitsu', 'milk', 'egg', 'ichigo'];
 const MON_PRICE = 400;   // モンスター素材は1こ400円として数える（売値の計算だけ。仕入れはできない）
+const MON_PRICE_RARE = 450;   // レアモンスターの素材（にじいろ水あめ・きらきらミント）。お菓子1こが600円までになるように（11/18 しょーくん）
 
 /* レシピ表：材料2つ（順番は関係なし・同じ素材2つもOK）で1つのお菓子。名前は8文字まで */
 const HIRU_RECIPES = {};
@@ -27,13 +28,14 @@ const HIRU_RECIPES = {};
   ['herb', 'mugi', 'ハーブサブレ'], ['herb', 'hachimitsu', 'ハーブのど飴'], ['herb', 'milk', 'ハーブムース'], ['herb', 'egg', 'ハーブシフォン'], ['herb', 'ichigo', 'ハーブゼリー'], ['herb', 'herb', 'ハーブティー'], ['herb', 'mizuame', 'ハーブキャンディ'],
 ].forEach(([a, b, name]) => { HIRU_RECIPES[recipeKey(a, b)] = name; });
 
-/* モンスター素材の「ことば」（仮。モンスター素材の名前が決まったらここに足す）。モンスター素材＋ほかの素材＝ことば＋形。モンスター素材どうし＝まぜまぜパフェ */
-const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじいろ', minto: 'ミント' };
+/* モンスター素材の「ことば」（11/18 しょーくん）。モンスター素材＋ほかの素材＝ことば＋形。モンスター素材どうし＝まぜまぜパフェ
+   hoshi・karamel・kanten は、モブ3体がお客さんになったときの素材（H-016・cards.js の MATS にリーダーが足すまでは出てこない） */
+const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじいろ', minto: 'ミント', hoshi: 'ほしぞら', karamel: 'こんがり', kanten: 'ひんやり' };
 const isHiruMat = m => !!HIRU_MATS[m];
 const isMonMat = m => !!(MATS[m] && MATS[m].fushigi);
 const matShort = m => HIRU_MATS[m] ? HIRU_MATS[m].short : MATS[m] ? MATS[m].short : m;
 const matName = m => HIRU_MATS[m] ? HIRU_MATS[m].name : MATS[m] ? MATS[m].name : m;
-const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? MON_PRICE : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
+const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? (MATS[m].rare ? MON_PRICE_RARE : MON_PRICE) : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
 
 /* 朝昼のお菓子（レシピの key＝'a+b'）：名前・材料・1この値段（材料2つの値段の合計）。前の形の key（夜のカードの材料どうし）は cards.js の recipeOf で */
 function candyOf(key) {
@@ -64,11 +66,12 @@ const LIKE_W = 3;         // お客さんごとの出やすい味（下）は3�
 const KANBAN_W = 2;       // 看板のお菓子の素材がすきなお客さんは2倍来やすい
 const OTHER_BUY = 0.5;    // すきな味のお菓子がないとき、ほかのお菓子を1こ買う人の割合（ハートなし）
 /* すきな味の出やすさ（お客さんの名前と見た目は world.js の CUSTOMERS・リーダー） */
+/* モンスター素材も1つずつ割りあて（11/18 しょーくん）：こども＝ゼリー・にじいろ水あめ／学生さん＝ミント・ほしくずシュガー／おとなの人＝ホイップ・ほのおカラメル／おばあちゃん＝しずく寒天。まだ倉庫に入ったことのない素材は、すきな味にならない（seenMats） */
 const CUST_LIKES = {
-  kodomo: ['ichigo', 'hachimitsu', 'zeri'],
-  gakusei: ['milk', 'ichigo', 'minto'],
-  otona: ['mugi', 'egg', 'herb'],
-  obaachan: ['hachimitsu', 'egg', 'mizuame'],
+  kodomo: ['ichigo', 'hachimitsu', 'zeri', 'niji'],
+  gakusei: ['milk', 'ichigo', 'minto', 'hoshi'],
+  otona: ['mugi', 'egg', 'herb', 'hoippu', 'karamel'],
+  obaachan: ['hachimitsu', 'egg', 'mizuame', 'kanten'],
 };
 function custCount() {
   if (S.day <= 1) return CUST_DAY1;
