@@ -101,6 +101,7 @@ function openDay() {
     R.plan = custPlan(custCount(), R.kanban, soroiRows(shelfSlots().slots).flatMap(x => x.mats));   // おそろいの段は開店のときの並びで
     S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
     save(); renderDay();
+    setTimeout(() => dSay('open'), 700);
   };
   if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go, { dim: false }); }
   else go();
@@ -122,6 +123,8 @@ function dayStep(R, dt) {
   if (R.cur) return visitStep(R, dt);
   if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
   if (R.i >= 1 && !R.mated) { const m = dMateDue(); if (m) return dMateVisit(R, m); }
+  /* お客さんのいない間のひとこと（営業の3割・6.5割のところで1回ずつ） */
+  for (const at of [.3, .65]) if (!(R.idle || {})[at] && R.t >= at * DAY_MS) { (R.idle = R.idle || {})[at] = 1; dSay('idle'); }
   if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }
   else if (R.t >= DAY_MS) closeDay();
 }
@@ -138,6 +141,8 @@ function visitStep(R, dt) {
     if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}, { dim: false }); }
   } else if (v.step === 1 && v.t >= V_ASK) {
     v.step = 2; v.res = serve(v); save(); showResult(v, false);
+    const r = v.res, it = r.key && S.shelf.find(s => s.key === r.key), nm = r.key ? candyOf(r.key).name : '';
+    setTimeout(() => it && it.n <= 0 ? dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true) : dSay(r.kind), 700);
   } else if (v.step === 2 && v.t >= V_LEAVE) {
     v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
   } else if (v.step === 3 && v.t >= V_END) {
@@ -184,7 +189,42 @@ function closeDay(msg) {
   clearTimeout(dayTick); dayTick = 0;
   save(); if (msg) toast(msg);
   renderDay();
+  setTimeout(() => dSay('close', '', true), 500);
   if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk(STORY.dayClose(S.today), () => {}, { dim: false }); }
+}
+
+/* ---------- 昼のお店のひとこと（11/19）：文は STORY.daySay。舞台の下に小さく出して消える（会話の窓にしない＝営業は止めない）
+   1日目（チュートリアルの会話がある）・会話のあいだは出さない。force＝売り切れなど（前のを消して出す） ---------- */
+let dSayT = 0, dSayAt = 0, dSayLast = '';
+function dSay(kind, c = '', force = false) {
+  const P = STORY.daySay && STORY.daySay[kind], st = $('dstage');
+  if (!P || !st || S.day <= 1 || talking()) return;
+  const now = performance.now();
+  if (!force && (now - dSayAt < 4500 || Math.random() > (STORY.daySayP[kind] ?? .4))) return;
+  const mi = STORY.mate('minamo'), wa = STORY.mate('wakaba');
+  const ok = P.map(e => typeof e === 'string' ? { s: [e] } : e).filter(e => (!e.mi || mi) && (!e.wa || wa) && e.s.join() !== dSayLast);
+  if (!ok.length) return;
+  const e = pick(ok), lines = e.s.map(l => l.replace(/\{c\}/g, c));
+  dSayLast = e.s.join(); dSayAt = now; clearTimeout(dSayT);
+  let i = 0;
+  const step = () => {
+    const el = dSayEl(); if (!el) return;
+    if (i >= lines.length) { el.classList.remove('show'); return; }
+    const m = lines[i++].match(/^([^【：]+)(?:【([^】]+)】)?：(.*)$/); if (!m) return step();
+    const who = Object.keys(TALKERS).find(k => TALKERS[k].name === m[1]) || 'honoka', T = TALKERS[who];
+    const img = ART[(T.faces && (T.faces[m[2]] || T.faces['ふつう'])) || who] || '';
+    el.dataset.who = who;
+    el.innerHTML = `<i class="ds-av"${img ? ` style="--av:url('${img}')"` : ''}></i><b>${esc(m[1])}</b><span>${esc(m[3])}</span>`;
+    el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    dSayT = setTimeout(step, 2600 / Math.sqrt(daySpeed));
+  };
+  step();
+}
+function dSayEl() {
+  const st = $('dstage'); if (!st) return null;
+  let el = $('dSay');
+  if (!el) { el = document.createElement('p'); el.id = 'dSay'; el.className = 'd-say'; el.setAttribute('role', 'status'); st.appendChild(el); }
+  return el;
 }
 
 /* ---------- お客さんの見た目（絵は day-scene.js の custHTML） ---------- */
