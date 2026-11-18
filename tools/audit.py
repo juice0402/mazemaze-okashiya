@@ -77,7 +77,7 @@ STEPS = [
     ('night-end', "N.score = Math.round(nightHP(S.day) * 0.7); endNight()", 2400),
     ('talk', "talkClose(true); talk(['ほのか【yaruki】：いらっしゃいませ！'], () => {})", 900),
     ('morning', "talkClose(true); fighting = false; goMorning(); render()", 1200),
-    ('m-shop', "talkClose(true); document.querySelector('[data-act=\"m-shop\"][data-o=\"1\"]')?.click()", 700),
+    ('m-shop', "talkClose(true); document.querySelector('[data-act=\"m-zakka\"]')?.click()", 700),   # 11/18 H-019：雑貨屋はグッズだけの別の画面
     ('day-pre', "talkClose(true); goDay(); render()", 1200),
     ('result', "talkClose(true); S.today = S.today || newDay(S.day); goResult()", 1400),
 ]

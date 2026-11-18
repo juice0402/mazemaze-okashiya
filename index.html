@@ -943,12 +943,12 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 @keyframes mointo{to{transform:translateY(-120%) scale(.2);opacity:0}}
 .m-fly{position:fixed;z-index:40;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px 7px;background:#fffaf0;border:2.5px solid var(--brass);border-radius:16px;box-shadow:0 0 0 3px rgba(255,236,190,.55),0 5px 0 rgba(0,0,0,.3);pointer-events:none;opacity:0}
 .m-fly .hico{width:52px;height:52px}
-.mshelf .dslot.m-wait > *{opacity:0}
+.mb-item.m-wait{opacity:0}
 .mm-nm{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
 .mm-flash{position:absolute;left:50%;top:-14px;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;font-family:var(--disp);font-size:12px;color:#3a1c08;background:linear-gradient(var(--brass-hi),var(--gold));border:1.5px solid var(--brass-lo);border-radius:999px;padding:1px 10px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.mz-wrap{position:relative;flex:1;min-height:0;border-radius:14px;overflow:hidden}
 .mshop{padding:26px 10px 10px;gap:6px}
 .shopov.mshop.ms-bg{background:linear-gradient(rgba(36,16,6,.58),rgba(36,16,6,.1) 28%,rgba(36,16,6,.1) 72%,rgba(36,16,6,.72)),var(--msbg) 50% 50%/cover no-repeat,#5a3824}
-.morning.shopping .mshelf{display:none}
 .ms-top{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
 .ms-ttl{font-family:var(--disp);font-size:18px;color:var(--milk);text-shadow:0 2px 0 rgba(0,0,0,.45)}
 .ms-wallet{font-size:12px;color:var(--milk);white-space:nowrap}
@@ -967,24 +967,43 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .m-wallet b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--brass-hi)}
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
 @keyframes mspent{0%{opacity:0;transform:translateY(-6px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
-.mshelf{flex:0 1 calc(var(--rows) * 60px + 16px);min-height:calc(var(--rows) * 44px + 16px)}
-.mshelf .d-nm{font-size:9.5px}
-.mshelf .dslot .hico{height:min(30px,54%)}
-.mshelf .d-dots{display:none}
-.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:12px 6px;padding:11px 11px 17px;min-height:72px}
-.mt{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 1px 4px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
-.mt .hico{width:30px;height:30px}
+.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px 6px;padding:12px;min-height:84px}
+.mt{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 1px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
+.mt .hico{width:34px;height:34px}
 .mt-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden}
 .mt-n{position:absolute;right:-5px;top:-6px;min-width:19px;height:19px;border-radius:10px;padding:0 4px;font-style:normal;font-size:11px;font-weight:700;line-height:19px;text-align:center;color:#fff;background:var(--strawberry);border:1.5px solid #fff}
 .mt.mmat{border-color:var(--brass-lo);background:radial-gradient(circle at 50% 30%,#fffbe8,#ffe2a6)}
 .mt.mmat .mt-nm{font-size:9px;letter-spacing:-.8px}
-.mt-pr{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%) rotate(-2deg);white-space:nowrap;font-size:10px;font-weight:700;line-height:15px;color:#6b2e0e;background:#ffe9a8;border:1.5px solid #8a4a1c;border-radius:4px;padding:0 5px;box-shadow:0 1.5px 0 rgba(0,0,0,.3)}
+.mt-pr{white-space:nowrap;font-size:10px;font-weight:700;line-height:15px;color:#6b2e0e;background:#ffe9a8;border:1.5px solid #8a4a1c;border-radius:4px;padding:0 5px;box-shadow:0 1.5px 0 rgba(0,0,0,.3)}
 .mt.poor{opacity:.55}
 .mt.poor .mt-pr{color:#5a4a3a;background:#d9d0c4;border-color:#7a6a5a}
+.mt-pr.sp{color:#5a3404;background:linear-gradient(var(--brass-hi),var(--gold));border-color:var(--brass-lo)}
 .m-bar{flex:none;display:flex;gap:8px;padding-bottom:8px}
 .m-bar .sub{flex:none;padding:8px 16px}
 .m-bar .big{flex:1;width:auto}
-.morning.busy .mtray,.morning.busy .mshelf{opacity:.7}
+.morning.busy .mtray{opacity:.7}
+.m-baked{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;display:flex;flex-direction:column;gap:3px;padding:5px 8px 6px;border-radius:10px;background:linear-gradient(#e9e4dc,#b9b1a6);border:2px solid #5a4636;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 0 rgba(0,0,0,.15),0 3px 0 rgba(0,0,0,.35)}
+.mb-lbl{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11px;font-weight:700;color:var(--ink)}
+.mb-lbl em{font-style:normal;font-size:11px;color:#8a3a14}
+.mb-row{display:flex;flex-wrap:wrap;gap:4px;min-height:34px;align-items:center}
+.mb-item{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fffaf0,#efe2cc);box-shadow:0 1.5px 0 rgba(0,0,0,.25)}
+.mb-item .hico{width:26px;height:26px}
+.mb-item.pop{animation:spop .35s ease-out}
+.mb-none{font-style:normal;font-size:11px;color:var(--ink-soft)}
+.md-room{position:relative;flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;overflow:hidden;border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4);background:linear-gradient(rgba(36,16,6,.45),rgba(36,16,6,.2) 30%,rgba(36,16,6,.55)),var(--bgimg) 50% 40%/cover no-repeat,#8d6142}
+.md-room.noart{background:linear-gradient(#8d6142,#5e3c28)}
+.md-tip{flex:none;align-self:center;max-width:100%;font-size:13px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.82);border:1.5px solid var(--brass);border-radius:999px;padding:4px 14px;text-align:center}
+.dcase.md-case{flex:1 1 0;min-height:0}
+.md-case .dslot{touch-action:none;user-select:none;cursor:grab}
+.md-case .dslot.empty{cursor:default}
+.md-case .dslot .hico{height:min(64px,52%)}
+.md-case .d-nm{font-size:12px}
+.md-wait{flex:none;position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;padding:20px 10px 10px;min-height:96px}
+.mw-lbl{position:absolute;left:10px;top:3px;font-size:11px;font-weight:700;color:var(--milk);text-shadow:0 1px 0 rgba(0,0,0,.5)}
+.mw{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
+.mw .hico{width:40px;height:40px}
+.mw-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-empty{grid-column:1 / -1;margin:auto;font-size:12px;color:var(--milk-soft)}
 .mghost{position:fixed;z-index:50;margin:0;pointer-events:none;box-shadow:0 10px 18px rgba(0,0,0,.4);transition:none;animation:none}
 .morning .lift{opacity:.35}
 .morning [data-mdrop].can{outline:2px dashed var(--gold);outline-offset:2px}
@@ -1062,7 +1081,7 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .d-fly{position:absolute;z-index:6;font-style:normal;font-size:26px;line-height:1;color:#e8506c;text-shadow:0 0 4px #fff,0 2px 0 rgba(120,20,40,.4);pointer-events:none;animation:dfly calc(.75s / var(--sp,1)) cubic-bezier(.5,0,.8,.6) forwards}
 @keyframes dfly{0%{transform:translate(-50%,0) scale(1.2)}100%{transform:translate(calc(var(--dx) - 50%),var(--dy)) scale(.5);opacity:.7}}
 .dcase{flex:0 1 calc(var(--rows) * 78px + 18px);min-height:calc(var(--rows) * 52px + 18px)}
-.dcase,.mshelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px;padding:8px;border-radius:12px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0) 40%),linear-gradient(#fff8ec,#f2dcb8);border:3px solid #5a3418;box-shadow:inset 0 0 0 2px var(--brass),0 4px 0 rgba(0,0,0,.4)}
+.dcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px;padding:8px;border-radius:12px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0) 40%),linear-gradient(#fff8ec,#f2dcb8);border:3px solid #5a3418;box-shadow:inset 0 0 0 2px var(--brass),0 4px 0 rgba(0,0,0,.4)}
 .dslot{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px 3px;margin:0;border-radius:10px;background:rgba(255,255,255,.6);border:1.5px solid rgba(122,82,54,.35);box-shadow:none;color:var(--ink);font:inherit;overflow:hidden}
 button.dslot:active{transform:scale(.96);box-shadow:none}
 .dslot .hico{width:auto;height:min(40px,56%);aspect-ratio:1}
@@ -1795,11 +1814,11 @@ mTut: {
 oven: ['ほのか【わくわく】：材料を2つ、オーブンに入れて……', '→ 材料を2つオーブンへ。値札のものは、その場で買える'],
 bake: ['ほのか【うれしい】：おいしくなーれ！'],
 baked: ['（焼き上がり。ほっぺに、すすがついた）', 'ほのか【あちゃー】：……ちょっと焦げた。ううん、これも味！'],
-shelf: ['ほのか【ドヤ】：焼けたら、棚にならんだ！', '→ 棚がうまったら、お店をあけに行こう'],
+shelf: ['ほのか【ドヤ】：焼けたお菓子は、天板にならぶよ！', '→ 焼けたら「商品を並べる」へ'],
 },
 dayPre: [
 'ほのか：いちばん自信のあるのは、まんなかの看板に！',
-'→ 看板の枠へ',
+'→ 天板のお菓子を、棚のマスへ',
 ],
 dayOpen: [
 'ほのか【やる気】：準備かんりょう！お店、あけまーす！',
@@ -3442,12 +3461,21 @@ const BAKE_MS = 1500;   // 焼くのは演出だけ（約1.5秒）
 const mSusuOn = () => !(typeof S === 'object' && S && S.seen) || S.day > 1 || !!S.seen.mBaked;
 for (const [f, k] of Object.entries(TALKERS.honoka.faces))
 Object.defineProperty(TALKERS.honoka.faces, f, { enumerable: true, get: () => (!mSusuOn() && ART[k + '-clean']) ? k + '-clean' : k });
-function startMorning() { S.morning = { shop: false, oven: [], made: null, fresh: false, talked: false }; }
-function mState() { if (!S.morning || !Array.isArray(S.morning.oven)) startMorning(); return S.morning; }
+function startMorning() { S.morning = { view: 'kitchen', oven: [], baked: [], kanban: null, talked: false }; }
+function mState() {
+if (!S.morning || !Array.isArray(S.morning.oven)) startMorning();
+const M = S.morning;
+if (!Array.isArray(M.baked)) M.baked = [];
+if (!M.view) M.view = 'kitchen';
+if (M.made) { M.baked.push({ key: M.made, n: BATCH }); M.made = null; }   // 前の形のセーブ（できたお菓子が待っていた）
+return M;
+}
 function matUnlocked(m) { const who = HIRU_MATS[m] && HIRU_MATS[m].who; return !who || !!S.seen[who] || (S.stock[m] || 0) > 0; }
 const shopMats = () => Object.keys(HIRU_MATS).filter(matUnlocked);
 const shelfMaxN = () => Math.min(SHELF_MAX, S.shelfMax || 6);
-const shelfRoom = () => S.shelf.filter(s => s.n > 0).length + (S.morning && S.morning.made ? 1 : 0) < shelfMaxN();
+const placedN = () => S.shelf.filter(s => s.n > 0).length;
+const mRoomN = () => shelfMaxN() - placedN() - mState().baked.length;   // あと何回焼けるか（棚のマス − 棚にある − 天板にある）
+const shelfRoom = () => mRoomN() > 0;
 const isNewRecipe = key => !(key in S.recipes);
 const trayMats = () => [...shopMats(), ...Object.keys(MATS).filter(m => isMonMat(m) && (S.stock[m] || 0) > 0)];
 const mNeed = list => list.reduce((o, m) => (o[m] = (o[m] || 0) + 1, o), {});
@@ -3473,7 +3501,7 @@ return true;
 }
 function bakeNg() {
 if (mBusy) return 'busy';
-if (!shelfRoom()) return '棚がいっぱい！お店をあけに行こう';
+if (!shelfRoom()) return '棚がいっぱい！商品を並べよう';
 return '';
 }
 function toOven(m) {
@@ -3505,7 +3533,7 @@ mBusy = true; renderMorning();
 setTimeout(() => {
 mBusy = false; M.oven = [];
 if (fresh) { S.recipes[key] = S.day; S.today.flashes.push(key); }
-S.today.made.push(key); S.shelf.push({ key, n: BATCH }); save();
+S.today.made.push(key); M.baked.push({ key, n: BATCH }); save();
 renderMorning(); const t = mFly(key, fresh);
 if (S.day === 1 && !S.seen.mBaked) { S.seen.mBaked = 1; save(); setTimeout(() => talk([...STORY.mTut.baked, ...STORY.mTut.shelf], () => {}, { dim: false }), t); }
 }, REDUCED ? 300 : BAKE_MS);
@@ -3514,7 +3542,7 @@ if (S.day === 1 && !S.seen.mBake) { S.seen.mBake = 1; save(); talk(STORY.mTut.ba
 else run();
 }
 function mFly(key, fresh) {
-const ov = document.querySelector('.m-oven'), sl = document.querySelectorAll('.mshelf .dslot:not(.empty)'), to = sl[sl.length - 1];
+const ov = document.querySelector('.m-oven'), to = document.querySelector('.mb-row .mb-item:last-child');
 if (!ov || !to || !document.body.animate) return 0;
 const f = document.createElement('div');
 f.className = 'm-fly';
@@ -3527,19 +3555,63 @@ const pop = REDUCED ? 80 : 380, hold = REDUCED ? 120 : fresh ? 1000 : 450, go = 
 to.classList.add('m-wait');
 f.animate([{ transform: 'scale(.2)', opacity: 0 }, { transform: 'scale(1.1)', opacity: 1, offset: .7 }, { transform: 'scale(1)', opacity: 1 }], { duration: pop, easing: 'ease-out', fill: 'forwards' });
 setTimeout(() => {
-const go1 = f.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(.45)`, opacity: .2 }], { duration: go, easing: 'cubic-bezier(.5,0,.7,1)', fill: 'forwards' });
+const go1 = f.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(.35)`, opacity: .2 }], { duration: go, easing: 'cubic-bezier(.5,0,.7,1)', fill: 'forwards' });
 go1.onfinish = () => {
 f.remove();
-const s2 = document.querySelectorAll('.mshelf .dslot:not(.empty)'), last = s2[s2.length - 1];
-document.querySelectorAll('.mshelf .m-wait').forEach(x => x.classList.remove('m-wait'));
-if (last) last.classList.add('pop');
+document.querySelectorAll('.m-wait').forEach(x => x.classList.remove('m-wait'));
+const last = document.querySelector('.mb-row .mb-item:last-child'); if (last) last.classList.add('pop');
 };
 }, pop + hold);
 return pop + hold + go;
 }
-function placeMade() {
-const M = mState(); if (!M.made || mBusy) return;
-S.shelf.push({ key: M.made, n: BATCH }); M.made = null; M.fresh = false; save();
+const dSlots = () => shelfSlots(mState().kanban);
+function dFixKan() { const M = mState(); if (M.kanban && !S.shelf.some(s => s.key === M.kanban && s.n > 0)) M.kanban = null; }
+function dPop(item) {
+const i = S.shelf.indexOf(item), el = i >= 0 && document.querySelector(`.md-case [data-mdrag="ds:${i}"]`);
+if (el) el.classList.add('pop');
+}
+function dPut(wi, idx) {
+const M = mState(), b = M.baked[wi]; if (!b) return;
+const { slots, ks } = dSlots();
+if (idx == null) {
+idx = slots.findIndex((o, j) => !o && j !== ks);
+if (idx < 0) idx = slots[ks] ? -1 : ks;
+if (idx < 0) return toast('棚がいっぱい！');
+}
+const o = slots[idx];
+M.baked.splice(wi, 1);
+if (o) M.baked.push(S.shelf.splice(o.i, 1, b)[0]);
+else S.shelf.push(b);
+if (idx === ks) M.kanban = b.key;
+dFixKan(); save(); renderMorning(); dPop(b);
+}
+function dMove(si, idx) {
+const M = mState(), s = S.shelf[si]; if (!s) return;
+const { slots, ks } = dSlots(), o = slots[idx], fromKan = !!slots[ks] && slots[ks].i === si;
+if (o && o.i === si) return;
+if (idx === ks) M.kanban = s.key;
+else if (fromKan) M.kanban = o ? S.shelf[o.i].key : null;
+else if (o) { S.shelf[si] = S.shelf[o.i]; S.shelf[o.i] = s; }
+else { S.shelf.splice(si, 1); S.shelf.push(s); }
+save(); renderMorning(); dPop(s);
+}
+function dOff(si) {
+const M = mState(), s = S.shelf.splice(si, 1)[0]; if (!s) return;
+M.baked.push(s); dFixKan(); save(); renderMorning();
+}
+function dKan(si) {
+const M = mState(), s = S.shelf[si]; if (!s) return;
+const { slots, ks } = dSlots();
+M.kanban = slots[ks] && slots[ks].i === si ? null : s.key;
+save(); renderMorning(); dPop(s);
+}
+function mOpen() {
+const M = mState(); if (mBusy) return;
+if (placedN() + M.baked.length > 0 && !M.kanban) return toast('看板にするお菓子を、まんなかに置いてね');
+while (M.baked.length) S.shelf.push(M.baked.shift());
+S.seen.dayPre = 1; save();
+goDay();
+if (S.dayRun && S.dayRun.kanban) openDay();
 }
 function goodNext(id) {
 if (id === 'tatekanban') { const lv = S.goods.tatekanban || 0; return lv < GOODS.tatekanban.price.length ? GOODS.tatekanban.price[lv] : null; }
@@ -3559,6 +3631,8 @@ function mCan(src) {
 const [k, a] = src.split(':');
 if (k === 'mat') return v => shelfRoom() && (v === 'oven' || v.startsWith('slot:') ? mOk([a]) : v.startsWith('mat:') && mOk([a, v.slice(4)]));
 if (k === 'oven') return v => v === 'tray';
+if (k === 'wait') return v => v.startsWith('ds:');
+if (k === 'ds') return v => v === 'wait' || (v.startsWith('ds:') && (dSlots().slots[+v.slice(3)] || {}).i !== +a);
 return () => false;
 }
 const mPay = list => { const c = mCost(list); return c ? `・${fmt(c)}円で買う` : ''; };
@@ -3573,7 +3647,10 @@ if (v === 'oven' || v.startsWith('slot:')) return (M.oven.length ? bakeTip(M.ove
 return bakeTip(a, v.slice(4)) + mPay([a, v.slice(4)]);
 }
 if (k === 'oven') return '材料だなへもどす';
-return '';
+if (v === 'wait') return '天板にもどす';
+const { slots, ks } = dSlots(), j = +v.slice(3);
+if (j === ks) return '看板にする';
+return slots[j] ? 'いれかえる' : k === 'wait' ? '棚に並べる' : 'ここへ動かす';
 }
 function mDown(e) {
 if (e.button > 0 || mBusy || talking() || MD) return;
@@ -3609,7 +3686,7 @@ MD.over = ok; if (ok) ok.classList.add('hot');
 MD.tip.hidden = !ok; if (ok) MD.tip.textContent = mTipText(MD.src, ok.dataset.mdrop);
 }
 if (ok) {
-const st = $('mstage'), tr = document.querySelector('.mtray');
+const st = document.querySelector('#mstage, .md-room'), tr = document.querySelector('.mtray, .md-wait');
 const y = e.clientY > innerHeight * 0.5 ? (st ? st.getBoundingClientRect().top + 10 : 10) : (tr ? tr.getBoundingClientRect().top - 40 : innerHeight - 120);
 MD.tip.style.transform = `translate(-50%,${Math.round(y)}px)`;
 }
@@ -3635,17 +3712,64 @@ function mTap(src) {
 const [k, a] = src.split(':');
 if (k === 'mat') toOven(a);
 else if (k === 'oven') fromOven(+a);
+else if (k === 'wait') dPut(+a);
+else if (k === 'ds') dKan(+a);
 }
 function mDrop(src, v) {
 const [k, a] = src.split(':');
 if (k === 'mat') return v.startsWith('mat:') ? mixTwo(a, v.slice(4)) : toOven(a);
 if (k === 'oven') return fromOven(+a);
+if (k === 'wait') return dPut(+a, +v.slice(3));
+if (k === 'ds') return v === 'wait' ? dOff(+a) : dMove(+a, +v.slice(3));
 }
 function mTile(m) {
-const n = S.stock[m] || 0, p = HIRU_MATS[m] ? HIRU_MATS[m].price : 0;
-return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && p > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm">${esc(matShort(m))}</span>${n ? `<em class="mt-n">${n}</em>` : `<span class="mt-pr">${fmt(p)}円</span>`}</div>`;
+const n = S.stock[m] || 0, H = HIRU_MATS[m];
+const tag = H ? `<span class="mt-pr">${fmt(H.price)}円</span>` : '<span class="mt-pr sp">とくべつ</span>';
+return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && H && H.price > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm">${esc(matShort(m))}</span>${tag}${n ? `<em class="mt-n">${n}</em>` : ''}</div>`;
 }
-function shopHTMLm() {
+function mHint(M) {
+if (mBusy) return '焼いてるよ……';
+if (!shelfRoom()) return '棚がいっぱい！商品を並べよう';
+return M.oven.length ? 'あと1つ！' : '材料を2つ入れてね';
+}
+function kitchenHTML(M) {
+const bg = ART['bg-morning'], room = mRoomN();
+const ovenSlots = [0, 1].map(i => {
+const m = M.oven[i];
+return m ? `<span class="mo-slot full" data-mdrag="oven:${i}" data-mdrop="slot:${i}">${matIcon(m)}</span>` : `<span class="mo-slot" data-mdrop="slot:${i}"></span>`;
+}).join('<i class="mo-plus">+</i>');
+const spent = mSpent ? `<i class="m-spent">−${fmt(mSpent)}円</i>` : ''; mSpent = 0;
+const wait = !mBusy && M.oven.length < 2 && shelfRoom();
+const baked = M.baked.map(b => `<span class="mb-item">${candyIcon(b.key)}</span>`).join('');
+return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
+<div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
+<span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
+<div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
+<div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
+</div>
+<div class="mtray gingham" data-mdrop="tray">${trayMats().map(mTile).join('')}</div>
+<div class="m-bar"><button class="sub" data-act="m-zakka">雑貨屋</button><button class="big" data-act="m-disp"${mBusy ? ' disabled' : ''}>商品を並べる</button></div>
+</section>`;
+}
+function mSlotHTML(o, idx, ks) {
+const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
+if (!o) return `<div class="dslot empty${kan}" data-mdrop="ds:${idx}">${kl}</div>`;
+return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span></div>`;
+}
+function displayHTML(M) {
+const bg = ART['bg-day'], { slots, ks } = dSlots();
+const tip = M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
+const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${esc(candyOf(b.key).name)}</span></div>`).join('');
+return `<section class="morning mdisp fit" id="msec">
+<div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
+<p class="md-tip">${esc(tip)}</p>
+<div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => mSlotHTML(o, i, ks)).join('')}</div>
+</div>
+<div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span>${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div>
+<div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
+</section>`;
+}
+function zakkaHTML() {
 const body = `<div class="ms-goods">${['tatekanban', 'showcase', ...GOODS.kazari.map(k => k.id)].map(id => {
 const G = GOODS[id] || GOODS.kazari.find(k => k.id === id), p = goodNext(id);
 const lv = id === 'tatekanban' ? S.goods.tatekanban || 0 : id === 'showcase' ? S.goods.showcase || 0 : 0;
@@ -3654,53 +3778,38 @@ const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置け�
 return `<div class="ms-good"><span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
 }).join('')}</div>`;
 const sbg = ART['bg-zakka'];
-return `<div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
+return `<section class="morning mzakka fit" id="msec">
+<div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
 <div class="ms-top"><span class="ms-ttl">雑貨屋</span><span class="ms-wallet">お財布 <b>${fmt(S.money)}</b>円</span></div>
 ${body}
 <p class="ms-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p>
-<button class="go2 ms-close" data-act="m-shop" data-o="0">キッチンへもどる</button>
-</div>`;
-}
-function mHint(M) {
-if (mBusy) return '焼いてるよ……';
-if (!shelfRoom()) return '棚がいっぱい！お店をあけに行こう';
-return M.oven.length ? 'あと1つ！' : '材料を2つ入れてね';
+</div></div>
+<div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
+</section>`;
 }
 function renderMorning() {
-const M = mState(), bg = ART['bg-morning'];
-if (M.made) placeMade();
-const ovenSlots = [0, 1].map(i => {
-const m = M.oven[i];
-return m ? `<span class="mo-slot full" data-mdrag="oven:${i}" data-mdrop="slot:${i}">${matIcon(m)}</span>` : `<span class="mo-slot" data-mdrop="slot:${i}"></span>`;
-}).join('<i class="mo-plus">+</i>');
-const spent = mSpent ? `<i class="m-spent">−${fmt(mSpent)}円</i>` : ''; mSpent = 0;
-const wait = !mBusy && M.oven.length < 2 && shelfRoom();
-const { slots, ks } = shelfSlots(null);
-$('screen').innerHTML = `<section class="morning fit${mBusy ? ' busy' : ''}${M.shop ? ' shopping' : ''}" id="msec">
-<div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-<span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
-<div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
-${M.shop ? shopHTMLm() : ''}
-</div>
-<div class="mshelf" data-mdrop="shelf" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => slotHTML(o, i, ks, false)).join('')}</div>
-<div class="mtray gingham" data-mdrop="tray">${trayMats().map(mTile).join('')}</div>
-<div class="m-bar"><button class="sub" data-act="m-shop" data-o="1">雑貨屋</button><button class="big" data-act="openShop"${mBusy ? ' disabled' : ''}>お店をあけに行く</button></div>
-</section>`;
+const M = mState(), v = M.view;
+$('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : kitchenHTML(M);
 $('msec').addEventListener('pointerdown', mDown);
-if (!M.talked && !talking()) {
+if (v === 'kitchen' && !M.talked && !talking()) {
 M.talked = true;
 const tut = S.day === 1 && !S.seen.mOven ? (S.seen.mOven = 1, STORY.mTut.oven) : [];
 const lines = [...STORY.morning(S.today, S.yesterday), ...tut];
 save();
 if (lines.length) talk(lines, () => {}, { dim: false });
 }
-if (M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
+if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}, { dim: false }); }
+if (v === 'kitchen' && M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
 }
-function setShop(open) { const M = mState(); M.shop = open; save(); renderMorning(); }
+function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 const MORNING_ACTS = {
-'m-shop': el => setShop(el.dataset.o === '1'),
+'m-zakka': () => mView('zakka'),
+'m-disp': () => { if (!mBusy) mView('display'); },
+'m-kitchen': () => mView('kitchen'),
+'m-open': () => mOpen(),
+'m-shop': el => mView(el.dataset.o === '1' ? 'zakka' : 'kitchen'),   // 前の名前（tools/audit.py の m-shop）
 'm-good': el => buyGood(el.dataset.id),
-toShelf: () => { placeMade(); renderMorning(); },   // 前の形のボタン（main.js の toCard もここへ）
+toShelf: () => renderMorning(),   // 前の形のボタン（main.js の toCard もここへ）
 };
 
 /* src/js/day.js */
@@ -3708,7 +3817,8 @@ toShelf: () => { placeMade(); renderMorning(); },   // 前の形のボタン（m
 let dayTick = 0, dayPrev = 0, daySpeed = 1;
 const V_ARRIVE = 900, V_ASK = 2200, V_LEAVE = 3500, V_END = 4200;
 function startDay() {
-S.dayRun = { open: false, done: false, kanban: null, t: 0, plan: [], i: 0, cur: null };
+const k = S.morning && S.morning.kanban, kan = k && S.shelf.some(s => s.key === k && s.n > 0) ? k : null;
+S.dayRun = { open: false, done: false, kanban: kan, t: 0, plan: [], i: 0, cur: null };
 }
 function stopDay() {
 clearTimeout(dayTick); dayTick = 0;
