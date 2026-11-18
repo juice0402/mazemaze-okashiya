@@ -146,7 +146,7 @@ function decoHTML(mode) {
   const pose = mode === 'shop' ? 'think' : mode === 'win' ? 'cheer' : 'sit';
   return `<div class="deco ${mode}" id="deco" aria-hidden="true">
     <i class="dc-ledge"></i>${grassSVG()}
-    <i class="dc-frame"></i><i class="dc-line"></i><i class="fc tl"></i><i class="fc tr"></i><i class="fc bl"></i><i class="fc br"></i><i class="fc-crest"></i>
+    <i class="dc-frame"></i><i class="dc-medal"></i>
     <img class="dc dc-chibi${ART['chibi-' + pose] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}</div>`;
 }
 /* ほのかのデフォルメのポーズをしばらく変える（ms のあと、すわってにこにこへ） */
