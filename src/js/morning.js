@@ -344,10 +344,10 @@ function kitchenHTML(M) {
     <div class="m-bar"><button class="sub" data-act="m-zakka">雑貨屋</button><button class="big" data-act="m-disp"${mBusy ? ' disabled' : ''}>商品を並べる</button></div>
   </section>`;
 }
-function mSlotHTML(o, idx, ks) {
+function mSlotHTML(o, idx, ks, rib = '') {
   const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
   if (!o) return `<div class="dslot empty${kan}" data-mdrop="ds:${idx}">${kl}</div>`;
-  return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span></div>`;
+  return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${rib}</div>`;
 }
 function displayHTML(M) {
   const bg = ART['bg-day'], { slots, ks } = dSlots();
@@ -356,7 +356,7 @@ function displayHTML(M) {
   return `<section class="morning mdisp fit" id="msec">
     <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
       <p class="md-tip">${esc(tip)}</p>
-      <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => mSlotHTML(o, i, ks)).join('')}</div>
+      <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${(rib => slots.map((o, i) => mSlotHTML(o, i, ks, rib[i])).join(''))(dSoroiRibs(slots))}</div>
     </div>
     <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span><div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
     <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
@@ -397,6 +397,11 @@ function renderMorning() {
     if (lines.length) talk(lines, () => {}, { dim: false });
   }
   if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}, { dim: false }); }
+  /* はじめて おそろいの段ができたとき1回だけ、ほのかのひとこと（11/19） */
+  if (v === 'display' && !S.seen.soroi && !talking()) {
+    const so = soroiRows(dSlots().slots);
+    if (so.length) { S.seen.soroi = S.day; save(); talk(STORY.soroiFirst(so[0].mats[0]), () => {}, { dim: false }); }
+  }
   if (v === 'kitchen' && M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
 }
 function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
