@@ -20,10 +20,12 @@
 - タブ：`class="tab"`・えらんでいるのは `class="tab on"`（上にしましまの日よけ・えらんでいるタブは赤い布といちごのリボン）。朝の仕入れの市場／雑貨屋のタブはこれで
 - まるいボタン：`class="round"`（44px のまる。とじる × など。大きく見る画面の × .vclose も同じ絵）。`class="sq"`（四角いアイコン）は絵なし
 - 押したときの白い輪は、`.big .pill .go2 .sub` に data-act があれば main.js が出す。押せないときは `disabled`
+- 押した形・使えない形も絵（11/18 ui-buttons2・ui-<部品>-down・-off）：`:active` で押した絵・`disabled` でくすんだ灰色の絵とこげ茶の字に自動で変わる。うすくする（opacity）・灰色にする（filter）を自分でつけない
 - ボタンの動きは data-act の名前で：朝は morning.js の `MORNING_ACTS`、昼は day.js の `DAY_ACTS` に `名前: el => …` を足す（main.js の ACTS に入る）。ほかの名前とかぶらないように
 
 ## パネル・ならべ方・お知らせ
 - `<div class="panel"><h2>見出し</h2><p>…</p></div>`（木の板・見出しは金の Dela Gothic One）。小さめは `panel tight`
+- 紙のパネル（11/18 ui-panels・まんなかはクリーム色の紙なので字はこげ茶）：ui-panel（四すみにお菓子）＝ラウンドの結果 `.vbox.result`・おもてなしの結果 `.panel.end`／ui-window（真ちゅうのびょう）＝会話の窓 `.tk-win`・大きく見る画面の説明 `.cinfo`／ui-nameplate＝会話の名前の札 `.tk-name`（人ごとの色は filter で回す）／ui-diary＋ui-diary-tape＝日記の紙 `.diary`（線は字の行にそろえてコード）。ほかの所で使うときは、style.css の「UI の絵」の .vbox.result の行（border と border-image）をまねずに、リーダーにお願いする
 - 横ならび `class="row"`（2つを同じ幅で `row two`）・うすい字 `class="muted"`・小さい説明 `class="hint"`
 - ギンガムの布（前の夜の手札の布・11/18）：`class="gingham"`（いちごのしましまの布・内側に点線。大きさ・並べ方は使う側で）
 - お知らせ：`toast('…')`（画面の上にしばらく出る）

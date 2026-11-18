@@ -1,4 +1,4 @@
-"""ボタンの点検（11/18・UI の絵を取りこんだら毎回）：python3 -I tools/audit.py [高さ]。画面ごとに、見えているボタンの面の絵・字の色（面とのコントラスト）・高さ・となりとのすき間を出す"""
+"""ボタンとパネルの点検（11/18・UI の絵を取りこんだら毎回）：python3 -I tools/audit.py [高さ]。画面ごとに、見えているボタンの面の絵・字の色（面とのコントラスト。使えないボタンは -off の面）・高さ・となりとのすき間と、クリーム色の紙のパネルの中の字のコントラストを出す"""
 import sys, json, re, pathlib
 from playwright.sync_api import sync_playwright
 
@@ -6,7 +6,26 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 FACE = {  # 面のだいたいの色（字とのコントラストを見る）
     'ui-btn-red': (214, 58, 48), 'ui-btn-wood': (160, 96, 52), 'ui-pill-cream': (248, 226, 186),
     'ui-pill-choco': (112, 52, 28), 'ui-tab-on': (214, 82, 78), 'ui-tab-off': (226, 196, 150), 'ui-round': (248, 226, 186),
+    # 使えない形（ui-buttons2 の2段目・面のまんなかの平均）
+    'ui-btn-red-off': (181, 148, 134), 'ui-btn-wood-off': (169, 139, 122), 'ui-pill-cream-off': (214, 185, 165), 'ui-pill-choco-off': (160, 131, 117),
+    'ui-tab-on-off': (175, 142, 126), 'ui-tab-off-off': (200, 168, 147), 'ui-round-off': (214, 184, 165),
 }
+PAPER = (253, 229, 191)   # ui-panel・ui-window・ui-diary のまんなか（クリーム色の紙）
+PANELS = '.vbox.result, .panel.end, .cinfo, .tk-win, .diary'
+JS_TEXT = r"""(sel) => {
+  const out = [];
+  for (const box of document.querySelectorAll(sel)) {
+    if (box.getBoundingClientRect().width < 2) continue;
+    for (const e of box.querySelectorAll('*')) {
+      if (e.closest('button') || ![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+      const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .05) continue;
+      const bg = cs.backgroundColor.match(/[\d.]+/g) || [];
+      if (cs.backgroundImage !== 'none' || cs.borderImageSource !== 'none' || (bg.length === 4 ? +bg[3] > 0 : bg.length === 3)) continue;   // 自分の地の色や絵がある札（名前の札・コインの札など）は飛ばす
+      out.push({ box: box.className.split(' ').slice(0, 2).join('.'), tag: e.tagName.toLowerCase() + (e.className ? '.' + String(e.className).split(' ')[0] : ''), txt: e.textContent.trim().slice(0, 12), color: cs.color, stroke: parseFloat(cs.webkitTextStrokeWidth) || 0 });
+    }
+  }
+  return out;
+}"""
 JS_COLLECT = r"""() => {
   const out = [];
   for (const b of document.querySelectorAll('button')) {
@@ -54,6 +73,9 @@ STEPS = [
     ('shop2', "talkClose(true); N.picks = 0; N.coins = 6; renderNight()", 800),
     ('viewer', "tapCard('shop', 0)", 600),
     ('battle', "N.view = null; N.board = [{ cid: 'm:ichiban', cook: 3 }, null, null, null, null]; renderNight(); omotenashi()", 2600),
+    ('round-end', "fighting = false; N.view = null; N.stage = 'roundEnd'; N.last = { round: 3, total: 12345, q: 9000, ok: true }; renderNight()", 900),
+    ('night-end', "N.score = Math.round(nightHP(S.day) * 0.7); endNight()", 2400),
+    ('talk', "talkClose(true); talk(['ほのか【yaruki】：いらっしゃいませ！'], () => {})", 900),
     ('morning', "talkClose(true); fighting = false; goMorning(); render()", 1200),
     ('m-shop', "talkClose(true); document.querySelector('[data-act=\"m-shop\"][data-o=\"1\"]')?.click()", 700),
     ('m-goods', "document.querySelector('[data-act=\"m-tab\"][data-t=\"goods\"]')?.click()", 600),
@@ -83,9 +105,14 @@ with sync_playwright() as p:
         print(f'== {name}')
         for x in bs:
             f = face_of(x['cls'], x['bis'])
+            if f and x['dis']: f += '-off'
             cr = contrast(rgb(x['color']), FACE[f]) if f else None
             flag = ' <<字が読みにくい' if cr is not None and cr < 3 else ''
             print(f"  [{x['cls'][:26]:26}] {x['txt']:14} h={x['h']:.0f} w={x['w']:.0f} y={x['y']:.0f} x={x['x']:.0f} fs={x['fs']} face={f} 字={x['color']} c={cr and round(cr,1)}{flag}{' disabled' if x['dis'] else ''}")
+        for t in page.evaluate(JS_TEXT, PANELS):
+            cr = contrast(rgb(t['color']), PAPER)
+            if t['stroke'] >= 2: continue   # ふちどりのある大きな字（見出し・大きな数字）は飛ばす
+            print(f"  ［紙の上の字］{t['box']:14} {t['tag']:14} {t['txt']:12} 字={t['color']} c={cr:.1f}{' <<字が読みにくい' if cr < 3 else ''}")
         # 同じ行（縦が重なる）でとなりあうボタンの高さとすき間
         bs2 = sorted(bs, key=lambda q: (round(q['y'] + q['h'] / 2), q['x']))
         for a in bs2:

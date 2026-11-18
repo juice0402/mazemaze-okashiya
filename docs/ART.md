@@ -38,7 +38,6 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/ui-buttons2.md`（ボタンの押した形・使えない形。ui-buttons を編集して2段 → ui-<部品>-down・ui-<部品>-off）・`ui-panels.md`（パネル・会話の窓・名前の札・日記の紙）が依頼中
 - 待ち（2つずつ依頼中に）：`ui-stage`（夜の舞台の額縁＋別の部品のメダル）・`ui-shop`（ショップの日よけと板）・`ui-board`（調理台・おなかの帯・マス・コイン・火力のメーター・値札）・`ui-cards`（カードのふち4つ）・`ui-parts`（紋章・星・まっすぐな帯・ハンコ）・`ui-day`（棚・オーブン・看板・びん）
 - 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
 - 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
@@ -61,3 +60,6 @@
 | bg-market・bg-zakka（朝の仕入れの背景：外の朝市・店の中の雑貨屋） | A | Codex | 2026-11-18 | art-irai `requests/okashi/bg3.md`（step1＝市場・step2＝雑貨屋・PR #48）・`prep_art.py bg`（16:9 の横960） | 朝の仕入れのタブの背景（昼のチャット） |
 | ui-btn-red・ui-btn-wood・ui-pill-cream・ui-pill-choco・ui-tab-on・ui-tab-off・ui-round（全画面のボタン） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-buttons.md`（PR #49）・`prep_art.py parts … 640`（緑で区切られた7つを上の段から順に） | 共通のボタン .big・.bake・.go2（赤）・.sub（木）・.pill（クリーム）・.pill.sub（チョコ）・.tab・.round（style.css の「UI の絵」・border-image） |
 | ui-tab-bow（えらんだタブのいちごのリボン） | A | Codex（切りわけ） | 2026-11-18 | ui-tab-on のまんなかのリボンを切りわけた（9分割でのびないように）。タブの面のリボンの下は、日よけを左からうつしてつないだ | .tab.on の上のまんなか（::before） |
+| ui-<部品>-down・ui-<部品>-off（7つのボタンの押した形・使えない形。部品＝btn-red・btn-wood・pill-cream・pill-choco・tab-on・tab-off・round） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-buttons2.md`（PR #51・ui-buttons の絵を編集して2段：step1＝押した・step2＝使えない）・`prep_art.py parts … 640`（ui-buttons と同じ順）。tab-on の2つはリボンを消して下を日よけでつないだ（ui-tab-on と同じ高さ161） | 全部のボタンの :active と disabled（style.css の「UI の絵」の --ufd・--ufo） |
+| ui-panel・ui-window・ui-nameplate・ui-diary（紙のパネル・会話の窓・名前の札・日記の紙） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-panels.md`（PR #52）・`prep_art.py parts … 640`（上の段から） | ラウンドの結果・おもてなしの結果（ui-panel）／会話の窓・大きく見る画面の説明（ui-window）／会話の名前の札／日記の紙（すべて border-image の9分割） |
+| ui-diary-tape（日記の紙のマスキングテープ） | A | Codex（切りわけ） | 2026-11-18 | ui-diary の左上のテープを切りわけた（9分割でのびないように）。紙のテープの下は、右の紙をうつしてつないだ | .diary の左上（::before） |

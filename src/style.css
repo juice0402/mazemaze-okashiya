@@ -696,14 +696,15 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .gingham{position:relative;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
 .gingham::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}
 
-/* ==== UI の絵（11/18 art-irai ui-buttons・Codex で描き下ろし）====
+/* ==== UI の絵（11/18 art-irai ui-buttons・ui-buttons2・ui-panels・Codex で描き下ろし）====
    ボタンの絵は border-image の9分割：上下はまんなかで2つに切り（49%）、左右のはし（飾り）はそのまま、まんなかだけ横にのびる。
    width:auto なので、ボタンの高さに合わせて絵がまるごと小さくなる（はしの飾りがゆがまない）。字はコードで重ねる。
    絵の URL は CSS の変数 --ui-<名前>（core.js の uiVars が ART から入れる）。
-   面の絵と字の色は組みで決める：背景・影・字の色は、ほかの皮（昼の .mshop .pill.on など）より強く（!important）。字の色を変えたいときは面を変える */
+   面の絵と字の色は組みで決める：背景・影・字の色は、ほかの皮（昼の .mshop .pill.on など）より強く（!important）。字の色を変えたいときは面を変える。
+   押した形と使えない形は、同じ形の絵 ui-<部品>-down・-off。面ごとに変数 --uf（ふだん）・--ufd（押した）・--ufo（使えない）を入れて、下の「ふだん・押した・使えない」で切りかえる */
 button.big,button.bake,button.go2,button.sub,button.pill,button.tab,button.round{background:none!important;box-shadow:none!important;border:2px solid transparent;border-radius:999px;border-image-repeat:stretch;border-image-width:auto}
 /* 赤（大事なボタン・買う・おわる）：白い字に赤茶のふち */
-button.big,button.bake,button.go2,button.pill.go2,button.pill.sub.on{border-image-source:var(--ui-btn-red);border-image-slice:49% 16% 49% 15% fill;color:#fff!important;-webkit-text-stroke:3px #7a1a0c!important;paint-order:stroke fill;text-shadow:0 2px 0 #5a0e06!important}
+button.big,button.bake,button.go2,button.pill.go2,button.pill.sub.on{--uf:var(--ui-btn-red);--ufd:var(--ui-btn-red-down);--ufo:var(--ui-btn-red-off);border-image-slice:49% 16% 49% 15% fill;color:#fff!important;-webkit-text-stroke:3px #7a1a0c!important;paint-order:stroke fill;text-shadow:0 2px 0 #5a0e06!important}
 button.pill.go2,button.pill.sub.on{-webkit-text-stroke:2.5px #7a1a0c!important}
 button.go2{padding-left:28px;padding-right:28px}
 /* 赤い絵は上に1割、クリームの飾りがはみ出している。その分だけ絵を上へ出して（outset）、赤い面の高さをとなりのボタンとそろえる（面の高さ×0.11） */
@@ -711,17 +712,35 @@ button.big,button.bake,button.pill.sub.on{border-image-outset:6px 0 0}
 button.go2{border-image-outset:4px 0 0}
 button.pill.go2{border-image-outset:5px 0 0}
 /* 木の板：クリーム色の字 */
-button.sub{border-image-source:var(--ui-btn-wood);border-image-slice:49% 10% 49% 10% fill;color:#fff4e4!important;-webkit-text-stroke:0!important;text-shadow:0 1px 0 rgba(30,12,4,.75)!important}
+button.sub{--uf:var(--ui-btn-wood);--ufd:var(--ui-btn-wood-down);--ufo:var(--ui-btn-wood-off);border-image-slice:49% 10% 49% 10% fill;color:#fff4e4!important;-webkit-text-stroke:0!important;text-shadow:0 1px 0 rgba(30,12,4,.75)!important}
 /* まるい札：クリーム＝こげ茶の字・チョコ＝クリーム色の字。えらんでいる札（.on）はチョコ（同じ形なので高さがそろう） */
-button.pill{border-image-source:var(--ui-pill-cream);border-image-slice:49% 15% 49% 15% fill;color:#4a2814!important;-webkit-text-stroke:0!important;text-shadow:none!important}
-button.pill.sub,button.pill.on:not(.go2):not(.sub){border-image-source:var(--ui-pill-choco);color:#fff0d8!important;text-shadow:0 1px 0 rgba(20,8,2,.75)!important}
-button.pill.sub.on{border-image-source:var(--ui-btn-red);border-image-slice:49% 16% 49% 15% fill}
+button.pill{--uf:var(--ui-pill-cream);--ufd:var(--ui-pill-cream-down);--ufo:var(--ui-pill-cream-off);border-image-slice:49% 15% 49% 15% fill;color:#4a2814!important;-webkit-text-stroke:0!important;text-shadow:none!important}
+button.pill.sub,button.pill.on:not(.go2):not(.sub){--uf:var(--ui-pill-choco);--ufd:var(--ui-pill-choco-down);--ufo:var(--ui-pill-choco-off);color:#fff0d8!important;text-shadow:0 1px 0 rgba(20,8,2,.75)!important}
+button.pill.sub.on{--uf:var(--ui-btn-red);--ufd:var(--ui-btn-red-down);--ufo:var(--ui-btn-red-off);border-image-slice:49% 16% 49% 15% fill}
 .bake::before{display:none}
 .title .big{border-radius:999px}
 /* タブ（えらぶ・えらんでいる .on）：上にしましまの日よけ。えらんでいるタブには、いちごのリボン（別の絵 ui-tab-bow を上のまんなかに） */
-button.tab{position:relative;border-image-source:var(--ui-tab-off);border-image-slice:49% 11% 49% 11% fill;color:#5a3418!important;-webkit-text-stroke:0!important;font-weight:700;padding:11px 18px 6px;text-shadow:0 1px 0 rgba(255,244,220,.6)!important}
-button.tab.on{border-image-source:var(--ui-tab-on);color:#fff!important;text-shadow:0 1px 0 rgba(90,14,10,.85)!important}
+button.tab{position:relative;--uf:var(--ui-tab-off);--ufd:var(--ui-tab-off-down);--ufo:var(--ui-tab-off-off);border-image-slice:49% 11% 49% 11% fill;color:#5a3418!important;-webkit-text-stroke:0!important;font-weight:700;padding:11px 18px 6px;text-shadow:0 1px 0 rgba(255,244,220,.6)!important}
+button.tab.on{--uf:var(--ui-tab-on);--ufd:var(--ui-tab-on-down);--ufo:var(--ui-tab-on-off);color:#fff!important;text-shadow:0 1px 0 rgba(90,14,10,.85)!important}
 button.tab.on::before{content:"";position:absolute;left:50%;top:-20%;height:55%;aspect-ratio:164/88;transform:translateX(-50%);background:var(--ui-tab-bow) center/contain no-repeat;pointer-events:none}
 /* まるいボタン（とじる × など） */
 button.round{width:44px;height:44px;padding:0;flex:none}
-button.round,button.vclose{border:2px solid transparent;border-radius:50%;box-shadow:none!important;border-image:none;background:var(--ui-round) center/100% 100% no-repeat!important;color:#4a2814!important;-webkit-text-stroke:0!important;font-size:18px;line-height:1}
+button.round,button.vclose{--uf:var(--ui-round);--ufd:var(--ui-round-down);--ufo:var(--ui-round-off);border:2px solid transparent;border-radius:50%;box-shadow:none!important;border-image:none;background:var(--uf) center/100% 100% no-repeat!important;color:#4a2814!important;-webkit-text-stroke:0!important;font-size:18px;line-height:1}
+/* ふだん・押した・使えない（:not(#_) は強さを上げるだけ。ほかの皮の字の色より強くするため） */
+button:is(.big,.bake,.go2,.sub,.pill,.tab){border-image-source:var(--uf)}
+button:is(.big,.bake,.go2,.sub,.pill,.tab):active:not(:disabled){border-image-source:var(--ufd)}
+button:is(.round,.vclose):active:not(:disabled){background:var(--ufd) center/100% 100% no-repeat!important}
+button:is(.big,.bake,.go2,.sub,.pill,.tab,.round,.vclose):disabled:not(#_){border-image-source:var(--ufo);opacity:1;filter:none;color:#463830!important;-webkit-text-stroke:0!important;text-shadow:0 1px 0 rgba(255,240,225,.45)!important}
+button:is(.round,.vclose):disabled:not(#_){background:var(--ufo) center/100% 100% no-repeat!important}
+button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
+
+/* パネル（ui-panels・9分割）：まんなかはクリーム色の紙なので、字はこげ茶。
+   ui-panel（四すみにお菓子）＝ラウンドの結果・おもてなしの結果／ui-window（真ちゅうのびょう）＝会話の窓・大きく見る画面の説明／ui-nameplate＝会話の名前の札／ui-diary＝日記の紙 */
+.vbox.result,.panel.end{background:none;box-shadow:none;border:24px solid transparent;border-radius:0;border-image:var(--ui-panel) 70 fill/24px stretch;color:#4a2814}
+.vbox.result{padding:2px 6px 6px}
+.panel.end{padding:0 4px 4px;gap:4px}
+.vbox.result .r-round,.vbox.result .r-q{color:#7a5a4a}
+.vbox.result .r-gain{color:#4a2814;font-weight:700}
+.vbox.result .r-msg{color:#a8433a}
+.vbox.result.ok .r-msg{color:#2f8a5c;border-color:#2f8a5c}
+.cinfo{background:none;box-shadow:none;border:14px solid transparent;border-radius:0;border-image:var(--ui-window) 42 fill/14px stretch;padding:0 4px}
