@@ -39,10 +39,10 @@
 
 - ストックの置き場（11/18 夜）：まだゲームで使っていない絵（みなものカード26・戦闘ポーズ6・デフォルメ3。これから届くわかばの分・立ち絵のストックも）は assets/art-stock/ に置く。ビルドは assets/art だけを埋めこむので、index.html が重くならない。使うときに assets/art へ git mv する
 ## 依頼中（11/18）
-- 依頼中（11/19 0時40分〜・4つまで）：art-irai `requests/okashi/cards-wakaba5.md`・`cards-wakaba6.md`（@codex 1本目）と `honoka-poses2.md`・`minamo-poses2.md`（@codex 2本目）。cards-wakaba1〜4 とそれより前は済
+- 依頼中（11/19 1時05分〜）：art-irai `requests/okashi/wakaba-poses2.md`（@codex 1本）。これで書いた依頼書はぜんぶ。cards-wakaba5・6・honoka-poses2・minamo-poses2 とそれより前は済
 - 11/18 17時10分 司令塔（art-irai PR #68・game-art-rule.md）：okashi の依頼中は4つまで・@codex は2本まで並べてよい（issue #3 にコメントを2つ別々に・それぞれ「@codex AGENTS.md の決まりで、次の依頼書だけ描いて、カギで送って PR を作って：requests/okashi/<名前1>.md・requests/okashi/<名前2>.md」・2つのコメントで同じ依頼書を書かない）。パスを書かないと依頼中をぜんぶ見る（多くて3つ）。GPT の利用上限が減ってきたら司令塔に教える（2つにもどす）
-- 依頼中の取りこみ：cards-wakaba5・6（gridcut 3×2・--strict・art-stock へ）／honoka-poses2（gen/posebox.py で honoka-battle ではなく立ち姿 honoka と同じ四角 162,4,830,1528・名前は依頼書・art-stock へ）／minamo-poses2（posebox で minamo と同じ四角・art-stock へ）
-- 待ち（この順・11/18 22時半 しょーくん「夜のうちに作れる絵・必要になるかもしれない絵・ボタン・作り込んでない所も全部」「ほのか・みなも・わかばの立ち絵も増産してストック」「おすすめで進めて」）：`pan3`（菓子パンの★3のタワー）→ `minamo-battle`・`minamo-chibi` → `wakaba` → `wakaba-poses2`（立ち絵のストック）。カードの名前と id はぽぽちの仮
+- 依頼中の取りこみ：wakaba-poses2（gen/posebox.py で wakaba と同じ四角・wakaba-nemui・-mazeru・-okoru・-ase・-tefuri・-mizuyari・-ajimi・-kangae・-tehe → assets/art-stock/）
+- 待ち：なし（11/19 1時。次に頼む絵は、遊んでからの感想と、4人目・5人目の設定が来てから）
 - 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
 - 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
 
@@ -101,6 +101,9 @@
 | title-wakaba（タイトルのわかば：くだもののかご） | A | Codex | 2026-11-19 | art-irai `requests/okashi/title-wakaba.md`（PR #104）・one … 760 --strict | タイトル（昼のチャットの LG_CAST） |
 | wakaba-battle・-charge・-atk・-special・-win・-support・wakaba-chibi-think・-cheer・-sit（わかばの戦闘ポーズ6・デフォルメ3・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/wakaba-battle.md`・`wakaba-chibi.md`（PR #101・#102） | assets/art-stock/（わかばのビルドを作るとき） |
 | card-sponge・tart・roll・deco・chiffon・hachiroll・garabin・ookibin・ichijam・shimejam・torojam・kirakira・field-hatake・terrace・jamnabe・card-joro・hiryo・kakashi・card-apple-0〜2・card-berry-0〜2（わかばのカード24・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/cards-wakaba1.md`〜`cards-wakaba4.md`（PR #105〜#108）・gen/gridcut.py 3×2・--strict（空のびんは --despill）・上限300 | assets/art-stock/（わかばのビルドを作るとき） |
+| card-peach-0〜2・card-grape-0〜2・card-mikan-0〜2・card-kago・card-hatabell（わかばのくだもの3段の残りと道具2・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/cards-wakaba5.md`・`cards-wakaba6.md`（PR #109・#110）・gridcut 3×2・--strict・上限300 | assets/art-stock/ |
+| honoka-peko・-tsumami・-nemui・-okori・-warai・-tefuri・-hashiru・-yubisashi・-nakiwarai（ほのかの立ち絵ストック9） | A | Codex | 2026-11-19 | art-irai `requests/okashi/honoka-poses2.md`（PR #111）・gen/posebox.py で立ち姿 honoka と同じ四角（162,4,824,1528・上限760） | assets/art-stock/（会話で使うときは assets/art へ・TALKERS.honoka の faces：おなかぺこぺこ・つまみ食い・ねむい・ぷんぷん・大わらい・手をふる・走る・びしっ・うれし泣き） |
+| minamo-hohoemi・-mutt・-sashidasu・-yomu・-akubi・-shiteki・-tobinoku・-udemakuri・-tefuri（みなもの立ち絵ストック9） | A | Codex | 2026-11-19 | art-irai `requests/okashi/minamo-poses2.md`（PR #112）・posebox で minamo と同じ四角 | assets/art-stock/（faces：ほほえみ・むっ・飴をどうぞ・レシピを読む・あくび・してき・とびのく・うでまくり・小さく手をふる） |
 | title-bg・title-honoka・title-mon-slime・-hitsuji・-kurage・-tokage・-hiyoko・title-fore（タイトル画面：夜のお店の前・泡立て器のほのか・見上げるモンスター5体・手前のランタンと花） | A | Codex | 2026-11-18 | art-irai `requests/okashi/title-bg.md`・`title-honoka.md`・`title-mons.md`・`title-fore.md`（PR #78・#80・#77・#79）。title-bg は抜かずに 720×1080・title-fore は `--strict` で抜いて大きさはそのまま 720×1080（位置がずれないよう切らない）・title-honoka は one … 760・title-mons は parts … 300。op-mix・op-forest・op-shop-night（前のオープニング）はけずった | タイトル画面（昼のチャットの logo.js の lgTitleHTML。位置は LG_BG・LG_CAST・LG_MONS） |
 | mon-tokage・mon-hiyoko・mon-kurage（こんぺいトカゲ・ほのお鳥のひよこ・しずくクラゲの大きい立ち姿・左向き） | A | Codex | 2026-11-18 | art-irai `requests/okashi/monsters2.md`（PR #63・1536×1024）。トカゲのしっぽが3等分の線をこえるので、すき間（x=543・1040）で切って trim_fit 520。トカゲは緑の星を残すため --strict | 夜の舞台のお客さん（monURL が mon-<id> を見る） |
 | card-kanten・card-hoshi・card-karamel（しずく寒天・ほしくずシュガー・ほのおカラメル） | A | Codex | 2026-11-18 | art-irai `requests/okashi/cards12.md`（PR #62）・`prep_art.py three … 300` | 夜のふしぎな素材のカード（MATS の alt より先） |
