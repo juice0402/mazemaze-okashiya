@@ -395,4 +395,5 @@ function renderNight() {
   if (resultAnim && N.stage === 'roundEnd') { resultAnim = false; const r = document.querySelector('.r-num'); if (r) countUp(r, 0, N.last.total, T(700)); }
   /* 来店とお礼の会話（night.js の nightTalk） */
   if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
+  tipSync();   // 夜のヒント（tips.js）
 }

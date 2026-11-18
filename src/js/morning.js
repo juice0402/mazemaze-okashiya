@@ -228,7 +228,7 @@ function renderMorning(pop) {
       ${M.shop ? shopHTMLm() : ''}
     </div>
     <div class="mshelf" data-mdrop="shelf" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => slotHTML(o, i, ks, false)).join('')}</div>
-    <div class="mtray" data-mdrop="tray">${mats.length ? mats.map(mTile).join('') : '<p class="mt-empty">倉庫はからっぽ。仕入れで素材を買ってね</p>'}</div>
+    <div class="mtray gingham" data-mdrop="tray">${mats.length ? mats.map(mTile).join('') : '<p class="mt-empty">倉庫はからっぽ。仕入れで素材を買ってね</p>'}</div>
     <div class="m-bar"><button class="sub" data-act="m-shop" data-o="1">仕入れ</button>${M.made ? `<button class="big" data-act="toShelf"${mBusy ? ' disabled' : ''}>お菓子を棚へ</button>` : `<button class="big" data-act="openShop"${mBusy ? ' disabled' : ''}>お店をあけに行く</button>`}</div>
   </section>`;
   $('msec').addEventListener('pointerdown', mDown);

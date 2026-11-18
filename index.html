@@ -756,6 +756,18 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
 @keyframes dmgfly{0%{opacity:0;transform:scale(2.8) rotate(-10deg)}16%{opacity:1;transform:scale(1) rotate(-4deg)}24%{transform:scale(1.12) rotate(-4deg)}32%{transform:scale(1) rotate(-4deg)}78%{opacity:1;transform:translateY(-20px) rotate(-4deg)}100%{opacity:0;transform:translateY(-38px) scale(.92) rotate(-4deg)}}
 @media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
+.tipb{position:fixed;left:0;top:0;z-index:44;max-width:240px;padding:7px 24px 8px 11px;border-radius:13px;background:var(--cream);color:var(--ink);border:2px solid #5a3418;box-shadow:0 3px 0 rgba(42,20,8,.45),0 8px 18px rgba(0,0,0,.35);font-size:min(12.5px,3.25vw);font-weight:700;line-height:1.5;cursor:pointer;transform-origin:0 100%;-webkit-tap-highlight-color:transparent}
+.tipb p{margin:0;white-space:nowrap}
+.tipb .kw{color:#8a3c00}
+.tipb::before,.tipb::after{content:"";position:absolute;left:-11px;bottom:9px;border:7px solid transparent;border-right:11px solid #5a3418;border-left:0}
+.tipb::after{left:-7px;bottom:10px;border-width:6px 9px 6px 0;border-right-color:var(--cream)}
+.tip-x{position:absolute;right:5px;top:4px;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:11px;line-height:1;color:#fff;background:#8a5a34}
+.tipb.pop{animation:tippop .38s cubic-bezier(.3,1.45,.5,1) both}
+@keyframes tippop{from{opacity:0;transform:scale(.55) translateY(6px)}to{opacity:1;transform:none}}
+.tipf{position:fixed;left:0;top:0;z-index:44;width:40px;height:49px;pointer-events:none;transform-origin:19px 2px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));will-change:transform,opacity}
+.tipf svg{display:block;width:100%;height:100%}
+.tipf-ring{position:absolute;left:19px;top:2px;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(255,190,90,.7);opacity:0}
+.night.dragging~.tipf{display:none}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -879,7 +891,7 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .mshelf .d-nm{font-size:9.5px}
 .mshelf .dslot .hico{height:min(30px,54%)}
 .mshelf .d-dots{display:none}
-.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;padding:9px;min-height:72px;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
+.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;padding:11px;min-height:72px}
 .mt{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 1px 4px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
 .mt .hico{width:30px;height:30px}
 .mt-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden}
@@ -1958,7 +1970,7 @@ N.board[j] = cardDef(cid).dough ? { cid, cook: 0 } : { cid }; return { where: 'b
 }
 function payNg(n, cost) {
 if (!n) return '';
-if (N.round === 1) return N.picks >= n ? '' : N.picks ? `無料はあと${N.picks}まい` : '3まい えらんだよ。バトルしてみよう';
+if (N.round === 1) return N.picks >= n ? '' : N.picks ? `無料はあと${N.picks}まい` : '3まい えらんだよ。おもてなししてみよう';
 return N.coins >= cost ? '' : 'コインがたりない';
 }
 function pay(n, cost) { if (!n) return; if (N.round === 1) N.picks -= n; else N.coins -= cost; }
@@ -1976,7 +1988,7 @@ const at = to && to.where === 'board' ? to.i : freeSlot();
 if (at < 0) return toast(BOARD_FULL);
 if (!place(cid, at)) return;
 }
-pay(1, d.cost); N.shop[i] = null; unsel();
+pay(1, d.cost); N.shop[i] = null; unsel(); tipEv('buy');
 save(); renderNight();
 }
 function sellValue(d) { return N.round === 1 && d.star === 1 && d.cat !== 'burnt' ? 0 : SELL[d.star]; }
@@ -1986,13 +1998,13 @@ const c = p.where === 'field' ? (N.field ? { cid: 'b:' + N.field } : null) : car
 const d = cardDef(c.cid), v = sellValue(d);
 if (v) N.coins += v; else N.picks = Math.min(ROUND1_PICKS, N.picks + 1);
 if (p.where === 'field') N.field = null; else N.board[p.i] = null;
-unsel(); save(); renderNight();
+unsel(); tipEv('sell'); save(); renderNight();
 }
 function sell() { sellAt(N.sel); }
 function reroll() {
 if (busy || N.stage !== 'shop' || N.round === 1) return;
 if (N.coins < REROLL) return toast('コインがたりない');
-N.coins -= REROLL; rollShop(); unsel(); save(); renderNight();
+N.coins -= REROLL; rollShop(); unsel(); tipEv('reroll'); save(); renderNight();
 }
 const canMix = (a, b) => mixable(cardDef(a.cid), cardDef(b.cid));
 const asCard = cid => cardDef(cid).dough ? { cid, cook: 0 } : { cid };   // 仕入れの生地は生（焼き加減0）
@@ -2050,7 +2062,7 @@ pay(P.n, P.cost);
 const r = mixResult(a, b), d = cardDef(r.cid);
 for (const x of [p, q]) { if (x.where === 'shop') N.shop[x.i] = null; if (x.where === 'board') N.board[x.i] = null; }
 N.board[P.to.i] = r;
-unsel();
+unsel(); tipEv('mix');
 const msg = d.star === 2 ? d.name + 'ができた' : '';   // できたカードの名前は演出の札で見せる（演出なしのときだけ toast）。レシピのひらめきは朝に（11/18 H-001）
 save(); renderNight();
 busy = true;
@@ -2063,7 +2075,7 @@ if (d.star === 3) cutIn(r.cid, 'スペシャルができた！');
 function moveTo(i, j) {
 if (busy || !N.board[i]) return;
 [N.board[j], N.board[i]] = [N.board[i], N.board[j]];
-unsel(); save(); renderNight();
+unsel(); tipEv('move'); save(); renderNight();
 const t = document.querySelector(`.tslot[data-w="board"][data-i="${j}"] .pc`); if (t) replay(t, 'kon');
 }
 function closeView() { unsel(); renderNight(); }
@@ -2152,12 +2164,12 @@ ev.push(e);
 }
 return { ev, total, burnt, board, heat, call };
 }
-function bake() {
+function omotenashi() {
 if (busy || N.stage !== 'shop') return;
-if (!N.board.some(Boolean)) return toast('調理台にカードを置いてからバトルしよう');
+if (!N.board.some(Boolean)) return toast('調理台にカードを置いてから おもてなししよう');
 if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
 const res = resolveRound(), q = quota(N.round, S.day);
-busy = true; unsel(); hideKw();
+busy = true; unsel(); hideKw(); tipEv('bake'); tipClear();
 shopOut(() => {
 fighting = true; renderNight();
 battleIntro(q, () => {
@@ -2184,6 +2196,7 @@ save(); renderNight();
 }
 function nextRound() {
 if (N.stage !== 'roundEnd') return;
+tipEv('next');
 if (N.round >= ROUNDS) return endNight();
 N.coins += INCOME + (N.last.ok ? QUOTA_BONUS : 0);
 N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
@@ -2555,6 +2568,7 @@ setHeat(N.heat);
 for (const c of N.board) if (c) delete c.born;
 if (resultAnim && N.stage === 'roundEnd') { resultAnim = false; const r = document.querySelector('.r-num'); if (r) countUp(r, 0, N.last.total, T(700)); }
 if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
+tipSync();   // 夜のヒント（tips.js）
 }
 
 /* src/js/battle-fx.js */
@@ -2912,6 +2926,131 @@ const sec = document.querySelector('.night'); if (sec) sec.classList.remove('dra
 (D.zones || []).forEach(o => o.z.classList.remove('can', 'cant', 'put', 'swap', 'sellok', 'over'));
 }
 
+/* src/js/tips.js */
+
+const TIP_GAP = 700;   // 画面が落ち着いてから出す（ショップのカードが配られるあいだは待つ）
+const TIP_TOOLS = d => d.cat === 'tool' && (d.fx.heat || d.fx.sear);
+const TIP_PLACE = d => !!(d.fx.lead || d.fx.sai || d.fx.fin || d.fx.rally);
+const TIPS = [
+{ id: 'shop1', at: 'shop', on: ['buy', 'mix'], text: ['カードを 下の調理台へ ドラッグ！', '今夜は 3まい 無料だよ'],
+when: () => N.round === 1 && !N.field && !N.board.some(Boolean) && tipBuy() >= 0,
+hand: () => [tipShopEl(tipBuy()), tipSlotEl(freeSlot())] },
+{ id: 'field', at: 'shop', on: ['buy', 'mix', 'bake'], text: ['フィールドは {場}へ 置こう', '{場}があると、生地が焼けるんだ'],
+when: () => !N.field && tipField() >= 0, hand: () => [tipShopEl(tipField()), document.querySelector('.fslot')] },
+{ id: 'bake', at: 'shop', on: ['bake'], text: ['準備ができたら', 'おもてなし！を おしてね'],
+when: () => N.board.some(Boolean) && (N.round > 1 || N.picks === 0 || !N.shop.some(Boolean)), hand: () => [document.querySelector('.bake')] },
+{ id: 'goal', at: 'roundEnd', on: ['next'], text: ['味パワーが おなかをこえたら まんぞく！', '9ラウンドの合計で お礼が決まるよ'],
+when: () => true, hand: () => null },
+{ id: 'mix', at: 'shop', on: ['mix'], text: ['まぜ の札がついたカードは', 'かさねると まぜまぜ！★が上がるよ'],
+when: () => !!tipMix(), hand: () => { const m = tipMix(); return m && [tipEl(m[0]), tipEl(m[1])]; } },
+{ id: 'reroll', at: 'shop', on: ['reroll', 'buy', 'mix', 'bake'], text: ['ここからは コインで買うよ', '入れかえで 新しいカードも出せる'],
+when: () => N.round >= 2 && N.coins >= REROLL, hand: () => [document.querySelector('.sh-roll')] },
+{ id: 'full', at: 'shop', on: ['sell', 'mix'], text: ['調理台が いっぱい！', 'まぜるか、ショップへ持っていって うろう'],
+when: () => N.board.every(Boolean) && N.shop.some(Boolean), hand: () => [tipSlotEl(0), document.querySelector('.sh-cards')] },
+{ id: 'cooked', at: 'shop', on: ['*'], text: ['生地が焼けてきた！', '{焼き加減}9で {サイコー}。焼きすぎ注意！'],
+when: () => tipBoard(c => cardDef(c.cid).dough && c.cook > 0) >= 0, hand: () => [tipSlotEl(tipBoard(c => cardDef(c.cid).dough && c.cook > 0))] },
+{ id: 'heat', at: 'shop', on: ['*'], text: ['まきや火種で {火力}が上がるよ', '火が強いと、生地が早く焼けるんだ'],
+when: () => tipAny(TIP_TOOLS), hand: () => [tipAnyEl(TIP_TOOLS)] },
+{ id: 'place', at: 'shop', on: ['*'], text: ['いちばん左が {スタート}、右が {アンカー}', '並べかえは、おもてなしの前に いつでも'],
+when: () => tipAny(TIP_PLACE), hand: () => [tipAnyEl(TIP_PLACE)] },
+{ id: 'fushigi', at: 'shop', on: ['*'], text: ['今夜のお客さんの ふしぎな素材！', 'ショップに出るのは、今夜だけだよ'],
+when: () => N.shop.indexOf('m:' + MONSTERS[N.mon].drop) >= 0, hand: () => [tipShopEl(N.shop.indexOf('m:' + MONSTERS[N.mon].drop))] },
+{ id: 'burnt', at: 'shop', on: ['*'], text: ['あっ、{焦げ}ちゃった…', '{焦げ}どうしを まぜると、すごいことに？'],
+when: () => tipBoard(c => cardDef(c.cid).cat === 'burnt') >= 0, hand: () => [tipSlotEl(tipBoard(c => cardDef(c.cid).cat === 'burnt'))] },
+{ id: 'view', at: 'shop', on: ['*'], text: ['カードを タップすると', 'くわしい効果が 見られるよ'],
+when: () => N.round >= 3 && N.shop.some(Boolean), hand: () => [tipShopEl(N.shop.findIndex(Boolean))] },
+];
+let TIP = null, tipT = 0;
+const tipEl = p => p.where === 'shop' ? tipShopEl(p.i) : tipSlotEl(p.i);
+const tipShopEl = i => i >= 0 ? document.querySelector(`.shcard[data-i="${i}"]`) : null;
+const tipSlotEl = i => i >= 0 ? document.querySelector(`.tslot[data-w="board"][data-i="${i}"]`) : null;
+const tipBoard = f => N.board.findIndex(c => c && f(c));
+const tipOkPlan = (p, q, kind) => { const P = dropPlan(p, q); return !!P && P.kind === kind && !P.ng; };
+function tipBuy() {
+const j = freeSlot(); if (j < 0) return -1;
+const ok = i => N.shop[i] && cardDef(N.shop[i]).cat !== 'field' && tipOkPlan({ where: 'shop', i }, { where: 'board', i: j }, 'buy');
+const L = N.shop.map((c, i) => i).filter(ok);
+return L.find(i => cardDef(N.shop[i]).dough) ?? (L.length ? L[0] : -1);
+}
+function tipField() { return N.shop.findIndex((c, i) => c && cardDef(c).cat === 'field' && tipOkPlan({ where: 'shop', i }, { where: 'field', i: 0 }, 'buy')); }
+function tipMix() {
+for (let i = 0; i < N.shop.length; i++) for (let j = 0; j < SLOTS; j++)
+if (N.shop[i] && N.board[j] && tipOkPlan({ where: 'shop', i }, { where: 'board', i: j }, 'mix')) return [{ where: 'shop', i }, { where: 'board', i: j }];
+for (let i = 0; i < SLOTS; i++) for (let j = 0; j < SLOTS; j++)
+if (i !== j && N.board[i] && N.board[j] && tipOkPlan({ where: 'board', i }, { where: 'board', i: j }, 'mix')) return [{ where: 'board', i }, { where: 'board', i: j }];
+return null;
+}
+const tipAny = f => N.shop.some(c => c && f(cardDef(c))) || N.board.some(c => c && f(cardDef(c.cid)));
+function tipAnyEl(f) {
+const i = N.shop.findIndex(c => c && f(cardDef(c)));
+return i >= 0 ? tipShopEl(i) : tipSlotEl(tipBoard(c => f(cardDef(c.cid))));
+}
+const tipLines = t => (typeof STORY === 'object' && STORY.tips && STORY.tips[t.id]) || t.text;
+const tipNow = () => S.phase === 'night' && N && !busy && !fighting && !talking();
+function tipSync() {
+clearTimeout(tipT);
+if (TIP && (S.phase !== 'night' || !N || TIP.t.at !== N.stage || !TIP.t.when())) TIP = null;
+if (TIP) { if (tipNow() && !N.view) requestAnimationFrame(tipDraw); return; }
+tipT = setTimeout(tipNext, TIP_GAP);
+}
+function tipNext() {
+if (TIP || !tipNow() || N.view) return;
+const t = TIPS.find(t => !S.seen['t:' + t.id] && t.at === N.stage && t.when());
+if (!t) return;
+TIP = { t, fresh: true };
+S.seen['t:' + t.id] = 1; save();
+tipDraw(); decoReact('hop', 500);
+}
+function tipEv(kind) {
+if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
+}
+function tipClose() { TIP = null; tipClear(); }
+function tipClear() { for (const id of ['tipb', 'tipf']) { const el = $(id); if (el) el.remove(); } }
+const tipKw = s => s.replace(/\{([^}]+)\}/g, '<b class="kw">$1</b>');
+const tipMid = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+function tipDraw() {
+tipClear();
+const scr = $('screen'), st = $('stage');
+if (!TIP || !scr || !st || !tipNow() || N.view) return;
+const b = document.createElement('div');
+b.id = 'tipb'; b.className = 'tipb' + (TIP.fresh && !REDUCED ? ' pop' : '');
+b.setAttribute('role', 'status');
+b.innerHTML = tipLines(TIP.t).map(l => `<p>${tipKw(esc(l))}</p>`).join('') + '<i class="tip-x" aria-label="とじる">×</i>';
+b.addEventListener('click', e => { e.stopPropagation(); tipClose(); });
+scr.appendChild(b);
+const sr = st.getBoundingClientRect(), ch = $('dcChibi'), base = ch && ch.offsetParent ? ch.offsetParent.getBoundingClientRect() : null;
+const has = base && ch.offsetWidth;
+const left = has ? base.left + ch.offsetLeft + ch.offsetWidth - 4 : sr.left + 10, foot = has ? base.top + ch.offsetTop + ch.offsetHeight * .72 : sr.bottom - 40;
+b.style.left = Math.round(left) + 'px';
+b.style.maxWidth = Math.round(Math.max(150, sr.right - left - 8)) + 'px';
+b.style.top = Math.round(Math.max(sr.top + 6, foot - b.offsetHeight)) + 'px';   // 幅が決まってから高さで合わせなおす
+TIP.fresh = false;
+const h = TIP.t.hand();
+if (!h || !h[0] || (h.length > 1 && !h[1])) return;
+const f = document.createElement('div');
+f.id = 'tipf'; f.className = 'tipf';
+f.innerHTML = `<i class="tipf-ring"></i><svg viewBox="0 0 44 54" aria-hidden="true"><g fill="#fff" stroke="#4a2a14" stroke-width="2.6" stroke-linejoin="round">
+<rect x="3" y="25" width="15" height="9.5" rx="4.75" transform="rotate(-28 10 30)"/><rect x="10" y="20" width="28" height="28" rx="9"/>
+<rect x="16" y="1.5" width="10.5" height="31" rx="5.25"/></g><path d="M27 29v8M32.5 28v8" stroke="#4a2a14" stroke-width="2" stroke-linecap="round" opacity=".55"/></svg>`;
+scr.appendChild(f);
+const A = tipMid(h[0]), B = h[1] ? tipMid(h[1]) : null;
+const at = (p, k) => `translate(${Math.round(p.x - 19)}px, ${Math.round(p.y - 2)}px) scale(${k})`;
+const ring = f.firstElementChild;
+if (REDUCED || !f.animate) { f.style.transform = at(B || A, 1); return; }
+if (B) {
+f.animate([
+{ transform: at(A, 1), opacity: 0 }, { transform: at(A, 1), opacity: 1, offset: .12 }, { transform: at(A, .86), opacity: 1, offset: .24 },
+{ transform: at(B, .86), opacity: 1, offset: .66 }, { transform: at(B, 1), opacity: 1, offset: .76 }, { transform: at(B, 1), opacity: 0 },
+], { duration: 2100, iterations: Infinity, easing: 'ease-in-out' });
+ring.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 0, transform: 'scale(.4)', offset: .18 }, { opacity: .9, transform: 'scale(1)', offset: .26 },
+{ opacity: .9, transform: 'scale(1)', offset: .66 }, { opacity: 0, transform: 'scale(1.4)', offset: .78 }, { opacity: 0, transform: 'scale(1.4)' }], { duration: 2100, iterations: Infinity });
+} else {
+f.animate([{ transform: at(A, 1) }, { transform: at(A, .84), offset: .3 }, { transform: at(A, 1), offset: .5 }, { transform: at(A, 1) }], { duration: 1300, iterations: Infinity, easing: 'ease-in-out' });
+ring.animate([{ opacity: 0, transform: 'scale(.3)' }, { opacity: .95, transform: 'scale(.5)', offset: .3 }, { opacity: 0, transform: 'scale(1.7)', offset: .85 }, { opacity: 0, transform: 'scale(1.7)' }], { duration: 1300, iterations: Infinity });
+}
+}
+addEventListener('resize', () => { if (TIP) requestAnimationFrame(tipDraw); });
+
 /* src/js/talk.js */
 
 const TALKERS = {
@@ -3235,7 +3374,7 @@ ${made}
 ${M.shop ? shopHTMLm() : ''}
 </div>
 <div class="mshelf" data-mdrop="shelf" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => slotHTML(o, i, ks, false)).join('')}</div>
-<div class="mtray" data-mdrop="tray">${mats.length ? mats.map(mTile).join('') : '<p class="mt-empty">倉庫はからっぽ。仕入れで素材を買ってね</p>'}</div>
+<div class="mtray gingham" data-mdrop="tray">${mats.length ? mats.map(mTile).join('') : '<p class="mt-empty">倉庫はからっぽ。仕入れで素材を買ってね</p>'}</div>
 <div class="m-bar"><button class="sub" data-act="m-shop" data-o="1">仕入れ</button>${M.made ? `<button class="big" data-act="toShelf"${mBusy ? ' disabled' : ''}>お菓子を棚へ</button>` : `<button class="big" data-act="openShop"${mBusy ? ' disabled' : ''}>お店をあけに行く</button>`}</div>
 </section>`;
 $('msec').addEventListener('pointerdown', mDown);
@@ -3539,7 +3678,7 @@ noop: () => {},
 buy: el => buy(+el.dataset.i),
 sell: () => sell(),
 reroll: () => reroll(),
-bake: () => bake(),
+bake: () => omotenashi(),
 next: () => nextRound(),
 openShop: () => goDay(),
 toEvening: () => goEvening(),

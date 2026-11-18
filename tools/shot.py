@@ -26,7 +26,7 @@ PRE = {
     'evening': ("localStorage.clear(); S = newState(); S.today = newDay(1); startNight()", 2400),
     'shop': ("talkClose(true); localStorage.clear(); S = newState(); S.day = 2; S.today = newDay(2); startNight()", 1800),
     'board': (BOARD, 1500),
-    'battle': (BOARD + "; bake()", 5200),
+    'battle': (BOARD + "; omotenashi()", 5200),
     'panel': (PANEL, 900),
     'end': ("talkClose(true); N.score = Math.round(nightHP(S.day) * 0.7); endNight()", 2200),
     'morning': ("goMorning(); render()", 1000),
