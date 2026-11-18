@@ -4,7 +4,7 @@
 2つのチャットで作る。**同じファイルを2人で直さない。** 昼のチャットが直してよいのは「昼」のファイルだけ。ほかを変えたいときは claude/okashi-hiru.md の「リーダーへのお願い」（H-001…）に書く。
 | 持ち主 | ファイル |
 | --- | --- |
-| 昼【okashi-hiru】（朝と昼の画面） | src/js/morning.js（朝のお菓子づくり）・src/js/day.js（昼の販売）・src/js/day-scene.js（昼の舞台とお客さんの絵）・src/data/hiru.js（朝と昼の数字・お客さんのすきな味）・src/data/story.js（セリフと日記。はじめの形はリーダーが①④と日記を写した）・src/style-hiru.css（朝と昼の見た目） |
+| 昼【okashi-hiru】（朝と昼の画面） | src/js/morning.js（朝のお菓子づくり）・src/js/day.js（昼の販売）・src/js/day-scene.js（昼の舞台とお客さんの絵）・src/js/logo.js（タイトルロゴ）・src/data/hiru.js（朝と昼の数字・お客さんのすきな味）・src/data/story.js（セリフと日記。はじめの形はリーダーが①④と日記を写した）・src/style-hiru.css（朝と昼の見た目） |
 | リーダー【okashi】（ほかぜんぶ） | 共通の部品：src/shell.html・src/style.css（色・文字・ボタン・パネル・カード）・src/js/core.js（道具・セーブ・toast・HEART）・src/js/cards-ui.js（カードの見た目・ことば）・src/js/art.js（絵）・src/js/talk.js（会話の部品）・src/style-talk.css（会話・プロローグ・おもてなしの結果・まとめの見た目）／1日の流れと画面の切りかえ：src/js/flow.js（goPrologue・goMorning・goDay・goEvening・goResult・nextDay・プロローグ・1日のまとめ）・src/js/main.js（render・ACTS・幕 wipe・押したときの光）／カード・数字：src/data/cards.js・src/data/world.js（モンスター・ノルマ・お客さんの名前と見た目）／夜：src/js/night.js・night-ui.js・battle-fx.js・drag.js・src/style-battle.css／ビルド tools/・assets/・docs/・index.html・README.md・CLAUDE.md |
 
 - 昼のファイルとリーダーのつなぎ目（ここの名前と形を変えるときは、お願いで相談）：朝は flow.js の goMorning（S.yesterday と S.today を用意）→ morning.js の **startMorning()**（S.morning を用意）。昼は goDay → day.js の **startDay()**（S.dayRun を用意）。閉店したら **goEvening()**（data-act="toEvening"。前の昼の画面の toResult もいまは夕方へ）→ day.js の **stopDay()** → 夜（来店の会話 → おもてなし → お礼の会話）→ まとめ。朝のお菓子はカードにしない（11/18 H-001・deckAddCandy はなくした）。会話は talk.js の **talk(lines, done)**、セリフは story.js の **STORY**（朝のひとり言は STORY.morning(S.today, S.yesterday) を朝の画面から呼ぶ）。画面は render() が **renderMorning()**・**renderDay()** を呼ぶ。ボタンは morning.js の **MORNING_ACTS**・day.js の **DAY_ACTS** に足すと main.js の ACTS に入る（data-act の名前は、ほかとかぶらないように m-・d- などで始めてもよい）
@@ -47,6 +47,7 @@
 | src/js/flow.js | 1日の流れ：goPrologue・goMorning（きのうの記録を S.yesterday へ・S.today＝newDay）・goDay・goEvening（stopDay → startNight）・goResult・nextDay／プロローグ renderPrologue（お店の外の場面＋会話。絵 bg-shop-out が来るまではコードの仮の場面）／1日のまとめ renderResult（ほのかの日記＝STORY.diary・お昼の売上・お礼のコイン・もらった素材・評判のハートのびん jarHTML＝S.rep を REP_JAR（hiru.js・なければ10）で割った残り・お財布） | |
 | src/js/talk.js | 会話の部品：talk(lines, done, opt)・TALKERS（名前・左右・表情→絵の名前。ほのかの13の表情・モンスター）・1行の形「名前【表情】：セリフ」「（地の文）」「→」は読まない・1文字ずつ出る（タップで全部→次）・スキップ・立ち絵はひざから上（全身の絵を切る）・ほのかは左右反転・会話のあとで S.phase が変わったら幕 | 使い方は docs/PARTS.md |
 | src/data/story.js | セリフと日記（昼のチャット）：STORY.prologue・evening(rec)・thanks(rec)・morning(rec, yest)・diary(rec)＝2行 | 文のもとは claude/okashi-scenario.md |
+| src/js/logo.js | タイトルロゴ（昼のチャット・H-014）：logoHTML()（main.js の renderTitle が置く）・文字の絵 logo-*・動くのは起動して最初のタイトルだけ（lgPlayed）・見た目は style-hiru.css の .lg-*。名前は lg・LG_ で始める | — |
 | src/js/main.js | 画面の切りかえ render（prologue・morning・day・night・result）・タイトル・タップの表 ACTS（朝と昼のボタンは MORNING_ACTS・DAY_ACTS をまぜる）・つづきの用意 resume・boot（hot のつづき）・押したときの光 pressFx・夜/朝/昼/まとめの切りかえの幕 wipe（ギンガムのタイル・ぜんぶのせシップの pixWipe の形） | |
 
 ## データの形（S・セーブは localStorage `mazemaze-okashiya` の v:5）
