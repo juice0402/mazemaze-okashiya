@@ -29,7 +29,7 @@ function mState() {
   if (M.made) { M.baked.push({ key: M.made, n: BATCH }); M.made = null; }   // 前の形のセーブ（できたお菓子が待っていた）
   return M;
 }
-function matUnlocked(m) { const who = HIRU_MATS[m] && HIRU_MATS[m].who; return !who || !!S.seen[who] || (S.stock[m] || 0) > 0; }
+function matUnlocked(m) { const who = HIRU_MATS[m] && HIRU_MATS[m].who; return !who || STORY.mate(who) || !!S.seen[who] || (S.stock[m] || 0) > 0; }   // 仲間になった次の日から（11/19）
 const shopMats = () => Object.keys(HIRU_MATS).filter(matUnlocked);
 const shelfMaxN = () => Math.min(SHELF_MAX, S.shelfMax || 6);
 const placedN = () => S.shelf.filter(s => s.n > 0).length;
