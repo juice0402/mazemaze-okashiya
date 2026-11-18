@@ -111,4 +111,79 @@
 @keyframes buffout{35%{transform:scale(1.45)}100%{opacity:0;transform:translateY(22px) scale(.2)}}
 #heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
 
-@media (prefers-reduced-motion:reduce){.dc{animation:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
+/* ---------- ほのかの炎（Version 38・動きは battle-fx.js の 4） ---------- */
+/* 鉄板の炎：マスのうしろ（すきま・ふち・上のふちの先に見える）。.tiles の data-z（0＝場なし（種火）・1 弱火〜4 火力マックス）で燃え方が変わる */
+.night .quota{position:relative;z-index:2}
+.tiles>:where(.tslot){z-index:1}
+.tiles{--fs:.2;--fo:.5;--go:.1}
+.tiles[data-z="1"]{--fs:.42;--fo:.8;--go:.3}
+.tiles[data-z="2"]{--fs:.66;--fo:.92;--go:.52}
+.tiles[data-z="3"]{--fs:.95;--fo:1;--go:.78}
+.tiles[data-z="4"]{--fs:1.25;--fo:1;--go:1}
+.tglow{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:var(--go);transition:opacity .5s}
+.tglow::before{content:"";position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(75% 95% at 50% 100%,rgba(255,96,24,.9),rgba(190,36,8,.5) 50%,transparent 82%),linear-gradient(transparent 25%,rgba(255,70,16,.45));
+  box-shadow:inset 0 0 0 2px rgba(255,150,70,.8),inset 0 0 20px 5px rgba(255,90,20,.65);animation:tglow 1.9s ease-in-out infinite}
+@keyframes tglow{0%,100%{opacity:.72}50%{opacity:1}}
+.tfire{position:absolute;inset:0;z-index:0;pointer-events:none;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
+.tf{position:absolute;bottom:-8px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
+  background:radial-gradient(46% 58% at 50% 82%,#fff7cc 0,#ffd34e 24%,#ff7a1e 52%,rgba(214,40,8,.6) 72%,transparent 88%);
+  animation:tf var(--d) ease-in-out infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+.tf.x{display:none}
+.tiles[data-z="3"] .tf.x,.tiles[data-z="4"] .tf.x{display:block}
+.tiles[data-z="4"] .tf{background:radial-gradient(46% 60% at 50% 82%,#fff 0,#fff2b0 20%,#ffc23a 40%,#ff5a14 62%,rgba(200,20,4,.6) 78%,transparent 90%)}
+@keyframes tf{0%,100%{transform:scale(1,1);opacity:.92}25%{transform:translateY(-5%) scale(.86,1.2);opacity:1}50%{transform:scale(1.12,.86);opacity:.82}75%{transform:translateX(7%) scale(.9,1.12);opacity:1}}
+.tiles.heatup .tfire{animation:heatup .65s cubic-bezier(.3,1.4,.5,1)}
+.tiles.heatdn .tfire{animation:heatdn .7s ease-out}
+@keyframes heatup{0%{scale:1 .5}35%{scale:1.06 1.9}100%{scale:1 1}}
+@keyframes heatdn{0%{scale:1 1.15}30%{scale:1.12 .25;opacity:.4}100%{scale:1 1}}
+/* 強火から、鉄板から火の粉が上がる */
+.tsparks{position:absolute;inset:0;z-index:0;pointer-events:none;display:none}
+.tiles[data-z="3"] .tsparks,.tiles[data-z="4"] .tsparks{display:block}
+.tiles[data-z="3"] .tsp:nth-child(n+5){display:none}
+.tsp{position:absolute;top:10%;left:var(--x);width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#ffe9a0;box-shadow:0 0 5px 2px rgba(255,130,40,.9);opacity:0;
+  animation:tsp var(--d) linear infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+@keyframes tsp{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(var(--sx),-88px) scale(.4);opacity:0}}
+/* 舞台の火の粉：下から舞い上がる。数は火力で（場なし3つ〜火力マックス14こ）・ショップのあいだは止める */
+.embers{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size}
+.embers i{position:absolute;bottom:6%;left:var(--x);width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:#ffe39a;box-shadow:0 0 6px 2px rgba(255,120,30,.85);opacity:0;
+  animation:ember var(--d) linear infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+@keyframes ember{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--sx) * -.5),-50cqh)}85%{opacity:.8}100%{transform:translate(var(--sx),-96cqh) scale(.5);opacity:0}}
+.stage[data-z="0"] .embers i:nth-child(n+4),.stage[data-z="1"] .embers i:nth-child(n+6),.stage[data-z="2"] .embers i:nth-child(n+10){display:none}
+.stage:has(.shopov:not(.out)) .embers{display:none}
+/* モンスター：ずっともにもに（スライム＝ぷるぷる・くもひつじ＝ふわふわ）。ぐにゃっ・ほえるは別のプロパティ（scale・translate）なので、もにもにはそのまま続く */
+.night .stage .mon{transform-origin:50% 100%;--idle:jelly 1.8s ease-in-out infinite;animation:var(--idle)}
+.night .stage .mon[data-idle="fluff"]{--idle:fluff 3.2s ease-in-out infinite}
+.night .stage .mon.hit{animation:gunya .55s cubic-bezier(.2,.9,.3,1),var(--idle)}
+.night .stage .mon.hitbig{animation:gunya2 .8s cubic-bezier(.2,.9,.3,1),var(--idle)}
+.night .stage .mon.roar{animation:roar .6s ease-out,var(--idle)}
+.night .stage .mon.flee{animation:flee 1.4s ease-in forwards}
+@keyframes jelly{0%,100%{transform:scale(1,1)}20%{transform:scale(1.07,.93)}45%{transform:scale(.95,1.06) skewX(-2deg)}70%{transform:scale(1.04,.96) skewX(1.5deg)}85%{transform:scale(.99,1.02)}}
+@keyframes fluff{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-6%) rotate(2.5deg) scale(1.03,.98)}}
+@keyframes gunya{0%{scale:1.32 .64;translate:10px 0;filter:brightness(2.6) saturate(.4) drop-shadow(0 6px 6px rgba(0,0,0,.45))}25%{scale:.84 1.2;translate:-4px 0;filter:brightness(1) saturate(1) drop-shadow(0 6px 6px rgba(0,0,0,.45))}45%{scale:1.12 .9;translate:2px 0}65%{scale:.95 1.06}85%{scale:1.03 .98}100%{scale:1 1;translate:0 0}}
+@keyframes gunya2{0%{scale:1.5 .5;translate:16px 4px;filter:brightness(3) saturate(.3) drop-shadow(0 6px 6px rgba(0,0,0,.45))}20%{scale:.72 1.36;translate:-8px -6px;filter:brightness(1) saturate(1) drop-shadow(0 6px 6px rgba(0,0,0,.45))}38%{scale:1.24 .8;translate:4px 0}55%{scale:.9 1.1;translate:0 0}72%{scale:1.06 .95}88%{scale:.98 1.02}100%{scale:1 1}}
+@keyframes roar{30%{scale:1.16;translate:0 -6px;filter:brightness(1.35) drop-shadow(0 6px 6px rgba(0,0,0,.45))}60%{scale:.96;filter:brightness(1) drop-shadow(0 6px 6px rgba(0,0,0,.45))}}
+/* 一回きりの炎（#fxl＝画面の上の層。額縁の外へはみ出す）：火花・炎の柱・湯気・ボッ！・画面いっぱいの炎・ダメージの数字 */
+.fspark{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#ffd45a;box-shadow:0 0 6px 2px rgba(255,120,30,.9)}
+.fspark.w{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:#fff6d0;box-shadow:0 0 8px 3px rgba(255,170,60,.95)}
+.pillar{position:absolute;width:var(--pw);height:var(--ph);margin-left:calc(var(--pw) / -2);translate:0 -100%;transform-origin:50% 100%;border-radius:50% 50% 30% 30% / 78% 78% 22% 22%;
+  background:radial-gradient(50% 36% at 50% 94%,#fff 0,#fff2b0 26%,transparent 62%),linear-gradient(transparent,rgba(255,90,20,.55) 28%,#ff7a24 62%,#ffd45a 90%);
+  animation:pillar .9s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes pillar{0%{transform:scale(.5,.08);opacity:0}18%{transform:scale(1,1.05);opacity:1}55%{transform:scale(.8,1);opacity:.9}100%{transform:scale(.25,1.25);opacity:0}}
+.steam{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:radial-gradient(circle,rgba(255,250,240,.85),rgba(230,220,210,.35) 55%,transparent 72%);opacity:0;animation:steam 1.1s ease-out both}
+@keyframes steam{0%{transform:scale(.4);opacity:0}20%{opacity:.9}100%{transform:translateY(-70px) scale(2.2);opacity:0}}
+.zudon.boh{font-size:36px;color:#fff0c0;-webkit-text-stroke-color:#8a2004}
+.fwall{position:absolute;overflow:hidden;pointer-events:none}
+.fw-flash{position:absolute;inset:0;background:radial-gradient(130% 95% at 50% 100%,rgba(255,200,90,.85),rgba(255,90,20,.55) 45%,rgba(120,20,4,.25) 75%,transparent 95%);animation:fwflash .75s ease-out forwards}
+@keyframes fwflash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+.fw-t{position:absolute;bottom:-4%;left:var(--x);width:34%;height:var(--h);translate:-50% 0;transform-origin:50% 100%;border-radius:50% 50% 34% 34% / 76% 76% 24% 24%;
+  background:radial-gradient(48% 40% at 50% 90%,#fff8d8 0,#ffe27a 22%,transparent 55%),linear-gradient(transparent,rgba(255,80,20,.42) 25%,rgba(255,120,30,.72) 60%,rgba(255,194,58,.9) 92%);
+  opacity:0;animation:fwt .9s var(--dl) cubic-bezier(.2,.8,.3,1) both}
+@keyframes fwt{0%{transform:scale(.6,.05);opacity:0}22%{transform:scale(1,1.05);opacity:.95}60%{transform:scale(.85,1);opacity:.8}100%{transform:scale(.3,1.2);opacity:0}}
+.fx-dmg{position:absolute;translate:-50% -50%;white-space:nowrap;font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;color:#fff3c0;-webkit-text-stroke:6px #7a1a04;paint-order:stroke fill;
+  text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
+.fx-dmg.s-big{font-size:min(50px,12vw)}
+.fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
+@keyframes dmgfly{0%{opacity:0;transform:scale(2.8) rotate(-10deg)}16%{opacity:1;transform:scale(1) rotate(-4deg)}24%{transform:scale(1.12) rotate(-4deg)}32%{transform:scale(1) rotate(-4deg)}78%{opacity:1;transform:translateY(-20px) rotate(-4deg)}100%{opacity:0;transform:translateY(-38px) scale(.92) rotate(-4deg)}}
+
+@media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}

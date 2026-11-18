@@ -82,12 +82,9 @@ background:radial-gradient(ellipse 60% 55% at 42% 100%,#ff7a2a,rgba(255,90,30,.3
 .chef.act{animation:act .3s ease-out}
 @keyframes breathe{50%{translate:0 -2px}}
 @keyframes act{40%{translate:6px -3px}}
-.mon{position:absolute;right:2%;bottom:14%;width:24%;max-height:66%;object-fit:contain;object-position:bottom;image-rendering:pixelated;filter:drop-shadow(0 6px 6px rgba(0,0,0,.45));animation:bob 2.4s ease-in-out infinite}
+.mon{position:absolute;right:2%;bottom:14%;width:24%;max-height:66%;object-fit:contain;object-position:bottom;image-rendering:pixelated;filter:drop-shadow(0 6px 6px rgba(0,0,0,.45))}
 .mon.hi{image-rendering:auto;width:29%}
-.mon.hit{animation:hit .3s}
 .mon.flee{animation:flee 1.4s ease-in forwards}
-@keyframes bob{50%{translate:0 -4px}}
-@keyframes hit{0%{filter:brightness(2.4) drop-shadow(0 6px 6px rgba(0,0,0,.45))}25%{translate:7px 0}50%{translate:-5px 0}75%{translate:3px 0}}
 @keyframes flee{to{translate:130% -10%;rotate:20deg;opacity:0}}
 .smoke{position:absolute;left:14%;top:18%;width:22%;aspect-ratio:1;border-radius:50%;opacity:0;pointer-events:none;background:radial-gradient(circle,rgba(160,150,150,.9),rgba(120,110,110,.4) 50%,transparent 70%)}
 .smoke.on{animation:smoke 1s ease-out}
@@ -100,7 +97,6 @@ background:radial-gradient(ellipse 60% 55% at 42% 100%,#ff7a2a,rgba(255,90,30,.3
 .ov-heat{bottom:5px}
 .float{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-size:14px;font-weight:700;color:var(--gold);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;white-space:nowrap;pointer-events:none;animation:up .95s ease-out forwards;z-index:3}
 .float.koge{color:#e0d6cc;top:-4px}
-.stage .float.dmg{left:84%;top:18%;font-size:26px;z-index:7;color:#fff3c0;-webkit-text-stroke:5px #7a1a04;paint-order:stroke fill;text-shadow:0 3px 0 #3a0c02,0 0 16px rgba(255,140,40,.9);animation:dmgfly .9s cubic-bezier(.2,1.4,.4,1) forwards}
 @keyframes up{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -24px}}
 .heat-bar{flex:1;max-width:46%;display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
 .heat-bar i{height:8px;background:rgba(42,23,12,.7);border-radius:3px}
@@ -406,25 +402,18 @@ background:radial-gradient(30% 50% at 22% 50%,rgba(0,0,0,.45),transparent 70%),r
 .ov-top>span{padding:2px 9px;border-radius:9px;background:linear-gradient(rgba(42,23,12,.78),rgba(42,23,12,.6));box-shadow:inset 0 0 0 1px rgba(255,214,140,.45)}
 .ov-top .score b{font-family:var(--disp);font-weight:400;font-size:21px;color:#ffe08a}
 .ov-heat{z-index:6}
-.stage .float.dmg{font-family:var(--disp);font-weight:400;font-size:30px}
-.stage .float.dmg.big{font-size:42px}
-.stage .float.dmg.huge{font-size:54px;color:#ffe066}
-@keyframes dmgfly{0%{opacity:0;transform:translateX(-50%) scale(2.6) rotate(-8deg)}18%{opacity:1;transform:translateX(-50%) scale(1) rotate(-4deg)}75%{opacity:1;transform:translateX(-50%) translateY(-18px) scale(1) rotate(-4deg)}100%{opacity:0;transform:translateX(-50%) translateY(-34px) scale(.9) rotate(-4deg)}}
 .fx-ball{position:absolute;z-index:6;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;pointer-events:none;
 background:radial-gradient(circle at 40% 40%,#fffbe0 0,#ffd45a 28%,#ff7a24 56%,rgba(220,60,20,0) 72%);box-shadow:0 0 18px 8px rgba(255,140,40,.65)}
 .fx-ball::after{content:"";position:absolute;right:60%;top:30%;width:60px;height:40%;border-radius:999px;background:linear-gradient(90deg,transparent,rgba(255,170,60,.75));filter:blur(2px)}
-.fx-hit{position:absolute;z-index:6;width:120px;height:120px;margin:-60px 0 0 -60px;pointer-events:none;border-radius:50%;
+.fx-hit{position:absolute;z-index:6;width:160px;height:160px;margin:-80px 0 0 -80px;pointer-events:none;border-radius:50%;
 background:radial-gradient(circle,#fff 0,rgba(255,240,190,.95) 14%,rgba(255,150,50,.7) 34%,rgba(255,90,30,0) 62%);animation:fxhit .42s ease-out forwards}
-.fx-hit.big{width:190px;height:190px;margin:-95px 0 0 -95px}
+.fx-hit.s-big{width:250px;height:250px;margin:-125px 0 0 -125px}.fx-hit.s-huge{width:340px;height:340px;margin:-170px 0 0 -170px}
 .fx-hit::before{content:"";position:absolute;inset:-30%;border-radius:50%;background:repeating-conic-gradient(rgba(255,226,140,.9) 0 4deg,transparent 4deg 20deg);-webkit-mask:radial-gradient(circle,transparent 0 22%,#000 32%,transparent 66%);mask:radial-gradient(circle,transparent 0 22%,#000 32%,transparent 66%)}
 .fx-hit::after{content:"";position:absolute;inset:18%;border-radius:50%;border:4px solid #fff3c0;animation:fxring .42s ease-out forwards}
 @keyframes fxhit{0%{opacity:1;transform:scale(.3) rotate(0)}60%{opacity:1}100%{opacity:0;transform:scale(1.25) rotate(30deg)}}
 @keyframes fxring{from{transform:scale(.4);opacity:1}to{transform:scale(1.9);opacity:0;border-width:1px}}
-.fx-spark{position:absolute;z-index:6;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:2px;pointer-events:none;background:#ffd45a;box-shadow:0 0 6px 2px rgba(255,170,60,.85)}
 .stage.quake{animation:quake .32s linear}
 .stage.quake2{animation:quake2 .42s linear}
-.mon.hit{animation:hit2 .34s}
-@keyframes hit2{0%{filter:brightness(3) saturate(.3) drop-shadow(0 6px 6px rgba(0,0,0,.45))}20%{translate:10px -2px;scale:1.04 .96}45%{translate:-6px 0;scale:.98 1.03}70%{translate:3px 0}100%{translate:0;scale:1}}
 .quota{font-weight:700}
 .qbar{height:10px;border-radius:6px;background:linear-gradient(#24130a,#3a2418);box-shadow:inset 0 1px 2px rgba(0,0,0,.7),0 0 0 1.5px rgba(217,168,90,.65)}
 .qbar i{border-radius:6px;background:linear-gradient(#ffe9a8,var(--gold) 45%,#e08a2a);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 8px rgba(255,190,80,.7)}
@@ -578,9 +567,7 @@ mix-blend-mode:screen;transform-origin:50% 100%}
 .tslot .float{top:14%;z-index:6;font-size:12px}
 .float.cookup{color:#ffb35a}
 .float.best{color:#ffe066;font-size:14px;text-shadow:0 0 8px rgba(255,214,80,.9),1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
-.fx-ball.big{filter:brightness(1.2) drop-shadow(0 0 12px #ff8a3d)}
-.mon.roar{animation:roar .6s ease-out}
-@keyframes roar{30%{transform:scale(1.16) translateY(-6px);filter:brightness(1.35) drop-shadow(0 6px 6px rgba(0,0,0,.45))}60%{transform:scale(.96)}}
+.fx-ball.s-big,.fx-ball.s-huge{filter:brightness(1.2) drop-shadow(0 0 12px #ff8a3d)}
 .quota.reach .qbar i{animation:reach .7s ease-out}
 @keyframes reach{0%{filter:brightness(2.2);box-shadow:0 0 12px 4px #ffe680}100%{filter:none}}
 .shopov.out{pointer-events:none;animation:shopup .36s .2s cubic-bezier(.55,0,.8,.35) forwards}
@@ -714,7 +701,75 @@ background:var(--bc);box-shadow:0 0 0 1.5px #2a1408,0 0 9px 2px var(--bc);animat
 @keyframes buffin{from{opacity:0;transform:scale(2.2)}}
 @keyframes buffout{35%{transform:scale(1.45)}100%{opacity:0;transform:translateY(22px) scale(.2)}}
 #heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
-@media (prefers-reduced-motion:reduce){.dc{animation:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
+.night .quota{position:relative;z-index:2}
+.tiles>:where(.tslot){z-index:1}
+.tiles{--fs:.2;--fo:.5;--go:.1}
+.tiles[data-z="1"]{--fs:.42;--fo:.8;--go:.3}
+.tiles[data-z="2"]{--fs:.66;--fo:.92;--go:.52}
+.tiles[data-z="3"]{--fs:.95;--fo:1;--go:.78}
+.tiles[data-z="4"]{--fs:1.25;--fo:1;--go:1}
+.tglow{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:var(--go);transition:opacity .5s}
+.tglow::before{content:"";position:absolute;inset:0;border-radius:inherit;
+background:radial-gradient(75% 95% at 50% 100%,rgba(255,96,24,.9),rgba(190,36,8,.5) 50%,transparent 82%),linear-gradient(transparent 25%,rgba(255,70,16,.45));
+box-shadow:inset 0 0 0 2px rgba(255,150,70,.8),inset 0 0 20px 5px rgba(255,90,20,.65);animation:tglow 1.9s ease-in-out infinite}
+@keyframes tglow{0%,100%{opacity:.72}50%{opacity:1}}
+.tfire{position:absolute;inset:0;z-index:0;pointer-events:none;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
+.tf{position:absolute;bottom:-8px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
+background:radial-gradient(46% 58% at 50% 82%,#fff7cc 0,#ffd34e 24%,#ff7a1e 52%,rgba(214,40,8,.6) 72%,transparent 88%);
+animation:tf var(--d) ease-in-out infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+.tf.x{display:none}
+.tiles[data-z="3"] .tf.x,.tiles[data-z="4"] .tf.x{display:block}
+.tiles[data-z="4"] .tf{background:radial-gradient(46% 60% at 50% 82%,#fff 0,#fff2b0 20%,#ffc23a 40%,#ff5a14 62%,rgba(200,20,4,.6) 78%,transparent 90%)}
+@keyframes tf{0%,100%{transform:scale(1,1);opacity:.92}25%{transform:translateY(-5%) scale(.86,1.2);opacity:1}50%{transform:scale(1.12,.86);opacity:.82}75%{transform:translateX(7%) scale(.9,1.12);opacity:1}}
+.tiles.heatup .tfire{animation:heatup .65s cubic-bezier(.3,1.4,.5,1)}
+.tiles.heatdn .tfire{animation:heatdn .7s ease-out}
+@keyframes heatup{0%{scale:1 .5}35%{scale:1.06 1.9}100%{scale:1 1}}
+@keyframes heatdn{0%{scale:1 1.15}30%{scale:1.12 .25;opacity:.4}100%{scale:1 1}}
+.tsparks{position:absolute;inset:0;z-index:0;pointer-events:none;display:none}
+.tiles[data-z="3"] .tsparks,.tiles[data-z="4"] .tsparks{display:block}
+.tiles[data-z="3"] .tsp:nth-child(n+5){display:none}
+.tsp{position:absolute;top:10%;left:var(--x);width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#ffe9a0;box-shadow:0 0 5px 2px rgba(255,130,40,.9);opacity:0;
+animation:tsp var(--d) linear infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+@keyframes tsp{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(var(--sx),-88px) scale(.4);opacity:0}}
+.embers{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size}
+.embers i{position:absolute;bottom:6%;left:var(--x);width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:#ffe39a;box-shadow:0 0 6px 2px rgba(255,120,30,.85);opacity:0;
+animation:ember var(--d) linear infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+@keyframes ember{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--sx) * -.5),-50cqh)}85%{opacity:.8}100%{transform:translate(var(--sx),-96cqh) scale(.5);opacity:0}}
+.stage[data-z="0"] .embers i:nth-child(n+4),.stage[data-z="1"] .embers i:nth-child(n+6),.stage[data-z="2"] .embers i:nth-child(n+10){display:none}
+.stage:has(.shopov:not(.out)) .embers{display:none}
+.night .stage .mon{transform-origin:50% 100%;--idle:jelly 1.8s ease-in-out infinite;animation:var(--idle)}
+.night .stage .mon[data-idle="fluff"]{--idle:fluff 3.2s ease-in-out infinite}
+.night .stage .mon.hit{animation:gunya .55s cubic-bezier(.2,.9,.3,1),var(--idle)}
+.night .stage .mon.hitbig{animation:gunya2 .8s cubic-bezier(.2,.9,.3,1),var(--idle)}
+.night .stage .mon.roar{animation:roar .6s ease-out,var(--idle)}
+.night .stage .mon.flee{animation:flee 1.4s ease-in forwards}
+@keyframes jelly{0%,100%{transform:scale(1,1)}20%{transform:scale(1.07,.93)}45%{transform:scale(.95,1.06) skewX(-2deg)}70%{transform:scale(1.04,.96) skewX(1.5deg)}85%{transform:scale(.99,1.02)}}
+@keyframes fluff{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-6%) rotate(2.5deg) scale(1.03,.98)}}
+@keyframes gunya{0%{scale:1.32 .64;translate:10px 0;filter:brightness(2.6) saturate(.4) drop-shadow(0 6px 6px rgba(0,0,0,.45))}25%{scale:.84 1.2;translate:-4px 0;filter:brightness(1) saturate(1) drop-shadow(0 6px 6px rgba(0,0,0,.45))}45%{scale:1.12 .9;translate:2px 0}65%{scale:.95 1.06}85%{scale:1.03 .98}100%{scale:1 1;translate:0 0}}
+@keyframes gunya2{0%{scale:1.5 .5;translate:16px 4px;filter:brightness(3) saturate(.3) drop-shadow(0 6px 6px rgba(0,0,0,.45))}20%{scale:.72 1.36;translate:-8px -6px;filter:brightness(1) saturate(1) drop-shadow(0 6px 6px rgba(0,0,0,.45))}38%{scale:1.24 .8;translate:4px 0}55%{scale:.9 1.1;translate:0 0}72%{scale:1.06 .95}88%{scale:.98 1.02}100%{scale:1 1}}
+@keyframes roar{30%{scale:1.16;translate:0 -6px;filter:brightness(1.35) drop-shadow(0 6px 6px rgba(0,0,0,.45))}60%{scale:.96;filter:brightness(1) drop-shadow(0 6px 6px rgba(0,0,0,.45))}}
+.fspark{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#ffd45a;box-shadow:0 0 6px 2px rgba(255,120,30,.9)}
+.fspark.w{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:#fff6d0;box-shadow:0 0 8px 3px rgba(255,170,60,.95)}
+.pillar{position:absolute;width:var(--pw);height:var(--ph);margin-left:calc(var(--pw) / -2);translate:0 -100%;transform-origin:50% 100%;border-radius:50% 50% 30% 30% / 78% 78% 22% 22%;
+background:radial-gradient(50% 36% at 50% 94%,#fff 0,#fff2b0 26%,transparent 62%),linear-gradient(transparent,rgba(255,90,20,.55) 28%,#ff7a24 62%,#ffd45a 90%);
+animation:pillar .9s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes pillar{0%{transform:scale(.5,.08);opacity:0}18%{transform:scale(1,1.05);opacity:1}55%{transform:scale(.8,1);opacity:.9}100%{transform:scale(.25,1.25);opacity:0}}
+.steam{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:radial-gradient(circle,rgba(255,250,240,.85),rgba(230,220,210,.35) 55%,transparent 72%);opacity:0;animation:steam 1.1s ease-out both}
+@keyframes steam{0%{transform:scale(.4);opacity:0}20%{opacity:.9}100%{transform:translateY(-70px) scale(2.2);opacity:0}}
+.zudon.boh{font-size:36px;color:#fff0c0;-webkit-text-stroke-color:#8a2004}
+.fwall{position:absolute;overflow:hidden;pointer-events:none}
+.fw-flash{position:absolute;inset:0;background:radial-gradient(130% 95% at 50% 100%,rgba(255,200,90,.85),rgba(255,90,20,.55) 45%,rgba(120,20,4,.25) 75%,transparent 95%);animation:fwflash .75s ease-out forwards}
+@keyframes fwflash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+.fw-t{position:absolute;bottom:-4%;left:var(--x);width:34%;height:var(--h);translate:-50% 0;transform-origin:50% 100%;border-radius:50% 50% 34% 34% / 76% 76% 24% 24%;
+background:radial-gradient(48% 40% at 50% 90%,#fff8d8 0,#ffe27a 22%,transparent 55%),linear-gradient(transparent,rgba(255,80,20,.42) 25%,rgba(255,120,30,.72) 60%,rgba(255,194,58,.9) 92%);
+opacity:0;animation:fwt .9s var(--dl) cubic-bezier(.2,.8,.3,1) both}
+@keyframes fwt{0%{transform:scale(.6,.05);opacity:0}22%{transform:scale(1,1.05);opacity:.95}60%{transform:scale(.85,1);opacity:.8}100%{transform:scale(.3,1.2);opacity:0}}
+.fx-dmg{position:absolute;translate:-50% -50%;white-space:nowrap;font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;color:#fff3c0;-webkit-text-stroke:6px #7a1a04;paint-order:stroke fill;
+text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
+.fx-dmg.s-big{font-size:min(50px,12vw)}
+.fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
+@keyframes dmgfly{0%{opacity:0;transform:scale(2.8) rotate(-10deg)}16%{opacity:1;transform:scale(1) rotate(-4deg)}24%{transform:scale(1.12) rotate(-4deg)}32%{transform:scale(1) rotate(-4deg)}78%{opacity:1;transform:translateY(-20px) rotate(-4deg)}100%{opacity:0;transform:translateY(-38px) scale(.92) rotate(-4deg)}}
+@media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
 .stockline{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
 .stockline .fus{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .stockline img,.rm img{width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle}
@@ -1701,6 +1756,7 @@ const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
 lab.textContent = N.field ? HEAT[h] : `${HEAT[h]}（場なし）`;
 lab.className = 'heat-label h' + (N.field ? h : 0);
 const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
+heatFx(N.field ? h : 0);   // 鉄板の炎（battle-fx.js）
 }
 function updTile(i, cid, cook) {
 const slot = document.querySelector(`.tslot[data-w="board"][data-i="${i}"]`); if (!slot) return null;
@@ -1723,26 +1779,27 @@ const tick = now => { const t = Math.min(1, (now - t0) / ms), v = from + (to - f
 requestAnimationFrame(tick);
 }
 function hitFx(dmg, q) {
-const st = $('stage'), fl = $('floats'), mon = $('mon'), chef = $('chef');
+const chef = $('chef'), a = spot(chef), b = spot($('mon'));
 replay(chef, 'act');
-const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(300);
-const land = () => { replay(mon, 'hit'); floatAt(fl, fmt(dmg), 'dmg ' + size); if (size) replay(st, size === 'huge' ? 'quake2' : 'quake'); decoReact(size ? 'jump' : 'hop', size ? 800 : 500); if (size) decoChibi('cheer', 1400); };
-if (REDUCED || !st || !fl || !mon || !chef || !st.animate) return land();
-const S = st.getBoundingClientRect(), c = chef.getBoundingClientRect(), m = mon.getBoundingClientRect();
-const x0 = c.right - S.left - c.width * 0.18, y0 = c.top - S.top + c.height * 0.32, x1 = m.left - S.left + m.width * 0.45, y1 = m.top - S.top + m.height * 0.5;
-const add = (cls, x, y) => { const e = document.createElement('i'); e.className = cls; e.style.left = x + 'px'; e.style.top = y + 'px'; fl.appendChild(e); return e; };
-const ball = add('fx-ball' + (size ? ' big' : ''), x0, y0), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
-ball.animate([{ transform: `translate(0,0) rotate(${ang}deg) scale(.5)` }, { transform: `translate(${(x1 - x0) / 2}px,${(y1 - y0) / 2 - 22}px) rotate(${ang}deg) scale(1.15)`, offset: .5 }, { transform: `translate(${x1 - x0}px,${y1 - y0}px) rotate(${ang}deg) scale(1.3)` }],
-{ duration: fly, easing: 'ease-in', fill: 'forwards' });
+const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(size ? 380 : 320);
+const land = p => {
+monReact(size ? 'hitbig' : 'hit'); dmgNum(dmg, size, p);
+decoReact(size ? 'jump' : 'hop', size ? 800 : 500);
+if (size) decoChibi('cheer', 1400);
+if (size === 'huge') fireWall(); else if (size) replay($('stage'), 'quake');
+};
+if (REDUCED || !a || !b || !document.body.animate) return land(b);
+const L = fxLayer(), x0 = a.x + a.w * .32, y0 = a.y - a.h * .18, x1 = b.x - b.w * .05, y1 = b.y;
+const at = t => { const u = t * t; return { x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u - 88 * u * (1 - u) }; };   // ゆっくり出て速くなる・少し弧をえがく
+const ball = document.createElement('i'), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+ball.className = 'fx-ball' + (size ? ' s-' + size : ''); ball.style.left = x0 + 'px'; ball.style.top = y0 + 'px'; L.appendChild(ball);
+ball.animate([...Array(9)].map((_, k) => { const t = k / 8, p = at(t); return { transform: `translate(${p.x - x0}px,${p.y - y0}px) rotate(${ang}deg) scale(${.55 + .85 * t})` }; }), { duration: fly, fill: 'forwards' });
+for (let k = 1; k < 8; k++) setTimeout(() => sparkBurst({ ...at(k / 8), w: 8 }, size ? 3 : 2, 'all', .35), fly * k / 8);
 setTimeout(() => {
-ball.remove(); land();
-const h = add('fx-hit' + (size ? ' big' : ''), x1, y1); setTimeout(() => h.remove(), 460);
-for (let i = 0, n = size ? 16 : 9; i < n; i++) {
-const sp = add('fx-spark', x1, y1), a = Math.random() * Math.PI * 2, r = 30 + Math.random() * (size ? 74 : 42);
-sp.animate([{ transform: 'translate(0,0) rotate(45deg)', opacity: 1 }, { transform: `translate(${Math.cos(a) * r}px,${Math.sin(a) * r + 14}px) rotate(225deg) scale(.3)`, opacity: 0 }],
-{ duration: 380 + Math.random() * 200, easing: 'cubic-bezier(.15,.8,.3,1)', fill: 'forwards' });
-setTimeout(() => sp.remove(), 620);
-}
+ball.remove(); land({ x: x1, y: y1 });
+const h = document.createElement('i'); h.className = 'fx-hit' + (size ? ' s-' + size : ''); h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
+L.appendChild(h); setTimeout(() => h.remove(), 520);
+sparkBurst({ x: x1, y: y1, w: 20 }, size === 'huge' ? 34 : size ? 24 : 14, 'all', size === 'huge' ? 2.3 : size ? 1.7 : 1.15);
 }, fly);
 }
 function shopOut(done) {
@@ -1758,7 +1815,7 @@ const ms = T(1450), el = document.createElement('div');
 el.className = 'bintro'; el.style.setProperty('--bd', ms + 'ms');
 el.innerHTML = `<i class="bi-band"></i><p class="bi-r">ラウンド <b>${N.round}</b> / ${ROUNDS}</p><p class="bi-t">バトル！</p><p class="bi-q">ノルマ <b>${fmt(q)}</b></p>`;
 st.appendChild(el);
-replay($('mon'), 'roar'); decoReact('scare', 600); setTimeout(() => replay($('chef'), 'act'), T(300));
+monReact('roar'); decoReact('scare', 600); setTimeout(() => replay($('chef'), 'act'), T(300));
 setTimeout(() => { el.remove(); done(); }, ms);
 }
 function showEvent(e, run, q) {
@@ -1770,7 +1827,7 @@ replay($('stage'), 'sizzle'); replay(document.querySelector('.tiles'), 'bakefx')
 const t0 = 420, gap = 260;
 e.list.forEach((x, n) => setTimeout(() => {
 const card = updTile(x.i, x.cid, x.burnt ? undefined : x.to), slot = card && card.parentNode;
-if (card) replay(card, 'sear');
+if (card) { replay(card, 'sear'); sparkBurst(card, 6, 'up', .6); }
 if (x.burnt) burntFx(slot);
 else floatAt(slot, x.to >= COOK_MAX ? 'サイコー！' : `焼き+${x.to - x.from}`, x.to >= COOK_MAX ? 'best' : 'cookup');
 }, T(t0 + n * gap)));
@@ -2031,7 +2088,7 @@ body = `<div class="panel end ${T.beaten ? 'win' : ''}"><h2>${T.beaten ? '撃退
 </div><button class="big" data-act="toMorning">朝の仕込みへ</button>`;
 } else {
 const shop = N.stage === 'shop';
-body = `<div class="tiles"><button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
+body = `<div class="tiles" data-z="${N.field ? N.heat : 0}">${boardFireHTML()}<button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
 `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
 <div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}</div>
 <div class="bar">${barHTML()}</div>
@@ -2041,8 +2098,8 @@ const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundE
 $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}">
 <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0"${ART['bg-night'] ? ` style="--bgimg:url('${ART['bg-night']}')"` : ''}>${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
 ${heroImg(N.stage === 'end' ? (S.today.beaten ? 'joy' : 'surprise') : 'battle')}
-<img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
-<i class="smoke" id="smoke"></i>${decoHTML(N.stage === 'end' ? (S.today.beaten ? 'win' : 'battle') : N.stage === 'shop' && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
+<img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" data-idle="${monIdle(mon.id)}" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
+${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(N.stage === 'end' ? (S.today.beaten ? 'win' : 'battle') : N.stage === 'shop' && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">スコア <b id="score">${fmt(N.score)}</b></span></div>
 <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div>
 ${N.stage === 'shop' && !fighting ? shopHTML() : ''}</div>
@@ -2066,7 +2123,7 @@ if (slot) slot.classList.add('lift');
 setTimeout(() => { slamFx(card); if (slot) slot.classList.remove('lift'); }, T(dur * .78));
 return 1250;
 }
-if (star === 2) setTimeout(() => ringAt(card, 'r-gold'), T(dur * .3));
+setTimeout(() => { if (star === 2) ringAt(card, 'r-gold'); sparkBurst(card, star === 2 ? 14 : 8, 'up', star === 2 ? 1.1 : .75); }, T(dur * .3));
 return star === 2 ? 560 : 400;
 }
 function slamFx(card) {
@@ -2088,6 +2145,7 @@ setTimeout(() => s.remove(), T(720));
 const t = document.createElement('b'); t.className = 'zudon'; t.textContent = 'ズドン！';
 t.style.left = p.x + 'px'; t.style.top = (p.y - p.h * .9) + 'px'; L.appendChild(t);
 setTimeout(() => t.remove(), T(900));
+sparkBurst(p, 26, 'up', 1.8); fireWall();
 decoReact('jump', 600);
 }
 function fxLayer() { let l = $('fxl'); if (!l) { l = document.createElement('div'); l.id = 'fxl'; document.body.appendChild(l); } return l; }
@@ -2095,7 +2153,7 @@ function spot(x) {
 const el = typeof x === 'number' ? (tslot(x) && (tslot(x).querySelector('.pc') || tslot(x))) : x === 'heat' ? $('heatBar') : x === 'score' ? $('score') : x;
 if (!el || !el.getBoundingClientRect) return null;
 const r = el.getBoundingClientRect();
-return { el, x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height };
+return { el, x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height };
 }
 function ringAt(el, cls) {
 const p = spot(el); if (!p || REDUCED) return;
@@ -2196,6 +2254,100 @@ function decoReact(kind, ms = 700) {
 const d = $('deco'); if (!d || REDUCED) return;
 d.classList.remove('hop', 'jump', 'scare'); void d.offsetWidth; d.classList.add(kind);
 clearTimeout(decoT); decoT = setTimeout(() => d.classList.remove(kind), ms);
+}
+const prng = seed => () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+let fireCache = '', emberCache = '';
+function boardFireHTML() {
+if (fireCache) return fireCache;
+const r = prng(7); let f = '', s = '';
+for (let k = 0; k < 14; k++) {
+const x = Math.floor(k / 2) / 6 * 100 + (k % 2 ? 2.4 : -2.4);   // 7つのすきま（左右のふち・マスのあいだ）に2本ずつ
+f += `<i class="tf${k % 3 === 1 ? ' x' : ''}" style="--x:${Math.max(1, Math.min(99, x)).toFixed(1)}%;--d:${(.8 + r() * .6).toFixed(2)}s;--k:${r().toFixed(2)};--w:${(24 + r() * 18).toFixed(0)}px"></i>`;
+}
+for (let k = 0; k < 8; k++) s += `<i class="tsp" style="--x:${(5 + r() * 90).toFixed(1)}%;--d:${(1.3 + r() * 1.1).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 44).toFixed(0)}px"></i>`;
+return (fireCache = `<i class="tglow" aria-hidden="true"></i><span class="tfire" aria-hidden="true">${f}</span><span class="tsparks" aria-hidden="true">${s}</span>`);
+}
+function embersHTML() {
+if (emberCache) return emberCache;
+const r = prng(23); let e = '';
+for (let k = 0; k < 14; k++) e += `<i style="--x:${(4 + r() * 92).toFixed(1)}%;--d:${(2.4 + r() * 2.2).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 70).toFixed(0)}px;--s:${(.6 + r() * .9).toFixed(2)}"></i>`;
+return (emberCache = `<span class="embers" aria-hidden="true">${e}</span>`);
+}
+let heatWas = null;
+function heatFx(z) {
+const t = document.querySelector('.tiles'); if (!t) return;
+const was = heatWas && heatWas.day === S.day ? heatWas.z : null;
+heatWas = { day: S.day, z }; t.dataset.z = z;
+if (was == null || z === was || REDUCED) return;
+if (z > was) { replay(t, 'heatup'); pillars(t, was === 0 ? 6 : Math.min(6, (z - was) * 2 + 1), was === 0); }
+else { replay(t, 'heatdn'); steam(t); }
+}
+function pillars(t, n, boom) {
+if (!document.body.animate) return;
+const L = fxLayer(), slots = [...t.querySelectorAll('.tslot')], ks = [...slots.keys()].sort(() => Math.random() - .5).slice(0, n);
+ks.forEach((k, j) => setTimeout(() => {
+const s = slots[k].getBoundingClientRect(), p = document.createElement('i');
+p.className = 'pillar' + (boom ? ' boom' : '');
+p.style.left = s.left + s.width / 2 + 'px'; p.style.top = s.bottom + 'px';
+p.style.setProperty('--pw', s.width * 1.15 + 'px'); p.style.setProperty('--ph', Math.min(innerHeight * .5, s.height * (1.8 + Math.random() * .9) + (boom ? 50 : 0)) + 'px');
+L.appendChild(p); setTimeout(() => p.remove(), 950);
+}, T(j * 55)));
+sparkBurst(t, boom ? 26 : 14, 'up', boom ? 1.6 : 1.2);
+if (boom) {
+const r = t.getBoundingClientRect(), b = document.createElement('b');
+b.className = 'zudon boh'; b.textContent = 'ボッ！'; b.style.left = r.left + r.width / 2 + 'px'; b.style.top = r.top - 30 + 'px';
+L.appendChild(b); setTimeout(() => b.remove(), 900);
+}
+}
+function steam(t) {
+const L = fxLayer(), r = t.getBoundingClientRect();
+for (let k = 0; k < 7; k++) {
+const s = document.createElement('i'); s.className = 'steam';
+s.style.left = r.left + r.width * (.1 + k * .13) + 'px'; s.style.top = r.top + r.height * .35 + 'px'; s.style.animationDelay = k * 45 + 'ms';
+L.appendChild(s); setTimeout(() => s.remove(), 1300);
+}
+}
+function sparkBurst(at, n, mode, spread = 1) {
+const p = at && at.getBoundingClientRect ? spot(at) : at;
+if (!p || REDUCED || !document.body.animate) return;
+const L = fxLayer();
+for (let k = 0; k < n; k++) {
+const s = document.createElement('i'); s.className = 'fspark' + (k % 3 ? '' : ' w');
+s.style.left = p.x + (Math.random() - .5) * (p.w || 30) * .8 + 'px'; s.style.top = p.y + 'px';
+L.appendChild(s);
+const a = mode === 'up' ? -Math.PI / 2 + (Math.random() - .5) * 1.5 : Math.random() * Math.PI * 2, d = (36 + Math.random() * 80) * spread;
+const dx = Math.cos(a) * d, dy = Math.sin(a) * d, ms = T(480 + Math.random() * 420);
+s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${dx * .75}px,${dy * .75}px) scale(.9)`, opacity: 1, offset: .5 },
+{ transform: `translate(${dx}px,${dy + 34}px) scale(.2)`, opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.15,.8,.35,1)', fill: 'forwards' });
+setTimeout(() => s.remove(), ms + 30);
+}
+}
+function fireWall() {
+const nt = document.querySelector('.night'); if (!nt || REDUCED) return;
+replay(nt, 'quake2');
+const r = nt.getBoundingClientRect(), w = document.createElement('div'), n = 11;
+w.className = 'fwall';
+Object.assign(w.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+let h = '<i class="fw-flash"></i>';
+for (let k = 0; k < n; k++) h += `<i class="fw-t" style="--x:${((k + .5) / n * 100 + (Math.random() - .5) * 6).toFixed(1)}%;--h:${(46 + Math.random() * 34).toFixed(0)}%;--dl:${Math.round(Math.random() * 140)}ms"></i>`;
+w.innerHTML = h; fxLayer().appendChild(w);
+setTimeout(() => w.remove(), 1150);
+}
+const MON_IDLE = { hitsuji: 'fluff' };
+const monIdle = id => MON_IDLE[id] || 'jelly';
+function monReact(cls) {
+const m = $('mon'); if (!m) return;
+m.classList.remove('hit', 'hitbig', 'roar'); void m.offsetWidth; m.classList.add(cls);
+clearTimeout(m._rt); m._rt = setTimeout(() => m.classList.remove(cls), 800);
+}
+function dmgNum(dmg, size, p) {
+const nt = document.querySelector('.night'), R = nt ? nt.getBoundingClientRect() : { left: 0, width: innerWidth, top: 0 };
+const e = document.createElement('b'); e.className = 'fx-dmg' + (size ? ' s-' + size : ''); e.textContent = fmt(dmg);
+fxLayer().appendChild(e);
+const w = e.offsetWidth, x = p ? p.x : R.left + R.width / 2;
+e.style.left = Math.max(R.left + w / 2 + 6, Math.min(R.left + R.width - w / 2 - 6, x)) + 'px';
+e.style.top = Math.max(R.top + 30, (p ? p.y : R.top + 120) - (size ? 46 : 34)) + 'px';
+setTimeout(() => e.remove(), 1100);
 }
 
 /* src/js/drag.js */

@@ -12,6 +12,7 @@ function setHeat(h) {
   lab.textContent = N.field ? HEAT[h] : `${HEAT[h]}（場なし）`;
   lab.className = 'heat-label h' + (N.field ? h : 0);
   const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
+  heatFx(N.field ? h : 0);   // 鉄板の炎（battle-fx.js）
 }
 /* タイル1つを描きなおす（焼き加減・焦げ） */
 function updTile(i, cid, cook) {
@@ -35,28 +36,30 @@ function countUp(el, from, to, ms, f = fmt) {
   const tick = now => { const t = Math.min(1, (now - t0) / ms), v = from + (to - from) * (1 - Math.pow(1 - t, 3)); el.textContent = f(Math.floor(v)); if (t < 1) requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
 }
-/* バトルの一撃：ほのかの手から火の玉 → モンスターに当たって光の輪と火花 → 大きな数字。ノルマにくらべて大きいほど派手に（big・huge） */
+/* バトルの一撃：ほのかの手から火の玉（火の粉の尾）→ モンスターに当たってぐにゃっ・光の輪と火花 → 大きな数字
+   ぜんぶ画面の上の層 #fxl に出す（額縁の外へはみ出す）。ノルマにくらべて大きいほど派手に（big＝舞台がゆれる・huge＝画面いっぱいの炎） */
 function hitFx(dmg, q) {
-  const st = $('stage'), fl = $('floats'), mon = $('mon'), chef = $('chef');
+  const chef = $('chef'), a = spot(chef), b = spot($('mon'));
   replay(chef, 'act');
-  const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(300);
-  const land = () => { replay(mon, 'hit'); floatAt(fl, fmt(dmg), 'dmg ' + size); if (size) replay(st, size === 'huge' ? 'quake2' : 'quake'); decoReact(size ? 'jump' : 'hop', size ? 800 : 500); if (size) decoChibi('cheer', 1400); };
-  if (REDUCED || !st || !fl || !mon || !chef || !st.animate) return land();
-  const S = st.getBoundingClientRect(), c = chef.getBoundingClientRect(), m = mon.getBoundingClientRect();
-  const x0 = c.right - S.left - c.width * 0.18, y0 = c.top - S.top + c.height * 0.32, x1 = m.left - S.left + m.width * 0.45, y1 = m.top - S.top + m.height * 0.5;
-  const add = (cls, x, y) => { const e = document.createElement('i'); e.className = cls; e.style.left = x + 'px'; e.style.top = y + 'px'; fl.appendChild(e); return e; };
-  const ball = add('fx-ball' + (size ? ' big' : ''), x0, y0), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
-  ball.animate([{ transform: `translate(0,0) rotate(${ang}deg) scale(.5)` }, { transform: `translate(${(x1 - x0) / 2}px,${(y1 - y0) / 2 - 22}px) rotate(${ang}deg) scale(1.15)`, offset: .5 }, { transform: `translate(${x1 - x0}px,${y1 - y0}px) rotate(${ang}deg) scale(1.3)` }],
-    { duration: fly, easing: 'ease-in', fill: 'forwards' });
+  const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(size ? 380 : 320);
+  const land = p => {
+    monReact(size ? 'hitbig' : 'hit'); dmgNum(dmg, size, p);
+    decoReact(size ? 'jump' : 'hop', size ? 800 : 500);
+    if (size) decoChibi('cheer', 1400);
+    if (size === 'huge') fireWall(); else if (size) replay($('stage'), 'quake');
+  };
+  if (REDUCED || !a || !b || !document.body.animate) return land(b);
+  const L = fxLayer(), x0 = a.x + a.w * .32, y0 = a.y - a.h * .18, x1 = b.x - b.w * .05, y1 = b.y;
+  const at = t => { const u = t * t; return { x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u - 88 * u * (1 - u) }; };   // ゆっくり出て速くなる・少し弧をえがく
+  const ball = document.createElement('i'), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+  ball.className = 'fx-ball' + (size ? ' s-' + size : ''); ball.style.left = x0 + 'px'; ball.style.top = y0 + 'px'; L.appendChild(ball);
+  ball.animate([...Array(9)].map((_, k) => { const t = k / 8, p = at(t); return { transform: `translate(${p.x - x0}px,${p.y - y0}px) rotate(${ang}deg) scale(${.55 + .85 * t})` }; }), { duration: fly, fill: 'forwards' });
+  for (let k = 1; k < 8; k++) setTimeout(() => sparkBurst({ ...at(k / 8), w: 8 }, size ? 3 : 2, 'all', .35), fly * k / 8);
   setTimeout(() => {
-    ball.remove(); land();
-    const h = add('fx-hit' + (size ? ' big' : ''), x1, y1); setTimeout(() => h.remove(), 460);
-    for (let i = 0, n = size ? 16 : 9; i < n; i++) {
-      const sp = add('fx-spark', x1, y1), a = Math.random() * Math.PI * 2, r = 30 + Math.random() * (size ? 74 : 42);
-      sp.animate([{ transform: 'translate(0,0) rotate(45deg)', opacity: 1 }, { transform: `translate(${Math.cos(a) * r}px,${Math.sin(a) * r + 14}px) rotate(225deg) scale(.3)`, opacity: 0 }],
-        { duration: 380 + Math.random() * 200, easing: 'cubic-bezier(.15,.8,.3,1)', fill: 'forwards' });
-      setTimeout(() => sp.remove(), 620);
-    }
+    ball.remove(); land({ x: x1, y: y1 });
+    const h = document.createElement('i'); h.className = 'fx-hit' + (size ? ' s-' + size : ''); h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
+    L.appendChild(h); setTimeout(() => h.remove(), 520);
+    sparkBurst({ x: x1, y: y1, w: 20 }, size === 'huge' ? 34 : size ? 24 : 14, 'all', size === 'huge' ? 2.3 : size ? 1.7 : 1.15);
   }, fly);
 }
 
@@ -76,7 +79,7 @@ function battleIntro(q, done) {
   el.className = 'bintro'; el.style.setProperty('--bd', ms + 'ms');
   el.innerHTML = `<i class="bi-band"></i><p class="bi-r">ラウンド <b>${N.round}</b> / ${ROUNDS}</p><p class="bi-t">バトル！</p><p class="bi-q">ノルマ <b>${fmt(q)}</b></p>`;
   st.appendChild(el);
-  replay($('mon'), 'roar'); decoReact('scare', 600); setTimeout(() => replay($('chef'), 'act'), T(300));
+  monReact('roar'); decoReact('scare', 600); setTimeout(() => replay($('chef'), 'act'), T(300));
   setTimeout(() => { el.remove(); done(); }, ms);
 }
 /* 3〜4. バトルの1こま。演出にかかる時間（ふつうの速さの ms）を返す
@@ -91,7 +94,7 @@ function showEvent(e, run, q) {
     const t0 = 420, gap = 260;
     e.list.forEach((x, n) => setTimeout(() => {
       const card = updTile(x.i, x.cid, x.burnt ? undefined : x.to), slot = card && card.parentNode;
-      if (card) replay(card, 'sear');
+      if (card) { replay(card, 'sear'); sparkBurst(card, 6, 'up', .6); }
       if (x.burnt) burntFx(slot);
       else floatAt(slot, x.to >= COOK_MAX ? 'サイコー！' : `焼き+${x.to - x.from}`, x.to >= COOK_MAX ? 'best' : 'cookup');
     }, T(t0 + n * gap)));
@@ -376,7 +379,7 @@ function renderNight() {
       </div><button class="big" data-act="toMorning">朝の仕込みへ</button>`;
   } else {
     const shop = N.stage === 'shop';
-    body = `<div class="tiles"><button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
+    body = `<div class="tiles" data-z="${N.field ? N.heat : 0}">${boardFireHTML()}<button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
         `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
       <div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}</div>
       <div class="bar">${barHTML()}</div>
@@ -386,8 +389,8 @@ function renderNight() {
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}">
     <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0"${ART['bg-night'] ? ` style="--bgimg:url('${ART['bg-night']}')"` : ''}>${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
       ${heroImg(N.stage === 'end' ? (S.today.beaten ? 'joy' : 'surprise') : 'battle')}
-      <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
-      <i class="smoke" id="smoke"></i>${decoHTML(N.stage === 'end' ? (S.today.beaten ? 'win' : 'battle') : N.stage === 'shop' && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
+      <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' && S.today.beaten ? ' flee' : ''}" id="mon" data-idle="${monIdle(mon.id)}" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
+      ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(N.stage === 'end' ? (S.today.beaten ? 'win' : 'battle') : N.stage === 'shop' && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">スコア <b id="score">${fmt(N.score)}</b></span></div>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div>
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}</div>
