@@ -358,3 +358,14 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .d-soroi.out{opacity:.45}
 .d-soroi.pop{animation:dSoroiPop .5s cubic-bezier(.3,1.6,.5,1) both}
 @keyframes dSoroiPop{0%{transform:scale(.3);opacity:0}100%{transform:none;opacity:1}}
+
+/* ==== 昼のお店のひとこと .d-say（11/19・day.js の dSay）：舞台の左下に小さく。顔は会話の立ち絵（ART）の上のほうを丸く切る
+   ずっと動くものなし（出るときと消えるときだけ・opacity と transform） ==== */
+.d-say{position:absolute;left:8px;bottom:8px;z-index:6;margin:0;display:flex;align-items:center;gap:6px;max-width:calc(100% - 16px);padding:4px 12px 4px 4px;border-radius:20px;background:rgba(255,248,236,.95);border:2px solid #5a3418;box-shadow:0 3px 0 rgba(42,20,8,.35);color:var(--ink);font-size:12px;font-weight:700;line-height:1.35;pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}
+.d-say.show{opacity:1;transform:none}
+.d-say .ds-av{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid #5a3418;background:var(--av,none) 50% 6%/300% auto no-repeat,#fbe3c8}
+.d-say b{flex:none;align-self:flex-start;margin-top:1px;padding:0 6px;border-radius:6px;font-size:10px;color:#fff;background:#d4547a}
+.d-say[data-who="minamo"] b{background:#3d8f88}
+.d-say[data-who="wakaba"] b{background:#5f9a3a}
+.d-say span{min-width:0}
+@media (prefers-reduced-motion:reduce){.d-say{transition:none}}
