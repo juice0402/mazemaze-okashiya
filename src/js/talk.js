@@ -15,7 +15,7 @@ const TALKERS = {
     やる気: 'honoka-yaruki', あちゃー: 'honoka-achaa', 不安: 'honoka-fuan', くやしい: 'honoka-kuyashii', わくわく: 'honoka-wakuwaku',
     うっとり: 'honoka-uttori', 考える: 'honoka-kangaeru', 感動: 'honoka-kandou', ドヤ: 'honoka-doya',
   } },
-  minamo: { name: 'みなも', side: 'r', faces: {} },
+  minamo: { name: 'みなも', side: 'r', faces: { ふつう: 'minamo' } },   // 表情は minamo-poses が届いたら足す（すまし・ジト目・ためいき・照れ・真剣・びっくり・そっぽ・考える・しょんぼり）
   wakaba: { name: 'わかば', side: 'r', faces: {} },
   kodomo: { name: '妖精の子', side: 'r', faces: {} },
   slime: { name: 'スライム', side: 'r', mon: 'slime' },
