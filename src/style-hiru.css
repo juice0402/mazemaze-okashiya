@@ -26,12 +26,12 @@
 .m-made .hico{width:52px;height:52px}
 .mm-nm{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
 .mm-flash{position:absolute;left:50%;top:-14px;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;font-family:var(--disp);font-size:12px;color:#3a1c08;background:linear-gradient(var(--brass-hi),var(--gold));border:1.5px solid var(--brass-lo);border-radius:999px;padding:1px 10px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
-/* 仕入れ：夜のショップ .shopov（日よけ・木の板）の中に、素材とお店のタブ */
+/* 仕入れ：夜のショップ .shopov（日よけ）の形で、市場と雑貨屋のタブ（共通の .tab）。背景は市場＝外の朝市 bg-market・雑貨屋＝店の中 bg-zakka。仕入れのあいだは棚をかくしてショップを広く（.morning.shopping） */
 .mshop{padding:26px 10px 10px;gap:6px}
-.ms-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.ms-tabs{display:flex;gap:6px}
-.mshop .pill{padding:4px 14px;font-size:13px;opacity:.7}
-.mshop .pill.on{opacity:1;background:linear-gradient(var(--brass-hi),var(--gold));color:#3a1c08}
+.shopov.mshop.ms-bg{background:linear-gradient(rgba(36,16,6,.58),rgba(36,16,6,.1) 28%,rgba(36,16,6,.1) 72%,rgba(36,16,6,.72)),var(--msbg) 50% 50%/cover no-repeat,#5a3824}
+.morning.shopping .mshelf{display:none}
+.ms-top{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.ms-tabs{display:flex;gap:8px}
 .ms-wallet{font-size:12px;color:var(--milk);white-space:nowrap}
 .ms-wallet b{font-family:var(--disp);font-weight:400;font-size:16px;color:var(--brass-hi)}
 .ms-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));align-content:start;gap:6px;overflow-y:auto}
