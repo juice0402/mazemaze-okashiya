@@ -31,6 +31,7 @@
 | src/data/hiru.js | 朝と昼の数字（昼のチャット）：朝昼の素材 HIRU_MATS・レシピ表 HIRU_RECIPES・モンスター素材のことば MON_WORD・お菓子 candyOf・棚 kanbanSlot（看板の枠はまんなか）・昼のお客さん custCount/custPlan・すきな味 CUST_LIKES・グッズ GOODS・評判のびん REP_JAR | |
 | assets/art/ | ハイグラの絵（webp）。ビルドが名前→dataURL の表 ART にして埋めこむ。もとの PNG は main に置かない（11/18 までの分は枝 art-raw・取り出し方は docs/ART.md）。一覧は docs/ART.md | |
 | tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL）。parts＝UI のシートを部品ごとに切る | |
+| tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
 | .ignore | 検索（ripgrep）から index.html・assets/ を外す（1行が大きすぎるため） | |
 | src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
