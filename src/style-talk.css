@@ -13,7 +13,7 @@
 .tk-p:empty{display:none}
 .tk-p.l{left:-6%}
 .tk-p.r{right:-6%}
-.tk-p img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 10px rgba(30,10,0,.5))}
+.tk-p img{position:absolute;top:0;left:0;display:block;width:100%;height:auto;filter:drop-shadow(0 4px 10px rgba(30,10,0,.5))}   /* 11/18 H-010 の6：iPad の Safari で箱が全身の高さにのびて足だけ見えた → 絵は箱の大きさに入れない */
 .tk-p.flip img{transform:scaleX(-1)}
 .tk-p.mon{width:62%;aspect-ratio:1;bottom:4%}
 .tk-p.mon img{height:100%;object-fit:contain;object-position:50% 100%}

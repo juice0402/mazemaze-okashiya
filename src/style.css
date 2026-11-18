@@ -692,3 +692,7 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 .sh-roll small{display:inline-flex;align-items:center;gap:3px;margin-left:2px}
 .sh-roll .cn{flex:none;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 1px #5a2a04}
 .sh-price{top:calc(100% + 6px);bottom:auto}
+
+/* 共通の部品：ギンガムの布（11/18 H-010 の7。前の夜の手札の布。朝の倉庫などで class="gingham" をつけて使う） */
+.gingham{position:relative;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
+.gingham::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}

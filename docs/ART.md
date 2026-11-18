@@ -38,7 +38,7 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/customers2.md`：お客さん4人の うれしい（すきな味があった）・ざんねん を、cust-* のもとの絵から編集で。名前は `cust-<id>-happy`・`cust-<id>-sad`（id＝kodomo・gakusei・otona・obaachan・`prep_art.py one … 480`。昼の custHTML がそのまま出す）
+- （いまはなし）
 
 ## これから頼む絵
 - ★3：クッキー以外の形の「○○タワー」（サブレ・カステラ・ショコラ・ドロップ・ゼリー・シュー）と、ちがう形どうしの★3（いまはコードで描いた仮の絵）
@@ -54,3 +54,4 @@
 | honoka-yaruki・honoka-achaa・honoka-fuan・honoka-kuyashii・honoka-wakuwaku・honoka-uttori・honoka-kangaeru・honoka-kandou・honoka-doya（ほのかの立ち絵：やる気・あちゃー・不安・くやしい・わくわく・うっとり・考える・感動・ドヤ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/honoka-poses.md`（step1〜9）・`prep_art.py box … 760 162,4,830,1528`（元の絵 honoka と同じ四角で切る） | 会話の部品の立ち絵（talk.js の TALKERS） |
 | bg-day・bg-morning・bg-shop-out（昼のお店の中・朝のキッチン・お店の外） | A | Codex | 2026-11-18 | art-irai `requests/okashi/bg2.md`（step1〜3）・`prep_art.py bg`（16:9 の横960） | 昼と朝の画面（昼のチャット）・プロローグ（看板の字はコードで重ねる） |
 | cust-kodomo・cust-gakusei・cust-otona・cust-obaachan（お客さん：こども・学生さん・おとなの人・おばあちゃんの正面・胸から上・ふつう） | A | Codex | 2026-11-18 | art-irai `requests/okashi/customers1.md`（step1〜4・PR #43）・`prep_art.py one … 480`（4まいとも高さ480。こどもを小さく見せるのはコードで） | 昼のカウンターの前のお客さん（昼のチャット）・会話の部品（こどもは⑬） |
+| cust-<id>-happy・cust-<id>-sad（お客さん4人の うれしい・ざんねん。id＝kodomo・gakusei・otona・obaachan） | A | Codex | 2026-11-18 | art-irai `requests/okashi/customers2.md`（step1〜8・PR #45・cust-* のもとの絵から編集）・`prep_art.py one … 480`（ふつうの絵と同じ大きさ） | 昼のお客さん（すきな味があった・なかった） |

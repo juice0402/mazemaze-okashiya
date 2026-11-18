@@ -22,6 +22,7 @@
 ## パネル・ならべ方・お知らせ
 - `<div class="panel"><h2>見出し</h2><p>…</p></div>`（木の板・見出しは金の Dela Gothic One）。小さめは `panel tight`
 - 横ならび `class="row"`（2つを同じ幅で `row two`）・うすい字 `class="muted"`・小さい説明 `class="hint"`
+- ギンガムの布（前の夜の手札の布・11/18）：`class="gingham"`（いちごのしましまの布・内側に点線。大きさ・並べ方は使う側で）
 - お知らせ：`toast('…')`（画面の上にしばらく出る）
 - 数字は `fmt(n)`（3けた区切り）。文字を HTML に入れるときは `esc(t)`
 
