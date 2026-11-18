@@ -110,6 +110,7 @@ function dayStep(R, dt) {
   const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / DAY_MS).toFixed(3));   // 外の明るさ（ゲージのかわり）
   if (R.cur) return visitStep(R, dt);
   if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
+  if (R.i >= 1 && !R.mated) { const m = dMateDue(); if (m) return dMateVisit(R, m); }
   if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }
   else if (R.t >= DAY_MS) closeDay();
 }
@@ -131,6 +132,27 @@ function visitStep(R, dt) {
   } else if (v.step === 3 && v.t >= V_END) {
     R.cur = null; const el = custEl(); if (el) el.remove(); save();
   }
+}
+/* ---------- ⑧⑫ 仲間の来店（11/19）：レアの素材のお菓子が棚にあると、1人目のお客さんのあとに来る（1日に1人まで）
+   会話のあいだは営業も止まる（dayLoop は talking() のあいだ進めない）。来たらそのお菓子を1こ買ってハート・S.seen['mate:<id>'] に その日
+   昼の舞台に2人の絵は出さない（会話の窓の立ち絵だけ・カウンターに3人ならぶのは絵が来てから） */
+const D_MATES = [['minamo', 'niji'], ['wakaba', 'minto']];
+function dMateDue() {
+  for (const [id, mat] of D_MATES) {
+    if (STORY.mateDay(id)) continue;
+    const it = S.shelf.find(s => s.n > 0 && candyHas(s.key, mat));
+    if (it) return { id, key: it.key };
+  }
+  return null;
+}
+function dMateVisit(R, m) {
+  R.mated = 1;
+  const T = S.today, it = S.shelf.find(s => s.key === m.key), price = candyOf(m.key).price;
+  it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
+  if (it.n <= 0 && it.key === T.kanban) T.kanbanSoldOut = true;
+  S.seen['mate:' + m.id] = S.day; save();
+  const cs = $('dCase'); if (cs) cs.innerHTML = caseHTML(false);
+  talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); });
 }
 /* 買う：すきな素材が入ったお菓子（看板が先・なければ高いほう）→ ハート。なければ OTHER_BUY の人がほかのを1こ */
 function serve(v) {
