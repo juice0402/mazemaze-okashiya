@@ -1,6 +1,6 @@
 /* ==== 夜のバトルの画面：舞台（ほのか・モンスター・鉄板の火力の光）・調理台（左にフィールドの「場」＋アイコンのタイル5つを1行・左から順）・仕入れ・下のボタン列
    生地のタイルには焼き加減のメーター（9段階・9でサイコー）
-   バトル中は、タイル行のすぐ下に発動したカードの説明を出す（手札の上にかぶせる）
+   バトル中は、舞台の下のほう（調理台のすぐ上）に発動したカードの説明を出す（11/18 手札をなくした）
    カードはタップでえらぶ → 光る行き先をタップで置く・うごかす・まぜる（まぜる前に、できるカードを見せる）。えらんだカードをもう1回タップで大きく見る ==== */
 const ORD = ['①', '②', '③', '④', '⑤'];
 
@@ -149,7 +149,7 @@ function chipStep(e, ch, prev, num) {
   if (ch.dataset.src) auraIn(e, ch.dataset.src.split(',').map(Number), ch.dataset.k);
   if (ch.dataset.out != null) auraOut(e, e.out[+ch.dataset.out]);
 }
-/* 下のパネル（手札の所にかぶせる）：左にカード・名前・計算の札・右に大きなダメージ。--x は指す場所（「場」が0） */
+/* 説明のパネル（舞台の下にかぶせる・下向きの矢印でマスを指す）：左にカード・名前・計算の札・右に大きなダメージ。--x は指す場所（「場」が0） */
 const tileX = j => `--x:${(j + .5) / (SLOTS + 1) * 100}%`;
 const fchip = (op, v, label, cls = '', data = '') => `<span class="f-chip ${cls}"${data}><b>${op}${fmtMul(v)}</b><small>${label}</small></span>`;
 /* 札のデータ：v＝この札のあとの数字・p＝前の数字・src＝効果の元のマス（k は種類）・out＝飛ばす先（e.out の番号） */
@@ -209,14 +209,14 @@ function cutIn(cid, sub) {
 
 /* まぜる演出（約1.5秒）：まわりが暗く → 2枚がシュッと飛び出して、まんなかで止まって（ヒットストップ）ガキーン → 火花・光 → できたカードがくるっと出て名前の札 → マスへ。終わったら done */
 function cardSpot(p) {
-  const el = document.querySelector(p.where === 'board' ? `.tslot[data-w="board"][data-i="${p.i}"] .pc` : `.handcard[data-w="${p.where}"][data-i="${p.i}"] .pc`);
+  const el = document.querySelector(`[data-w="${p.where}"][data-i="${p.i}"] .pc`);
   if (!el) return null;
   const r = el.getBoundingClientRect();
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: el.offsetWidth };
 }
 const SPARK = ['#fff6d8', '#ffd45a', '#ff9a3c', '#ffe9a8', '#8fe0c0', '#ff8f6a'];
 function mixFx(from, ca, cb, cr, to, done) {
-  const tile = document.querySelector(to.where === 'board' ? `.tslot[data-w="board"][data-i="${to.i}"]` : `.handcard[data-w="held"][data-i="${to.i}"]`), tc = tile && tile.querySelector('.pc');
+  const tile = document.querySelector(`.tslot[data-w="board"][data-i="${to.i}"]`), tc = tile && tile.querySelector('.pc');
   const end = skip => { if (tc) { tc.style.visibility = ''; replay(tc, 'born'); } done(skip); };   // skip＝演出なしで終わった
   if (REDUCED || !from[0] || !from[1] || !tc || !tc.animate) return end(true);
   tc.style.visibility = 'hidden';
@@ -326,11 +326,11 @@ function viewerHTML() {
     const cid = N.shop[s.i]; if (!cid) return '';
     const d = cardDef(cid), free = N.round === 1;
     return box(cid, null, `<button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'もらう' : `買う <small>コイン${d.cost}</small>`}</button>`,
-      d.cat === 'field' ? 'ドラッグで「場」へ' : '買うと手札へ・ドラッグで調理台へ・かさねて まぜる');
+      d.cat === 'field' ? 'ドラッグで「場」へ' : '買うと左の空いているマスへ・ドラッグで好きなマスへ・かさねて まぜる');
   }
   if (s.where === 'field') return N.field ? box('b:' + N.field, null, sellBtn(), '新しいのを買うと入れかわる') : '';
   const c = cardAt(s); if (!c) return '';
-  return box(c.cid, c.cook, sellBtn(), s.where === 'held' ? `手持ち・${mixRule(cardDef(c.cid))}` : `${ORD[s.i]}番め・${mixRule(cardDef(c.cid))}`);
+  return box(c.cid, c.cook, sellBtn(), `${ORD[s.i]}番め・${mixRule(cardDef(c.cid))}`);
 }
 /* うる（1ラウンド目の★1は「もどす」＝無料の枠がもどる） */
 function sellLabel(d) { const v = sellValue(d); return v ? `うる <small>+${v}</small>` : 'もどす'; }
@@ -338,19 +338,12 @@ function sellBtn() {
   const s = N.sel, c = s.where === 'field' ? { cid: 'b:' + N.field } : cardAt(s);
   return `<button class="pill sub" data-act="sell">${sellLabel(cardDef(c.cid))}</button>`;
 }
-/* 手札：自分のカード（買った・まぜた。5まいまで）を扇形に。手札の空いている所は「手札へ」の行き先（data-w="hand"） */
-const mixesWithMine = (cid, skip) => mixesWithBoard(cid) || N.held.some((x, i) => i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
-function handHTML() {
-  const n = N.held.length;
-  return `<div class="hand${n ? '' : ' empty'}" data-drop data-w="hand" data-i="0" style="--n:${Math.max(n, 3)};--ov:${n >= 5 ? .14 : .08}">${n ? N.held.map((c, i) => `<button class="handcard" style="--k:${i + (3 - Math.min(n, 3)) / 2}" data-act="card" data-drag data-drop data-w="held" data-i="${i}">${cardMini(c.cid, { cook: c.cook })}${mixesWithMine(c.cid, i) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')
-    : '<p class="hand-empty">ショップで買ったカードが ここに入るよ</p>'}<span class="hand-n">手札 ${n}/${HELD_MAX}</span></div>`;
-}
 function barHTML() {
   if (fighting) return `<button class="pill sub spd${bSpeed > 1 ? ' on' : ''}" data-act="spd">${spdLabel()}</button>`;   // バトル中は、はやおくり
   return `<button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>おもてなし！</button>`;
 }
 /* ショップ：準備のあいだ、舞台にかぶせる（バトルのときはとじる）。3まい（1ラウンド目は無料の5まい）・コイン・有料の入れかえ・うる
-   カードはドラッグで手札・調理台へ（かさねると買いながら まぜる）。自分のカードをショップへ持ってくると うる */
+   カードはドラッグで調理台へ（かさねると買いながら まぜる）。調理台のカードをショップへ持ってくると うる */
 function shopHTML() {
   const r1 = N.round === 1, list = N.shop;
   const head = r1 ? `<span class="sh-free">むりょうで あと<b>${N.picks}</b>まい</span>`
@@ -359,7 +352,7 @@ function shopHTML() {
   return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
     <div class="sh-top"><b class="sh-ttl">ショップ</b>${head}</div>
     <div class="sh-cards">${list.map((cid, i) => cid
-      ? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid)}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithMine(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
+      ? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid)}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
       : '<span class="shcard sold"></span>').join('')}</div>
     <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
 }
@@ -367,7 +360,7 @@ function shopHTML() {
 /* ---------- 夜の画面 ---------- */
 function renderNight() {
   if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
-  N = S.night; N.held = N.held || [];
+  N = S.night;
   const mon = MONSTERS[N.mon], F = N.field ? FIELDS[N.field] : null;
   let body = '';
   const rec = S.today, after = N.stage === 'end' || N.stage === 'thanks', happy = after && rec.mood >= 2;
@@ -382,7 +375,6 @@ function renderNight() {
     const shop = N.stage === 'shop';
     body = `<div class="tiles" data-z="${N.field ? N.heat : 0}">${boardFireHTML()}<button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
         `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
-      <div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}</div>
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
   }
@@ -394,7 +386,7 @@ function renderNight() {
       ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div>
-      ${N.stage === 'shop' && !fighting ? shopHTML() : ''}</div>
+      ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'end' ? '' : '<div class="callout" id="callout"></div>'}</div>
     <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
     ${body}</section>`;
   setHeat(N.heat);

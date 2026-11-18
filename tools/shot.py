@@ -16,7 +16,7 @@ steps = args or ['shop']
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 BOARD = ("N.picks = 0; N.field = 'teppan'; N.heat = 3; N.board = [{ cid: 'm:ichiban', cook: 9 }, { cid: 'o:komugi+bata', cook: 5 }, "
          "{ cid: 's:komugi+komugi|komugi+komugi', cook: 0 }, { cid: 't:maki', cook: 0 }, { cid: 'm:tamago', cook: 0 }]; "
-         "N.held = [{ cid: 'm:sato', cook: 0 }, { cid: 'o:komugi+sato', cook: 2 }]; renderNight()")
+         "renderNight()")
 PANEL = ("const e = { type: 'act', cid: 'm:shime', i: 4, cook: 9, dmg: 3030, base: 180, parts: [['×', 3, '焼き加減'], ['×', 2, '次の主役', [2]]], fin: [2.25], out: [{ k: 'fin', v: 2.25 }] }; "
          "fighting = true; renderNight(); const co = $('callout'); co.innerHTML = actPanel(e, 2000); fitPanel(co); "
          "co.querySelectorAll('.f-chip').forEach(c => c.classList.add('in')); const n = co.querySelector('.bp-dmg'); n.classList.add('in', 'fin'); n.querySelector('b').textContent = fmt(e.dmg)")

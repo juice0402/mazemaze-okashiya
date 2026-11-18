@@ -1,13 +1,13 @@
 /* ==== 夜：来店した食材モンスターを9ラウンドでおもてなしする（ゼンゼロのオバケ屋敷の形が土台・仕様は claude/okashi-battle-spec.md） ====
    流れ（11/18 H-001）：来店の会話（stage arrive）→ ラウンド1〜9 → お礼の会話（thanks）→ 結果（end）→ 1日のまとめ。味パワーの合計で満足が決まり、素材とコインをくれる
-   1ラウンド：ショップ（舞台にかぶせる。毎回3枚・有料の入れかえ・コインで買う・うる）＋ 手札と調理台で並べる・まぜる → バトル（ショップがとじて舞台でバトル）
-   買ったカードは手札へ（5まいまで）。お金とコインはショップの中だけに出す（11/17 しょーくん「ゼンゼロのようにショップを挟む」）
+   1ラウンド：ショップ（舞台にかぶせる。毎回3枚・有料の入れかえ・コインで買う・うる）＋ 調理台で並べる・まぜる → バトル（ショップがとじて舞台でバトル）
+   買ったカードは調理台へ（手札はない・11/18）。調理台がいっぱいなら、まぜるか先にうる。お金とコインはショップの中だけに出す（11/17 しょーくん「ゼンゼロのようにショップを挟む」）
    バトル：はじめに「焼き」（フィールドがあれば、鉄板の生地がいっせいに火力のぶん焼ける）→ 左から順に発動
    生地は場に残り、ラウンドをまたいで焼けていく（9でサイコー・サイコーのまま焼かれると焦げる）
    鉄板の火力（N.heat 1〜4）はラウンドをまたいで残る。火力カードが発動すると変わり、次のラウンドの焼きに効く
    フィールドも仕入れから。買うと調理台の左の「場」に入る（1つだけ・置きかえOK）。ラウンド1だけ、5まいから3まい えらんで無料
    調理台5マス。画面は night-ui.js */
-const SLOTS = 5, HELD_MAX = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
+const SLOTS = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
 const START_HEAT = 2;           // 夜のはじめの鉄板（中火）
 /* バトルの速さ（11/18 しょーくん「一瞬すぎて何が起きているかわからない」）：ふつうはゆっくり見せて、はやおくり ×2 も選べる（この端末に覚える） */
@@ -32,7 +32,7 @@ function startNight() {
   S.night = {
     mon, field: null, heat: START_HEAT, call: false, stage: 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
-    held: [], sel: null, view: false, last: null,
+    sel: null, view: false, last: null,
   };
   N = S.night; rollShop(); dealAnim = true;
   save(); render();
@@ -47,8 +47,8 @@ function nightTalk() {
 function nightOk(n) {
   try {
     if (!n || n.board.length !== SLOTS || !Number.isFinite(n.heat)) return false;
-    if (!Array.isArray(n.held)) n.held = [];
-    for (const c of [...n.board, ...n.shop, ...n.held]) if (c) cardDef(typeof c === 'string' ? c : c.cid);
+    for (const c of [...n.board, ...n.shop, ...(n.held || [])]) if (c) cardDef(typeof c === 'string' ? c : c.cid);
+    if (n.held) { for (const c of n.held) { const k = n.board.indexOf(null); if (k >= 0) n.board[k] = c; } delete n.held; }   // 11/18 手札をなくした：前のセーブの手札は調理台の空きへ
     if (n.field && !FIELDS[n.field]) return false;
     return true;
   } catch (e) { return false; }
@@ -100,9 +100,9 @@ function payNg(n, cost) {
   return N.coins >= cost ? '' : 'コインがたりない';
 }
 function pay(n, cost) { if (!n) return; if (N.round === 1) N.picks -= n; else N.coins -= cost; }
-/* ショップのカードを買う。to が調理台のマスならそこへ、ほかは手札へ（フィールドは「場」へ） */
-const handFull = () => N.held.length >= HELD_MAX;
-const HAND_FULL = `手札がいっぱい（${HELD_MAX}まいまで）。うるか、まぜてから買おう`;
+/* ショップのカードを買う。to が調理台のマスならそこへ、ほかは左から空いているマスへ（フィールドは「場」へ）。11/18 しょーくん：手札はなくした（ショップ→調理台で完結） */
+const freeSlot = () => N.board.indexOf(null);
+const BOARD_FULL = '調理台がいっぱい。先にショップへうるか、まぜてから買おう';
 function buy(i, to) {
   const cid = N.shop[i]; if (!cid || busy || N.stage !== 'shop') return;
   const d = cardDef(cid), ng = payNg(1, d.cost);
@@ -110,23 +110,13 @@ function buy(i, to) {
   if (d.cat === 'field') {
     if (N.field) toast('フィールドを入れかえた');
     N.field = cid.slice(2); N.heat = FIELDS[N.field].start;
-  } else if (to && to.where === 'board') { if (!place(cid, to.i)) return; }
-  else if (handFull()) return toast(HAND_FULL);
-  else N.held.push(asCard(cid));
+  } else {
+    const at = to && to.where === 'board' ? to.i : freeSlot();
+    if (at < 0) return toast(BOARD_FULL);
+    if (!place(cid, at)) return;
+  }
   pay(1, d.cost); N.shop[i] = null; unsel();
   save(); renderNight();
-}
-/* 調理台のカードを手札にもどす */
-function takeBack(i) {
-  if (!N.board[i] || handFull()) return;
-  N.held.push(N.board[i]); N.board[i] = null; unsel(); save(); renderNight();
-}
-/* 手札にあるカード（まぜてできた・自分のもの）を調理台へ */
-function placeHeld(h, at) {
-  const c = N.held[h]; if (!c || N.board[at]) return;
-  N.board[at] = c; N.held.splice(h, 1); unsel();
-  save(); renderNight();
-  const t = document.querySelector(`.tslot[data-w="board"][data-i="${at}"] .pc`); if (t) replay(t, 'born');
 }
 /* うる・もどす（1ラウンド目の★1は「もどす」＝無料の枠がもどる） */
 function sellValue(d) { return N.round === 1 && d.star === 1 && d.cat !== 'burnt' ? 0 : SELL[d.star]; }
@@ -135,7 +125,7 @@ function sellAt(p) {
   const c = p.where === 'field' ? (N.field ? { cid: 'b:' + N.field } : null) : cardAt(p); if (!c || p.where === 'shop') return;
   const d = cardDef(c.cid), v = sellValue(d);
   if (v) N.coins += v; else N.picks = Math.min(ROUND1_PICKS, N.picks + 1);
-  if (p.where === 'field') N.field = null; else if (p.where === 'held') N.held.splice(p.i, 1); else N.board[p.i] = null;
+  if (p.where === 'field') N.field = null; else N.board[p.i] = null;
   unsel(); save(); renderNight();
 }
 function sell() { sellAt(N.sel); }
@@ -145,14 +135,13 @@ function reroll() {
   N.coins -= REROLL; rollShop(); unsel(); save(); renderNight();
 }
 
-/* ---------- まぜる：同じ★で、属性の合うものどうし（cards.js の mixable）。調理台・手札（仕入れ・手持ち）のどれどうしでも、まぜられる（仕入れのカードは買いながら） ---------- */
+/* ---------- まぜる：同じ★で、属性の合うものどうし（cards.js の mixable）。調理台・ショップのどれどうしでも、まぜられる（ショップのカードは買いながら） ---------- */
 const canMix = (a, b) => mixable(cardDef(a.cid), cardDef(b.cid));
 const asCard = cid => cardDef(cid).dough ? { cid, cook: 0 } : { cid };   // 仕入れの生地は生（焼き加減0）
-/* その場所のカード（shop＝仕入れは買う前の形・held＝手持ち・board＝調理台） */
+/* その場所のカード（shop＝ショップは買う前の形・board＝調理台） */
 function cardAt(p) {
   if (!p) return null;
   if (p.where === 'shop') return N.shop[p.i] ? asCard(N.shop[p.i]) : null;
-  if (p.where === 'held') return N.held[p.i] || null;
   return p.where === 'board' ? N.board[p.i] : null;
 }
 /* まぜてできるカード。焼き加減は、低いほうを引きつぐ */
@@ -160,15 +149,15 @@ function mixResult(a, b) {
   const cid = mixCid(a.cid, b.cid), cooks = [a, b].filter(x => x.cook != null).map(x => x.cook);
   return cardDef(cid).dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 } : { cid };
 }
-/* まぜるときの代金（仕入れのカードの分）と、できたカードの行き先。調理台のカードとまぜたら調理台・手札どうしなら手札（手持ちになる） */
+/* まぜるときの代金（ショップのカードの分）と、できたカードの行き先。調理台のカードとまぜたらそのマス・ショップどうしなら左から空いているマス */
 function mixPlan(p, q) {
   const shop = [p, q].filter(x => x.where === 'shop'), cost = shop.reduce((t, x) => t + cardDef(N.shop[x.i]).cost, 0);
-  const bd = [q, p].find(x => x.where === 'board'), hd = [p, q].filter(x => x.where === 'held').map(x => x.i);
-  const to = bd ? { where: 'board', i: bd.i } : hd.length ? { where: 'held', i: Math.min(...hd) } : { where: 'held', i: N.held.length < HELD_MAX ? N.held.length : -1 };
+  const bd = [q, p].find(x => x.where === 'board');
+  const to = { where: 'board', i: bd ? bd.i : freeSlot() };
   return { n: shop.length, cost, to };
 }
-function mixNg(P) { return P.to.i < 0 ? `手札がいっぱい（${HELD_MAX}まいまで）` : payNg(P.n, P.cost); }
-/* 調理台のほかのカードとまぜられるか（手札とタイルの「まぜ」の目じるし） */
+function mixNg(P) { return P.to.i < 0 ? BOARD_FULL : payNg(P.n, P.cost); }
+/* 調理台のほかのカードとまぜられるか（ショップとタイルの「まぜ」の目じるし） */
 const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
 /* まぜられる相手の決まり（ドラッグの案内・大きく見る画面） */
 function mixRule(d) {
@@ -184,17 +173,12 @@ function dropPlan(p, q) {
   if (q.where === 'sell') return p.where === 'shop' ? null : { kind: 'sell', v: sellValue(d) };
   if (d.cat === 'field') return q.where === 'field' && p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : null;
   if (q.where === 'field') return null;
-  if (q.where === 'hand') {   // 手札の空いている所：ショップのカードは買って手札へ・調理台のカードは手札にもどす
-    if (p.where === 'held') return null;
-    const full = handFull() ? HAND_FULL : '';
-    return p.where === 'shop' ? { kind: 'buy', ng: full || payNg(1, d.cost), cost: d.cost } : { kind: 'take', ng: full };
-  }
   const b = cardAt(q);
   if (b && canMix(a, b)) { const P = mixPlan(p, q); return { kind: 'mix', P, ng: mixNg(P), r: mixResult(a, b) }; }
   if (q.where !== 'board') return null;
   if (p.where === 'board') return { kind: 'move', swap: !!b };
   if (b) return null;
-  return p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : { kind: 'place' };
+  return p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : null;
 }
 /* 指をはなした所で決める */
 function dropCard(p, q, from) {
@@ -202,13 +186,11 @@ function dropCard(p, q, from) {
   if (P.ng) { toast(P.ng); return false; }
   if (P.kind === 'mix') doMix(p, q, from);
   else if (P.kind === 'buy') buy(p.i, q.where === 'board' ? q : null);
-  else if (P.kind === 'take') takeBack(p.i);
-  else if (P.kind === 'place') placeHeld(p.i, q.i);
   else if (P.kind === 'move') moveTo(p.i, q.i);
   else if (P.kind === 'sell') sellAt(p);
   return true;
 }
-/* まぜる。2枚がシュッと飛び出してガキーン（mixFx）→ できたカードが調理台か手札へ */
+/* まぜる。2枚がシュッと飛び出してガキーン（mixFx）→ できたカードが調理台へ */
 function doMix(p, q, from) {
   const a = cardAt(p), b = cardAt(q);
   if (busy || !a || !b || !canMix(a, b)) return;
@@ -217,14 +199,7 @@ function doMix(p, q, from) {
   pay(P.n, P.cost);
   const r = mixResult(a, b), d = cardDef(r.cid);
   for (const x of [p, q]) { if (x.where === 'shop') N.shop[x.i] = null; if (x.where === 'board') N.board[x.i] = null; }
-  if (P.to.where === 'board') {
-    N.board[P.to.i] = r;
-    [p, q].filter(x => x.where === 'held').forEach(x => N.held.splice(x.i, 1));
-  } else {
-    const hs = [p, q].filter(x => x.where === 'held').map(x => x.i).sort((x, y) => y - x);
-    hs.slice(0, -1).forEach(h => N.held.splice(h, 1));   // 手持ちどうしなら、大きい番号のほうを消す
-    N.held[P.to.i] = r;
-  }
+  N.board[P.to.i] = r;
   unsel();
   const msg = d.star === 2 ? d.name + 'ができた' : '';   // できたカードの名前は演出の札で見せる（演出なしのときだけ toast）。レシピのひらめきは朝に（11/18 H-001）
   save(); renderNight();

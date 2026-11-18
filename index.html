@@ -168,7 +168,7 @@ background:radial-gradient(circle at 62% 38%,#fff2b8 0,#ffc04a 26%,#ff7a24 52%,#
 .fslot .ord{color:#3a1c08;background:var(--gold)}
 .tslot .ord{position:absolute;left:-5px;top:-6px;z-index:4;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:9.5px;color:#3a1c08;font-family:var(--disp);font-weight:400;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 55%,#b97a12);box-shadow:0 0 0 1.5px #3a1c08,0 1px 2px rgba(0,0,0,.5)}
 .tslot.sel .pc{outline:3px solid var(--gold);outline-offset:2px}
-.tslot.can .pc::after,.handcard.can .pc::after,.shcard.can .pc::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 1px #2a1408,0 0 0 3px rgba(111,199,168,.95),0 0 14px 6px rgba(111,199,168,.55);animation:canmix .9s ease-in-out infinite alternate}
+.tslot.can .pc::after,.shcard.can .pc::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 1px #2a1408,0 0 0 3px rgba(111,199,168,.95),0 0 14px 6px rgba(111,199,168,.55);animation:canmix .9s ease-in-out infinite alternate}
 @keyframes canmix{from{opacity:.4}to{opacity:1}}
 .tslot:active .pc{transform:scale(.94)}
 .tslot.sel .pc{transform:translateY(-4px)}
@@ -179,7 +179,6 @@ background:radial-gradient(circle at 62% 38%,#fff2b8 0,#ffc04a 26%,#ff7a24 52%,#
 .mx-dot{position:absolute;right:-5px;bottom:-6px;z-index:4;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:13px;font-weight:900;line-height:1;color:#103a2c;background:#8fe0c0;box-shadow:0 0 0 1.5px #1e4a3a;animation:dotbob .8s ease-in-out infinite alternate;pointer-events:none}
 @keyframes dotbob{to{transform:translateY(-2px)}}
 .mixmark{position:absolute;right:4%;top:-5px;z-index:4;padding:1px 6px;border-radius:8px;font-style:normal;font-size:10px;font-weight:900;line-height:1.35;color:#103a2c;background:#8fe0c0;box-shadow:0 0 0 1.5px #1e4a3a,0 2px 0 rgba(0,0,0,.3);pointer-events:none;animation:dotbob .8s ease-in-out infinite alternate}
-.handcard.can::after{content:"まぜる";position:absolute;left:50%;top:-8px;z-index:5;transform:translateX(-50%);padding:1px 6px;border-radius:7px;font-size:10px;font-weight:900;line-height:1.35;color:#103a2c;background:#8fe0c0;white-space:nowrap;box-shadow:0 0 0 1.5px #1e4a3a;pointer-events:none}
 .pc.tile{transition:filter .2s}
 .pc.tile .pc-win{left:6cqw;right:6cqw;top:6cqw;bottom:6cqw;border-radius:6cqw}
 .pc.tile .pc-art{inset:4%}
@@ -203,17 +202,10 @@ box-shadow:0 0 0 1px rgba(42,23,12,.8)}
 .pc.kon{animation:kon .42s cubic-bezier(.3,1.5,.5,1)}
 @keyframes kon{0%{transform:none}35%{transform:translateY(-11px) scale(1.22) rotate(-5deg)}65%{transform:translateY(1px) scale(.95)}100%{transform:translateY(-3px) scale(1.08)}}
 @keyframes ring{from{opacity:1;scale:.8}to{opacity:0;scale:1.4}}
-.handwrap{position:relative;flex:none}
 .callout{position:absolute;left:0;right:0;top:2px;z-index:6;height:52px;border-radius:12px;isolation:isolate;background:var(--cream);color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.35)}
 .callout:empty{display:none}
-.night .hand{transition:opacity .25s,filter .25s}
-.night.busy .hand{opacity:.35;filter:saturate(.5)}
 .callout.pop::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 3px #ffe2a0,0 0 22px 6px rgba(255,138,61,.8);opacity:0;animation:coflash .45s ease-out}
 @keyframes coflash{0%{opacity:1}}
-.hand{position:relative;flex:none;height:var(--hh);display:flex;justify-content:center;align-items:flex-end;padding:10px 12px 0}
-.handcard{--mid:calc((var(--n) - 1) / 2);--d:calc(var(--k) - var(--mid));position:relative;flex:none;width:min(calc((100% - 6px) / var(--n) + 6px),calc((var(--hh) - 16px) * .72),118px);aspect-ratio:5/7;height:auto;margin:0 -3px;padding:0;border:none;background:transparent;box-shadow:none;transform:translateY(calc(var(--d) * var(--d) * 3px)) rotate(calc(var(--d) * 3deg));transform-origin:50% 100%;transition:transform .15s}
-.handcard.gone{visibility:hidden}
-.handcard.sel,.handcard:active{transform:translateY(-10px) scale(1.05);z-index:3}
 .cutin{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden;display:grid;place-items:center;animation:cidim var(--cd) ease-out forwards}
 .ci-flash{position:absolute;inset:0;background:#fff6dc;opacity:0;animation:ciflash var(--cd) ease-out forwards}
 .ci-band{position:relative;width:100%;height:clamp(150px,30vh,230px);transform:skewY(-8deg) scaleY(0);animation:ciband var(--cd) cubic-bezier(.2,.9,.3,1) forwards;
@@ -340,9 +332,9 @@ background:repeating-conic-gradient(rgba(var(--ray),.95) 0 5deg,rgba(var(--ray),
 .dragghost.hot .pc{box-shadow:0 0 0 3px #8fe0c0,0 0 20px 7px rgba(111,199,168,.75)}
 .lifted .pc{opacity:.28}
 .tslot.swap .pc{outline:2px dashed rgba(255,226,160,.85);outline-offset:2px}
-.tslot.over .pc,.handcard.over .pc{transform:scale(1.12)}
+.tslot.over .pc,.shcard.over .pc{transform:scale(1.12)}
 .tslot.put.over{background:rgba(244,194,78,.5)}
-.tslot.cant .pc,.handcard.cant .pc{filter:grayscale(.7) brightness(.75)}
+.tslot.cant .pc,.shcard.cant .pc{filter:grayscale(.7) brightness(.75)}
 .dragtip{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 44px);z-index:46;transform:translateX(-50%);width:min(calc(100vw - 24px),400px);min-height:62px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:var(--cream);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35);pointer-events:none}
 .dt-card{flex:none;width:42px;aspect-ratio:5/7}
 .dt-card .pc{width:100%;height:100%}
@@ -354,12 +346,8 @@ background:repeating-conic-gradient(rgba(var(--ray),.95) 0 5deg,rgba(var(--ray),
 .dt-sub em{font-style:normal;color:#b8321e}
 .dt-fx{margin:2px 0 0;font-size:11px;line-height:1.35;color:#6a4a3a;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .dt-flash{display:inline-block;margin:3px 0 0;font-size:11px;font-weight:900;background:var(--gold);color:#3a1c08;padding:1px 8px;border-radius:8px}
-.night .stage{flex:1.6 1 0;max-height:calc((min(100vw, 460px) - 32px) * 1.02)}
+.night .stage{flex:1 1 0;max-height:none}
 .night .chef{height:min(88%,calc((min(100vw, 460px) - 32px) * .4))}
-.night .handwrap{flex:1 1 0;min-height:var(--hh);display:flex;flex-direction:column;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
-.night .handwrap>.hand{flex:1;height:auto;container-type:size;padding:18px 10px 13px}
-.night .handcard{width:var(--w);margin:0 calc(var(--w) * var(--ov, .1) * -1);--w:min(calc((100cqw - 6px) / (var(--n) * (1 - 2 * var(--ov, .1)) + 2 * var(--ov, .1))),calc((100cqh - 8px) * .72),164px)}
-.night .handcard:first-child{margin-left:0}.night .handcard:last-child{margin-right:0}
 .shopov{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;gap:4px;padding:7px 8px 12px;border-radius:11px;box-shadow:inset 0 0 0 2px rgba(255,226,170,.25);animation:shopin .28s cubic-bezier(.2,1.2,.4,1);padding-top:24px;background:radial-gradient(80% 55% at 50% 30%,rgba(255,214,150,.32),transparent 72%),repeating-linear-gradient(90deg,rgba(0,0,0,.1) 0 2px,transparent 2px 38px),linear-gradient(#8a5a38,#5a3824)}
 @keyframes shopin{from{opacity:0;transform:translateY(-10px)}}
 .sh-top{flex:none;display:flex;align-items:center;gap:8px;min-height:30px}
@@ -385,11 +373,6 @@ background:repeating-conic-gradient(rgba(var(--ray),.95) 0 5deg,rgba(var(--ray),
 .night.drag-own .sh-sell{display:flex}
 .night.drag-own .shopov.over .sh-sell{background:rgba(190,58,36,.97);transform:scale(1.03)}
 .night.drag-own .shopov.over{box-shadow:inset 0 0 0 3px #ffd0a0}
-.hand.empty{align-items:center}
-.hand-empty{margin:0 auto;font-size:12px;text-align:center;padding:8px 14px;border-radius:10px;background:rgba(42,20,10,.45);color:var(--milk)}
-.hand-n{position:absolute;z-index:4;font-size:10.5px;font-weight:700;pointer-events:none;right:12px;bottom:9px;padding:1px 8px;border-radius:8px;background:rgba(42,20,10,.6);color:var(--milk)}
-.night.dragging .hand.put{border-radius:12px;box-shadow:inset 0 0 0 2px rgba(255,214,120,.7);background:rgba(244,194,78,.12)}
-.night.dragging .hand.put.over{background:rgba(244,194,78,.3)}
 .bar .bake{flex:1;margin-left:0}
 :root{--disp:"Dela Gothic One","Zen Maru Gothic","Hiragino Sans",sans-serif;--brass:#d9a85a;--brass-hi:#ffe2a0;--brass-lo:#7a4e1c}
 body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transparent 62%),radial-gradient(150% 90% at 50% 120%,rgba(0,0,0,.6),transparent 60%),repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,rgba(255,220,180,.03) 2px 3px,transparent 3px 64px),linear-gradient(#5e3c28,#3a2418)}
@@ -420,7 +403,6 @@ background:radial-gradient(circle,#fff 0,rgba(255,240,190,.95) 14%,rgba(255,150,
 #qtext{font-family:var(--disp);font-weight:400;font-size:11px;color:var(--milk);letter-spacing:.5px}
 .tiles{background:radial-gradient(100% 140% at 50% 0%,rgba(255,226,170,.18),transparent 60%),repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 40px),linear-gradient(#7a5236,#4a2f20);box-shadow:inset 0 0 0 2px rgba(255,214,140,.55),inset 0 2px 0 rgba(255,240,210,.35),inset 0 -4px 0 rgba(0,0,0,.35),0 4px 0 #24130a,0 10px 18px rgba(0,0,0,.4)}
 .tslot{background:radial-gradient(70% 60% at 50% 40%,rgba(255,220,170,.08),rgba(20,8,2,.35));box-shadow:inset 0 3px 7px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,214,140,.18)}
-.night .handwrap::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}
 button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);color:#fff4e4;border:2px solid #2a170c;box-shadow:inset 0 2px 0 rgba(255,236,200,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 #2a170c;text-shadow:0 1px 0 rgba(0,0,0,.4)}
 .go2,button.go2{background:linear-gradient(#ffb3c2,#f0708a 50%,#c8445e);border:2px solid #5a1424;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),inset 0 -3px 0 rgba(90,10,30,.35),0 3px 0 #5a1424}
 .big{font-family:var(--disp);font-weight:400;background:linear-gradient(#ffd27a,#ffa04a 45%,#e0782a);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -4px 0 rgba(120,40,0,.35),0 4px 0 #3a1c08}
@@ -480,7 +462,6 @@ background:radial-gradient(10% 70% at 8% 100%,rgba(255,200,80,.9),transparent 70
 mix-blend-mode:screen;transform-origin:50% 100%}
 .tiles.bakefx::after{animation:bakeflame .9s ease-out}
 @keyframes bakeflame{0%{opacity:0;transform:scaleY(.2)}25%{opacity:1;transform:scaleY(1.1)}55%{opacity:.85;transform:scaleY(.9)}100%{opacity:0;transform:scaleY(.6) translateY(-6px)}}
-.hand-n{left:14px;right:auto;top:10px;bottom:auto}
 .pc-attr{position:absolute;left:5.5cqw;right:5.5cqw;top:68.4%;height:7.6%;z-index:3;margin:0;display:flex;border-radius:2.5cqw;overflow:hidden;box-shadow:0 0 0 .9cqw #2a1408,0 1cqw 1.5cqw rgba(0,0,0,.35)}
 .pc-attr span{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;font-size:7.8cqw;font-weight:900;line-height:1;color:#fff;letter-spacing:.02em;white-space:nowrap;text-shadow:0 .5cqw 0 rgba(40,10,0,.55);box-shadow:inset 0 1cqw 0 rgba(255,255,255,.3)}
 .pc-attr span+span{border-left:.9cqw solid #2a1408}
@@ -503,7 +484,6 @@ mix-blend-mode:screen;transform-origin:50% 100%}
 .kwtip.dn::before{top:-6px;box-shadow:inset 1.5px 1.5px 0 var(--brass)}
 .kwtip.up::before{bottom:-6px;background:#2e190e;box-shadow:inset -1.5px -1.5px 0 var(--brass)}
 @keyframes kwin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.handcard{transform:translateY(calc((var(--d) * var(--d) - var(--mid) * var(--mid)) * 2.5px)) rotate(calc(var(--d) * 3deg))}
 .dragtip{translate:0 -100%;min-height:58px}
 .pc-text{gap:1.5cqw;padding:0 3cqw}
 .pc-text span.pl{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center;gap:.8cqw;-webkit-line-clamp:unset;overflow:visible}
@@ -530,7 +510,11 @@ mix-blend-mode:screen;transform-origin:50% 100%}
 .ci-fx .tg.pos{color:#3a1c08;background:linear-gradient(#ffe48a,#e3a52a);box-shadow:inset 0 0 0 1px rgba(120,70,0,.55),0 2px 0 rgba(0,0,0,.2)}
 .ci-fx p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
 .ci-fx .kw{color:#a84400;background:linear-gradient(transparent 42%,#ffd84a 42% 94%,transparent 94%)}
-.night .callout{inset:0;top:0;height:auto;z-index:8;border-radius:14px;container-type:size}
+.night .callout{inset:auto 7px 12px;height:var(--hh);z-index:8;border-radius:14px;container-type:size}
+.night .stage:has(.callout:not(:empty)) :is(.chef,.mon,.dc){translate:0 calc(var(--hh) * -.55);transition:translate .3s}
+.night .stage :is(.chef,.mon,.dc,.ov-heat){transition:translate .3s}
+.night .stage:has(.callout:not(:empty)) .ov-heat{translate:0 calc(var(--hh) * -1 - 4px)}
+.night .bp::before{top:auto;bottom:-9px;border:9px solid transparent;border-bottom:0;border-top-color:#f6e4c8}
 .bp{position:absolute;inset:0;display:grid;grid-template-columns:min(28%,112px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:12px;row-gap:2px;padding:12px 14px 10px 12px;border-radius:14px;--ch:1}
 .bp::before{content:"";position:absolute;left:var(--x);top:-9px;translate:-50% 0;border:9px solid transparent;border-top:0;border-bottom-color:#fffaf0}
 .callout.pop .bp{animation:bpin .26s cubic-bezier(.2,1.2,.4,1)}
@@ -1793,7 +1777,7 @@ return `<div class="cu-fig" style="--skin:${c.skin};--hair:${c.hair};--shirt:${c
 
 /* src/js/night.js */
 
-const SLOTS = 5, HELD_MAX = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
+const SLOTS = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
 const START_HEAT = 2;           // 夜のはじめの鉄板（中火）
 let bSpeed = (() => { try { return +localStorage.getItem('mazemaze-okashiya-spd') === 2 ? 2 : 1; } catch (e) { return 1; } })();
@@ -1816,7 +1800,7 @@ Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id), belly: nightH
 S.night = {
 mon, field: null, heat: START_HEAT, call: false, stage: 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
 board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
-held: [], sel: null, view: false, last: null,
+sel: null, view: false, last: null,
 };
 N = S.night; rollShop(); dealAnim = true;
 save(); render();
@@ -1829,8 +1813,8 @@ else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'en
 function nightOk(n) {
 try {
 if (!n || n.board.length !== SLOTS || !Number.isFinite(n.heat)) return false;
-if (!Array.isArray(n.held)) n.held = [];
-for (const c of [...n.board, ...n.shop, ...n.held]) if (c) cardDef(typeof c === 'string' ? c : c.cid);
+for (const c of [...n.board, ...n.shop, ...(n.held || [])]) if (c) cardDef(typeof c === 'string' ? c : c.cid);
+if (n.held) { for (const c of n.held) { const k = n.board.indexOf(null); if (k >= 0) n.board[k] = c; } delete n.held; }   // 11/18 手札をなくした：前のセーブの手札は調理台の空きへ
 if (n.field && !FIELDS[n.field]) return false;
 return true;
 } catch (e) { return false; }
@@ -1878,8 +1862,8 @@ if (N.round === 1) return N.picks >= n ? '' : N.picks ? `無料はあと${N.pick
 return N.coins >= cost ? '' : 'コインがたりない';
 }
 function pay(n, cost) { if (!n) return; if (N.round === 1) N.picks -= n; else N.coins -= cost; }
-const handFull = () => N.held.length >= HELD_MAX;
-const HAND_FULL = `手札がいっぱい（${HELD_MAX}まいまで）。うるか、まぜてから買おう`;
+const freeSlot = () => N.board.indexOf(null);
+const BOARD_FULL = '調理台がいっぱい。先にショップへうるか、まぜてから買おう';
 function buy(i, to) {
 const cid = N.shop[i]; if (!cid || busy || N.stage !== 'shop') return;
 const d = cardDef(cid), ng = payNg(1, d.cost);
@@ -1887,21 +1871,13 @@ if (ng) return toast(ng);
 if (d.cat === 'field') {
 if (N.field) toast('フィールドを入れかえた');
 N.field = cid.slice(2); N.heat = FIELDS[N.field].start;
-} else if (to && to.where === 'board') { if (!place(cid, to.i)) return; }
-else if (handFull()) return toast(HAND_FULL);
-else N.held.push(asCard(cid));
+} else {
+const at = to && to.where === 'board' ? to.i : freeSlot();
+if (at < 0) return toast(BOARD_FULL);
+if (!place(cid, at)) return;
+}
 pay(1, d.cost); N.shop[i] = null; unsel();
 save(); renderNight();
-}
-function takeBack(i) {
-if (!N.board[i] || handFull()) return;
-N.held.push(N.board[i]); N.board[i] = null; unsel(); save(); renderNight();
-}
-function placeHeld(h, at) {
-const c = N.held[h]; if (!c || N.board[at]) return;
-N.board[at] = c; N.held.splice(h, 1); unsel();
-save(); renderNight();
-const t = document.querySelector(`.tslot[data-w="board"][data-i="${at}"] .pc`); if (t) replay(t, 'born');
 }
 function sellValue(d) { return N.round === 1 && d.star === 1 && d.cat !== 'burnt' ? 0 : SELL[d.star]; }
 function sellAt(p) {
@@ -1909,7 +1885,7 @@ if (busy || N.stage !== 'shop' || !p) return;
 const c = p.where === 'field' ? (N.field ? { cid: 'b:' + N.field } : null) : cardAt(p); if (!c || p.where === 'shop') return;
 const d = cardDef(c.cid), v = sellValue(d);
 if (v) N.coins += v; else N.picks = Math.min(ROUND1_PICKS, N.picks + 1);
-if (p.where === 'field') N.field = null; else if (p.where === 'held') N.held.splice(p.i, 1); else N.board[p.i] = null;
+if (p.where === 'field') N.field = null; else N.board[p.i] = null;
 unsel(); save(); renderNight();
 }
 function sell() { sellAt(N.sel); }
@@ -1923,7 +1899,6 @@ const asCard = cid => cardDef(cid).dough ? { cid, cook: 0 } : { cid };   // 仕�
 function cardAt(p) {
 if (!p) return null;
 if (p.where === 'shop') return N.shop[p.i] ? asCard(N.shop[p.i]) : null;
-if (p.where === 'held') return N.held[p.i] || null;
 return p.where === 'board' ? N.board[p.i] : null;
 }
 function mixResult(a, b) {
@@ -1932,11 +1907,11 @@ return cardDef(cid).dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 }
 }
 function mixPlan(p, q) {
 const shop = [p, q].filter(x => x.where === 'shop'), cost = shop.reduce((t, x) => t + cardDef(N.shop[x.i]).cost, 0);
-const bd = [q, p].find(x => x.where === 'board'), hd = [p, q].filter(x => x.where === 'held').map(x => x.i);
-const to = bd ? { where: 'board', i: bd.i } : hd.length ? { where: 'held', i: Math.min(...hd) } : { where: 'held', i: N.held.length < HELD_MAX ? N.held.length : -1 };
+const bd = [q, p].find(x => x.where === 'board');
+const to = { where: 'board', i: bd ? bd.i : freeSlot() };
 return { n: shop.length, cost, to };
 }
-function mixNg(P) { return P.to.i < 0 ? `手札がいっぱい（${HELD_MAX}まいまで）` : payNg(P.n, P.cost); }
+function mixNg(P) { return P.to.i < 0 ? BOARD_FULL : payNg(P.n, P.cost); }
 const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
 function mixRule(d) {
 if (d.cat === 'field') return 'フィールドは まぜられない';
@@ -1950,25 +1925,18 @@ const d = cardDef(a.cid);
 if (q.where === 'sell') return p.where === 'shop' ? null : { kind: 'sell', v: sellValue(d) };
 if (d.cat === 'field') return q.where === 'field' && p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : null;
 if (q.where === 'field') return null;
-if (q.where === 'hand') {   // 手札の空いている所：ショップのカードは買って手札へ・調理台のカードは手札にもどす
-if (p.where === 'held') return null;
-const full = handFull() ? HAND_FULL : '';
-return p.where === 'shop' ? { kind: 'buy', ng: full || payNg(1, d.cost), cost: d.cost } : { kind: 'take', ng: full };
-}
 const b = cardAt(q);
 if (b && canMix(a, b)) { const P = mixPlan(p, q); return { kind: 'mix', P, ng: mixNg(P), r: mixResult(a, b) }; }
 if (q.where !== 'board') return null;
 if (p.where === 'board') return { kind: 'move', swap: !!b };
 if (b) return null;
-return p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : { kind: 'place' };
+return p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : null;
 }
 function dropCard(p, q, from) {
 const P = dropPlan(p, q); if (!P || busy || N.stage !== 'shop') return false;
 if (P.ng) { toast(P.ng); return false; }
 if (P.kind === 'mix') doMix(p, q, from);
 else if (P.kind === 'buy') buy(p.i, q.where === 'board' ? q : null);
-else if (P.kind === 'take') takeBack(p.i);
-else if (P.kind === 'place') placeHeld(p.i, q.i);
 else if (P.kind === 'move') moveTo(p.i, q.i);
 else if (P.kind === 'sell') sellAt(p);
 return true;
@@ -1981,14 +1949,7 @@ from = from || [cardSpot(p), cardSpot(q)];   // 演出のために、動く前�
 pay(P.n, P.cost);
 const r = mixResult(a, b), d = cardDef(r.cid);
 for (const x of [p, q]) { if (x.where === 'shop') N.shop[x.i] = null; if (x.where === 'board') N.board[x.i] = null; }
-if (P.to.where === 'board') {
 N.board[P.to.i] = r;
-[p, q].filter(x => x.where === 'held').forEach(x => N.held.splice(x.i, 1));
-} else {
-const hs = [p, q].filter(x => x.where === 'held').map(x => x.i).sort((x, y) => y - x);
-hs.slice(0, -1).forEach(h => N.held.splice(h, 1));   // 手持ちどうしなら、大きい番号のほうを消す
-N.held[P.to.i] = r;
-}
 unsel();
 const msg = d.star === 2 ? d.name + 'ができた' : '';   // できたカードの名前は演出の札で見せる（演出なしのときだけ toast）。レシピのひらめきは朝に（11/18 H-001）
 save(); renderNight();
@@ -2323,14 +2284,14 @@ setTimeout(() => el.remove(), ms);
 return ms;
 }
 function cardSpot(p) {
-const el = document.querySelector(p.where === 'board' ? `.tslot[data-w="board"][data-i="${p.i}"] .pc` : `.handcard[data-w="${p.where}"][data-i="${p.i}"] .pc`);
+const el = document.querySelector(`[data-w="${p.where}"][data-i="${p.i}"] .pc`);
 if (!el) return null;
 const r = el.getBoundingClientRect();
 return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: el.offsetWidth };
 }
 const SPARK = ['#fff6d8', '#ffd45a', '#ff9a3c', '#ffe9a8', '#8fe0c0', '#ff8f6a'];
 function mixFx(from, ca, cb, cr, to, done) {
-const tile = document.querySelector(to.where === 'board' ? `.tslot[data-w="board"][data-i="${to.i}"]` : `.handcard[data-w="held"][data-i="${to.i}"]`), tc = tile && tile.querySelector('.pc');
+const tile = document.querySelector(`.tslot[data-w="board"][data-i="${to.i}"]`), tc = tile && tile.querySelector('.pc');
 const end = skip => { if (tc) { tc.style.visibility = ''; replay(tc, 'born'); } done(skip); };   // skip＝演出なしで終わった
 if (REDUCED || !from[0] || !from[1] || !tc || !tc.animate) return end(true);
 tc.style.visibility = 'hidden';
@@ -2432,22 +2393,16 @@ if (s.where === 'shop') {
 const cid = N.shop[s.i]; if (!cid) return '';
 const d = cardDef(cid), free = N.round === 1;
 return box(cid, null, `<button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'もらう' : `買う <small>コイン${d.cost}</small>`}</button>`,
-d.cat === 'field' ? 'ドラッグで「場」へ' : '買うと手札へ・ドラッグで調理台へ・かさねて まぜる');
+d.cat === 'field' ? 'ドラッグで「場」へ' : '買うと左の空いているマスへ・ドラッグで好きなマスへ・かさねて まぜる');
 }
 if (s.where === 'field') return N.field ? box('b:' + N.field, null, sellBtn(), '新しいのを買うと入れかわる') : '';
 const c = cardAt(s); if (!c) return '';
-return box(c.cid, c.cook, sellBtn(), s.where === 'held' ? `手持ち・${mixRule(cardDef(c.cid))}` : `${ORD[s.i]}番め・${mixRule(cardDef(c.cid))}`);
+return box(c.cid, c.cook, sellBtn(), `${ORD[s.i]}番め・${mixRule(cardDef(c.cid))}`);
 }
 function sellLabel(d) { const v = sellValue(d); return v ? `うる <small>+${v}</small>` : 'もどす'; }
 function sellBtn() {
 const s = N.sel, c = s.where === 'field' ? { cid: 'b:' + N.field } : cardAt(s);
 return `<button class="pill sub" data-act="sell">${sellLabel(cardDef(c.cid))}</button>`;
-}
-const mixesWithMine = (cid, skip) => mixesWithBoard(cid) || N.held.some((x, i) => i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
-function handHTML() {
-const n = N.held.length;
-return `<div class="hand${n ? '' : ' empty'}" data-drop data-w="hand" data-i="0" style="--n:${Math.max(n, 3)};--ov:${n >= 5 ? .14 : .08}">${n ? N.held.map((c, i) => `<button class="handcard" style="--k:${i + (3 - Math.min(n, 3)) / 2}" data-act="card" data-drag data-drop data-w="held" data-i="${i}">${cardMini(c.cid, { cook: c.cook })}${mixesWithMine(c.cid, i) ? '<i class="mixmark">まぜ</i>' : ''}</button>`).join('')
-: '<p class="hand-empty">ショップで買ったカードが ここに入るよ</p>'}<span class="hand-n">手札 ${n}/${HELD_MAX}</span></div>`;
 }
 function barHTML() {
 if (fighting) return `<button class="pill sub spd${bSpeed > 1 ? ' on' : ''}" data-act="spd">${spdLabel()}</button>`;   // バトル中は、はやおくり
@@ -2461,13 +2416,13 @@ const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンド�
 return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
 <div class="sh-top"><b class="sh-ttl">ショップ</b>${head}</div>
 <div class="sh-cards">${list.map((cid, i) => cid
-? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid)}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithMine(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
+? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid)}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
 : '<span class="shcard sold"></span>').join('')}</div>
 <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
 }
 function renderNight() {
 if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
-N = S.night; N.held = N.held || [];
+N = S.night;
 const mon = MONSTERS[N.mon], F = N.field ? FIELDS[N.field] : null;
 let body = '';
 const rec = S.today, after = N.stage === 'end' || N.stage === 'thanks', happy = after && rec.mood >= 2;
@@ -2482,7 +2437,6 @@ body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood
 const shop = N.stage === 'shop';
 body = `<div class="tiles" data-z="${N.field ? N.heat : 0}">${boardFireHTML()}<button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
 `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
-<div class="handwrap"><div class="callout" id="callout"></div>${N.stage === 'shop' ? handHTML() : '<div class="hand"></div>'}</div>
 <div class="bar">${barHTML()}</div>
 ${viewerHTML()}`;
 }
@@ -2494,7 +2448,7 @@ ${heroImg(after ? (happy ? 'joy' : 'oops') : 'battle')}
 ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
 <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div>
-${N.stage === 'shop' && !fighting ? shopHTML() : ''}</div>
+${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'end' ? '' : '<div class="callout" id="callout"></div>'}</div>
 <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
 ${body}</section>`;
 setHeat(N.heat);
@@ -2821,7 +2775,7 @@ if (P && P.kind === 'mix') {
 const r = cardDef(P.r.cid), flash = !P.ng && r.star === 2 && r.food && S.recipes[P.r.cid.slice(2)] == null;
 const price = P.P.n ? `（${N.round === 1 ? `無料${P.P.n}まい` : `コイン${P.P.cost}`}）` : '';
 return `<span class="dt-card">${cardMini(P.r.cid)}</span><div class="dt-body"><p class="dt-main">${'★'.repeat(r.star)} ${esc(r.name)}</p>
-<p class="dt-sub">${P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと まぜる${price}${P.P.to.where === 'held' ? '・手札へ' : ''}`}</p>
+<p class="dt-sub">${P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと まぜる${price}`}</p>
 <p class="dt-fx">${kwShort(fxText(r.fx, r.star))}</p>${flash ? '<p class="dt-flash">レシピがひらめく！</p>' : ''}</div>`;
 }
 const t = !P ? (d.cat === 'field' ? '左の「場」へ' : mixRule(d))
@@ -2846,7 +2800,7 @@ const gr = D.g.getBoundingClientRect();
 const from = [{ x: gr.left + gr.width / 2, y: gr.top + gr.height / 2, w: D.w * D.k }, cardSpot(Z.q)];
 dragClean(D);
 if (dropCard(D.p, Z.q, from) && Z.P.kind === 'buy') {
-const t = document.querySelector(Z.q.where === 'board' ? `.tslot[data-w="board"][data-i="${Z.q.i}"] .pc` : Z.q.where === 'hand' ? '.handcard[data-w="held"]:last-of-type .pc' : '.fslot .pc');
+const t = document.querySelector(Z.q.where === 'board' ? `.tslot[data-w="board"][data-i="${Z.q.i}"] .pc` : '.fslot .pc');
 if (t) replay(t, 'born');
 }
 }

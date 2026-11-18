@@ -1,4 +1,4 @@
-/* ==== ドラッグ：手札・調理台・「場」のカードを指でつかんで、はなした所で決まる（決まりは night.js の dropPlan・dropCard）
+/* ==== ドラッグ：ショップ・調理台・「場」のカードを指でつかんで、はなした所で決まる（決まりは night.js の dropPlan・dropCard）
    置く・うごかす（バトルを押すまでいつでも）・まぜる（カードどうしをかさねる）・うる（下の「ここで うる」）
    指が少ししか動かなければタップ（大きく見る）。つかんでいるあいだ、行き先が光り、上の札に「はなすと どうなるか」を出す ==== */
 let DRAG = null, dragEnd = 0;
@@ -43,13 +43,13 @@ function dragBegin(D) {
   const tip = document.createElement('div');
   tip.className = 'dragtip'; document.body.appendChild(tip); D.tip = tip;
   /* 札の置き場（11/18 しょーくん「上に出るとショップのカードやコインが見えない」）：指がショップ（舞台）の上なら下のボタンの所、
-     調理台・手札の上ならノルマの帯の所（舞台の下はし）。指の所や行き先をかくさない */
+     調理台の上ならおなかの帯の所（舞台の下はし）。指の所や行き先をかくさない */
   const rb = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect().bottom; };
   D.stageB = rb('#stage') || innerHeight / 2; D.upY = rb('.night .quota') || D.stageB; D.downY = rb('.night .bar') || innerHeight - 8; D.dock = null;
   D.el.classList.add('lifted');
   const sec = document.querySelector('.night');
   if (sec) { sec.classList.add('dragging'); if (p.where !== 'shop') sec.classList.add('drag-own'); }
-  /* 行き先を光らせる：put（置く・うごかす）・swap（入れかえ）・can（まぜる）・cant（まぜられるけど、お金や手札がたりない） */
+  /* 行き先を光らせる：put（置く・うごかす）・swap（入れかえ）・can（まぜる）・cant（まぜられるけど、お金や調理台の空きがたりない） */
   D.zones = [...document.querySelectorAll('[data-drop]')].map(z => {
     const q = { where: z.dataset.w, i: +z.dataset.i }, P = dropPlan(p, q);
     if (P) z.classList.add(P.kind === 'mix' ? (P.ng ? 'cant' : 'can') : P.kind === 'sell' ? 'sellok' : P.kind === 'move' && P.swap ? 'swap' : 'put');
@@ -87,7 +87,7 @@ function tipHTML(cid, P) {
     const r = cardDef(P.r.cid), flash = !P.ng && r.star === 2 && r.food && S.recipes[P.r.cid.slice(2)] == null;
     const price = P.P.n ? `（${N.round === 1 ? `無料${P.P.n}まい` : `コイン${P.P.cost}`}）` : '';
     return `<span class="dt-card">${cardMini(P.r.cid)}</span><div class="dt-body"><p class="dt-main">${'★'.repeat(r.star)} ${esc(r.name)}</p>
-      <p class="dt-sub">${P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと まぜる${price}${P.P.to.where === 'held' ? '・手札へ' : ''}`}</p>
+      <p class="dt-sub">${P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと まぜる${price}`}</p>
       <p class="dt-fx">${kwShort(fxText(r.fx, r.star))}</p>${flash ? '<p class="dt-flash">レシピがひらめく！</p>' : ''}</div>`;
   }
   const t = !P ? (d.cat === 'field' ? '左の「場」へ' : mixRule(d))
@@ -113,7 +113,7 @@ function dragFinish(D) {
   const from = [{ x: gr.left + gr.width / 2, y: gr.top + gr.height / 2, w: D.w * D.k }, cardSpot(Z.q)];
   dragClean(D);
   if (dropCard(D.p, Z.q, from) && Z.P.kind === 'buy') {
-    const t = document.querySelector(Z.q.where === 'board' ? `.tslot[data-w="board"][data-i="${Z.q.i}"] .pc` : Z.q.where === 'hand' ? '.handcard[data-w="held"]:last-of-type .pc' : '.fslot .pc');
+    const t = document.querySelector(Z.q.where === 'board' ? `.tslot[data-w="board"][data-i="${Z.q.i}"] .pc` : '.fslot .pc');
     if (t) replay(t, 'born');
   }
 }

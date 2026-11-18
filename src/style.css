@@ -180,7 +180,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .tslot .ord{position:absolute;left:-5px;top:-6px;z-index:4;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:9.5px;color:#3a1c08;font-family:var(--disp);font-weight:400;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 55%,#b97a12);box-shadow:0 0 0 1.5px #3a1c08,0 1px 2px rgba(0,0,0,.5)}
 .tslot.sel .pc{outline:3px solid var(--gold);outline-offset:2px}
 /* まぜられる行き先のミントの光（11/18 軽量化：影はぬりなおさず、重ねた光の濃さ opacity だけ動かす） */
-.tslot.can .pc::after,.handcard.can .pc::after,.shcard.can .pc::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 1px #2a1408,0 0 0 3px rgba(111,199,168,.95),0 0 14px 6px rgba(111,199,168,.55);animation:canmix .9s ease-in-out infinite alternate}
+.tslot.can .pc::after,.shcard.can .pc::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 1px #2a1408,0 0 0 3px rgba(111,199,168,.95),0 0 14px 6px rgba(111,199,168,.55);animation:canmix .9s ease-in-out infinite alternate}
 @keyframes canmix{from{opacity:.4}to{opacity:1}}
 .tslot:active .pc{transform:scale(.94)}
 /* タップで置く・まぜる：えらんだカードの行き先を光らせる（put＝置く・can＝まぜる）。何もえらんでいないときは、まぜられるカードに「+」と「まぜ」の目じるし */
@@ -192,7 +192,6 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .mx-dot{position:absolute;right:-5px;bottom:-6px;z-index:4;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:13px;font-weight:900;line-height:1;color:#103a2c;background:#8fe0c0;box-shadow:0 0 0 1.5px #1e4a3a;animation:dotbob .8s ease-in-out infinite alternate;pointer-events:none}
 @keyframes dotbob{to{transform:translateY(-2px)}}
 .mixmark{position:absolute;right:4%;top:-5px;z-index:4;padding:1px 6px;border-radius:8px;font-style:normal;font-size:10px;font-weight:900;line-height:1.35;color:#103a2c;background:#8fe0c0;box-shadow:0 0 0 1.5px #1e4a3a,0 2px 0 rgba(0,0,0,.3);pointer-events:none;animation:dotbob .8s ease-in-out infinite alternate}
-.handcard.can::after{content:"まぜる";position:absolute;left:50%;top:-8px;z-index:5;transform:translateX(-50%);padding:1px 6px;border-radius:7px;font-size:10px;font-weight:900;line-height:1.35;color:#103a2c;background:#8fe0c0;white-space:nowrap;box-shadow:0 0 0 1.5px #1e4a3a;pointer-events:none}
 /* 調理台のタイル：名前と効果の紙はなし。絵の窓を大きく、数字の紋章は右上、★は左下 */
 .pc.tile{transition:filter .2s}
 .pc.tile .pc-win{left:6cqw;right:6cqw;top:6cqw;bottom:6cqw;border-radius:6cqw}
@@ -222,11 +221,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes ring{from{opacity:1;scale:.8}to{opacity:0;scale:1.4}}
 
 /* バトルの間だけ出る説明：タイル行のすぐ下、手札の上にかぶせる。発動したカードの名前・効果・火加減と、大きなダメージ */
-.handwrap{position:relative;flex:none}
 .callout{position:absolute;left:0;right:0;top:2px;z-index:6;height:52px;border-radius:12px;isolation:isolate;background:var(--cream);color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.35)}
 .callout:empty{display:none}
-.night .hand{transition:opacity .25s,filter .25s}
-.night.busy .hand{opacity:.35;filter:saturate(.5)}
 
 
 
@@ -234,10 +230,6 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes coflash{0%{opacity:1}}
 
 /* 手札（仕入れ）：扇形に重ねる。枚数で幅を決めて、はしのカードも画面に収める */
-.hand{position:relative;flex:none;height:var(--hh);display:flex;justify-content:center;align-items:flex-end;padding:10px 12px 0}
-.handcard{--mid:calc((var(--n) - 1) / 2);--d:calc(var(--k) - var(--mid));position:relative;flex:none;width:min(calc((100% - 6px) / var(--n) + 6px),calc((var(--hh) - 16px) * .72),118px);aspect-ratio:5/7;height:auto;margin:0 -3px;padding:0;border:none;background:transparent;box-shadow:none;transform:translateY(calc(var(--d) * var(--d) * 3px)) rotate(calc(var(--d) * 3deg));transform-origin:50% 100%;transition:transform .15s}
-.handcard.gone{visibility:hidden}
-.handcard.sel,.handcard:active{transform:translateY(-10px) scale(1.05);z-index:3}
 
 /* ★3 のカットイン：ななめの金の帯・ほのかが左から・カードが右から・名前を大きく（--cd がかかる時間） */
 .cutin{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden;display:grid;place-items:center;animation:cidim var(--cd) ease-out forwards}
@@ -387,9 +379,9 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .dragghost.hot .pc{box-shadow:0 0 0 3px #8fe0c0,0 0 20px 7px rgba(111,199,168,.75)}
 .lifted .pc{opacity:.28}
 .tslot.swap .pc{outline:2px dashed rgba(255,226,160,.85);outline-offset:2px}
-.tslot.over .pc,.handcard.over .pc{transform:scale(1.12)}
+.tslot.over .pc,.shcard.over .pc{transform:scale(1.12)}
 .tslot.put.over{background:rgba(244,194,78,.5)}
-.tslot.cant .pc,.handcard.cant .pc{filter:grayscale(.7) brightness(.75)}
+.tslot.cant .pc,.shcard.cant .pc{filter:grayscale(.7) brightness(.75)}
 .dragtip{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 44px);z-index:46;transform:translateX(-50%);width:min(calc(100vw - 24px),400px);min-height:62px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:var(--cream);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35);pointer-events:none}
 .dt-card{flex:none;width:42px;aspect-ratio:5/7}
 .dt-card .pc{width:100%;height:100%}
@@ -403,13 +395,8 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .dt-flash{display:inline-block;margin:3px 0 0;font-size:11px;font-weight:900;background:var(--gold);color:#3a1c08;padding:1px 8px;border-radius:8px}
 
 /* 夜の画面のあまった高さは手札に：カードの大きさを手札の高さと幅で決める（container の単位） */
-.night .stage{flex:1.6 1 0;max-height:calc((min(100vw, 460px) - 32px) * 1.02)}
+.night .stage{flex:1 1 0;max-height:none}
 .night .chef{height:min(88%,calc((min(100vw, 460px) - 32px) * .4))}
-.night .handwrap{flex:1 1 0;min-height:var(--hh);display:flex;flex-direction:column;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
-.night .handwrap>.hand{flex:1;height:auto;container-type:size;padding:18px 10px 13px}
-/* カードの幅：手札の幅に重なり（--ov。枚数が多いと深く）で収まる・高さに収まる・大きすぎない、の小さいほう */
-.night .handcard{width:var(--w);margin:0 calc(var(--w) * var(--ov, .1) * -1);--w:min(calc((100cqw - 6px) / (var(--n) * (1 - 2 * var(--ov, .1)) + 2 * var(--ov, .1))),calc((100cqh - 8px) * .72),164px)}
-.night .handcard:first-child{margin-left:0}.night .handcard:last-child{margin-right:0}
 
 /* ショップ（11/17 しょーくん「ゼンゼロのようにショップを挟む。舞台にかぶせる」）：準備のあいだ舞台の上にかぶせ、バトルのときはとじる。
    上にコインと入れかえ・まんなかに3まい（1ラウンド目は無料の5まいを3＋2で）・値札は下。自分のカードを持ってくると、下に「はなすと うる」 */
@@ -439,11 +426,6 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .night.drag-own .shopov.over .sh-sell{background:rgba(190,58,36,.97);transform:scale(1.03)}
 .night.drag-own .shopov.over{box-shadow:inset 0 0 0 3px #ffd0a0}
 /* 手札：自分のカードだけ（5まいまで）。空いている所は「手札へ」の行き先 */
-.hand.empty{align-items:center}
-.hand-empty{margin:0 auto;font-size:12px;text-align:center;padding:8px 14px;border-radius:10px;background:rgba(42,20,10,.45);color:var(--milk)}
-.hand-n{position:absolute;z-index:4;font-size:10.5px;font-weight:700;pointer-events:none;right:12px;bottom:9px;padding:1px 8px;border-radius:8px;background:rgba(42,20,10,.6);color:var(--milk)}
-.night.dragging .hand.put{border-radius:12px;box-shadow:inset 0 0 0 2px rgba(255,214,120,.7);background:rgba(244,194,78,.12)}
-.night.dragging .hand.put.over{background:rgba(244,194,78,.3)}
 .bar .bake{flex:1;margin-left:0}
 
 /* ===== 今どきのゲームの見た目（11/17 夜 しょーくん「近代のゲームレベルに」・コードで描く C） =====
@@ -489,7 +471,6 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .tslot{background:radial-gradient(70% 60% at 50% 40%,rgba(255,220,170,.08),rgba(20,8,2,.35));box-shadow:inset 0 3px 7px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,214,140,.18)}
 
 /* 手札：ギンガムの布の上に並べる（いちごとクリーム・ステッチのふち） */
-.night .handwrap::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}
 
 /* ボタン：光沢と厚み。ときどき光が走る */
 button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);color:#fff4e4;border:2px solid #2a170c;box-shadow:inset 0 2px 0 rgba(255,236,200,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 #2a170c;text-shadow:0 1px 0 rgba(0,0,0,.4)}
@@ -561,7 +542,6 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
   mix-blend-mode:screen;transform-origin:50% 100%}
 .tiles.bakefx::after{animation:bakeflame .9s ease-out}
 @keyframes bakeflame{0%{opacity:0;transform:scaleY(.2)}25%{opacity:1;transform:scaleY(1.1)}55%{opacity:.85;transform:scaleY(.9)}100%{opacity:0;transform:scaleY(.6) translateY(-6px)}}
-.hand-n{left:14px;right:auto;top:10px;bottom:auto}
 
 /* ==== 11/18 しょーくんの感想（ゼンゼロを参考に） ==== */
 /* 属性の帯：名前の下に、左が役目・右が種類。色で見分ける */
@@ -589,8 +569,7 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 .kwtip.up::before{bottom:-6px;background:#2e190e;box-shadow:inset -1.5px -1.5px 0 var(--brass)}
 @keyframes kwin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 /* 手札：カードを布の内側（ステッチ）に収める。扇は外のカードを下の線にそろえ、まんなかを持ち上げる */
-.handcard{transform:translateY(calc((var(--d) * var(--d) - var(--mid) * var(--mid)) * 2.5px)) rotate(calc(var(--d) * 3deg))}
-/* つかんでいるあいだの札：上ではなく、指から遠いほう（ショップの上なら下のボタンの所・調理台や手札の上ならノルマの帯の所）。drag.js が top を決める */
+/* つかんでいるあいだの札：上ではなく、指から遠いほう（ショップの上なら下のボタンの所・調理台の上ならおなかの帯の所）。drag.js が top を決める */
 .dragtip{translate:0 -100%;min-height:58px}
 
 /* ==== 11/18 その2：カードの紙・焼き加減の炎・大きく見る画面の札・バトルの流れ・画面の切りかえ ==== */
@@ -625,7 +604,11 @@ button.pill.sub,.sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);col
 
 /* バトルの下のパネル（手札の所にまるごとかぶせる）：左にカード、右に名前と計算の札（1つずつハンコのように出る）、右下に大きなダメージ。
    11/18 見直し（しょーくん「表示が多いと枠の中がとんでもないことに」）：札が多い・パネルが低いときは札を小さく、数字は右の幅に収まる大きさ（--len＝いちばん長い数字の幅）。枠からははみ出さない */
-.night .callout{inset:0;top:0;height:auto;z-index:8;border-radius:14px;container-type:size}
+.night .callout{inset:auto 7px 12px;height:var(--hh);z-index:8;border-radius:14px;container-type:size}   /* 11/18 手札をなくした：舞台の下にかぶせる */
+.night .stage:has(.callout:not(:empty)) :is(.chef,.mon,.dc){translate:0 calc(var(--hh) * -.55);transition:translate .3s}
+.night .stage :is(.chef,.mon,.dc,.ov-heat){transition:translate .3s}
+.night .stage:has(.callout:not(:empty)) .ov-heat{translate:0 calc(var(--hh) * -1 - 4px)}
+.night .bp::before{top:auto;bottom:-9px;border:9px solid transparent;border-bottom:0;border-top-color:#f6e4c8}
 .bp{position:absolute;inset:0;display:grid;grid-template-columns:min(28%,112px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:12px;row-gap:2px;padding:12px 14px 10px 12px;border-radius:14px;--ch:1}
 .bp::before{content:"";position:absolute;left:var(--x);top:-9px;translate:-50% 0;border:9px solid transparent;border-top:0;border-bottom-color:#fffaf0}
 .callout.pop .bp{animation:bpin .26s cubic-bezier(.2,1.2,.4,1)}
