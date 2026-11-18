@@ -51,7 +51,6 @@ const candyHas = (key, m) => String(key).split('+').includes(m);
 
 /* ---------- 棚 ---------- */
 const BATCH = 3;          // 1回焼くと同じお菓子3こ＝棚の1マス
-const OVENS = 3;          // 前の朝の画面の数（朝の画面を作りなおすまで）
 const SHELF_COLS = 3;     // 棚は3列。看板の枠は、まんなかの列の上から（行の数のまんなか）
 const kanbanSlot = n => SHELF_COLS * Math.floor((Math.ceil(n / SHELF_COLS) - 1) / 2) + 1;
 

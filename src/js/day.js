@@ -20,10 +20,11 @@ function stopDay() {
 }
 
 /* ---------- 棚：3列・看板の枠はまんなか（hiru.js の kanbanSlot） ---------- */
-function shelfSlots() {
-  const n = Math.max(1, Math.min(SHELF_MAX, S.shelfMax || 6)), ks = kanbanSlot(n), R = S.dayRun;
+/* kan＝看板の枠に入れるお菓子の key（朝の画面は null） */
+function shelfSlots(kan = S.dayRun && S.dayRun.kanban) {
+  const n = Math.max(1, Math.min(SHELF_MAX, S.shelfMax || 6)), ks = kanbanSlot(n);
   const slots = Array(n).fill(null), items = S.shelf.map((s, i) => ({ s, i }));
-  const k = R && R.kanban ? items.findIndex(o => o.s.key === R.kanban) : -1;
+  const k = kan ? items.findIndex(o => o.s.key === kan) : -1;
   if (k >= 0) slots[ks] = items.splice(k, 1)[0];
   let j = 0;
   for (const o of items) {
