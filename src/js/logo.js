@@ -1,17 +1,19 @@
 /* ==== タイトルロゴ（昼のチャット・11/18）==== */
 /* logoHTML() をタイトル画面の見出しの場所に置く。見本はしょーくんのOKの Design「まぜまぜ ロゴ案」（Version 6）
    動き（約3秒）：生地のうずまき → まぜまぜが残像をひいて飛び出す（-7度）・光がすべる → おかし屋が1文字ずつトン → 小さく「さん」・お菓子が散ってふわふわ
-   文字は Mochiy Pop One で描いた絵（assets/art の logo-*・ネットなしでも出る）。大きさは横幅に合わせる（390 の座標を --u でのばす）
+   文字はコードの文字（11/18 司令塔「ロゴの字は絵に焼きこまず、コードの文字で」）：Mochiy Pop One（OFL・アプリに入れてよい）をロゴの8文字だけにしぼった assets/font/logo.woff2（"mz-logo"・ビルドが埋めこむ）。
+   大きさは横幅に合わせる（390 の座標を --u でのばす）
    動くのは起動して最初に出たときだけ。2回目からは、できあがった形（お菓子のふわふわ・キラキラだけ動く） */
 let lgPlayed = false;
 const LG_SW1 = 'M156 150 157 151 157.9 152.2 158.5 153.7 158.9 155.4 158.9 157.3 158.6 159.3 157.9 161.3 156.8 163.2 155.3 165.1 153.4 166.8 151.1 168.2 148.6 169.3 145.7 170 142.7 170.2 139.4 170 136.2 169.3 132.9 168 129.7 166.2 126.7 163.8 124 161 121.7 157.6 119.8 153.8 118.5 149.6 117.7 145.2 117.6 140.5 118.2 135.7 119.5 130.9 121.6 126.2 124.4 121.7 127.8 117.6 132 113.9 136.7 110.7 142 108.2 147.8 106.3 153.8 105.3 160.1 105.2 166.6 106 173 107.7 179.2 110.3 185.1 113.9 190.6 118.3 195.5 123.6 199.7 129.7 203.1 136.4 205.5 143.6 207 151.3 207.4 159.3 206.6 167.3 204.7 175.4 201.7 183.2 197.5 190.7 192.2 197.6 186 203.9 178.7 209.3 170.7 213.7 162 217 152.8 219.2 143.2 220 133.4 219.5 123.7 217.6 114.1 214.3 105 209.7 96.5 203.8 88.8 196.7 82 188.4 76.4 179.2 72 169.1 69 158.4 67.5 147.2 67.6 135.7 69.3 124.3 72.5 113 77.4 102.2 83.8 91.9 91.6 82.6 100.8 74.3 111.1 67.3 122.4 61.7 134.6 57.7 147.3 55.3 160.4 54.7 173.6 56 186.6 59 199.3 63.9 211.2 70.6 222.3 78.9 232.2 88.8 240.8 100.1 247.8 112.6 253.1 126 256.5 140.2 257.9 154.9 257.3 169.8 254.7 184.7 249.9 199.1 243.2 213 234.6 225.8 224.1 237.5 212 247.8 198.6 256.3 183.9 263 168.3 267.7 152.1 270.2 135.5 270.5 118.9 268.4 102.6 264.1 86.8 257.5 72.1 248.7 58.5 237.9 46.4 225.2';
 const LG_SW2 = 'M146 150 145.1 149.3 144.4 148.4 143.8 147.3 143.5 146 143.4 144.6 143.6 143.1 144.1 141.5 144.9 140 146 138.5 147.4 137.2 149.1 136 151.1 135.1 153.3 134.5 155.7 134.3 158.2 134.4 160.8 134.9 163.4 135.9 165.9 137.3 168.3 139.1 170.4 141.4 172.3 144 173.8 147 174.9 150.3 175.5 153.8 175.6 157.5 175.2 161.3 174.2 165.2 172.6 168.9 170.4 172.5 167.7 175.8 164.4 178.8 160.6 181.4 156.4 183.4 151.8 184.9 146.9 185.7 141.9 185.8 136.7 185.2 131.6 183.9 126.6 181.8 121.9 178.9 117.5 175.4 113.5 171.2 110.1 166.3 107.4 160.9 105.4 155.1 104.2 149 103.9 142.6 104.4 136.1 106 129.6 108.4 123.3 111.7 117.2 116 111.6 121 106.6 126.8 102.2 133.3 98.6 140.3 95.9 147.8 94.2 155.5 93.5 163.4 93.9 171.2 95.4 178.9 98.1 186.3 101.8 193.2 106.6 199.5 112.3 204.9 119 209.5 126.4 213.1 134.6 215.5 143.2 216.7 152.3 216.6 161.5 215.3 170.8 212.7 179.9 208.8 188.7 203.6 197 197.3 204.6 189.9 211.3 181.5 217 172.3 221.5 162.5 224.8 152.2 226.7 141.6 227.2 130.9 226.2 120.3 223.7 110.1 219.7 100.4 214.4 91.4 207.6 83.3 199.6 76.4 190.5 70.7 180.4 66.4 169.4 63.6 157.9 62.5 146 62.9 133.9 65.1 121.9 68.9 110.1 74.4 98.9 81.4 88.4 89.8 79 99.6 70.6 110.6 63.7 122.5 58.2 135.1 54.4 148.3 52.4 161.8 52.2 175.3 53.8 188.5 57.3 201.3 62.7 213.3 69.8 224.3 78.6 234.1 88.9';
-/* 散るお菓子（仮の絵・H-011 のアイコンが来たら差しかえ）：[絵, 左, 上, 大きさ, かたむき, 出る時間, ふわふわの時間] */
+/* 散るお菓子：[絵, 左, 上, 大きさ, かたむき, 出る時間, ふわふわの時間]。絵はゲームで描いたお菓子（LG_SWEET_ART・11/18 しょーくん「ロゴの周りの飛んでるお菓子もちゃんと作り込んで」）・ないときはコードの SVG */
 const LG_SWEETS = [
-  ['cookie', 12, -4, 44, -14, 2.4, 3.3], ['cake', 334, -8, 44, 10, 2.43, 3.5], ['macaron', 8, 92, 44, -8, 2.45, 3.7],
-  ['donut', 338, 76, 44, 16, 2.47, 3.4], ['berry', 62, 126, 44, -18, 2.49, 3.6], ['cupcake', 296, 140, 44, 8, 2.51, 3.8],
-  ['candy', 180, -14, 44, -6, 2.42, 3.45], ['chip', 196, 146, 36, 12, 2.53, 3.55],
+  ['cookie', 9, -7, 50, -14, 2.4, 3.3], ['cake', 331, -11, 50, 10, 2.43, 3.5], ['macaron', 5, 89, 50, -8, 2.45, 3.7],
+  ['donut', 335, 73, 50, 16, 2.47, 3.4], ['berry', 59, 123, 50, -18, 2.49, 3.6], ['cupcake', 293, 137, 50, 8, 2.51, 3.8],
+  ['candy', 177, -17, 50, -6, 2.42, 3.45], ['chip', 193, 143, 42, 12, 2.53, 3.55],
 ];
+const LG_SWEET_ART = { cookie: 'candy-cookie', cake: 'candy-cookie-sato', macaron: 'candy-puff', donut: 'candy-jelly', berry: 'card-sato', cupcake: 'candy-cookie-bata', candy: 'candy-candy', chip: 'candy-brownie' };
 const LG_SPARKS = [[52, 48, 2.6], [334, 46, 2.85], [120, 2, 3.1], [262, 0, 3.35], [128, 150, 3.6], [252, 150, 3.85]];
 const LG_SVG = {
   cookie: '<circle cx="22" cy="22" r="19" fill="#d99a4e" stroke="#7a3e14" stroke-width="2.5"/><circle cx="20" cy="19" r="13" fill="#eab86d" opacity=".55"/><circle cx="15" cy="17" r="2.7" fill="#4a2410"/><circle cx="27" cy="13" r="2.2" fill="#4a2410"/><circle cx="29" cy="27" r="2.9" fill="#4a2410"/><circle cx="17" cy="29" r="2.3" fill="#4a2410"/><circle cx="23" cy="21" r="1.7" fill="#4a2410"/>',
@@ -27,25 +29,27 @@ const LG_SPARK = '<svg class="lg-sp" viewBox="0 0 20 20" style="--x:{x};--y:{y};
 /* うずまきの中心（お菓子が飛び出す所） */
 const LG_CX = 200, LG_CY = 66;
 /* まぜまぜ：[文字, 飛び出す前の位置, まわる角度, 出る時間, 光がすべる時間] */
-const LG_MZ = [['ma', 87, 320, .5, 1.15], ['ze', 29, 270, .55, 1.22], ['ma', -29, 220, .6, 1.29], ['ze', -87, 170, .65, 1.36]];
-const LG_DP = [['o', 1.4], ['ka', 1.56], ['shi', 1.72], ['ya', 1.88]];
+const LG_MZ = [['ま', 87, 320, .5, 1.15], ['ぜ', 29, 270, .55, 1.22], ['ま', -29, 220, .6, 1.29], ['ぜ', -87, 170, .65, 1.36]];
+const LG_DP = [['お', 1.4], ['か', 1.56], ['し', 1.72], ['屋', 1.88]];
 
-function lgImg(n) { return `<img src="${ART['logo-' + n] || ''}" alt="" draggable="false">`; }
+/* 字：3まい重ね（うしろ＝クリームのふちとかげ・まんなか＝こげ茶のふち＝::before/::after・前＝中の色 i） */
+function lgTxt(t) { return `<b class="lg-t" data-t="${t}"><i>${t}</i></b>`; }
 function logoHTML() {
   const play = !lgPlayed;
   lgPlayed = true;
   const sweets = LG_SWEETS.map(([k, x, y, w, rt, d, bob]) => {
-    const sx = LG_CX - (x + w / 2), sy = LG_CY - (y + w / 2);
-    return `<span class="lg-bs" style="--x:${x};--y:${y};--w:${w};--sx:${sx};--sy:${sy};--rt:${rt};animation-delay:${d}s"><span class="lg-bb" style="animation-delay:${bob}s"><svg viewBox="0 0 44 44">${LG_SVG[k]}</svg></span></span>`;
+    const sx = LG_CX - (x + w / 2), sy = LG_CY - (y + w / 2), src = ART[LG_SWEET_ART[k]];
+    const pic = src ? `<img src="${src}" alt="" draggable="false">` : `<svg viewBox="0 0 44 44">${LG_SVG[k]}</svg>`;
+    return `<span class="lg-bs" style="--x:${x};--y:${y};--w:${w};--sx:${sx};--sy:${sy};--rt:${rt};animation-delay:${d}s"><span class="lg-bb" style="animation-delay:${bob}s">${pic}</span></span>`;
   }).join('') + LG_SPARKS.map(([x, y, d]) => LG_SPARK.replace('{x}', x).replace('{y}', y).replace('{d}', d)).join('');
-  const mz = LG_MZ.map(([n, dx, a, d, sh]) => {
+  const mz = LG_MZ.map(([t, dx, a, d, sh]) => {
     const v = `--dx:${dx};--a0:${-a}deg;--a1:${a}deg`;
-    return `<span class="lg-slot"><span class="lg-gh" style="${v};animation-delay:${(d + .04).toFixed(2)}s">${lgImg(n + '-g')}</span><span class="lg-gh" style="${v};animation-delay:${(d + .08).toFixed(2)}s">${lgImg(n + '-g')}</span>`
-      + `<span class="lg-c lg-mz" style="${v};animation-delay:${d}s">${lgImg(n)}<span class="lg-sh" style="-webkit-mask-image:url(${ART['logo-' + n + '-g'] || ''});mask-image:url(${ART['logo-' + n + '-g'] || ''})"><i style="animation-delay:${sh}s"></i></span></span></span>`;
+    return `<span class="lg-slot"><span class="lg-gh" style="${v};animation-delay:${(d + .04).toFixed(2)}s"><b class="lg-g">${t}</b></span><span class="lg-gh" style="${v};animation-delay:${(d + .08).toFixed(2)}s"><b class="lg-g">${t}</b></span>`
+      + `<span class="lg-c lg-mz" style="${v};animation-delay:${d}s">${lgTxt(t)}<b class="lg-sh" style="animation-delay:${sh}s">${t}</b></span></span>`;
   }).join('');
-  const dp = LG_DP.map(([n, d]) => `<span class="lg-c lg-dp" style="animation-delay:${d}s">${lgImg(n)}</span>`).join('')
+  const dp = LG_DP.map(([t, d]) => `<span class="lg-c lg-dp" style="animation-delay:${d}s">${lgTxt(t)}</span>`).join('')
     + LG_DP.map(([, d], i) => `<span class="lg-pf" style="--x:${2 + i * 54};animation-delay:${(d + .29).toFixed(2)}s"></span>`).join('')
-    + `<span class="lg-c lg-sn">${lgImg('san')}</span>`;
+    + `<span class="lg-c lg-sn">${lgTxt('さん')}</span>`;
   return `<div class="lg ${play ? 'lg-play' : 'lg-still'}" role="img" aria-label="まぜまぜおかし屋さん">
     <div class="lg-fx" aria-hidden="true">${sweets}</div>
     <div class="lg-th" aria-hidden="true">
@@ -108,7 +112,6 @@ function lgTitleHTML(saved, arm) {
   const btn = saved && saved.phase !== 'title'
     ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button><button class="sub" data-act="reset">${arm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>`
     : '<button class="big" data-act="start">はじめる</button>';
-  if (play) setTimeout(() => { const l = document.querySelector('.tt .lg-play'); if (l) l.className = 'lg lg-still'; }, 4300);   // ロゴが動きおわったら、光がすべるのをくりかえす形に
   return `<section class="title tt${play ? ' tt-play' : ''}">
     <div class="tt-scene" style="--ar:${B.ar};--fx:${B.fx};--fy:${B.fy};--z:${B.z || 1}" aria-hidden="true"><div class="tt-zoom"><img class="tt-bgi" src="${bg}" alt="" draggable="false">${lt}${ray}</div></div>
     <div class="tt-veil" aria-hidden="true"></div>
