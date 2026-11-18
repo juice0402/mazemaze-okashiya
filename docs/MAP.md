@@ -59,6 +59,11 @@
 - night.js：growStep（バトル開始時に育つ・ev の type grow）・coolDown（ラウンドの終わりに冷める・nextRound）・mixResult（大作は大きいほう）
 - night-ui.js：setHeat（温度のことば）・showEvent の grow・HEROES・POSE_MINAMO・chefArt()。battle-fx.js：tempHTML・tempFx・coolFx・chibiName。cards-ui.js：sizeIcon・meterIcon。見た目は style-battle.css のいちばん下「みなもの夜」
 
+## みなも②（11/19・ちいさなキャンディ）
+- cards.js：COLD_MUL（ひえひえ×2・ひんやり×1.5）・PETIT_DMG／MATS の cat candy（korodrop〜mintame・fx の candy・perChain・petit・link・candyLead・chainFin・coldAgain）／飴ばさみの chainUp（キャンディの夜は れんさ+1・紙は candyNight() で出しわけ）／FIELDS の dairiseki（chain0）・yatai（petit）／BUILDS.candy（from 14・mate）／chainFinOf・KW の れんさ・ちいさなキャンディ
+- night.js の resolveRound：chain（キャンディで+1・素材や道具で0・飴ばさみは切らない）・candyMul・ちいさなキャンディは ev の type petit（act のあと）。mixRule はキャンディか素材
+- night-ui.js：showEvent の petit・e.chain（2から chainPop）・scoreTick・actChips の clead／link／chainUp・pickHTML は4つ以上で .pk-list.many（2×2）。battle-fx.js：chainPop・petitFx。見た目は style-battle.css のいちばん下
+
 ## データの形（S・セーブは localStorage `mazemaze-okashiya` の v:5）
 - phase：title → prologue（はじめだけ）→ morning → day → night → result → （day+1）morning
 - 1日の記録 today（newDay・朝に作る）と yesterday（きのうの分）：day・visitors（来たお客さん）・served・sales（円）・flashes（朝にひらめいたレシピ）・made・kanban（看板のレシピの key）・kanbanSoldOut・hearts・newRegulars／mon（来たモンスター）・newMon（はじめて）・score（味パワーの合計）・belly（おなかいっぱいの量）・mood（0〜3）・gifts（素材 id → 数）・coins（お礼のコイン 円）。昼の画面は visitors・served・sales・kanban・kanbanSoldOut・hearts を入れる

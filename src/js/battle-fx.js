@@ -90,7 +90,7 @@ function takeBuff(i, from, kind) {
   b.classList.add('absorb'); setTimeout(() => b.remove(), T(420));
   return true;
 }
-const BUFF_TXT = { next: o => '×' + fmtMul(o.v), rally: o => '+' + fmt(o.v), nb: o => '+' + fmt(o.v), again: () => 'もう1回' };
+const BUFF_TXT = { next: o => '×' + fmtMul(o.v), clead: o => '×' + fmtMul(o.v), rally: o => '+' + fmt(o.v), nb: o => '+' + fmt(o.v), again: () => 'もう1回' };
 /* 計算の札の元のカード → このカードへ（札が残っていれば吸いこむ・なければ元のマスから飛んでくる） */
 function auraIn(e, srcs, kind) {
   for (const s of srcs) if (s !== e.i && !takeBuff(e.i, s, kind)) aura(s, e.i, kind);
@@ -359,4 +359,32 @@ function chipPop(at, c) {
   const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c));
   ch.style.setProperty('--pd', T(1000) + 'ms');
   setTimeout(() => ch.remove(), T(1020));
+}
+
+/* ---------- 6. みなも②ちいさなキャンディ（11/19）：れんさの数・ちいさなキャンディ。動かすのは transform と opacity だけ ---------- */
+/* 舞台の右上に「Nれんさ！」。数がふえるほど字が大きく・5から金色（2れんさから・11/19 しょーくん） */
+function chainPop(n) {
+  const st = $('stage'); if (!st) return;
+  const r = st.getBoundingClientRect(), p = { x: r.left + r.width * .74, y: r.top + r.height * .2 };
+  document.querySelectorAll('.chainpop').forEach(el => el.remove());
+  const el = fxEl('chainpop' + (n >= 5 ? ' gold' : ''), p, `<b>${n}</b><small>れんさ！</small>`);
+  el.style.setProperty('--cs', Math.min(1.7, .9 + n * .08).toFixed(2));
+  if (!REDUCED && el.animate) el.animate([{ transform: 'translate(-50%,-50%) scale(.3) rotate(-12deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.18) rotate(-6deg)', opacity: 1, offset: .25 },
+    { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: .4 }, { transform: 'translate(-50%,-58%) scale(1) rotate(-6deg)', opacity: 0 }], { duration: T(1100), easing: 'ease-out', fill: 'forwards' });
+  setTimeout(() => el.remove(), T(1150));
+}
+/* ちいさなキャンディ：はじけキャンディのタイルから、小さな飴がぽんと はじけてモンスターへ。当たったら数字と、れんさ */
+function petitFx(e, run, q) {
+  const a = spot(e.i), b = spot($('mon'));
+  const land = () => {
+    monReact('hit'); if (b) { dmgNum(e.dmg, '', b); sparkBurst({ x: b.x, y: b.y, w: 12 }, 8, 'all', .8); }
+    if (e.chain >= 2) chainPop(e.chain);
+    scoreTick(e.dmg, run, q);
+  };
+  if (e.k === 0) { const slot = tslot(e.i), card = slot && slot.querySelector('.pc'); if (card) replay(card, 'kon'); }
+  if (!a || !b || REDUCED || !document.body.animate) { setTimeout(land, T(120)); return 260; }
+  const el = fxEl('fx-petit', a, artImg(e.cid)), ms = T(420), side = (e.k % 2 ? 1 : -1) * (14 + e.k * 6);
+  el.style.setProperty('--pr', (e.k * 47 % 360) + 'deg');
+  arcFly(el, { x: side * .3, y: -a.h * .2 }, { x: b.x - a.x, y: b.y - a.y }, ms, 70 + e.k * 12, .5, .9, () => { el.remove(); land(); });
+  return 370 + (e.k === e.n - 1 ? 520 : 0);   // 次の飴は とちゅうで追いかける・さいごの1こは当たるまで待つ
 }

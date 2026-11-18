@@ -134,8 +134,11 @@ function showEvent(e, run, q) {
     if (done.length) { setTimeout(() => cutIn(done[0].cid, '大作 完成！'), T(t)); t += 1500; }
     return t + 250;
   }
+  if (e.type === 'petit') return petitFx(e, run, q);   // みなも②：ちいさなキャンディが1こ飛ぶ（battle-fx.js）
   const d = cardDef(e.cid), slot = tslot(e.i), card = slot && slot.querySelector('.pc');
   if (slot) slot.classList.add('now', 'done');
+  if (e.chain >= 2) chainPop(e.chain);   // 2れんさから大きく（11/19 しょーくん）
+  else if (e.chainBreak >= 2) floatAt(slot, 'れんさ おわり', 'ice');
   if (e.again) takeBuff(e.i, e.i - 1, 'again');
   /* 1. 発動したカードが跳ねる（★1 ぽん・★2 大きく・★3 縦にくるっと1回転してズドン） */
   let t = card ? actBounce(card, d.star) : 300;
@@ -163,21 +166,25 @@ function showEvent(e, run, q) {
     t += 300;
     setTimeout(() => {
       if (!$('qfill')) return;   // 夜の画面からはなれたあと（11/19）
-      hitFx(e.dmg, q, H.el);
-      const sc = $('score'), before = N.score + run - e.dmg;
-      countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');
-      $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(e.dmg, run, q);
-      $('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
-      if (run >= q && run - e.dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
+      hitFx(e.dmg, q, H.el); scoreTick(e.dmg, run, q);
     }, T(t));
     t += 760;
   } else t += 420;
   return t;
 }
+/* 味パワーの札とおなかの帯を、この一撃のぶん進める（ちいさなキャンディも使う） */
+function scoreTick(dmg, run, q) {
+  if (!$('qfill')) return;
+  const sc = $('score'), before = N.score + run - dmg;
+  countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');
+  $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q);
+  $('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
+  if (run >= q && run - dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
+}
 /* 計算の札のデータ：calc＝数字にすいこまれる札（v＝この札のあとの数字・p＝前の数字・src＝効果の元のマス・k＝マスに残った札の種類）
    outs＝ほかのカードへの効果（out＝e.out の番号）。c＝札の色（gold・ember・pink・mint・koge） */
-const PART_K = l => l === '次の主役' ? 'next' : l === 'となり' ? 'nb' : l === 'スタート' ? 'rally' : l.startsWith('サイコー') ? 'best' : '';
-const PART_C = l => l === '次の主役' ? 'pink' : l === 'となり' || l === '大きさ' ? 'mint' : l === '焼き加減' || l === 'フィールド' || l.startsWith('サイコー') ? 'ember' : 'gold';
+const PART_K = l => l === '次の主役' ? 'next' : l === 'となり' ? 'nb' : l === 'スタート' ? 'rally' : l === 'いちばん' ? 'clead' : l.startsWith('サイコー') ? 'best' : '';
+const PART_C = l => l === '次の主役' || l === 'いちばん' ? 'pink' : l === 'となり' || l === '大きさ' || l === 'ひえひえ' || l === 'ひんやり' ? 'mint' : l === '焼き加減' || l === 'フィールド' || l.startsWith('サイコー') ? 'ember' : 'gold';
 function actChips(e) {
   const d = cardDef(e.cid), calc = [], outs = [], out = k => { const n = (e.out || []).findIndex(o => o.k === k); return n < 0 ? null : n; };
   let v = 0;
@@ -193,6 +200,9 @@ function actChips(e) {
   if (e.sear) outs.push(e.sear.burnt ? { b: '焦げた', s: '右の生地', c: 'koge', out: out('sear') } : { b: `焼き+${e.sear.to - e.sear.from}`, s: '右の生地', c: 'ember', out: out('sear') });
   if (e.grow) outs.push({ b: e.grow.to >= SIZE_MAX ? '完成！' : `大きさ+${e.grow.to - e.grow.from}`, s: '右の大作', c: 'mint', out: out('grow') });
   if (e.next) outs.push({ b: '×' + fmtMul(e.next), s: '次の主役へ', c: 'pink', out: out('next') });
+  if (e.clead) outs.push({ b: '×' + fmtMul(e.clead), s: 'キャンディぜんぶへ', c: 'pink', out: out('clead') });
+  if (e.link) outs.push({ b: `れんさ+${e.link}`, s: 'つなぎ', c: 'gold' });
+  if (e.chainUp) outs.push({ b: `れんさ+${e.chainUp}`, s: 'つなげる', c: 'gold' });
   if (fxOn(d, 'again') && !e.again) outs.push({ b: 'もう1回', s: '右どなり', c: 'mint', out: out('again') });
   if (e.call) outs.push({ b: 'フィールド', s: '次のショップ', c: 'mint' });
   if (e.kone) outs.push({ b: `こね+${e.kone[1] - e.kone[0]}`, s: 'こねた回数', c: 'gold', kone: e.kone[1] });
@@ -408,8 +418,8 @@ function pickHTML() {
       <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
       <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
-  return `<div class="pickov"><p class="pk-ttl">今夜の おもてなし</p><div class="pk-list">${list}</div>
-    ${TRIAL ? '<p class="pk-trial">ためしのページ：本番では、こね生地は8日目から・みなもは仲間になってから</p>' : ''}</div>`;
+  return `<div class="pickov"><p class="pk-ttl">今夜の おもてなし</p><div class="pk-list${openBuilds().length >= 4 ? ' many' : ''}">${list}</div>
+    ${TRIAL ? '<p class="pk-trial">ためしのページ：本番では、こね生地は⑨のあと・みなもは仲間になった次の夜から</p>' : ''}</div>`;
 }
 
 /* ---------- 夜の画面 ---------- */

@@ -9,7 +9,7 @@ const artImg = cid => `<img${hiArt(cid) ? ' class="hi"' : ''} src="${cardIconURL
 const starGems = d => d.star > 1 ? `<span class="pc-star" aria-label="★${d.star}">${'<i></i>'.repeat(d.star)}</span>` : '';   // 星は描き下ろしの絵（ui-star）
 
 /* 属性の帯（ゼンゼロの形・11/18 しょーくん）：左が役目・右が種類。色で見分ける */
-const ATTR_C = { 主役: 'atk', 支援: 'sup', 火力: 'fire', 温度: 'temp', 仕入れ: 'buy', 生地: 'dough', 飴細工: 'ame', 素材: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };
+const ATTR_C = { 主役: 'atk', 支援: 'sup', 火力: 'fire', 温度: 'temp', 仕入れ: 'buy', 生地: 'dough', 飴細工: 'ame', キャンディ: 'ame', 素材: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };
 function attrBar(d) {
   const a = d.cat === 'field' ? ['フィールド'] : [d.role, CAT_NAME[d.cat]].filter(Boolean);
   return `<p class="pc-attr">${a.map(t => `<span class="at-${ATTR_C[t] || 'etc'}">${t}</span>`).join('')}</p>`;

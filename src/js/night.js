@@ -194,7 +194,8 @@ const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && 
 function mixRule(d) {
   if (d.cat === 'field') return 'フィールドは まぜられない';
   if (d.star >= 3) return '★3は完成。もう まぜられない';
-  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : chefNow() === CHEFS.minamo ? '飴細工か素材' : '生地か素材'}の★${d.star}と まぜる`;
+  const main = d.cat === 'ame' || d.cat === 'candy' ? CAT_NAME[d.cat] : candyNight() ? 'キャンディ' : chefNow() === CHEFS.minamo ? '飴細工' : '生地';
+  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : main + 'か素材'}の★${d.star}と まぜる`;
 }
 /* p のカードを q へ落としたら何が起きるか（ドラッグの光と案内・指をはなしたとき）。kind：mix・buy・place・move・sell */
 function dropPlan(p, q) {
@@ -308,15 +309,28 @@ function resolveRound() {
   const first = idx[0], last = idx[idx.length - 1];
   const doneN = () => idx.filter(j => board[j] && cardDef(board[j].cid).grow && board[j].cook >= SIZE_MAX).length;   // 完成した大作の数（そのときの）
   const extra = Array(SLOTS).fill(0);
-  let pend = 1, total = 0, rally = 0, pendEv = [], kone = N.kone || 0, panRally = 0;   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
+  let pend = 1, total = 0, rally = 0, pendEv = [], kone = N.kone || 0, panRally = 0;
+  /* みなも②（11/19）：chain＝れんさ（キャンディが続けて発動した数・素材や道具が発動すると0）・candyMul＝いちばんドロップの「キャンディぜんぶ×」 */
+  let chain = (F && F.chain0) || 0, candyMul = 1;
+  const petitN = (F && F.petit) || 0, isCandy = j => !!board[j] && cardDef(board[j].cid).candy;   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
   /* ほかのカードにかかる効果は、バトルの画面でオーラを飛ばすので、どこからどこへかを残す（11/18 しょーくん）
      e.out＝このカードから飛ばす [{k, to, v}]（to はマスの番号の列・'heat'・'score'）。parts の4つめ＝かかった元のマス */
   const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
   for (const i of idx) {
-    const times = 1 + Math.min(3, extra[i]);
+    const cold = cardDef(board[i].cid).fx.coldAgain && heat <= 2 ? 1 : 0;   // ひえひえミント飴：ひんやり以下なら もう1回
+    const times = 1 + Math.min(3, extra[i]) + cold;
     for (let t = 0; t < times; t++) {
       const c = board[i], d = cardDef(c.cid), fx = d.fx, sm = STAR_MUL[d.star];
       const e = { type: 'act', i, cid: c.cid, again: t > 0, dmg: 0, cook: c.cook, out: [] };
+      if (d.candy) {   // れんさ+1（つなぎペロキャン：両どなりがキャンディなら さらに+）
+        const lk = fx.link && isCandy(i - 1) && isCandy(i + 1) ? fx.link : 0;
+        chain += 1 + lk; e.chain = chain; if (lk) e.link = lk;
+      } else if (fx.chainUp && candyNight()) { chain += fx.chainUp; e.chain = chain; e.chainUp = fx.chainUp; }   // 飴ばさみは れんさを切らない
+      else if (chain) { e.chainBreak = chain; chain = 0; }
+      if (i === first && t === 0 && fx.candyLead) {   // いちばんドロップ：このラウンドのキャンディぜんぶ×（自分も・ちいさなキャンディも）
+        candyMul *= fx.candyLead; e.clead = fx.candyLead;
+        e.out.push({ k: 'clead', to: idx.filter(j => j > i && isCandy(j)), v: fx.candyLead });
+      }
       if (i === first && t === 0 && fx.rally) {
         rally += fx.rally * sm; e.rally = true;
         e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j)), v: fx.rally * sm });
@@ -346,11 +360,16 @@ function resolveRound() {
         const parts = [];
         let base = fx.dmg * sm;
         if (fx.perKone && kone) { const v = fx.perKone * sm * kone; base += v; parts.push(['+', v, `こね${kone}回`]); }
+        if (fx.perChain && chain) { const v = fx.perChain * sm * chain; base += v; parts.push(['+', v, `れんさ${chain}`]); }
         if (d.dough) {
           const cm = cookMul(c.cook || 0); base *= cm; if (cm !== 1) parts.push(['×', cm, '焼き加減']);
           if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
         }
         if (d.grow) { const gm = sizeMul(c.cook || 0, fx); base *= gm; if (gm !== 1) parts.push(['×', gm, c.cook >= SIZE_MAX ? '完成' : '大きさ']); }
+        if (d.candy) {   // キャンディは冷えるほど強い・いちばんドロップ
+          const cm = COLD_MUL[heat] || 1; if (cm !== 1) { base *= cm; parts.push(['×', cm, heatOf().names[heat]]); }
+          if (candyMul !== 1) { base *= candyMul; parts.push(['×', candyMul, 'いちばん', [first]]); }
+        }
         if (fx.lead && i === first) { base *= fx.lead; e.lead = true; parts.push(['×', fx.lead, 'スタート']); }
         if (fx.sai && i === last) {
           const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n);
@@ -371,14 +390,20 @@ function resolveRound() {
       }
       if (fx.next) { pend *= fx.next; e.next = fx.next; pendEv.push(e); }
       total += dmg;
+      const pet = [];   // はじけキャンディ：ちいさなキャンディが1こずつ飛ぶ（れんさ+1ずつ・冷えるほど強い・いちばんドロップも効く）
+      if (fx.petit) {
+        const n = fx.petit + petitN, pm = (COLD_MUL[heat] || 1) * candyMul;
+        for (let k = 0; k < n; k++) { chain++; const pd = Math.min(DMG_CAP, Math.floor(PETIT_DMG * sm * pm)); total += pd; pet.push({ type: 'petit', i, cid: c.cid, k, n, dmg: pd, chain }); }
+      }
       const fin = i === last ? (fx.fin || 1) * (fx.koneFin ? 1 + koneFinOf(fx, d.star) * kone : 1)   // しめのコロネ：×(1＋0.5×こねた回数)
-        * (fx.doneFin ? 1 + doneFinOf(fx, d.star) * doneN() : 1) : 1;                               // しあげのつや：×(1＋0.5×完成した大作の数)（11/19）
+        * (fx.doneFin ? 1 + doneFinOf(fx, d.star) * doneN() : 1)
+        * (fx.chainFin ? 1 + chainFinOf(fx, d.star) * chain : 1) : 1;                                  // キャンディのびん：×(1＋0.25×れんさ)（11/19）                               // しあげのつや：×(1＋0.5×完成した大作の数)（11/19）
       if (fin > 1) { const add = Math.min(DMG_CAP, Math.floor(total * (fin - 1))); dmg += add; total += add; e.fin = [Math.round(fin * 100) / 100, add]; e.out.push({ k: 'fin', to: 'score' }); }
       total = Math.min(DMG_CAP, total);
       if (fx.again && t === 0 && i + 1 < SLOTS) { extra[i + 1] += fx.again; if (board[i + 1]) e.out.push({ k: 'again', to: [i + 1] }); }
       if (fx.call) { call = true; e.call = true; }
       e.dmg = dmg;
-      ev.push(e);
+      ev.push(e, ...pet);
     }
   }
   return { ev, total, burnt, board, heat, call, kone };
