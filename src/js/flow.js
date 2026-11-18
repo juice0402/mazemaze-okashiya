@@ -28,7 +28,7 @@ function renderPrologue() {
 const repFull = () => (typeof REP_JAR === 'number' ? REP_JAR : 10);   // びんがいっぱいになるハートの数（昼のチャットが hiru.js に REP_JAR を置くとそれを使う）
 function jarHTML() {
   const full = repFull(), p = Math.max(0, Math.min(1, (S.rep % full) / full)), n = Math.floor(S.rep / full);
-  return `<div class="jar" style="--p:${p.toFixed(3)}" aria-label="お店の評判"><i class="jar-fill"></i><i class="jar-gloss"></i><span class="jar-h">${HEART}</span>${n ? `<em>${'★'.repeat(Math.min(5, n))}</em>` : ''}</div>`;
+  return `<div class="jar" style="--p:${p.toFixed(3)}" aria-label="お店の評判"><i class="jar-in"><i class="jar-fill"></i></i><i class="jar-gloss"></i><span class="jar-h">${HEART}</span>${n ? `<em>${'★'.repeat(Math.min(5, n))}</em>` : ''}</div>`;
 }
 function renderResult() {
   const T = S.today, mon = MONSTERS.find(m => m.id === T.mon), mood = MOODS[T.mood];

@@ -786,3 +786,16 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* 商品を並べる画面（段が高い）：お菓子と名前を下へよせてカゴの中に・看板の札はお菓子の上に */
 .md-case.md-case .dslot{justify-content:flex-end;padding-bottom:12px}
 .md-case.md-case .dslot.kan .d-kl{position:static;transform:none;order:-1;margin-bottom:2px;border-top:1px solid var(--brass-lo);border-radius:6px}
+/* ==== UI の絵 その6（11/18 art-irai ui-day2）==== */
+/* 営業中の札（ui-sign・320×231・上はくさりとフック・板は縦51%から下）：字はコードで板の上に */
+.ds-sign.ds-sign{width:clamp(76px,26cqw,112px);aspect-ratio:320/231;display:grid;place-items:center;padding:36.8% 6% 2%;border:0;border-radius:0;box-shadow:none;background:var(--ui-sign) center/100% 100% no-repeat;color:#fff4e4;text-shadow:0 1px 0 rgba(30,12,4,.85),0 0 3px rgba(30,12,4,.6);filter:drop-shadow(0 3px 2px rgba(30,12,4,.35))}
+/* 評判のびん（ui-jar・240×281・まんなかがぬける）：ガラスは ::after でいちばん上。ハートとたまった色はびんのうしろ（丸い胴 .jar-in の中だけ） */
+.jar.jar{width:64px;height:75px;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.jar.jar::after{content:"";position:absolute;inset:0;z-index:2;background:var(--ui-jar) center/100% 100% no-repeat;pointer-events:none}
+.jar-in{position:absolute;left:5%;right:5%;top:35%;bottom:2.5%;border-radius:50%;overflow:hidden;background:rgba(255,250,240,.18)}
+.jar.jar .jar-gloss{display:none}
+.jar.jar .jar-h{inset:32% 0 0;font-size:22px}
+.jar.jar em{z-index:3;bottom:1px;text-shadow:0 1px 0 rgba(90,20,30,.8)}
+/* 思っている吹き出し（ui-think・480×215 を9分割 70・しっぽは ui-think-tail の小さな丸2つ〔左右反転で左下へ〕） */
+.cu-bub.cu-bub.think{border-image:var(--ui-think) 70 fill/21px stretch;padding:9px 14px 8px}
+.cu-bub.cu-bub.think::after{width:22px;height:20px;left:0;bottom:-19px;transform:scaleX(-1);background-image:var(--ui-think-tail)}
