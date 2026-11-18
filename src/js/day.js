@@ -36,15 +36,26 @@ function shelfSlots(kan = S.dayRun && S.dayRun.kanban) {
   }
   return { slots, ks };
 }
-function slotHTML(o, idx, ks, pre) {
+/* おそろいの段のリボン（段のいちばん左のマスの中に置き、段のまんなかの棚板の上に出す）。はじめて出る段だけ、ぽんと出る */
+let dSoroiLast = new Set();
+function dSoroiRibs(slots) {
+  const now = new Set(), out = {};
+  for (const x of soroiRows(slots)) {
+    const k = x.r + ':' + x.mats.join('+'); now.add(k);
+    out[x.r * SHELF_COLS] = `<span class="d-soroi${x.out ? ' out' : ''}${dSoroiLast.has(k) || REDUCED ? '' : ' pop'}" aria-label="おそろい">${x.mats.map(matIcon).join('')}<b>おそろい</b></span>`;
+  }
+  dSoroiLast = now;
+  return out;
+}
+function slotHTML(o, idx, ks, pre, rib = '') {
   const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
   if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
   const c = candyOf(o.s.key), out = o.s.n <= 0, tag = pre ? 'button' : 'div';
-  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}</${tag}>`;
+  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}${rib}</${tag}>`;
 }
 function caseHTML(pre) {
-  const { slots, ks } = shelfSlots();
-  return slots.map((o, i) => slotHTML(o, i, ks, pre)).join('');
+  const { slots, ks } = shelfSlots(), rib = dSoroiRibs(slots);
+  return slots.map((o, i) => slotHTML(o, i, ks, pre, rib[i])).join('');
 }
 
 /* ---------- 画面 ---------- */
@@ -87,7 +98,7 @@ function openDay() {
   if (!R.kanban) return toast('看板にするお菓子を、えらんでね');
   const go = () => {
     R.open = true; R.t = 0; R.i = 0; R.cur = null;
-    R.plan = custPlan(custCount(), R.kanban);
+    R.plan = custPlan(custCount(), R.kanban, soroiRows(shelfSlots().slots).flatMap(x => x.mats));   // おそろいの段は開店のときの並びで
     S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
     save(); renderDay();
   };

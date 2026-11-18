@@ -55,6 +55,19 @@ const candyHas = (key, m) => String(key).split('+').includes(m);
 const BATCH = 3;          // 1回焼くと同じお菓子3こ＝棚の1マス
 const SHELF_COLS = 3;     // 棚は3列。看板の枠は、まんなかの列の上から（行の数のまんなか）
 const kanbanSlot = n => SHELF_COLS * Math.floor((Math.ceil(n / SHELF_COLS) - 1) / 2) + 1;
+/* おそろいの段（11/19 しょーくん）：横1段の3マスのお菓子が、同じ素材を1つずつふくむ（看板のマスも数える・空きがあるとならない）
+   slots は day.js の shelfSlots の slots（{ s: 棚のお菓子, i }）。段ごとに [{ r＝段, mats＝そろった素材, out＝売り切れがある }] */
+function soroiRows(slots) {
+  const rows = [];
+  for (let r = 0; (r + 1) * SHELF_COLS <= slots.length; r++) {
+    const row = slots.slice(r * SHELF_COLS, (r + 1) * SHELF_COLS);
+    if (row.some(o => !o)) continue;
+    const sets = row.map(o => new Set(String(o.s.key).split('+')));
+    const mats = [...sets[0]].filter(m => sets.every(x => x.has(m)));
+    if (mats.length) rows.push({ r, mats, out: row.some(o => o.s.n <= 0) });
+  }
+  return rows;
+}
 
 /* ---------- 昼のお客さん ---------- */
 const DAY_MS = 40000;     // 営業は約40秒（はやおくりで約20秒）
@@ -64,6 +77,7 @@ const CUST_BASE = 4;      // 2日目から：4人＋評判のびんの数＋立�
 const REP_JAR = 10;       // ハート10こで評判のびん1つ → 次の日からお客さん+1人（まとめのびんは flow.js の jarHTML がこれを使う）
 const LIKE_W = 3;         // お客さんごとの出やすい味（下）は3倍出やすい
 const KANBAN_W = 2;       // 看板のお菓子の素材がすきなお客さんは2倍来やすい
+const SOROI_W = 1.5;      // おそろいの段1つごとに、その素材がすきなお客さんが1.5倍来やすい（看板とかけ算・開店のときの並びで決まる・11/19 仮）
 const OTHER_BUY = 0.5;    // すきな味のお菓子がないとき、ほかのお菓子を1こ買う人の割合（ハートなし）
 /* すきな味の出やすさ（お客さんの名前と見た目は world.js の CUSTOMERS・リーダー）
    お客さん（11/18 16時 しょーくん：ファンタジーに・id はそのまま）：kodomo＝妖精の子・gakusei＝けもみみの子（ねこ耳の男の子・14さいくらい）・otona＝冒険者（20代のお兄さん）・obaachan＝魔女のおばあちゃん
@@ -94,15 +108,16 @@ function wpick(items, w) {
 }
 /* その日のお客さん（開店のときに決める）：[{ c: お客さんの id, like: すきな素材 }] */
 /* その日のお客さんの順番：同じ種類のお客さんは続けて来ない。見た目ちがいの絵（day-scene.js の custVariants）があれば、その日まだ来ていない見た目から（vr） */
-function custPlan(n, kanbanKey) {
+function custPlan(n, kanbanKey, soroi = []) {   // soroi＝おそろいの段の素材（段の数だけ）
   const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set();
+  const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
   let prev = null;
   return Array.from({ length: n }, () => {
     const c = pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev)); prev = c;
     const vs = custVariants(c), fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
     used.add(c + vr);
     const pref = CUST_LIKES[c] || [];
-    const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1));
+    const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m));
     return { c, vr, like };
   });
 }
