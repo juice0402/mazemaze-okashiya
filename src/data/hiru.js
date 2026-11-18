@@ -108,12 +108,12 @@ function wpick(items, w) {
 }
 /* その日のお客さん（開店のときに決める）：[{ c: お客さんの id, like: すきな素材 }] */
 /* その日のお客さんの順番：同じ種類のお客さんは続けて来ない。見た目ちがいの絵（day-scene.js の custVariants）があれば、その日まだ来ていない見た目から（vr） */
-function custPlan(n, kanbanKey, soroi = []) {   // soroi＝おそろいの段の素材（段の数だけ）
+function custPlan(n, kanbanKey, soroi = [], first = []) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）
   const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set();
   const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
   let prev = null;
-  return Array.from({ length: n }, () => {
-    const c = pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev)); prev = c;
+  return Array.from({ length: n }, (_, i) => {
+    const c = first[i] || pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev)); prev = c;
     const vs = custVariants(c), fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
     used.add(c + vr);
     const pref = CUST_LIKES[c] || [];
@@ -135,3 +135,29 @@ const GOODS = {
   ],
 };
 const SHELF_MAX = 12;
+/* ---------- べんり道具（11/19 しょーくん「自動化とお金をかけ合わせる」・雑貨屋で買う）
+   はじめは雑貨屋に出ない。仲間が「前のお店で使ってた」などと朝に紹介した日から並ぶ（STORY.toolTalk・S.seen['u:<id>']）
+   by＝紹介する仲間・after＝仲間になった次の朝から何日あと・買ったら S.goods['t-<id>'] = 1
+   自動化は「ボタン1つできのうと同じ」まで（しょーくん：朝をまるごとおまかせにはしない） ---------- */
+const M_TOOLS = [
+  { id: 'oven', name: 'おまかせオーブン', text: 'きのう焼いたお菓子を、ボタン1つでまとめて焼く（材料代はかかる）', price: 5000, by: 'minamo', after: 0 },
+  { id: 'sand', name: '超はやおくりの砂時計', text: 'お昼を4倍の速さで進められる', price: 4000, by: 'minamo', after: 4 },
+  { id: 'doll', name: 'からくり陳列人形', text: '天板のお菓子を、看板とおそろいを考えて並べてくれる', price: 6000, by: 'wakaba', after: 0 },
+  { id: 'bell', name: 'ひるねの鐘', text: '鳴らすと、お昼がすーっと閉店まで進む', price: 12000, by: 'wakaba', after: 4 },
+];
+const mToolHas = id => !!(S.goods && S.goods['t-' + id]);
+const mToolOpen = id => !!(S.seen && S.seen['u:' + id]);
+const DAY_SUPER = 4;      // 超はやおくりの速さ（砂時計）
+
+/* ---------- 昼のできごと（11/19 しょーくん「ランダムイベントとか、飽きない工夫をたくさん」）
+   3日目から、お店をあけるときに ときどき1つ（EVENT_P）。お金やごほうびが運で増えるしくみにはしない（お客さんの数と顔ぶれだけ・claude/game-art-rule.md）
+   add＝お客さんの数に足す・first＝はじめに続けて来るお客さん・cls＝舞台につける見た目 ---------- */
+const EVENT_P = .4;
+const DAY_EVENTS = [
+  { id: 'rain', add: -1, cls: 'ev-rain' },
+  { id: 'matsuri', add: 2, cls: 'ev-matsuri' },
+  { id: 'ensoku', first: ['kodomo', 'kodomo', 'kodomo'], cls: '' },
+  { id: 'kotori', add: 0, cls: 'ev-kotori' },
+  { id: 'kaze', add: 0, cls: 'ev-kaze' },
+  { id: 'majo', first: ['obaachan'], add: 1, cls: '' },
+];

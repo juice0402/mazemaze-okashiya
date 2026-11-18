@@ -67,11 +67,11 @@ function renderDay() {
   if (pre && empty) bar = '<button class="big" data-act="toEvening">今日はお休みして夕方へ</button>';
   else if (pre) bar = '<button class="big" data-act="d-open">お店をあける</button>';
   else if (R.done) bar = '<button class="big" data-act="toEvening">閉店して夕方へ</button>';
-  else bar = `<div class="d-bar"><span class="d-lbl">えいぎょう中</span><button class="sub" data-act="d-fast">${daySpeed > 1 ? 'ふつうの速さ' : 'はやおくり'}</button></div>`;
+  else bar = `<div class="d-bar"><span class="d-lbl">えいぎょう中</span>${mToolHas('bell') ? '<button class="sub" data-act="d-bell">ひるねの鐘</button>' : ''}<button class="sub" data-act="d-fast">${dSpeedLbl()}</button></div>`;
   const tip = !pre ? '' : empty ? '棚がからっぽ……今日はお休みかな' : R.kanban ? `今日の看板は ${candyOf(R.kanban).name}` : '看板にするお菓子を、タップしてえらんでね';
   const rows = Math.ceil(Math.min(SHELF_MAX, S.shelfMax || 6) / SHELF_COLS);
   $('screen').innerHTML = `<section class="day fit">
-    <div class="dstage${pre ? ' pre' : ''}" id="dstage" style="--sp:${daySpeed};--p:${R.done ? 1 : Math.min(1, (R.t || 0) / DAY_MS).toFixed(3)}">
+    <div class="dstage${pre ? ' pre' : ''}${(dEv(R) || {}).cls ? ' ' + dEv(R).cls : ''}" id="dstage" style="--sp:${daySpeed};--p:${R.done ? 1 : Math.min(1, (R.t || 0) / DAY_MS).toFixed(3)}">
       ${dayStageBg(sign)}
       <div class="d-cust" id="dCust"></div>
       ${dayStageFront()}
@@ -83,7 +83,7 @@ function renderDay() {
   </section>`;
   if (R.cur) showCust(R.cur, true);
   if (pre && !empty && S.day === 1 && !S.seen.dayPre && !talking()) talk(STORY.dayPre, () => { S.seen.dayPre = 1; save(); }, { dim: false });
-  if (R.open && !R.done) { dayPrev = 0; dayLoop(); }
+  if (R.open && !R.done) { dayPrev = 0; dayLoop(); dAmbT = setTimeout(dAmbient, 1500); }
 }
 
 /* 開店前：棚のお菓子をタップすると看板の枠へ（もう一度で外す） */
@@ -98,10 +98,14 @@ function openDay() {
   if (!R.kanban) return toast('看板にするお菓子を、えらんでね');
   const go = () => {
     R.open = true; R.t = 0; R.i = 0; R.cur = null;
-    R.plan = custPlan(custCount(), R.kanban, soroiRows(shelfSlots().slots).flatMap(x => x.mats));   // おそろいの段は開店のときの並びで
+    R.soroi = soroiRows(shelfSlots().slots).flatMap(x => x.mats);   // おそろいの段は開店のときの並びで
+    if (!R.ev && S.day >= 3 && Math.random() < EVENT_P) R.ev = pick(DAY_EVENTS).id;   // 昼のできごと（11/19）
+    const E = dEv(R);
+    R.plan = custPlan(Math.max(2, custCount() + ((E && E.add) || 0)), R.kanban, R.soroi, (E && E.first) || []);
+    R.lk = {}; R.got = {}; R.miss = {};
     S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
     save(); renderDay();
-    setTimeout(() => dSay('open'), 700);
+    setTimeout(() => { const E = dEv(R); E ? dSayRun(STORY.pickE(STORY.ev[E.id].open)) : dSay('open'); }, 700);
   };
   if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go, { dim: false }); }
   else go();
@@ -124,7 +128,12 @@ function dayStep(R, dt) {
   if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
   if (R.i >= 1 && !R.mated) { const m = dMateDue(); if (m) return dMateVisit(R, m); }
   /* お客さんのいない間のひとこと（営業の3割・6.5割のところで1回ずつ） */
-  for (const at of [.3, .65]) if (!(R.idle || {})[at] && R.t >= at * DAY_MS) { (R.idle = R.idle || {})[at] = 1; dSay('idle'); }
+  for (const at of [.3, .5, .72]) if (!(R.idle || {})[at] && R.t >= at * DAY_MS) {
+    (R.idle = R.idle || {})[at] = 1;
+    const E = dEv(R);
+    if (at === .5) { if (E) dSayRun(STORY.pickE(STORY.ev[E.id].mid)); }
+    else dSay('idle');
+  }
   if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }
   else if (R.t >= DAY_MS) closeDay();
 }
@@ -142,6 +151,7 @@ function visitStep(R, dt) {
   } else if (v.step === 1 && v.t >= V_ASK) {
     v.step = 2; v.res = serve(v); save(); showResult(v, false);
     const r = v.res, it = r.key && S.shelf.find(s => s.key === r.key), nm = r.key ? candyOf(r.key).name : '';
+    if (R.lk && v.like) { R.lk[v.like] = (R.lk[v.like] || 0) + 1; const b = r.kind === 'love' ? R.got : R.miss; b[v.like] = (b[v.like] || 0) + 1; }   // ふり返り（dSum）
     setTimeout(() => it && it.n <= 0 ? dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true) : dSay(r.kind), 700);
   } else if (v.step === 2 && v.t >= V_LEAVE) {
     v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
@@ -189,23 +199,33 @@ function closeDay(msg) {
   clearTimeout(dayTick); dayTick = 0;
   save(); if (msg) toast(msg);
   renderDay();
-  setTimeout(() => dSay('close', '', true), 500);
+  setTimeout(() => {
+    const sd = dSum(R), E = dEv(R);
+    const lines = [...(E ? STORY.pickE(STORY.ev[E.id].close) : []), ...(sd ? STORY.fill(STORY.pickE(STORY.sum[sd.k]), sd) : [])];
+    lines.length ? dSayRun(lines.slice(0, 3)) : dSay('close', '', true);
+  }, 500);
   if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk(STORY.dayClose(S.today), () => {}, { dim: false }); }
 }
 
 /* ---------- 昼のお店のひとこと（11/19）：文は STORY.daySay。舞台の下に小さく出して消える（会話の窓にしない＝営業は止めない）
    1日目（チュートリアルの会話がある）・会話のあいだは出さない。force＝売り切れなど（前のを消して出す） ---------- */
-let dSayT = 0, dSayAt = 0, dSayLast = '';
+let dSayT = 0, dSayAt = 0, dSayLast = '', dSkip = 0;
 function dSay(kind, c = '', force = false) {
   const P = STORY.daySay && STORY.daySay[kind], st = $('dstage');
-  if (!P || !st || S.day <= 1 || talking()) return;
+  if (!P || !st || S.day <= 1 || talking() || performance.now() < dSkip) return;
   const now = performance.now();
   if (!force && (now - dSayAt < 4500 || Math.random() > (STORY.daySayP[kind] ?? .4))) return;
   const mi = STORY.mate('minamo'), wa = STORY.mate('wakaba');
   const ok = P.map(e => typeof e === 'string' ? { s: [e] } : e).filter(e => (!e.mi || mi) && (!e.wa || wa) && e.s.join() !== dSayLast);
   if (!ok.length) return;
-  const e = pick(ok), lines = e.s.map(l => l.replace(/\{c\}/g, c));
-  dSayLast = e.s.join(); dSayAt = now; clearTimeout(dSayT);
+  const e = pick(ok);
+  dSayLast = e.s.join();
+  dSayRun(e.s.map(l => l.replace(/\{c\}/g, c)));
+}
+/* 文の並びを順に出す（できごと・ふり返りは、ここを直接よぶ） */
+function dSayRun(lines) {
+  if (!lines || !lines.length || !$('dstage') || S.day <= 1 || talking()) return;
+  dSayAt = performance.now(); clearTimeout(dSayT);
   let i = 0;
   const step = () => {
     const el = dSayEl(); if (!el) return;
@@ -225,6 +245,57 @@ function dSayEl() {
   let el = $('dSay');
   if (!el) { el = document.createElement('p'); el.id = 'dSay'; el.className = 'd-say'; el.setAttribute('role', 'status'); st.appendChild(el); }
   return el;
+}
+
+/* ---------- ふり返り（11/19 しょーくん）：その日のお客さんの すきな味 と 買えたか から、いちばん言いたいことを1つ
+   R.lk＝すきな味ごとの人数・R.got＝ハートで買えた・R.miss＝買えなかった（ほかを買った・なにも買わなかった）。仲間の来店は数えない ---------- */
+function dSum(R) {
+  if (!R || !R.lk) return null;
+  const sum = o => Object.values(o || {}).reduce((a, b) => a + b, 0), tot = sum(R.lk), love = sum(R.got);
+  if (tot < 2) return null;
+  const m = Object.keys(R.lk).sort((a, b) => R.lk[b] - R.lk[a])[0], n = R.lk[m], g = (R.got || {})[m] || 0;
+  if (love === tot && tot >= 3) return { k: 'all', m, n };
+  if ((R.soroi || []).includes(m) && g >= 2) return { k: 'soroi', m, n };
+  if (R.kanban && candyHas(R.kanban, m) && g >= 2) return { k: 'kanban', m, n, c: candyOf(R.kanban).name };
+  if (((R.miss || {})[m] || 0) >= 2) return { k: 'miss', m, n };
+  if (g >= 2) return { k: 'hit', m, n };
+  return null;
+}
+const dEv = R => (R && R.ev && DAY_EVENTS.find(e => e.id === R.ev)) || null;
+
+/* ひるねの鐘（べんり道具）：のこりのお昼を一気に進める（絵とひとことは とばす・仲間の来店の会話が出たら そこで止まる） */
+function dBell() {
+  const R = S.dayRun; if (!R || !R.open || R.done || talking()) return;
+  dSkip = performance.now() + 2500; toast('リーン……すやすや……');
+  let g = 0;
+  while (!R.done && !talking() && g++ < 3000) dayStep(R, 250);
+  if (!R.done && !talking()) renderDay();
+}
+
+/* ---------- 窓の外の生きもの（11/19 しょーくん「窓の外に鳥が飛ぶとか、飽きない工夫」）：窓のガラスの型（bg-day-mado）の中だけに見える
+   鳥の群れ・葉っぱ・ちょうちょ がときどき横切る（transform と opacity だけ・終わったら消す）。できごとで出やすさが変わる ---------- */
+let dAmbT = 0;
+const D_BIRD = '<svg viewBox="0 0 20 10"><path d="M1 6 Q5 1 10 6 Q15 1 19 6" fill="none" stroke="#3a2a22" stroke-width="2.2" stroke-linecap="round"/></svg>';
+const D_LEAF = c => `<svg viewBox="0 0 12 12"><path d="M2 10 C2 4 6 1 11 1 C11 6 8 10 2 10Z" fill="${c}"/><path d="M2 10 L9 3" stroke="rgba(60,30,10,.5)" stroke-width=".8"/></svg>`;
+const D_BUTTERFLY = '<svg viewBox="0 0 16 12"><ellipse cx="5" cy="5" rx="4" ry="4" fill="#ffd9a0"/><ellipse cx="11" cy="5" rx="4" ry="4" fill="#ffd9a0"/><ellipse cx="5.5" cy="9.5" rx="2.6" ry="2" fill="#f6b8c8"/><ellipse cx="10.5" cy="9.5" rx="2.6" ry="2" fill="#f6b8c8"/><rect x="7.4" y="3" width="1.2" height="8" rx=".6" fill="#5a3418"/></svg>';
+function dAmbient() {
+  clearTimeout(dAmbT);
+  const R = S.dayRun, lay = document.querySelector('#dstage .ds-out');
+  if (!lay || !R || !R.open || R.done || S.phase !== 'day') return;
+  const ev = R.ev, kind = ev === 'kotori' ? (Math.random() < .8 ? 'bird' : 'fly') : ev === 'kaze' ? (Math.random() < .75 ? 'leaf' : 'bird') : ev === 'rain' ? 'none' : pick(['bird', 'bird', 'leaf', 'fly']);
+  if (kind !== 'none' && !REDUCED) {
+    const dir = Math.random() < .5 ? 1 : -1, n = kind === 'bird' ? 1 + Math.floor(Math.random() * 3) : 1;
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement('i');
+      el.className = 'amb ' + kind + (dir < 0 ? ' rev' : '');
+      el.style.cssText = `--y:${(kind === 'leaf' ? 8 : 14) + Math.random() * 30}%;--d:${(kind === 'bird' ? 6 : 9) + Math.random() * 4}s;--dl:${i * .35}s;--s:${.8 + Math.random() * .5}`;
+      el.innerHTML = `<i>${kind === 'bird' ? D_BIRD : kind === 'leaf' ? D_LEAF(pick(['#e8a040', '#d9733a', '#9fbf5a'])) : D_BUTTERFLY}</i>`;
+      el.addEventListener('animationend', e => { if (e.target === el) el.remove(); });
+      lay.appendChild(el);
+    }
+  }
+  const gap = ev === 'kotori' || ev === 'kaze' ? 2500 + Math.random() * 2500 : 6500 + Math.random() * 6500;
+  dAmbT = setTimeout(dAmbient, gap / Math.sqrt(daySpeed));
 }
 
 /* ---------- お客さんの見た目（絵は day-scene.js の custHTML） ---------- */
@@ -282,10 +353,13 @@ function heartFx(from) {
     jb.classList.remove('bump'); void jb.offsetWidth; jb.classList.add('bump');
   }, 750 / daySpeed);
 }
+/* はやおくり：ふつう → ×2（いつでも）→ ×4（超はやおくりの砂時計があるとき）→ ふつう。ボタンの字は、つぎに押したときの速さ */
+const dSpeedNext = () => daySpeed === 1 ? DAY_FAST : daySpeed === DAY_FAST && mToolHas('sand') ? DAY_SUPER : 1;
+const dSpeedLbl = () => ({ [DAY_FAST]: 'はやおくり', [DAY_SUPER]: '超はやおくり', 1: 'ふつうの速さ' })[dSpeedNext()];
 function toggleDayFast(el) {
-  daySpeed = daySpeed > 1 ? 1 : DAY_FAST;
+  daySpeed = dSpeedNext();
   const st = $('dstage'); if (st) st.style.setProperty('--sp', daySpeed);
-  if (el) el.textContent = daySpeed > 1 ? 'ふつうの速さ' : 'はやおくり';
+  if (el) el.textContent = dSpeedLbl();
 }
 
 /* 昼の画面のボタン（data-act）。main.js の ACTS に入る */
@@ -293,4 +367,5 @@ const DAY_ACTS = {
   'd-pick': el => pickKanban(el.dataset.i),
   'd-open': () => openDay(),
   'd-fast': el => toggleDayFast(el),
+  'd-bell': () => dBell(),
 };

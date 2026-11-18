@@ -54,7 +54,7 @@ function dayStageBg(sign) {
   const bg = ART['bg-day'];
   /* 時間は外の明るさで（11/18 しょーくん）：窓の外（ART['bg-day-mado'] の型）を夕焼けに・お店の中もだんだん夕方の色に・窓のまわりに光がにじむ（bg-day-mado-glow）・宙にキラキラ。強さは .dstage の --p（0〜1・day.js） */
   const mado = ART['bg-day-mado'], glow = ART['bg-day-mado-glow'];
-  const m = mado ? `<i class="ds-mado ds-m1" style="--mado:url('${mado}')"></i><i class="ds-mado ds-m2" style="--mado:url('${mado}')"></i>` : '';
+  const m = mado ? `<i class="ds-mado ds-m1" style="--mado:url('${mado}')"></i><i class="ds-mado ds-m2" style="--mado:url('${mado}')"></i><i class="ds-mado ds-out" style="--mado:url('${mado}')"><i class="ds-rain"></i></i>` : '';   // ds-out＝窓の外の生きもの・雨（day.js の dAmbient）
   const gl = glow ? `<i class="ds-mado ds-glow" style="--mado:url('${glow}')"></i>` : '';
   const motes = DS_MOTES.map(([x, y, d, dl, s]) => `<i class="ds-mote" style="--x:${x}%;--y:${y}%;--d:${d}s;--dl:-${dl}s;--s:${s}"></i>`).join('');
   if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')">${m}<i class="ds-dusk"></i>${gl}${motes}<span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
