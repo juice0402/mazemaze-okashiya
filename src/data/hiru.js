@@ -97,7 +97,7 @@ function seenMats() {
   const set = new Set(Object.keys(S.stock));
   for (const k of Object.keys(S.recipes)) k.split('+').forEach(m => set.add(m));
   for (const s of S.shelf) s.key.split('+').forEach(m => set.add(m));
-  const out = [...set].filter(m => HIRU_MATS[m] || MATS[m]);
+  const out = [...set].filter(m => HIRU_MATS[m] || isMonMat(m));   // 夜のデッキだけの素材（はじめから知っている komugi+sato のトカゲ砂糖など）は朝に作れないので、すきな味にしない（11/19）
   return out.length ? out : BASE_IDS.slice();
 }
 function wpick(items, w) {
