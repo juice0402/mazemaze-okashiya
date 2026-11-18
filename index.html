@@ -674,7 +674,12 @@ background:linear-gradient(rgba(255,236,200,.55),rgba(255,236,200,0) 35%) paddin
 .pc:not(.tile):not(.ci-card) .pc-attr span+span::before{content:"／";color:#4a2414}
 .pc:not(.tile):not(.ci-card) .pc-attr span:last-child::after{content:"】";color:#4a2414}
 .at-atk{--atc:#a8281a}.at-sup{--atc:#1e6a38}.at-fire{--atc:#b44e08}.at-buy{--atc:#5a2e8e}.at-dough{--atc:#8a5a0a}.at-mat{--atc:#a23460}.at-tool{--atc:#4a2c14}.at-koge{--atc:#2a1a12}.at-field{--atc:#84440c}.at-ame{--atc:#1e7698}.at-temp{--atc:#1e58b0}.at-etc{--atc:#5a3e2c}
-.pc:not(.tile):not(.ci-card) .pc-text{top:76.4%;bottom:7%}
+.pc:not(.tile):not(.ci-card) .pc-attr{top:71.6%;height:5.2%}
+.pc:not(.tile):not(.ci-card) .pc-text{top:77.6%;bottom:7%}
+.pc-ck{position:absolute;right:-1.5cqw;top:-1cqw;z-index:5;pointer-events:none}
+.pc-ck .ck{--u:1.75cqw;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.45))}
+.dt-card .pc-ck{display:none}
+.mixmark{right:auto;left:50%;translate:-50% 0;top:-7px}
 .deco{position:absolute;inset:0;z-index:8;pointer-events:none;container-type:size;border-radius:inherit}
 .dc-frame{position:absolute;inset:0;border:10px solid transparent;border-image:var(--ui-stage-frame) 74/20px round;box-shadow:inset 0 0 14px 4px rgba(20,8,2,.45)}
 .dc-medal{position:absolute;left:50%;top:-1px;width:36px;aspect-ratio:150/157;translate:-50% 0;background:var(--ui-stage-medal) center/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
@@ -2376,14 +2381,14 @@ const glossI = d => d.star > 1 ? '<i class="pc-gl"></i>' : '';
 function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-pow l${Math.min(t.length, 5)}">${t}</b>`; }
 function cardFace(cid, cls, opt = {}) {
 const d = cardDef(cid), dmg = cardDmg(d, opt.cook), lines = cardChips(d).slice(0, 2);
-const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = ck ? 54 : 70;   // 紙の字の幅（cqw・11/19 ふちの絵の紙の内側に合わせた：紙 78cqw − すき間 − 炎のアイコン）
+const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = 70;   // 紙の字の幅（cqw・ふちの絵の紙の内側）。焼き加減・大きさは右上へ（11/19 しょーくん「文字が見えない」）
 const txt = lines.length ? lines.map(t => `<span class="ln" style="font-size:${fitFs(t, w - 2 * (t.match(KW_SHORT) || []).length)}cqw">${kwShort(t, opt.tap)}</span>`).join('')   // 黄色いことばは ふちの分だけ広いので、その分つめる（11/19「×2」が切れていた）
 : `<span class="ln plain">${esc(plainLine(d))}</span>`;
 const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
 return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
 <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
 <div class="pc-name"><span style="font-size:${nameFs(d.short)}cqw">${esc(d.short)}</span></div>${attrBar(d)}
-<div class="pc-text${ck ? ' has-ck' : ''}">${ck}<span class="pl">${txt}</span></div>
+<div class="pc-text"><span class="pl">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
 ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
 </div>`;
 }

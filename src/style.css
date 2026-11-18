@@ -834,4 +834,11 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .pc:not(.tile):not(.ci-card) .pc-attr span+span::before{content:"／";color:#4a2414}
 .pc:not(.tile):not(.ci-card) .pc-attr span:last-child::after{content:"】";color:#4a2414}
 .at-atk{--atc:#a8281a}.at-sup{--atc:#1e6a38}.at-fire{--atc:#b44e08}.at-buy{--atc:#5a2e8e}.at-dough{--atc:#8a5a0a}.at-mat{--atc:#a23460}.at-tool{--atc:#4a2c14}.at-koge{--atc:#2a1a12}.at-field{--atc:#84440c}.at-ame{--atc:#1e7698}.at-temp{--atc:#1e58b0}.at-etc{--atc:#5a3e2c}
-.pc:not(.tile):not(.ci-card) .pc-text{top:76.4%;bottom:7%}
+.pc:not(.tile):not(.ci-card) .pc-attr{top:71.6%;height:5.2%}
+.pc:not(.tile):not(.ci-card) .pc-text{top:77.6%;bottom:7%}
+/* 焼き加減の炎・大作の大きさ（11/19 しょーくん）：紙の中だと字がせまくなるので、カードの右上（味パワーの紋章の反対）へ */
+.pc-ck{position:absolute;right:-1.5cqw;top:-1cqw;z-index:5;pointer-events:none}
+.pc-ck .ck{--u:1.75cqw;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.45))}
+.dt-card .pc-ck{display:none}
+/* まぜの札（11/19）：右上は焼き加減・大きさのアイコンになったので、上のまんなかへ */
+.mixmark{right:auto;left:50%;translate:-50% 0;top:-7px}
