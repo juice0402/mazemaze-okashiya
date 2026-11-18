@@ -39,7 +39,7 @@
 
 ## 依頼中（11/18）
 - 依頼中（11/18 17時〜）：art-irai `requests/okashi/ui-day.md`・`ui-chips.md`。ui-parts・ui-icons（PR #65・#64）・monsters2・cards12・ui-shop・ui-board・ui-stage・op1・op2 は済
-- 待ち（2つずつ依頼中に・この順・11/18 16時すぎ しょーくん「棚と計算の札が先」）（ui-day と ui-chips は 11/18 17時に依頼中）：`customers3`（お客さん4人をファンタジーに）と `cards13` → `customers4`（うれしい・ざんねん）と `cards14` → `cards15` と `ui-flame`（鉄板の炎・黒い背景・mix-blend-mode: screen で重ねる）→ `ui-cards`（カードのふち4つ）
+- 待ち（2つずつ依頼中に・この順・11/18 16時すぎ しょーくん「棚と計算の札が先」）（ui-day と ui-chips は 11/18 17時に依頼中）：`honoka-battle2`（ほのかの戦闘ポーズ：チャージ・攻撃★1〜3・必殺技・決めポーズ → honoka-charge・atk1〜3・special・win）と `honoka-battle3`（支援・火力アップ・火力ダウン・こねる・場を置く・焦げた → honoka-support・heatup・heatdown・knead・field・burnt。どちらも元の絵 sources/okashi/honoka-battle.png を編集・取りこみは honoka-battle と同じ四角で）→ `customers3`（お客さん4人をファンタジーに）と `cards13` → `customers4`（うれしい・ざんねん）と `cards14` → `cards15` と `ui-flame`（鉄板の炎・黒い背景・mix-blend-mode: screen で重ねる）→ `ui-cards`（カードのふち4つ）
 - 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
 - 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
 

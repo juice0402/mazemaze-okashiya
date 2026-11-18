@@ -20,7 +20,7 @@ function updTile(i, cid, cook) {
   slot.innerHTML = `<i class="ord">${i + 1}</i>${cardTile(cid, { cook })}`;
   return slot.querySelector('.pc');
 }
-function burntFx(slot) { replay($('smoke'), 'on'); heroFor('oops', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
+function burntFx(slot) { replay($('smoke'), 'on'); heroPose('burnt', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
 function floatAt(el, text, cls = '') {
   if (!el) return;
   const f = document.createElement('span');
@@ -51,7 +51,7 @@ function countUp(el, from, to, ms, f = fmt) {
    ぜんぶ画面の上の層 #fxl に出す（額縁の外へはみ出す）。ノルマにくらべて大きいほど派手に（big＝舞台がゆれる・huge＝画面いっぱいの炎） */
 function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（battle-fx.js の flyHub）。あればそれがモンスターへ飛ぶ（なければ ほのかの手から火の玉）
   const chef = $('chef'), a = spot(proj || chef), b = spot($('mon'));
-  replay(chef, 'act');
+  if (!chef || !chef.dataset.pose) replay(chef, 'act');   // 戦闘ポーズ中は heroPose の動きにまかせる
   const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(size ? 380 : 320);
   const land = p => {
     if (proj) proj.remove();
@@ -104,7 +104,7 @@ function showEvent(e, run, q) {
   document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
   if (e.type === 'bake') {
     const fs = document.querySelector('.fslot'), best = e.list.filter(x => !x.burnt && x.to >= COOK_MAX).length, nb = e.list.filter(x => x.burnt).length;
-    chipPop(fs, { b: HEAT[e.heat], s: `焼き+${e.heat}`, c: 'ember' });
+    chipPop(fs, { b: HEAT[e.heat], s: `焼き+${e.heat}`, c: 'ember' }); heroPose('field', 1000);   // 鉄板に手をかざして焼く
     replay($('stage'), 'sizzle'); replay(document.querySelector('.tiles'), 'bakefx');   // 鉄板の下から炎がゆらっと上がる
     const t0 = 420, gap = 260;
     e.list.forEach((x, n) => setTimeout(() => {
@@ -125,10 +125,14 @@ function showEvent(e, run, q) {
   /* 1. 発動したカードが跳ねる（★1 ぽん・★2 大きく・★3 縦にくるっと1回転してズドン） */
   let t = card ? actBounce(card, d.star) : 300;
   const C = actChips(e), H = {};
+  /* ほのかの戦闘ポーズ：ダメージのあるカードは チャージ → 攻撃（★で3段・おなかの6割をこえる一撃は必殺技）、ないカードは役目のポーズ */
+  if (e.dmg > 0) heroPose('charge');
+  else heroPose(e.heat ? (e.heat[1] > e.heat[0] ? 'heatup' : 'heatdown') : e.kone ? 'knead' : e.sear ? 'heatup' : 'support', 1100);
   /* 2. ダメージのあるカード：メダルが舞台へ → 計算の札が飛んできて数字が変わる */
   if (e.dmg > 0) {
     setTimeout(() => Object.assign(H, flyHub(e, e.dmg >= q / 3)), T(t)); t += 360;
-    C.calc.forEach(c => { setTimeout(() => chipFly(e, c, H), T(t)); t += c.src && c.src.length ? 340 : 300; });
+    const ck = C.calc.length > 3 ? 900 / C.calc.length / 300 : 1;   // 札が多いときは間をつめて、1攻撃 2〜3秒に
+    C.calc.forEach(c => { setTimeout(() => chipFly(e, c, H), T(t)); t += Math.round((c.src && c.src.length ? 340 : 300) * ck); });
     t += 260;
   }
   /* 3. ほかのカードへの効果：タイルの上に札がぽん・オーラが相手へ */
@@ -139,14 +143,16 @@ function showEvent(e, run, q) {
   /* 4. 数字がモンスターへバーン */
   if (e.dmg > 0) {
     setTimeout(() => hubFin(H, e.dmg), T(t));
+    const atk = e.dmg >= q * 0.6 ? 'special' : 'atk' + Math.min(3, d.star || 1);
+    setTimeout(() => heroPose(atk, 820), T(t + 120));   // 数字が飛ぶのに合わせて、ほのかが攻撃
     t += 300;
     setTimeout(() => {
       hitFx(e.dmg, q, H.el);
       const sc = $('score'), before = N.score + run - e.dmg;
       countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');
-      $('qfill').style.width = Math.min(100, run / q * 100) + '%';
+      $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(e.dmg, run, q);
       $('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
-      if (run >= q && run - e.dmg < q) setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200));
+      if (run >= q && run - e.dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
     }, T(t));
     t += 760;
   } else t += 420;
@@ -285,8 +291,30 @@ function heroImg(k) { const h = heroPick(k); return `<img class="chef${ART.honok
 let heroT = 0;
 function heroFor(k, ms) {
   const el = $('chef'); if (!el) return;
-  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); };
+  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); delete el.dataset.pose; };
   set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
+}
+/* ほのかの戦闘ポーズ（11/18 しょーくん「チャージや攻撃必殺技とか、いつまで見てても飽きない戦闘シーンにしたい」）
+   絵（art-irai の honoka-battle2・3）が来るまでは、[絵の名前, 代わりの HERO]。動きは CSS の .chef[data-pose]（translate・scale・rotate の transition） */
+const POSE = {
+  stance: ['honoka-battle', 'battle'], charge: ['honoka-charge', 'battle'], atk1: ['honoka-atk1', 'battle'], atk2: ['honoka-atk2', 'battle'], atk3: ['honoka-atk3', 'battle'],
+  special: ['honoka-special', 'battle'], win: ['honoka-win', 'joy'], support: ['honoka-support', 'battle'], heatup: ['honoka-heatup', 'battle'],
+  heatdown: ['honoka-heatdown', 'battle'], knead: ['honoka-knead', 'battle'], field: ['honoka-field', 'battle'], burnt: ['honoka-burnt', 'oops'],
+};
+let poseT = 0;
+function heroPose(p, ms) {
+  const el = $('chef'); if (!el || !POSE[p]) return;
+  const [n, alt] = POSE[p], h = ART[n] ? { src: ART[n], flip: false } : heroPick(alt);
+  if (el.getAttribute('src') !== h.src) el.src = h.src;
+  el.classList.toggle('flip', h.flip); el.dataset.pose = p;
+  clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
+}
+/* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯が光る） */
+function qGain(dmg, run, q) {
+  const qb = document.querySelector('.quota'); if (!qb || !dmg) return;
+  const g = document.createElement('b'); g.className = 'qgain'; g.textContent = '+' + fmt(dmg);
+  const bar = qb.querySelector('.qbar'); g.style.left = Math.max(22, Math.round(bar.offsetLeft + bar.offsetWidth * Math.min(1, run / q))) + 'px';
+  qb.appendChild(g); replay(qb, 'gain'); setTimeout(() => g.remove(), T(1100));
 }
 const MON_URL = {};
 const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || ART[(MONSTERS.find(m => m.id === id) || {}).alt] || big(MON_SPR[id] || MON_SPR.slime, 8));
