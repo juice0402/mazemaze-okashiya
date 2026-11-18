@@ -824,3 +824,9 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .pc:not(.tile):not(.ci-card) .pc-name span{color:#4a2414;text-shadow:0 1px 0 rgba(255,250,235,.7);font-size:9.4cqw}
 .pc:not(.tile):not(.ci-card) .pc-attr{left:12%;right:12%;top:70%;height:6.4%}
 .pc:not(.tile):not(.ci-card) .pc-text{left:11%;right:11%;top:77.5%;bottom:7%;background:none;box-shadow:none}
+/* 11/19 しょーくん（3つの案から C）：名前はリボンのまんなか。属性（主役・生地など）は帯をやめて、絵の窓の左下に小さな丸い札。紙は効果の字だけでゆったり */
+.pc:not(.tile):not(.ci-card) .pc-name{justify-content:center;padding:0 2cqw}
+.pc:not(.tile):not(.ci-card) .pc-attr{left:12.5%;right:auto;top:49.6%;height:5.6%;gap:1.4cqw;overflow:visible;border-radius:0;box-shadow:none}
+.pc:not(.tile):not(.ci-card) .pc-attr span{flex:none;padding:0 3cqw;font-size:6.8cqw;border-radius:99px;box-shadow:0 0 0 .8cqw #2a1408,0 1cqw 1.5cqw rgba(0,0,0,.35)}
+.pc:not(.tile):not(.ci-card) .pc-attr span+span{border-left:0}
+.pc:not(.tile):not(.ci-card) .pc-text{top:70%;bottom:7%}

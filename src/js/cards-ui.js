@@ -46,6 +46,8 @@ const meterIcon = (d, c, ice) => d.grow ? sizeIcon(c || 0, ice) : cookIcon(c || 
 /* 紙の字の大きさ：1行に収まるように（数字や記号は細いので少なく数える） */
 const textW = t => [...t].reduce((a, c) => a + (/[0-9.+\-]/.test(c) ? .6 : /[×−]/.test(c) ? .8 : 1), 0);
 const fitFs = (t, w) => Math.min(9, Math.floor(w / textW(t) * 10) / 10);
+/* 名前の字の大きさ（11/19 しょーくん「名前を中央に」）：8文字でもリボンからはみ出さないように（…で切らない） */
+const nameFs = t => Math.min(9.4, Math.floor(66 / textW(t) * 10) / 10);
 
 /* ダメージの紋章（けた数で文字を小さく） */
 /* ★2・★3のきらめき（11/18 軽量化）：光の帯は transform で動かす（色をぬりなおさない）。★1には出さない
@@ -56,13 +58,13 @@ function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-po
 /* カードの形（mini と huge は同じ形で大きさだけちがう）。紙は1つの効果を1行で、上から大事な2つまで */
 function cardFace(cid, cls, opt = {}) {
   const d = cardDef(cid), dmg = cardDmg(d, opt.cook), lines = cardChips(d).slice(0, 2);
-  const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = ck ? 64 : 82;   // 紙の字の幅（cqw）
-  const txt = lines.length ? lines.map(t => `<span class="ln" style="font-size:${fitFs(t, w)}cqw">${kwShort(t, opt.tap)}</span>`).join('')
+  const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = ck ? 54 : 70;   // 紙の字の幅（cqw・11/19 ふちの絵の紙の内側に合わせた：紙 78cqw − すき間 − 炎のアイコン）
+  const txt = lines.length ? lines.map(t => `<span class="ln" style="font-size:${fitFs(t, w - 2 * (t.match(KW_SHORT) || []).length)}cqw">${kwShort(t, opt.tap)}</span>`).join('')   // 黄色いことばは ふちの分だけ広いので、その分つめる（11/19「×2」が切れていた）
     : `<span class="ln plain">${esc(plainLine(d))}</span>`;
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
-    <div class="pc-name"><span>${esc(d.short)}</span></div>${attrBar(d)}
+    <div class="pc-name"><span style="font-size:${nameFs(d.short)}cqw">${esc(d.short)}</span></div>${attrBar(d)}
     <div class="pc-text${ck ? ' has-ck' : ''}">${ck}<span class="pl">${txt}</span></div>
     ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
   </div>`;
