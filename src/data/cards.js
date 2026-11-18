@@ -163,7 +163,7 @@ const BUILDS = {
     doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
   },
   kone: {
-    chef: 'honoka', name: 'こね生地', from: 8, pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
+    chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
     doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
   },
   /* みなも①（11/19）：mate＝その仲間が来てから（昼の⑧で S.seen['mate:minamo']） */
@@ -172,8 +172,12 @@ const BUILDS = {
     doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
   },
 };
-/* その日に使えるビルド（ためしのページ＝TRIAL では、ぜんぶ） */
-const openBuilds = () => Object.keys(BUILDS).filter(id => TRIAL || (S.day >= BUILDS[id].from && (!BUILDS[id].mate || STORY.mate(BUILDS[id].mate))));
+/* その日に使えるビルド（ためしのページ＝TRIAL では、ぜんぶ）
+   mate＝仲間になった次の日から（STORY.mate）・seen＝その場面を見た日から（こね生地は⑨の朝 S.seen.m9・H-025） */
+const openBuilds = () => Object.keys(BUILDS).filter(id => {
+  const b = BUILDS[id];
+  return TRIAL || (S.day >= b.from && (!b.mate || STORY.mate(b.mate)) && (!b.seen || (S.seen[b.seen] && S.day >= S.seen[b.seen])));
+});
 
 const STAR_MUL = [0, 1, 1.5, 3];   // ★1・★2・★3 の強さの倍率（まぜるほど倍々）
 const DMG_CAP = 9999999;           // 1回のダメージとスコアの上限

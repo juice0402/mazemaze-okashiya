@@ -1310,7 +1310,7 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @media (prefers-reduced-motion:reduce){.lg *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
 #screen>section.title.tt{width:100%;align-self:stretch;padding:10px 0 14px;gap:0;background:#140806;overflow:hidden;container-type:size;isolation:isolate}
 .tt>*{position:relative}
-.tt-scene{position:absolute;z-index:0;--w:calc(max(100cqw,calc(100cqh * var(--ar))) * var(--z));--h:calc(max(100cqh,calc(100cqw / var(--ar))) * var(--z));width:var(--w);height:var(--h);left:calc((100cqw - var(--w)) * var(--fx));top:calc((100cqh - var(--h)) * var(--fy));pointer-events:none}
+.tt-scene{position:absolute;z-index:0;--H:calc(100cqh + 24px);--w:calc(max(100cqw,calc(var(--H) * var(--ar))) * var(--z));--h:calc(max(var(--H),calc(100cqw / var(--ar))) * var(--z));width:var(--w);height:var(--h);left:calc((100cqw - var(--w)) * var(--fx));top:calc((var(--H) - var(--h)) * var(--fy));pointer-events:none}
 .tt-zoom{position:absolute;inset:0;transform-origin:50% 62%;animation:ttZoom 26s ease-in-out infinite alternate}
 .tt-bgi{position:absolute;inset:0;width:100%;height:100%;display:block}
 .tt-lt{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 1%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,228,165,.9),rgba(255,178,92,.4) 45%,rgba(255,150,60,0));mix-blend-mode:screen;animation:ttWin 5s ease-in-out infinite}
@@ -1336,12 +1336,14 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .tt-mv.hop2{animation:ttHop 1.9s ease-in-out infinite}
 .tt-mv.bob{animation:ttBob 3.2s ease-in-out infinite}
 .tt-mv.float{animation:ttFloat 4s ease-in-out infinite}
-.tt-fore{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:4;pointer-events:none}
+.tt-fbox{position:absolute;z-index:4;pointer-events:none;--H:calc(100cqh + 24px);--w:max(100cqw,calc(var(--H) * 2 / 3));--h:max(var(--H),calc(100cqw * 1.5));width:var(--w);height:var(--h);left:calc((100cqw - var(--w)) / 2);top:calc(var(--H) - var(--h))}
+.tt-fore{position:absolute;inset:0;width:100%;height:100%;display:block}
 .tt-btns{z-index:5;width:min(330px,100% - 40px);display:flex;flex-direction:column;gap:8px}
 .tt-btns>button{width:100%;margin:0}
 .tt-btns>[data-act=start],.tt-btns>[data-act=continue]{animation:ttPulse 2.4s ease-in-out infinite}
 .tt-play .tt-scene{animation:ttFade 1.1s ease-out both}
 .tt-play .tt-in{animation:ttPop .7s cubic-bezier(.2,1.5,.45,1) both}
+.tt-play .tt-fbox{animation:ttFade 1.1s ease-out both}
 .tt-play .tt-sky,.tt-play .tt-fx{animation:ttFade 1.2s 1s ease-out both}
 .tt-play .tt-btns{animation:ttFade .6s 2.9s ease-out both}
 @keyframes ttZoom{from{transform:scale(1)}to{transform:scale(1.045)}}
@@ -1357,7 +1359,21 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @keyframes ttPop{0%{opacity:0;transform:translateY(18%) scale(.9)}100%{opacity:1;transform:none}}
 @keyframes ttPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
 @keyframes ttFade{from{opacity:0}to{opacity:1}}
-.title.tt{align-items:center;text-align:center;position:relative;border-radius:16px;box-shadow:inset 0 0 0 2px rgba(255,214,140,.4),0 10px 24px rgba(0,0,0,.45)}</style>
+.title.tt{align-items:center;text-align:center;position:relative;border-radius:16px;box-shadow:inset 0 0 0 2px rgba(255,214,140,.4),0 10px 24px rgba(0,0,0,.45)}
+.d-soroi{position:absolute;z-index:2;left:calc(150% + 6px);bottom:-10px;translate:-50% 0;display:flex;align-items:center;gap:1px;padding:1px 7px 1px 3px;border-radius:999px;background:linear-gradient(#fff6de,#f3cf8c);border:1.5px solid #8a5a2b;box-shadow:0 2px 0 rgba(70,36,12,.35);font-size:10px;line-height:1.2;color:#7a3e10;white-space:nowrap;pointer-events:none}
+.d-soroi .hico{width:16px;height:16px}
+.d-soroi b{font-weight:800;letter-spacing:.04em}
+.d-soroi.out{opacity:.45}
+.d-soroi.pop{animation:dSoroiPop .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes dSoroiPop{0%{transform:scale(.3);opacity:0}100%{transform:none;opacity:1}}
+.d-say{position:absolute;left:8px;bottom:8px;z-index:6;margin:0;display:flex;align-items:center;gap:6px;max-width:calc(100% - 16px);padding:4px 12px 4px 4px;border-radius:20px;background:rgba(255,248,236,.95);border:2px solid #5a3418;box-shadow:0 3px 0 rgba(42,20,8,.35);color:var(--ink);font-size:12px;font-weight:700;line-height:1.35;pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}
+.d-say.show{opacity:1;transform:none}
+.d-say .ds-av{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid #5a3418;background:var(--av,none) 50% 6%/300% auto no-repeat,#fbe3c8}
+.d-say b{flex:none;align-self:flex-start;margin-top:1px;padding:0 6px;border-radius:6px;font-size:10px;color:#fff;background:#d4547a}
+.d-say[data-who="minamo"] b{background:#3d8f88}
+.d-say[data-who="wakaba"] b{background:#5f9a3a}
+.d-say span{min-width:0}
+@media (prefers-reduced-motion:reduce){.d-say{transition:none}}</style>
 </head>
 <body>
 <div id="app">
@@ -1639,7 +1655,7 @@ chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text:
 doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
 },
 kone: {
-chef: 'honoka', name: 'こね生地', from: 8, pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
+chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
 doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
 },
 taisaku: {
@@ -1647,7 +1663,10 @@ chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minam
 doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 };
-const openBuilds = () => Object.keys(BUILDS).filter(id => TRIAL || (S.day >= BUILDS[id].from && (!BUILDS[id].mate || STORY.mate(BUILDS[id].mate))));
+const openBuilds = () => Object.keys(BUILDS).filter(id => {
+const b = BUILDS[id];
+return TRIAL || (S.day >= b.from && (!b.mate || STORY.mate(b.mate)) && (!b.seen || (S.seen[b.seen] && S.day >= S.seen[b.seen])));
+});
 const STAR_MUL = [0, 1, 1.5, 3];   // ★1・★2・★3 の強さの倍率（まぜるほど倍々）
 const DMG_CAP = 9999999;           // 1回のダメージとスコアの上限
 const recipeKey = (a, b) => [a, b].sort().join('+');
@@ -1905,6 +1924,17 @@ const candyHas = (key, m) => String(key).split('+').includes(m);
 const BATCH = 3;          // 1回焼くと同じお菓子3こ＝棚の1マス
 const SHELF_COLS = 3;     // 棚は3列。看板の枠は、まんなかの列の上から（行の数のまんなか）
 const kanbanSlot = n => SHELF_COLS * Math.floor((Math.ceil(n / SHELF_COLS) - 1) / 2) + 1;
+function soroiRows(slots) {
+const rows = [];
+for (let r = 0; (r + 1) * SHELF_COLS <= slots.length; r++) {
+const row = slots.slice(r * SHELF_COLS, (r + 1) * SHELF_COLS);
+if (row.some(o => !o)) continue;
+const sets = row.map(o => new Set(String(o.s.key).split('+')));
+const mats = [...sets[0]].filter(m => sets.every(x => x.has(m)));
+if (mats.length) rows.push({ r, mats, out: row.some(o => o.s.n <= 0) });
+}
+return rows;
+}
 const DAY_MS = 40000;     // 営業は約40秒（はやおくりで約20秒）
 const DAY_FAST = 2;       // はやおくりの速さ
 const CUST_DAY1 = 3;      // 1日目は3人（シナリオ③）
@@ -1912,6 +1942,7 @@ const CUST_BASE = 4;      // 2日目から：4人＋評判のびんの数＋立�
 const REP_JAR = 10;       // ハート10こで評判のびん1つ → 次の日からお客さん+1人（まとめのびんは flow.js の jarHTML がこれを使う）
 const LIKE_W = 3;         // お客さんごとの出やすい味（下）は3倍出やすい
 const KANBAN_W = 2;       // 看板のお菓子の素材がすきなお客さんは2倍来やすい
+const SOROI_W = 1.5;      // おそろいの段1つごとに、その素材がすきなお客さんが1.5倍来やすい（看板とかけ算・開店のときの並びで決まる・11/19 仮）
 const OTHER_BUY = 0.5;    // すきな味のお菓子がないとき、ほかのお菓子を1こ買う人の割合（ハートなし）
 const CUST_LIKES = {
 kodomo: ['ichigo', 'hachimitsu', 'zeri', 'niji'],
@@ -1936,15 +1967,16 @@ let r = Math.random() * sum;
 for (const x of items) { r -= w(x); if (r < 0) return x; }
 return items[items.length - 1];
 }
-function custPlan(n, kanbanKey) {
+function custPlan(n, kanbanKey, soroi = []) {   // soroi＝おそろいの段の素材（段の数だけ）
 const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set();
+const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
 let prev = null;
 return Array.from({ length: n }, () => {
 const c = pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev)); prev = c;
 const vs = custVariants(c), fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
 used.add(c + vr);
 const pref = CUST_LIKES[c] || [];
-const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1));
+const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m));
 return { c, vr, like };
 });
 }
@@ -1973,7 +2005,24 @@ prologue: [
 'ほのか【やる気】：だいじょうぶ！おいしいお菓子があれば、お客さんは来てくれる！',
 'ほのか【やる気】：よーし、さっそく仕込みだ！',
 ],
+miChef: () => { try { return !!(N && BUILDS[N.build] && BUILDS[N.build].chef === 'minamo'); } catch (e) { return false; } },
 evening(rec) {
+const L = STORY.eveningBase(rec);
+if (rec.day === 1 || !STORY.miChef()) return L;
+const first = !S.seen.miChef; S.seen.miChef = S.seen.miChef || S.day;
+if (L.length) return [...L.slice(0, -1), 'ほのか【わくわく】：今夜は、みなもちゃんの番だね！', 'みなも【真剣】：……まかせて。大作、作る'];
+return first ? STORY.miFirst : [];
+},
+miFirst: [
+'（夕方。みなもが、飴の鍋に火を入れる）',
+'みなも【真剣】：……今夜は、わたしが作る',
+'ほのか【わくわく】：みなもちゃんの飴細工、見たい！',
+'みなも【すまし】：……飴は、温度がいのち',
+'みなも【真剣】：あたためて、ゆっくり育てる。……大作に',
+'ほのか【やる気】：よーし、わたしは応援係だ！',
+'みなも【ジト目】：……声、大きい',
+],
+eveningBase(rec) {
 if (rec.day === 1) return [
 '（夕方。カラン、とドアの音）',
 'ほのか【考える】：あれ？もう閉店なのに……お客さん？',
@@ -2053,25 +2102,31 @@ nightSay: [null,
 ['ほのか【うれしい】：よかったぁ、よろこんでくれたみたい', 'ほのか【うれしい】：えへへ、また来てね！', 'ほのか【わくわく】：まんぞくしてくれた！明日もがんばろ！'],
 ['ほのか【うれしい】：やったー！おなかいっぱいにできた！', 'ほのか【ドヤ】：おなかいっぱい！今日のは自信作！', 'ほのか【感動】：大満足だって！うれしいなぁ'],
 ],
+nightMiSay: [null,
+['みなも【しょんぼり】：……まだ、小さかった', 'みなも【考える】：……温度、もう少し', 'ほのか【やる気】：次は、ぜったい大作だよ！'],
+['みなも【すまし】：……悪くない', 'みなも【照れ】：……よろこんでた。たぶん', 'ほのか【うれしい】：みなもちゃんの飴、きれいだった！'],
+['みなも【照れ】：……いい、大作だった', 'みなも【すまし】：……完成。おなかいっぱい', 'ほのか【感動】：みなもちゃん、すごーい！'],
+],
 nightMate: {
 minamo: [null, 'みなも：……次は、もっと焼ける', 'みなも：……悪くない', 'みなも：……いい、おもてなしだった'],
 wakaba: [null, 'わかば：あらあら、次はきっと大丈夫よぉ', 'わかば：うふふ、よろこんでたわねぇ', 'わかば：あらあら、おなかぽんぽんねぇ'],
 },
-mate: id => !!(S.seen && S.seen['mate:' + id]),
+mateDay: id => (S.seen && S.seen['mate:' + id]) || 0,
+mate: id => { const d = STORY.mateDay(id); return !!d && d < S.day; },
 tips: {
 shop1: ['カードを、下の調理台へドラッグ！', '1ラウンド目は、3まいタダだよ！'],
 field: ['これ、フィールドだ！{場}に置こう', '{場}があると、生地が焼けるんだよ'],
-bake: ['準備ができたら、おもてなし！をタップ', 'おなかいっぱいに、してあげよう！'],
-goal: ['味パワーがおなかをこえたら、まんぞく！', '9ラウンドの合計で、お礼が決まるんだ'],
-mix: ['このカード、かさねるとまぜまぜできる！', 'まぜると、★が上がるんだよ'],
+bake: ['準備ができたら、おもてなし！を', 'タップして、おなかいっぱいに！'],
+goal: ['味パワーがおなかをこえたら、', 'まんぞく！合計で、お礼が決まるよ'],
+mix: ['かさねると、まぜまぜできるよ！', 'まぜると、★が上がるんだよ'],
 reroll: ['ここからは、コインで買うんだね', '入れかえで、新しいカードも出せるよ'],
-full: ['わわっ、調理台がいっぱい！', 'まぜるか、ショップへ持っていってうろう'],
+full: ['わわっ、調理台がいっぱい！', 'まぜるか、ショップで売ろう'],
 cooked: ['生地が焼けてきた！いい匂い〜', '{焼き加減}9で{サイコー}！焼きすぎ注意'],
 heat: ['まきや火種で、{火力}アップ！', '火が強いほど、生地が早く焼けるよ'],
-place: ['いちばん左が{スタート}、右が{アンカー}', '並べかえは、おもてなしの前ならいつでも'],
-fushigi: ['あっ、今夜のお客さんのふしぎな素材！', 'ショップに出るのは、今夜だけだよ'],
-burnt: ['あちゃー、{焦げ}ちゃった……', 'ううん、これも味！{焦げ}どうしをまぜると？'],
-view: ['カードをタップすると、大きく見られるよ', 'くわしい効果も、ちゃんと書いてある！'],
+place: ['左が{スタート}、右が{アンカー}', '並べかえは、おもてなしの前に'],
+fushigi: ['あっ、お客さんのふしぎな素材！', 'ショップに出るのは、今夜だけだよ'],
+burnt: ['あちゃー、{焦げ}ちゃった……', 'これも味！{焦げ}どうしをまぜると？'],
+view: ['カードをタップで、大きく見える！', 'くわしい効果も、ちゃんと書いてある！'],
 },
 thanks(rec) {
 if (rec.day === 1) {
@@ -2101,7 +2156,7 @@ const give = m === 1 ? '（' + g + 'ひとつと、コインを少し置いて�
 const mi = STORY.mate('minamo');
 if (rec.newMon) {
 const head = [(m >= 3 ? '（おなかいっぱいの' : m === 2 ? '（まんぞくそうな' : '（もうちょっと食べたそうな') + nm + '）',
-nm + '：' + vc[m], give, STORY.nightSay[m][0]];
+nm + '：' + vc[m], give, (STORY.miChef() ? STORY.nightMiSay : STORY.nightSay)[m][0]];
 if (rec.mon === 'hitsuji') return [...head,
 'ほのか【うっとり】：ひつじホイップ……ふわっふわ！',
 'ほのか【わくわく】：明日は、これでなに作ろうかな！'];
@@ -2119,8 +2174,8 @@ if (rec.mon === 'hiyoko') return [...head,
 ...(mi ? ['みなも：……あなたより、火加減が上手', 'ほのか【くやしい】：うっ……ひよこに、負けた……']
 : ['ほのか【くやしい】：うう、ひよこに火加減で負けた……！'])];
 }
-const say = [...STORY.nightSay[m]];
-for (const id of ['minamo', 'wakaba']) if (STORY.mate(id)) say.push(STORY.nightMate[id][m]);
+const mc = STORY.miChef(), say = [...(mc ? STORY.nightMiSay : STORY.nightSay)[m]];   // みなもがシェフの夜は、みなもが主役のひとこと
+for (const id of ['minamo', 'wakaba']) if (STORY.mate(id) && !(mc && id === 'minamo')) say.push(STORY.nightMate[id][m]);
 return [nm + '：' + vc[m], give, pick(say)];
 },
 morning(rec, yest) {
@@ -2130,6 +2185,18 @@ if (rec.day === 1) return [
 'ほのか【不安】：……うっ。お財布、さみしいなぁ',
 'ほのか【考える】：材料は、使うぶんだけ買おっと',
 ];
+if (S.stock.niji && !S.seen.m7 && !STORY.mateDay('minamo')) {
+S.seen.m7 = 1;
+return ['ほのか【わくわく】：この水あめで作ったら、お店いちばんのお菓子になるかも！', '→ にじいろの水あめのお菓子を作って、棚へ'];
+}
+if (S.stock.minto && !S.seen.m11 && !STORY.mateDay('wakaba')) {
+S.seen.m11 = 1;
+return ['ほのか【わくわく】：このミントで、さわやかなお菓子、作ってみよう！', '→ きらきらミントのお菓子を作って、棚へ'];
+}
+if (STORY.mate('minamo') && S.day >= ((typeof BUILDS === 'object' && BUILDS.kone && BUILDS.kone.from) || 8) && !S.seen.m9) {
+S.seen.m9 = S.day;
+return STORY.m9;
+}
 if (rec.day === 2 && S.stock.zeri && !S.seen.m5) {
 S.seen.m5 = 1;
 return [
@@ -2139,12 +2206,13 @@ return [
 ];
 }
 const L = [], y = yest || {}, mon = y.mon ? MONSTERS.find(m => m.id === y.mon) : null;
-if (mon && y.newMon) L.push('ほのか：きのうの' + mon.name + '、また来てくれるかな');
+const yl = k => STORY.yestLine(mon.id, k);   // きのうの夜のモンスターごとの文（11/19・なければ前の共通の文）
+if (mon && y.newMon) L.push(...(yl('new') || ['ほのか：きのうの' + mon.name + '、また来てくれるかな']));
 else if (y.kanbanSoldOut && y.kanban) L.push('ほのか【ドヤ】：看板の' + candyOf(y.kanban).name + '、売り切れたんだよね！');
 else if (y.visitors >= 6) L.push('ほのか【うれしい】：きのうは、お客さんいっぱいだった！');
-else if (mon && y.mood >= 3) L.push('ほのか【うれしい】：' + mon.name + '、すっごく満足してくれた！');
+else if (mon && y.mood >= 3) L.push(...(yl('great') || ['ほのか【うれしい】：' + mon.name + '、すっごく満足してくれた！']));
 else if (y.visitors && y.served * 2 < y.visitors) L.push('ほのか【不安】：きのうは、ちょっとさみしかったなぁ');
-else if (mon && y.mood === 1) L.push('ほのか【くやしい】：きのうの夜は……うーん、くやしい！');
+else if (mon && y.mood === 1) L.push(...(yl('poor') || ['ほのか【くやしい】：きのうの夜は……うーん、くやしい！']));
 else L.push('ほのか【やる気】：よーし、今日もがんばるぞー！');
 const unused = Object.keys(S.stock).find(m => isMonMat(m) && !Object.keys(S.recipes).some(k => k.split('+').includes(m)));
 const rare = MONSTERS.find(m => m.rare && S.day === m.rare - 1 && !S.seenMon.includes(m.id));
@@ -2152,16 +2220,207 @@ if (unused) L.push('ほのか【考える】：' + matShort(unused) + '、まだ
 else if (S.money < 300) L.push('ほのか【不安】：お財布、さみしい……仕入れはひかえめに');
 else if (rare && rare.id === 'nijikurage') L.push('ほのか【わくわく】：森で、きらきらの光を見たって……？');
 else if (rare && rare.id === 'mintousagi') L.push('ほのか【うっとり】：森から、すーっといい香りがする……');
+else if (S.day >= 3 && !S.seen.soroi && Math.random() < 0.5) L.push('ほのか【考える】：同じ素材のお菓子を、横にそろえたら……？');
 else if (Math.random() < 0.3) L.push('ほのか【わくわく】：まだ知らないレシピ、ありそうな気がする！');
-if (Math.random() < 0.5) L.push(pick([
-'ほのか【うれしい】：おはよう、オーブン！今日もよろしくね',
-'ほのか【びっくり】：あっ、エプロン、うらがえしだった',
-'ほのか【うっとり】：夢でクッキーの山に埋もれてた……しあわせ',
-'ほのか：森の鳥さん、今日も早起きだなぁ',
-'ほのか【ドヤ】：味見は大事。……もうひとつ味見',
-'ほのか【ドヤ】：コック帽、今日はまっすぐかぶれた！',
-]));
+if (Math.random() < 0.5) {
+const mi = STORY.mate('minamo'), wa = STORY.mate('wakaba');
+const kake = STORY.kakeai.filter(k => (!k.mi || mi) && (!k.wa || wa));
+const pool = kake.length && Math.random() < 0.6 ? kake : STORY.koneta;
+const k = STORY.sayPick(pool);
+if (k) L.push(...k.say);
+}
 return L;
+},
+koneta: [
+{ id: 'k1', say: ['ほのか【うれしい】：おはよう、オーブン！今日もよろしくね'] },
+{ id: 'k2', say: ['ほのか【びっくり】：あっ、エプロン、うらがえしだった'] },
+{ id: 'k3', say: ['ほのか【うっとり】：夢でクッキーの山に埋もれてた……しあわせ'] },
+{ id: 'k4', say: ['ほのか：森の鳥さん、今日も早起きだなぁ'] },
+{ id: 'k5', say: ['ほのか【ドヤ】：味見は大事。……もうひとつ味見'] },
+{ id: 'k6', say: ['ほのか【ドヤ】：コック帽、今日はまっすぐかぶれた！'] },
+{ id: 'k7', say: ['ほのか【わくわく】：今日の空、クッキー色の雲だ！'] },
+{ id: 'k8', say: ['ほのか【考える】：オーブンさん、きのうより機嫌いい？'] },
+{ id: 'k9', say: ['ほのか【うっとり】：焼きたての匂いで、目がさめた……'] },
+{ id: 'k10', say: ['ほのか【びっくり】：コック帽に、葉っぱがついてた'] },
+{ id: 'k11', say: ['ほのか【ドヤ】：ほっぺのすすは、今日も勲章！'] },
+{ id: 'k12', say: ['ほのか【うれしい】：窓の外で、リスがこっち見てる！'] },
+{ id: 'k13', say: ['ほのか【やる気】：腕まくりして……よーし！'] },
+{ id: 'k14', say: ['ほのか【考える】：泡立て器、どこに置いたっけ……'] },
+{ id: 'k15', say: ['ほのか：お店の前、ほうきではいておこっと'] },
+{ id: 'k16', say: ['ほのか【わくわく】：今日は、どんなお客さんが来るかな'] },
+],
+kakeai: [
+{ id: 'm1', mi: 1, say: ['ほのか【うれしい】：おはよう、みなもちゃん！', 'みなも【ジト目】：……朝から、声、大きい'] },
+{ id: 'm2', mi: 1, say: ['みなも：……エプロン、うらがえし', 'ほのか【びっくり】：えっ！？またー！？'] },
+{ id: 'm3', mi: 1, say: ['みなも：……今日の看板、なに', 'ほのか【ドヤ】：ぜったい、クッキー！'] },
+{ id: 'm4', mi: 1, say: ['みなも【すまし】：……オーブン、もう温めておいた', 'ほのか【感動】：みなもちゃん、天使！？', 'みなも【照れ】：……べつに'] },
+{ id: 'm5', mi: 1, say: ['ほのか【わくわく】：みなもちゃん、味見して！', 'みなも【ジト目】：……まだ、生焼け'] },
+{ id: 'm6', mi: 1, say: ['みなも【考える】：……今日の飴、色を変えてみる', 'ほのか【わくわく】：わー、何色！？', 'みなも【すまし】：……ないしょ'] },
+{ id: 'm7', mi: 1, say: ['ほのか【やる気】：今日は焦がさないぞー！', 'みなも【ためいき】：……それ、毎日きいてる'] },
+{ id: 'w1', wa: 1, say: ['わかば【あらあら】：あらあら、ほっぺにすすがついてるわねぇ', 'ほのか【ドヤ】：えへへ、勲章だよ！'] },
+{ id: 'w2', wa: 1, say: ['わかば【わくわく】：畑のいちご、今朝とれたのよぉ', 'ほのか【うれしい】：つやつや！いい匂い！'] },
+{ id: 'w3', wa: 1, say: ['わかば【うふふ】：うふふ、今日も元気ねぇ', 'ほのか【ドヤ】：元気だけは、負けないよ！'] },
+{ id: 'w4', wa: 1, say: ['ほのか【不安】：わかばさん、ねむそう……？', 'わかば【ないしょ】：うふふ、夜ふかしして、ハーブの本をねぇ'] },
+{ id: 'w5', wa: 1, say: ['わかば【まかせて】：今日のお花、お店にかざっておいたわぁ', 'ほのか【感動】：わぁ、お店が明るい！'] },
+{ id: 't1', mi: 1, wa: 1, say: ['わかば【まかせて】：ハーブティー、いれたわよぉ', 'ほのか【うれしい】：わーい！', 'みなも：……いただきます'] },
+{ id: 't2', mi: 1, wa: 1, say: ['みなも：……今日の看板、なに', 'ほのか【ドヤ】：ぜったい、クッキー！', 'わかば【うふふ】：うふふ、ぶれないわねぇ'] },
+{ id: 't3', mi: 1, wa: 1, say: ['わかば【あらあら】：あらあら、二人とも粉だらけねぇ', 'ほのか【びっくり】：えっ！？みなもちゃんまで！？', 'みなも【照れ】：……ふるいすぎた'] },
+{ id: 't4', mi: 1, wa: 1, say: ['みなも【すまし】：……今日の看板、わたしの飴', 'ほのか【くやしい】：えー、クッキーがいい！', 'わかば【うふふ】：うふふ、じゃんけんねぇ'] },
+],
+sayPick(pool) {
+if (!pool || !pool.length) return null;
+const day = k => (S.seen && S.seen['say:' + k.id]) || 0;
+const today = pool.find(k => day(k) === S.day);   // 同じ日にもう一度よばれたら（画面の出しなおし）、同じ文
+if (today) return today;
+const ok = pool.filter(k => !day(k) || S.day - day(k) >= 7);
+const k = ok.length ? pick(ok) : pool.slice().sort((a, b) => day(a) - day(b))[0];
+if (S.seen) S.seen['say:' + k.id] = S.day;
+return k;
+},
+mateVisit: {
+minamo: () => [
+'（カラン。すらっとした女の子。だまって棚を見つめる）',
+'ほのか【うれしい】：いらっしゃいませー！',
+'みなも【すまし】：……これ。にじいろの水あめ',
+'ほのか【びっくり】：わかる！？きのうの夜、クラゲさんがくれたの！',
+'みなも：……ひとつ',
+'（もぐ）',
+'みなも【考える】：…………',
+'ほのか【不安】：ど、どう……？',
+'みなも【ジト目】：焦げてる',
+'ほのか【不安】：うっ',
+'みなも【ジト目】：形も、そろってない',
+'ほのか【くやしい】：ううっ……',
+'みなも【考える】：……でも',
+'みなも【照れ】：……なんでだろう。あったかい',
+'ほのか【うれしい】：えへへ。焦がしちゃったけど、焼くの、すっごく楽しかったんだ！',
+'みなも【考える】：……楽しい',
+'（少しの間）',
+'みなも【真剣】：わたし、飴細工の職人。……だった',
+'みなも【しょんぼり】：完璧を目指してたら、手が動かなくなった',
+'ほのか【不安】：そっか……',
+'みなも【真剣】：あなたには、わたしにないものがある',
+'みなも【真剣】：……ここで、働かせて',
+'ほのか【びっくり】：えっ！？ほ、ほんとに！？',
+'みなも【ジト目】：……返事',
+'ほのか【感動】：もちろん！大歓迎だよ！',
+'ほのか【やる気】：よーし、今日から2人で、まぜまぜおかし屋だ！',
+'みなも【そっぽ】：……声、大きい',
+'（みなもが仲間になった！次の夜から、いっしょにおもてなしできる）',
+],
+wakaba: () => {
+const mi = STORY.mate('minamo');
+return [
+'（カラン。ハーブのかごをかかえた、ふんわりしたお姉さん）',
+'わかば【あらあら】：あらあら、いい香りねぇ',
+'ほのか【うれしい】：いらっしゃいませー！',
+'わかば【うふふ】：このミントの香り……森の奥まで、とどいてたのよ',
+'ほのか【びっくり】：えっ、そんなに遠くまで！？',
+'わかば【ふつう】：ミントうさぎさんの葉っぱでしょう？',
+'わかば【おどろき】：あの子、なかなかなつかないのに。すごいわねぇ',
+mi ? 'みなも【考える】：……くわしい' : 'ほのか【考える】：森のこと、くわしいんですね',
+'わかば【うふふ】：うふふ。わたし、森の奥で畑をしてるの',
+'わかば【わくわく】：ハーブとか、くだものとかねぇ',
+'わかば【ふつう】：ひとつ、いただくわねぇ',
+'（もぐ）',
+'わかば【こまり顔】：あらあら……ちょっと焦げてるわねぇ',
+'ほのか【くやしい】：うっ……また言われた……',
+...(mi ? ['みなも【すまし】：……いつものこと'] : []),
+'わかば【うふふ】：うふふ。でも、とっても元気が出る味',
+'わかば【しんみり】：わたしね、ずっとひとりでお菓子を作ってたの',
+mi ? 'わかば【しんみり】：でも、ふたりを見てたら……' : 'わかば【しんみり】：でも、あなたを見てたら……',
+'わかば【よろこび】：みんなで作るほうが、楽しそうねぇって',
+'ほのか【わくわく】：じゃあ、いっしょにやろうよ！',
+'わかば【おどろき】：あらあら、いいの？',
+...(mi ? ['みなも【そっぽ】：……人手、たりてないし', 'ほのか【びっくり】：みなもちゃん、それ、歓迎してるんだよね！？', 'みなも【照れ】：……べつに'] : []),
+mi ? 'わかば【うふふ】：うふふ。よろしくねぇ、ほのかちゃん、みなもちゃん' : 'わかば【うふふ】：うふふ。よろしくねぇ、ほのかちゃん',
+mi ? 'ほのか【やる気】：よーし、3人で、まぜまぜおかし屋だー！' : 'ほのか【やる気】：よーし、2人で、まぜまぜおかし屋だー！',
+...(mi ? ['みなも【ジト目】：……声、大きい'] : []),
+'わかば【あらあら】：あらあら、元気ねぇ',
+'（わかばが仲間になった！次の夜から、いっしょにおもてなしできる）',
+];
+},
+},
+soroiFirst: m => ['ほのか【わくわく】：同じ' + matShort(m) + 'のお菓子で、おそろいの段！', 'ほのか【うれしい】：' + matShort(m) + 'がすきなお客さん、来てくれるかも！'],
+m9: [
+'（みなもが来て何日かあと。朝のキッチン。ほのかが大あわてで生地をこねている）',
+'ほのか【不安】：早く焼かなきゃ、開店に間に合わない〜！',
+'（オーブンから、もくもくの煙）',
+'ほのか【あちゃー】：あちゃー……また焦げた……',
+'みなも【ジト目】：……あせりすぎ',
+'ほのか【くやしい】：だって、早くおいしいの作りたいんだもん！',
+'みなも【真剣】：飴も、生地も。待つのも、腕',
+'ほのか【しょんぼり】：待つの、にがて……',
+'みなも【ためいき】：…………（ためいき）',
+'みなも【考える】：……じゃあ、こねて',
+'ほのか【びっくり】：こねる？',
+'みなも【真剣】：生地は、こねるほど強くなる',
+'みなも【真剣】：こねた生地を少しのこすと、次のパン種になる',
+'ほのか【びっくり】：生地から、生地が生まれるの！？',
+'みなも【すまし】：……そう。パン種が、次の生地を強くする',
+'（ほのかが全力でこねる。ぽこぽこ、パン種ができていく）',
+'ほのか【やる気】：こねて、こねて……こねまくるー！！',
+'みなも【ジト目】：……声、大きい',
+'みなも【照れ】：……でも、いい生地',
+'ほのか【ドヤ】：待つのはにがてだけど、こねるのは負けない！',
+'（ほのかの新しいビルド「こね生地」が使えるようになった！）',
+],
+yestMon: {
+slime: {
+great: ['ほのか【うれしい】：スライム、ぷるんぷるんで帰ってった！', 'ほのか【ドヤ】：スライムのおなか、まんまるだった！', { mi: 1, s: ['みなも【すまし】：……スライム、つやつやだった', 'ほのか【ドヤ】：おなかいっぱいの、つやだよ！'] }],
+poor: ['ほのか【くやしい】：スライム、ちょっとしぼんでた……', 'ほのか【考える】：スライムには、もっと甘いのがいいのかな'],
+},
+hitsuji: {
+new: ['ほのか【うっとり】：くもひつじの毛、ふわふわだったなぁ', 'ほのか【わくわく】：ひつじホイップ、なにに使おうかな！'],
+great: ['ほのか【うれしい】：くもひつじ、もこもこでごきげんだった！', 'ほのか【うっとり】：満腹のくもひつじ、雲みたいだった', { wa: 1, s: ['わかば【うふふ】：くもひつじさん、まんまるだったわねぇ', 'ほのか【うれしい】：ね！かわいかったー！'] }],
+poor: ['ほのか【くやしい】：くもひつじ、めぇ……って、しょんぼり', 'ほのか【考える】：もこもこを、もっともこもこにしたい！'],
+},
+kurage: {
+new: ['ほのか【考える】：しずくクラゲ、さいご、にじいろに光った……？', 'ほのか【うっとり】：しずく寒天、ひんやりきれいだったなぁ'],
+great: ['ほのか【うれしい】：しずくクラゲ、ちゃぷちゃぷ喜んでた！', { mi: 1, s: ['みなも【照れ】：……クラゲ、きれいだった', 'ほのか【わくわく】：みなもちゃん、クラゲすきなの？', 'みなも【そっぽ】：……べつに'] }],
+poor: ['ほのか【考える】：しずくクラゲ、熱いのは苦手なのかな……'],
+},
+tokage: {
+new: ['ほのか【びっくり】：床に、まだ金平糖が落ちてる……！', { mi: 1, s: ['みなも【すまし】：……ほしくずシュガー、飴にしたい', 'ほのか【わくわく】：みなもちゃん、目がきらきら！'] }],
+great: ['ほのか【うれしい】：こんぺいトカゲ、しっぽまでキラキラだった！', 'ほのか【うっとり】：きのうの床、星空みたいだったなぁ'],
+poor: ['ほのか【くやしい】：こんぺいトカゲ、元気なかったなぁ……', { mi: 1, s: ['みなも【考える】：……金平糖、ぜんぜん落ちてなかった', 'ほのか【くやしい】：うう、元気なかったんだ……'] }],
+},
+hiyoko: {
+new: ['ほのか【くやしい】：ひよこの火加減……思い出すとくやしい！', 'ほのか【うっとり】：ほのおカラメル、こんがりいい匂い……'],
+great: ['ほのか【ドヤ】：ひよこ、ぴよぴよ大喜びだった！', { mi: 1, s: ['みなも【すまし】：……ひよこ、あったかかった', 'ほのか【びっくり】：みなもちゃん、さわったの！？'] }],
+poor: ['ほのか【不安】：ひよこの炎、ちょっと小さくなってた……'],
+},
+},
+yestLine(id, k) {
+const mi = STORY.mate('minamo'), wa = STORY.mate('wakaba');
+const ok = ((STORY.yestMon[id] || {})[k] || []).map(e => typeof e === 'string' ? { s: [e] } : e).filter(e => (!e.mi || mi) && (!e.wa || wa));
+return ok.length ? pick(ok).s : null;
+},
+daySayP: { open: .7, love: .35, other: .3, none: .5, sold: .8, kanban: 1, idle: .8, close: .8 },
+daySay: {
+open: ['ほのか【やる気】：今日も、お店あけまーす！', 'ほのか【うれしい】：さあ、いらっしゃいませー！',
+{ mi: 1, s: ['みなも【すまし】：……開店'] }, { wa: 1, s: ['わかば【うふふ】：今日もよろしくねぇ'] },
+{ mi: 1, wa: 1, s: ['ほのか【やる気】：3人で、がんばろー！', 'みなも【ジト目】：……声、大きい'] }],
+love: ['ほのか【うれしい】：ありがとうございましたー！', 'ほのか【うれしい】：また来てくださいね！', 'ほのか【ドヤ】：えへへ、よろこんでくれた！',
+{ mi: 1, s: ['みなも【照れ】：……また、どうぞ'] }, { wa: 1, s: ['わかば【うふふ】：うふふ、またねぇ'] }],
+other: ['ほのか【うれしい】：まいどありー！', 'ほのか【考える】：すきな味、なんだったんだろう……',
+{ mi: 1, s: ['みなも【考える】：……すきな味、ちがった'] }],
+none: ['ほのか【不安】：ううっ……ざんねん', 'ほのか【考える】：すきな味、並べておかなきゃ……',
+{ mi: 1, s: ['みなも【すまし】：……棚、見直す'] }, { wa: 1, s: ['わかば【こまり顔】：あらあら、ざんねんねぇ'] }],
+sold: ['ほのか【びっくり】：わっ、{c}、売り切れ！', 'ほのか【うれしい】：{c}、ぜんぶ売れちゃった！',
+{ mi: 1, s: ['みなも【すまし】：……{c}、完売'] }, { wa: 1, s: ['わかば【わくわく】：あらあら、{c}は大人気ねぇ'] }],
+kanban: ['ほのか【感動】：看板の{c}、売り切れー！',
+{ mi: 1, s: ['ほのか【ドヤ】：看板、売り切れたよ！', 'みなも【すまし】：……当然'] }, { wa: 1, s: ['わかば【よろこび】：看板の{c}、すごい人気ねぇ！'] }],
+idle: ['ほのか【考える】：お客さん、まだかなぁ……', 'ほのか：カウンター、ぴかぴかにしとこっと', 'ほのか【うっとり】：窓の外、いい天気〜', 'ほのか【ドヤ】：……ちょっとだけ、味見',
+{ mi: 1, s: ['みなも【すまし】：……ひま', 'ほのか【びっくり】：しーっ、言っちゃだめ！'] },
+{ mi: 1, s: ['ほのか【わくわく】：みなもちゃん、なに作ってるの？', 'みなも【照れ】：……ないしょ。飴の小鳥'] },
+{ mi: 1, s: ['みなも【ジト目】：……つまみ食い、見えてる', 'ほのか【びっくり】：み、見えてないもん！'] },
+{ wa: 1, s: ['わかば【まかせて】：お花のお水、かえておくわねぇ', 'ほのか【うれしい】：ありがとう、わかばさん！'] },
+{ wa: 1, s: ['わかば【ないしょ】：うふふ、さっきのお客さん、かわいかったわねぇ', 'ほのか【うれしい】：ね！また来てくれるかな'] },
+{ mi: 1, wa: 1, s: ['わかば【うふふ】：みなもちゃん、ほっぺに飴がついてるわよぉ', 'みなも【照れ】：……ついてない', 'ほのか【ドヤ】：ついてる！'] },
+{ mi: 1, wa: 1, s: ['ほのか【考える】：3人だと、お店がせまいね', 'みなも【すまし】：……あなたが、うごきすぎ', 'わかば【うふふ】：うふふ、にぎやかねぇ'] }],
+close: ['ほのか【うれしい】：本日は、閉店でーす！', 'ほのか【やる気】：よーし、夕方の準備！',
+{ mi: 1, s: ['みなも【すまし】：……おつかれ'] }, { wa: 1, s: ['わかば【うふふ】：おつかれさま、ほのかちゃん'] }],
 },
 mTut: {
 oven: ['ほのか【わくわく】：材料を2つ、オーブンに入れて……', '→ 材料を2つオーブンへ。値札のものは、その場で買える'],
@@ -2194,18 +2453,59 @@ love: ['これ、だいすき！', 'わあ、これください！', 'これこ�
 other: ['じゃあ、これにしよ', 'これもおいしそう', 'ひとつください'],
 none: ['うーん、また来るね', 'きょうはいいかな', 'ざんねん……'],
 },
+custBy: {
+kodomo: {
+love: ['わぁ！これ、だいすき！', 'きらきらの、ちょうだい！', 'これこれ！これがいいの！', 'あまいにおい、するー！', 'ぜんぶ、たべたいなぁ', 'はね、ぱたぱたしちゃう！'],
+other: ['じゃあ、これにするの', 'これも、おいしそう！', 'ひとつ、くださいな', 'こっちにしよっと'],
+none: ['うーん、またくるね', 'きょうは、いいの', 'ざんねん……', 'あしたも、くるね！'],
+},
+gakusei: {
+love: ['くんくん……これだっ！', 'この匂い、たまらない……', 'しっぽが、かってに……', 'べ、べつに好物じゃ……', 'み、耳が立っちゃった', 'これ、ください！'],
+other: ['じゃ、これでいいや', 'こっちも、悪くないかも', 'ひとつ。……どうも', 'まあ、これにしとく'],
+none: ['くんくん……ちがうな', 'きょうは、いいや', 'お、おなかいっぱいだし', 'また、匂いかぎに来る'],
+},
+otona: {
+love: ['旅のおともに、これだ！', 'よし、これに決めた！', 'これで、あと百歩いける', 'うまそう！ひとつくれ！', '腹ぺこには、これだな', '冒険の前のごほうびだ'],
+other: ['よし、これをもらおう', 'これも、うまそうだな', 'ひとつ、たのむよ', '旅の土産にするか'],
+none: ['うーん、また寄るよ', '今日は、腹いっぱいだ', 'また旅の帰りにな', 'ざんねん、また今度'],
+},
+obaachan: {
+love: ['おやまあ、これはいいねぇ', 'ひとつ、いただこうかね', 'ほっほ、なつかしい味だ', 'ほうきも浮かれる味だよ', 'いいにおいだねぇ', '魔法みたいなお菓子だよ'],
+other: ['これをもらおうかね', 'これも、よさそうだねぇ', 'ひとつ、包んでおくれ', 'おやおや、これにしよう'],
+none: ['また、寄らせてもらうよ', 'きょうは、見るだけだよ', 'おやまあ、ざんねんだねぇ', 'ほっほ、また来るからね'],
+},
+},
+custSay: (c, kind) => pick(((STORY.custBy[c] || {})[kind]) || STORY.cust[kind]),
 diary(rec) {
 if (rec.day === 1) return ['お店をひらいた日。お客さんは' + rec.visitors + '人。', '夜にスライムが来た。ゼリー、何に使おうかな？'];
-const L1 = '今日のお客さんは' + rec.visitors + '人。';   // 多い・少ないの目安は昼の数字が決まってから
+if (S.seen.m9 === rec.day) return ['みなもちゃんに、パン種を教わった。', 'こねすぎて、うでがパンパン。楽しい！'];   // ⑨の日（紙に入るよう少しちぢめた）
+if (STORY.mateDay('wakaba') === rec.day) return ['わかばさんが仲間になった！', 'お店が、もっとにぎやかになりそう。'];
+if (STORY.mateDay('minamo') === rec.day) return ['みなもちゃんが仲間になった！', 'クールだけど、たぶんすごくやさしい。'];
+const many = rec.visitors >= 6, few = rec.visitors && rec.served * 2 < rec.visitors;
+const L1 = '今日のお客さんは' + rec.visitors + '人。' + (many ? 'にぎやかだった！' : few ? '明日はもっと！' : '');
 const mon = rec.mon ? MONSTERS.find(m => m.id === rec.mon) : null, gift = Object.keys(rec.gifts || {})[0];
 let L2;
 if (mon && rec.newMon) L2 = '夜に' + mon.name + 'が来た。' + (gift ? MATS[gift].short + 'をくれた！' : '');
 else if (rec.flashes.length) L2 = candyOf(rec.flashes[0]).name + 'をひらめいた！';
 else if (rec.kanbanSoldOut && rec.kanban) L2 = '看板の' + candyOf(rec.kanban).name + '、売り切れ！';
 else if (mon && rec.mood >= 3) L2 = mon.name + '、おなかいっぱいで帰っていった。';
-else L2 = pick(['今日もオーブンはごきげんだった。', '焦がしたのは2回だけ。えらい！']);
+else L2 = STORY.sayPick(STORY.diaryDay.filter(k => (!k.mi || STORY.mate('minamo')) && (!k.wa || STORY.mate('wakaba')))).say[0];
 return [L1, L2];
 },
+diaryDay: [
+{ id: 'd1', say: ['今日もオーブンはごきげんだった。'] },
+{ id: 'd2', say: ['焦がしたのは2回だけ。えらい！'] },
+{ id: 'd3', say: ['味見しすぎて、おなかいっぱい。'] },
+{ id: 'd4', say: ['森の鳥さんが、窓辺で歌ってた。'] },
+{ id: 'd5', say: ['泡立て器を、ぴかぴかにみがいた。'] },
+{ id: 'd6', say: ['エプロン、ちゃんと表で着られた！'] },
+{ id: 'd7', say: ['明日は、新しいレシピに挑戦したい！'] },
+{ id: 'd8', say: ['夕焼けが、キャラメル色だった。'] },
+{ id: 'd9', mi: 1, say: ['みなもちゃんが、ちょっとだけ笑った。'] },
+{ id: 'd10', mi: 1, say: ['みなもちゃんの飴、きれいだったなぁ。'] },
+{ id: 'd11', wa: 1, say: ['わかばさんのお茶、おいしかった。'] },
+{ id: 'd12', wa: 1, say: ['わかばさんの畑のお話、楽しかった。'] },
+],
 };
 
 /* src/js/art.js */
@@ -3982,7 +4282,7 @@ if (!M.view) M.view = 'kitchen';
 if (M.made) { M.baked.push({ key: M.made, n: BATCH }); M.made = null; }   // 前の形のセーブ（できたお菓子が待っていた）
 return M;
 }
-function matUnlocked(m) { const who = HIRU_MATS[m] && HIRU_MATS[m].who; return !who || !!S.seen[who] || (S.stock[m] || 0) > 0; }
+function matUnlocked(m) { const who = HIRU_MATS[m] && HIRU_MATS[m].who; return !who || STORY.mate(who) || !!S.seen[who] || (S.stock[m] || 0) > 0; }   // 仲間になった次の日から（11/19）
 const shopMats = () => Object.keys(HIRU_MATS).filter(matUnlocked);
 const shelfMaxN = () => Math.min(SHELF_MAX, S.shelfMax || 6);
 const placedN = () => S.shelf.filter(s => s.n > 0).length;
@@ -4270,10 +4570,10 @@ return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
 <div class="m-bar"><button class="sub" data-act="m-zakka">雑貨屋</button><button class="big" data-act="m-disp"${mBusy ? ' disabled' : ''}>商品を並べる</button></div>
 </section>`;
 }
-function mSlotHTML(o, idx, ks) {
+function mSlotHTML(o, idx, ks, rib = '') {
 const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
 if (!o) return `<div class="dslot empty${kan}" data-mdrop="ds:${idx}">${kl}</div>`;
-return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span></div>`;
+return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${rib}</div>`;
 }
 function displayHTML(M) {
 const bg = ART['bg-day'], { slots, ks } = dSlots();
@@ -4282,7 +4582,7 @@ const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${can
 return `<section class="morning mdisp fit" id="msec">
 <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
 <p class="md-tip">${esc(tip)}</p>
-<div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => mSlotHTML(o, i, ks)).join('')}</div>
+<div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${(rib => slots.map((o, i) => mSlotHTML(o, i, ks, rib[i])).join(''))(dSoroiRibs(slots))}</div>
 </div>
 <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span><div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
 <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
@@ -4322,6 +4622,10 @@ save();
 if (lines.length) talk(lines, () => {}, { dim: false });
 }
 if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}, { dim: false }); }
+if (v === 'display' && !S.seen.soroi && !talking()) {
+const so = soroiRows(dSlots().slots);
+if (so.length) { S.seen.soroi = S.day; save(); talk(STORY.soroiFirst(so[0].mats[0]), () => {}, { dim: false }); }
+}
 if (v === 'kitchen' && M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
 }
 function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
@@ -4360,15 +4664,25 @@ slots[j++] = o;
 }
 return { slots, ks };
 }
-function slotHTML(o, idx, ks, pre) {
+let dSoroiLast = new Set();
+function dSoroiRibs(slots) {
+const now = new Set(), out = {};
+for (const x of soroiRows(slots)) {
+const k = x.r + ':' + x.mats.join('+'); now.add(k);
+out[x.r * SHELF_COLS] = `<span class="d-soroi${x.out ? ' out' : ''}${dSoroiLast.has(k) || REDUCED ? '' : ' pop'}" aria-label="おそろい">${x.mats.map(matIcon).join('')}<b>おそろい</b></span>`;
+}
+dSoroiLast = now;
+return out;
+}
+function slotHTML(o, idx, ks, pre, rib = '') {
 const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
 if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
 const c = candyOf(o.s.key), out = o.s.n <= 0, tag = pre ? 'button' : 'div';
-return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}</${tag}>`;
+return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}${rib}</${tag}>`;
 }
 function caseHTML(pre) {
-const { slots, ks } = shelfSlots();
-return slots.map((o, i) => slotHTML(o, i, ks, pre)).join('');
+const { slots, ks } = shelfSlots(), rib = dSoroiRibs(slots);
+return slots.map((o, i) => slotHTML(o, i, ks, pre, rib[i])).join('');
 }
 function renderDay() {
 if (!S.dayRun) startDay();
@@ -4407,9 +4721,10 @@ const R = S.dayRun; if (!R || R.open || R.done) return;
 if (!R.kanban) return toast('看板にするお菓子を、えらんでね');
 const go = () => {
 R.open = true; R.t = 0; R.i = 0; R.cur = null;
-R.plan = custPlan(custCount(), R.kanban);
+R.plan = custPlan(custCount(), R.kanban, soroiRows(shelfSlots().slots).flatMap(x => x.mats));   // おそろいの段は開店のときの並びで
 S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
 save(); renderDay();
+setTimeout(() => dSay('open'), 700);
 };
 if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go, { dim: false }); }
 else go();
@@ -4428,6 +4743,8 @@ R.t += dt;
 const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / DAY_MS).toFixed(3));   // 外の明るさ（ゲージのかわり）
 if (R.cur) return visitStep(R, dt);
 if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
+if (R.i >= 1 && !R.mated) { const m = dMateDue(); if (m) return dMateVisit(R, m); }
+for (const at of [.3, .65]) if (!(R.idle || {})[at] && R.t >= at * DAY_MS) { (R.idle = R.idle || {})[at] = 1; dSay('idle'); }
 if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }
 else if (R.t >= DAY_MS) closeDay();
 }
@@ -4444,11 +4761,31 @@ v.step = 1; showBubble(v);
 if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}, { dim: false }); }
 } else if (v.step === 1 && v.t >= V_ASK) {
 v.step = 2; v.res = serve(v); save(); showResult(v, false);
+const r = v.res, it = r.key && S.shelf.find(s => s.key === r.key), nm = r.key ? candyOf(r.key).name : '';
+setTimeout(() => it && it.n <= 0 ? dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true) : dSay(r.kind), 700);
 } else if (v.step === 2 && v.t >= V_LEAVE) {
 v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
 } else if (v.step === 3 && v.t >= V_END) {
 R.cur = null; const el = custEl(); if (el) el.remove(); save();
 }
+}
+const D_MATES = [['minamo', 'niji'], ['wakaba', 'minto']];
+function dMateDue() {
+for (const [id, mat] of D_MATES) {
+if (STORY.mateDay(id)) continue;
+const it = S.shelf.find(s => s.n > 0 && candyHas(s.key, mat));
+if (it) return { id, key: it.key };
+}
+return null;
+}
+function dMateVisit(R, m) {
+R.mated = 1;
+const T = S.today, it = S.shelf.find(s => s.key === m.key), price = candyOf(m.key).price;
+it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
+if (it.n <= 0 && it.key === T.kanban) T.kanbanSoldOut = true;
+S.seen['mate:' + m.id] = S.day; save();
+const cs = $('dCase'); if (cs) cs.innerHTML = caseHTML(false);
+talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); });
 }
 function serve(v) {
 const T = S.today, R = S.dayRun, items = S.shelf.filter(s => s.n > 0);
@@ -4456,19 +4793,51 @@ const liked = items.filter(s => candyHas(s.key, v.like));
 let s = null, love = false;
 if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
 else if (items.length && Math.random() < OTHER_BUY) s = pick(items);
-if (!s) return { kind: 'none', say: pick(STORY.cust.none) };
+if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
 const price = candyOf(s.key).price;
 s.n--; S.money += price; T.sales += price; T.served++;
 if (s.n <= 0 && s.key === T.kanban) T.kanbanSoldOut = true;
 if (love) { S.rep++; T.hearts++; }
-return { kind: love ? 'love' : 'other', key: s.key, say: pick(STORY.cust[love ? 'love' : 'other']) };
+return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other') };
 }
 function closeDay(msg) {
 const R = S.dayRun; R.done = true; R.cur = null;
 clearTimeout(dayTick); dayTick = 0;
 save(); if (msg) toast(msg);
 renderDay();
+setTimeout(() => dSay('close', '', true), 500);
 if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk(STORY.dayClose(S.today), () => {}, { dim: false }); }
+}
+let dSayT = 0, dSayAt = 0, dSayLast = '';
+function dSay(kind, c = '', force = false) {
+const P = STORY.daySay && STORY.daySay[kind], st = $('dstage');
+if (!P || !st || S.day <= 1 || talking()) return;
+const now = performance.now();
+if (!force && (now - dSayAt < 4500 || Math.random() > (STORY.daySayP[kind] ?? .4))) return;
+const mi = STORY.mate('minamo'), wa = STORY.mate('wakaba');
+const ok = P.map(e => typeof e === 'string' ? { s: [e] } : e).filter(e => (!e.mi || mi) && (!e.wa || wa) && e.s.join() !== dSayLast);
+if (!ok.length) return;
+const e = pick(ok), lines = e.s.map(l => l.replace(/\{c\}/g, c));
+dSayLast = e.s.join(); dSayAt = now; clearTimeout(dSayT);
+let i = 0;
+const step = () => {
+const el = dSayEl(); if (!el) return;
+if (i >= lines.length) { el.classList.remove('show'); return; }
+const m = lines[i++].match(/^([^【：]+)(?:【([^】]+)】)?：(.*)$/); if (!m) return step();
+const who = Object.keys(TALKERS).find(k => TALKERS[k].name === m[1]) || 'honoka', T = TALKERS[who];
+const img = ART[(T.faces && (T.faces[m[2]] || T.faces['ふつう'])) || who] || '';
+el.dataset.who = who;
+el.innerHTML = `<i class="ds-av"${img ? ` style="--av:url('${img}')"` : ''}></i><b>${esc(m[1])}</b><span>${esc(m[3])}</span>`;
+el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+dSayT = setTimeout(step, 2600 / Math.sqrt(daySpeed));
+};
+step();
+}
+function dSayEl() {
+const st = $('dstage'); if (!st) return null;
+let el = $('dSay');
+if (!el) { el = document.createElement('p'); el.id = 'dSay'; el.className = 'd-say'; el.setAttribute('role', 'status'); st.appendChild(el); }
+return el;
 }
 const custEl = () => document.querySelector('#dCust .cu');
 const faceOf = v => (v.step >= 2 && v.res ? (v.res.kind === 'love' ? 'happy' : v.res.kind === 'none' ? 'sad' : '') : '');
@@ -4632,18 +5001,19 @@ return `<div class="lg ${play ? 'lg-play' : 'lg-still'}" role="img" aria-label="
 </div>`;
 }
 const LG_BG = {
-'title-bg': { ar: 9 / 16, fx: .5, fy: .5, lt: [], ray: [] },
-'op-shop-night': { ar: 16 / 9, fx: .55, fy: 1, z: 1.12,
-lt: [[44, 55, 26, 'win'], [43, 44, 8, 'lamp'], [52, 44, 8, 'lamp'], [65, 48, 11, 'win'], [73, 44, 10, 'lamp'], [78, 49, 8, 'win'], [52, 86, 62, 'pool'], [11, 16, 12, 'moon']],
-ray: [[44, 62, 20, 32, -4], [65, 56, 9, 30, 6]] },
+'title-bg': { ar: 2 / 3, fx: .5, fy: .5,
+lt: [[42, 56, 26, 'win'], [69, 52, 11, 'win'], [37.8, 48.6, 6, 'lamp'], [47.6, 48.6, 6, 'lamp'], [80.5, 50.5, 8, 'lamp'],
+[50, 76, 60, 'pool'], [51.5, 9.5, 12, 'moon']],
+ray: [[42, 60, 24, 22, -3], [69, 56, 10, 20, 5]] },
 };
+const LG_FORE_LT = [[10, 17.2, 6], [16.7, 13, 5], [84.2, 13, 5], [91.2, 17.8, 6]];
 const LG_CAST = [
 ['minamo', ['title-minamo'], 23, 40, 1, .9], ['wakaba', ['title-wakaba'], 77, 40, 1, 1.0],
 ['honoka', ['title-honoka', 'honoka'], 50, 50, 2, .75],
 ];
 const LG_MONS = [
 ['slime', 12, 0, 8.5, 1, 'hop', 1.35], ['hitsuji', 31, 1, 8.5, 1, 'bob', 1.45], ['hiyoko', 70, 0, 7.5, 0, 'hop2', 1.55],
-['tokage', 87, 0, 8, 0, 'bob', 1.65], ['kurage', 81, 34, 8, 0, 'float', 1.75],
+['tokage', 87, 0, 8, 0, 'bob', 1.65], ['kurage', 84, 60, 8, 0, 'float', 1.75],
 ];
 const LG_MOTES = [[8, 8, 6, 9, 0, 14], [18, 30, 4, 11, 3, -10], [27, 12, 5, 8, 6, 12], [36, 40, 4, 10, 1.5, -14], [45, 18, 6, 12, 7, 10], [55, 5, 5, 9, 4, -12],
 [63, 34, 4, 11, 2, 16], [72, 14, 6, 10, 8, -10], [81, 26, 5, 8, 5, 12], [90, 10, 4, 12, 0.5, -16], [50, 48, 4, 9, 9, 8], [15, 52, 5, 10, 4.5, -8],
@@ -4654,7 +5024,7 @@ const LG_STAR = '<svg viewBox="0 0 20 20"><path d="M10 0 C11 7 13 9 20 10 C13 11
 function lgArt(c) { for (const k of c) if (ART[k]) return ART[k]; return ''; }
 function lgTitleHTML(saved, arm) {
 const play = !lgPlayed, logo = logoHTML();
-const bk = ART['title-bg'] ? 'title-bg' : 'op-shop-night', B = LG_BG[bk], bg = ART[bk] || ART['bg-night'] || '';
+const B = LG_BG['title-bg'], bg = ART['title-bg'] || ART['bg-night'] || '';
 const lt = B.lt.map(([x, y, s, k], i) => `<i class="tt-lt ${k}" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * 1.37).toFixed(2)}s"></i>`).join('');
 const ray = B.ray.map(([x, y, w, h, r], i) => `<i class="tt-ray" style="--x:${x};--y:${y};--w:${w};--h:${h};--r:${r}deg;animation-delay:${(-i * 2.1).toFixed(1)}s"></i>`).join('');
 const motes = LG_MOTES.map(([x, b, s, t, d, dx]) => `<i class="tt-mote" style="left:${x}%;bottom:${b}%;--s:${s}px;--dx:${dx}px;animation-duration:${t}s;animation-delay:${-d}s"></i>`).join('');
@@ -4663,7 +5033,8 @@ const cast = LG_CAST.map(([id, c, x, h, z, d], i) => { const src = lgArt(c); ret
 ? `<span class="tt-ch tt-${id}" style="--x:${x};--h:${h};z-index:${z}"><span class="tt-in" style="animation-delay:${d}s"><span class="tt-br" style="animation-delay:${(-i * 1.1).toFixed(1)}s"><img src="${src}" alt="" draggable="false"></span></span></span>` : ''; }).join('');
 const mons = LG_MONS.map(([id, x, b, h, fl, mv, d], i) => { const src = lgArt(['title-mon-' + id, 'mon-' + id]); return src
 ? `<span class="tt-ch tt-mon" style="--x:${x};--b:${b};--h:${h};z-index:3"><span class="tt-in" style="animation-delay:${d}s"><span class="tt-mv ${mv}" style="animation-delay:${(-i * .7).toFixed(1)}s"><img src="${src}" alt=""${fl ? ' class="fl"' : ''} draggable="false"></span></span></span>` : ''; }).join('');
-const fore = ART['title-fore'] ? `<img class="tt-fore" src="${ART['title-fore']}" alt="" draggable="false">` : '';
+const fore = ART['title-fore'] ? `<div class="tt-fbox" aria-hidden="true"><img class="tt-fore" src="${ART['title-fore']}" alt="" draggable="false">${
+LG_FORE_LT.map(([x, y, s], i) => `<i class="tt-lt lamp" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * .9).toFixed(1)}s"></i>`).join('')}</div>` : '';
 const btn = saved && saved.phase !== 'title'
 ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button><button class="sub" data-act="reset">${arm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>`
 : '<button class="big" data-act="start">はじめる</button>';
