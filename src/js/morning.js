@@ -235,7 +235,7 @@ function mDown(e) {
   if (e.button > 0 || mBusy || talking() || MD) return;
   const el = e.target.closest('[data-mdrag]'); if (!el) return;
   e.preventDefault();
-  const tray = el.closest('.mtray, .md-wait');
+  const tray = el.closest('.mt-row');
   MD = { el, src: el.dataset.mdrag, id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false, g: null, over: null, can: null, tip: null, tray, sl0: tray ? tray.scrollLeft : 0, scroll: false };
   window.addEventListener('pointermove', mMove);
   window.addEventListener('pointerup', mUp);
@@ -340,7 +340,7 @@ function kitchenHTML(M) {
       <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
       <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
     </div>
-    <div class="mtray gingham" data-mdrop="tray"><span class="mt-lbl">材料だな</span>${trayMats().map(mTile).join('')}</div>
+    <div class="mtray gingham" data-mdrop="tray"><span class="mt-lbl">材料だな</span><div class="mt-row">${trayMats().map(mTile).join('')}</div></div>
     <div class="m-bar"><button class="sub" data-act="m-zakka">雑貨屋</button><button class="big" data-act="m-disp"${mBusy ? ' disabled' : ''}>商品を並べる</button></div>
   </section>`;
 }
@@ -358,7 +358,7 @@ function displayHTML(M) {
       <p class="md-tip">${esc(tip)}</p>
       <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => mSlotHTML(o, i, ks)).join('')}</div>
     </div>
-    <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span>${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div>
+    <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span><div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
     <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
   </section>`;
 }
@@ -384,9 +384,9 @@ function renderMorning() {
   const M = mState(), v = M.view;
   $('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : kitchenHTML(M);
   $('msec').addEventListener('pointerdown', mDown);
-  /* トレーの右にまだあるときは、右はしに「›」 */
-  document.querySelectorAll('#msec .mtray, #msec .md-wait').forEach(el => {
-    const f = () => el.classList.toggle('more', el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  /* トレーの右にまだあるときは、右はしに「›」（すべるのは中の .mt-row・ふちの外枠はすべらない） */
+  document.querySelectorAll('#msec .mt-row').forEach(el => {
+    const f = () => el.parentElement.classList.toggle('more', el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
     f(); el.addEventListener('scroll', f, { passive: true });
   });
   if (v === 'kitchen' && !M.talked && !talking()) {

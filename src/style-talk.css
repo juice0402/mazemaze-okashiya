@@ -39,7 +39,7 @@
 #screen>section.prologue.hasbg{background:#3a2a1a}
 .pr-art{position:absolute;top:0;left:50%;height:100%;aspect-ratio:16/9;transform:translateX(-56%);container-type:size}
 .pr-art img{display:block;width:100%;height:100%}
-.pr-art .pr-sign{left:56.6%;top:26.6%;width:15%;padding:0;border:0;border-radius:0;background:none;box-shadow:none;transform:translate(-50%,-50%);font-size:4.4cqh;line-height:1.08;color:#fff3d6;-webkit-text-stroke:.7cqh #5a2a10;text-shadow:0 .4cqh 0 rgba(60,20,4,.6)}
+.pr-art .pr-sign{left:55.7%;top:22.2%;width:15%;padding:0;border:0;border-radius:0;background:none;box-shadow:none;transform:translate(-50%,-50%);font-size:4.4cqh;line-height:1.08;color:#fff3d6;-webkit-text-stroke:.7cqh #5a2a10;text-shadow:0 .4cqh 0 rgba(60,20,4,.6)}
 .pr-scene{position:absolute;inset:0}
 .pr-scene i{position:absolute;display:block}
 .pr-tree{bottom:34%;width:38%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#9ccf6e,#4f8a3a 70%);box-shadow:inset -10px -14px 0 rgba(30,60,20,.25)}

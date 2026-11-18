@@ -61,9 +61,11 @@
 /* 朝の3つの画面（キッチン・商品を並べる・雑貨屋）は同じ形：上の舞台（flex 1・同じふち）・下のトレー（同じ高さ --mtrayH）・いちばん下のボタン
    11/18 16時 しょーくん「キッチンと並べるで、舞台とトレーの大きさ・位置がちがって、行き来するとズレが目立つ」。トレーは1段で、多いときは横にスクロール */
 .morning{--mtrayH:112px}
-.mtray,.md-wait,.mz-foot{position:relative;flex:none;height:var(--mtrayH);display:flex;align-items:flex-end;gap:6px;padding:22px 10px 10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain}
-.mtray::-webkit-scrollbar,.md-wait::-webkit-scrollbar{display:none}
-.mtray.more::after,.md-wait.more::after{content:'›';position:sticky;right:-10px;flex:none;align-self:stretch;width:28px;margin-left:-28px;display:grid;place-items:center;font-size:24px;font-weight:700;color:var(--milk);background:linear-gradient(90deg,transparent,rgba(58,20,10,.9) 70%);pointer-events:none}
+.mtray,.md-wait,.mz-foot{position:relative;flex:none;height:var(--mtrayH);display:flex;align-items:flex-end;gap:6px;padding:22px 10px 10px;overflow:hidden}
+/* すべるのは中の .mt-row だけ（11/18 18:08 しょーくん「小麦を左に寄せたら、枠と被る」＝前は布のふちごとすべっていた）。ふちの内がわ（10px）で切る・札の影の分だけ下にあそび */
+.mt-row{flex:1;min-width:0;align-self:stretch;display:flex;align-items:flex-end;gap:6px;padding:0 0 4px;margin-bottom:-4px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;border-radius:6px}
+.mt-row::-webkit-scrollbar{display:none}
+.mtray.more::before,.md-wait.more::before{content:'›';position:absolute;right:10px;top:22px;bottom:6px;z-index:2;width:28px;display:grid;place-items:center;font-size:24px;font-weight:700;color:var(--milk);background:linear-gradient(90deg,transparent,rgba(58,20,10,.9) 70%);border-radius:0 6px 6px 0;pointer-events:none}
 .mt-lbl,.mw-lbl{position:absolute;left:10px;top:3px;font-size:11px;font-weight:700;color:var(--milk);text-shadow:0 1px 0 rgba(0,0,0,.5);pointer-events:none}
 .mt{position:relative;flex:none;width:64px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 1px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
 .mt .hico{width:34px;height:34px}
@@ -145,7 +147,9 @@
 @keyframes dsmote{0%{opacity:0;transform:translate(0,0)}20%{opacity:.9}50%{transform:translate(10px,-16px)}80%{opacity:.6}100%{opacity:0;transform:translate(-6px,-34px)}}
 @media (prefers-reduced-motion:reduce){.ds-mote{animation:none;opacity:.45}}
 .ds-sign{position:absolute;left:50%;top:46%;transform:translateX(-50%);z-index:1;white-space:nowrap;text-align:center;font-size:clamp(9px,4cqh,13px);font-weight:700;color:#3a1c08;background:linear-gradient(#fff6e0,#f6dcae);border:2px solid #5a3418;border-radius:6px;padding:2px 8px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
-.ds-sign.on-art{top:38%}
+/* 絵のときは、bg-day（16:9・下にそろえて cover）のドアの上にかける：くさりの上が絵の縦18%・はばは絵の横14%（板は札の下半分＝絵の縦27〜36%のガラスの所）。
+   絵の大きさ＝横 max(100cqw, 177.78cqh)・縦 max(100cqh, 56.25cqw)。字の大きさも札のはばに合わせる（11/18 18:11 しょーくん「営業中の看板おかしい」＝板がカウンターのうしろにかくれていた） */
+.ds-sign.on-art{--sw:calc(.14 * max(100cqw, 177.78cqh));top:calc(100cqh - .82 * max(100cqh, 56.25cqw));width:var(--sw);font-size:calc(var(--sw) * .135)}
 .ds-lamp{left:calc(50% - 7%);top:0;width:14%;height:12%;border-radius:0 0 50% 50% / 0 0 100% 100%;background:linear-gradient(#f4c24e,#d98a2a);border:2px solid #7a4a1c;border-top:0}
 .ds-counter{position:absolute;left:0;right:0;bottom:0;height:15%;z-index:3;background:linear-gradient(#d8a06a,#a8693a 35%,#7a4a26);border-top:4px solid var(--brass);box-shadow:0 -3px 8px rgba(60,30,10,.35)}
 /* 時間（開店から閉店まで）と評判のびん（flow.js の jarHTML をそのまま小さく） */
@@ -229,6 +233,19 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 /* 見本（Design「まぜまぜ ロゴ案」）の 390 の座標を、--u（横幅÷390）でのばす。.lg-play＝最初の1回だけ動く・.lg-still＝できあがった形 */
 .lg{position:relative;width:min(390px,100vw - 36px);aspect-ratio:390/166;margin:0 auto;container-type:inline-size;--u:calc(100cqw / 390);pointer-events:none;-webkit-user-select:none;user-select:none}
 .lg img{display:block;max-width:none;-webkit-user-drag:none}
+/* 字はコードの文字（"mz-logo"＝ロゴの8文字だけの Mochiy Pop One）。3まい重ね：うしろ＝クリームのふちと下のかげ（::before）・まんなか＝こげ茶のふち（::after）・前＝中の色（i を background-clip:text）
+   11/18 しょーくん「ロゴの文字が明るすぎて少しだけ視認性が悪い」→ 中の色を少し深く・クリームのふちの外にこげ茶のかげ */
+.lg-t,.lg-g,.lg-sh{position:absolute;inset:0;display:block;font:400 1em/1 "mz-logo","Mochiy Pop One","Zen Maru Gothic",sans-serif;font-style:normal;text-align:center;white-space:nowrap}
+.lg-t{isolation:isolate}
+.lg-t::before,.lg-t::after{content:attr(data-t);position:absolute;inset:0;z-index:-1}
+.lg-t::before{z-index:-2;color:#fff3dc;-webkit-text-stroke:.3em #fff3dc;text-shadow:0 .08em 0 #3a1404,0 .05em .16em rgba(30,8,0,.6)}
+.lg-t::after{color:#4a1c06;-webkit-text-stroke:.17em #4a1c06}
+.lg-t>i{display:block;font-style:normal;color:transparent;-webkit-text-fill-color:transparent;background:var(--chip, linear-gradient(transparent,transparent)),var(--fill);-webkit-background-clip:text;background-clip:text}
+.lg-mz{--fill:linear-gradient(#f7cb80,#e49a48 52%,#c4732a);--chip:radial-gradient(circle at 30% 36%,#5a2a10 0 4%,transparent 5%),radial-gradient(circle at 68% 58%,#5a2a10 0 3.5%,transparent 4.5%),radial-gradient(circle at 44% 80%,#5a2a10 0 3%,transparent 4%)}
+.lg-dp{--fill:linear-gradient(#ffc6d4 0 20%,#f47c9a 55%,#d4527a);--chip:linear-gradient(rgba(255,255,255,.45) 0 16%,transparent 16%)}
+.lg-sn{--fill:linear-gradient(#f4b660,#d6862f 60%,#b4651c)}
+.lg-g{color:#fff1d2;-webkit-text-stroke:.3em #fff1d2;text-shadow:0 0 .17em rgba(255,190,110,.95)}
+.lg-sh{color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.95) 50%,transparent 60%) 100% 0/300% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
 .lg-fx,.lg-th{position:absolute;inset:0}
 .lg-fx{z-index:1}
 .lg-th{z-index:2}
@@ -241,17 +258,13 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .lg-r2{position:absolute;left:calc(117*var(--u));top:calc(90*var(--u));display:flex;font-size:calc(56*var(--u));line-height:1}
 .lg-slot{position:relative;display:block}
 .lg-c,.lg-gh{position:relative;display:block;width:1em;height:1em;margin:0 calc(-1*var(--u))}
-.lg-c>img,.lg-gh>img{position:absolute;left:calc(-16*var(--u));top:calc(-16*var(--u));width:calc(100% + 32*var(--u))}
 .lg-gh{position:absolute;left:0;top:0;opacity:0}
-.lg-gh>img{filter:drop-shadow(0 0 calc(10*var(--u)) rgba(255,190,110,.95))}
-.lg-sh{position:absolute;left:calc(-16*var(--u));top:calc(-16*var(--u));width:calc(100% + 32*var(--u));height:calc(100% + 40*var(--u));overflow:hidden;-webkit-mask-size:100% 100%;mask-size:100% 100%}
-.lg-sh>i{position:absolute;left:calc(16*var(--u));top:calc(16*var(--u));width:calc(150*var(--u));height:calc(60*var(--u));background:linear-gradient(110deg,rgba(255,255,255,0) 38%,rgba(255,255,255,.92) 50%,rgba(255,255,255,0) 62%);transform:translateX(-90%)}
 .lg-pf{position:absolute;bottom:calc(-8*var(--u));left:calc(var(--x)*var(--u));width:calc(50*var(--u));height:calc(14*var(--u));border-radius:50%;background:radial-gradient(rgba(255,241,210,.95),rgba(255,241,210,0) 70%);opacity:0}
 .lg-sn{position:absolute;right:calc(-46*var(--u));bottom:0;width:2em;margin:0;font-size:calc(22*var(--u));transform-origin:20% 90%;transform:rotate(-8deg)}
-.lg-sn>img{left:calc(-8*var(--u));top:calc(-8*var(--u));width:calc(100% + 16*var(--u))}
 .lg-bs{position:absolute;left:calc(var(--x)*var(--u));top:calc(var(--y)*var(--u));width:calc(var(--w)*var(--u));height:calc(var(--w)*var(--u));transform:rotate(calc(var(--rt)*1deg))}
 .lg-bb{display:block;width:100%;height:100%;animation:lgBob 2.2s ease-in-out 3.3s infinite alternate}
-.lg-bb>svg{display:block;width:100%;height:100%}
+.lg-bb>svg,.lg-bb>img{display:block;width:100%;height:100%;object-fit:contain}
+.lg-bb>img{filter:drop-shadow(0 calc(2*var(--u)) calc(3*var(--u)) rgba(40,12,0,.5))}
 .lg-sp{position:absolute;left:calc(var(--x)*var(--u));top:calc(var(--y)*var(--u));width:calc(18*var(--u));height:calc(18*var(--u));animation:lgTw 1.6s ease-in-out infinite both}
 .lg-still .lg-sh{display:none}
 .lg-play .lg-swg{animation:lgSwirl .78s cubic-bezier(.4,0,.6,1) both}
@@ -259,7 +272,7 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .lg-play .lg-cf{animation:lgCf .5s ease-out .56s both}
 .lg-play .lg-mz{animation:lgMz .78s cubic-bezier(.22,.9,.35,1) both}
 .lg-play .lg-gh{animation:lgGhost .78s cubic-bezier(.22,.9,.35,1) both}
-.lg-play .lg-sh>i{animation:lgShine .6s ease-in-out both}
+.lg-play .lg-sh{animation:lgShine .6s ease-in-out both}
 .lg-play .lg-dp{animation:lgDrop .5s cubic-bezier(.3,0,.4,1) both}
 .lg-play .lg-pf{animation:lgPuff .45s ease-out both}
 .lg-play .lg-th{animation:lgThump .6s linear 1.64s both}
@@ -271,7 +284,7 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @keyframes lgCf{0%{opacity:0;transform:scale(.2)}35%{opacity:1}100%{opacity:0;transform:scale(1.5)}}
 @keyframes lgMz{0%{opacity:0;transform:translateX(calc(var(--dx)*var(--u))) rotate(var(--a0)) translateX(calc(26*var(--u))) rotate(var(--a1)) scale(.1)}15%{opacity:1}70%{opacity:1;transform:translateX(0px) rotate(0deg) translateX(0px) rotate(0deg) scale(1.14)}85%{transform:translateX(0px) rotate(0deg) translateX(0px) rotate(0deg) scale(.95)}100%{opacity:1;transform:translateX(0px) rotate(0deg) translateX(0px) rotate(0deg) scale(1)}}
 @keyframes lgGhost{0%{opacity:0;transform:translateX(calc(var(--dx)*var(--u))) rotate(var(--a0)) translateX(calc(26*var(--u))) rotate(var(--a1)) scale(.1)}15%{opacity:.55}55%{opacity:.3}75%{opacity:0;transform:translateX(0px) rotate(0deg) translateX(0px) rotate(0deg) scale(1.1)}100%{opacity:0;transform:translateX(0px) rotate(0deg) translateX(0px) rotate(0deg) scale(1)}}
-@keyframes lgShine{from{transform:translateX(-90%)}to{transform:translateX(36%)}}
+@keyframes lgShine{from{background-position:100% 0}to{background-position:0 0}}
 @keyframes lgDrop{0%{opacity:0;transform:translateY(calc(-220*var(--u)))}8%{opacity:1}58%{transform:translateY(0px) scale(1,1)}70%{transform:translateY(0px) scale(1.16,.78)}84%{transform:translateY(calc(-12*var(--u))) scale(.95,1.06)}100%{opacity:1;transform:translateY(0px) scale(1,1)}}
 @keyframes lgPuff{0%{opacity:0;transform:scale(.2,.2)}25%{opacity:1}100%{opacity:0;transform:scale(1.7,1)}}
 @keyframes lgThump{0%,7%{transform:translateY(0px)}9.5%{transform:translateY(calc(4*var(--u)))}14%,33.5%{transform:translateY(0px)}36%{transform:translateY(calc(4*var(--u)))}40.5%,60%{transform:translateY(0px)}62.5%{transform:translateY(calc(4*var(--u)))}67%,87%{transform:translateY(0px)}89.5%{transform:translateY(calc(4*var(--u)))}94%,100%{transform:translateY(0px)}}
@@ -303,8 +316,6 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .tt-tw svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 4px rgba(255,222,150,.95))}
 .tt-mote{position:absolute;width:calc(var(--s) * 3);height:calc(var(--s) * 3);border-radius:50%;background:radial-gradient(circle,#fff7dc 0 22%,rgba(255,204,116,.8) 38%,rgba(255,172,82,0) 70%);opacity:0;animation:ttRise 10s linear infinite}
 .tt-logo{z-index:4;margin-top:6px}
-.tt .lg-still .lg-sh{display:block}
-.tt .lg-still .lg-sh>i{animation:ttShine 6s ease-in-out infinite}
 .tt-stage{flex:1 1 0;min-height:0;width:100%;z-index:2}
 .tt-ch{position:absolute;left:calc(var(--x) * 1%);bottom:calc(var(--b, 0) * 1%);height:calc(var(--h) * 1cqh);translate:-50% 0}
 .tt-in,.tt-br,.tt-mv{display:block;height:100%;transform-origin:50% 100%}
@@ -329,7 +340,6 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @keyframes ttRay{0%,100%{opacity:.5}50%{opacity:1}}
 @keyframes ttTw{0%,100%{opacity:0;transform:scale(.2) rotate(0deg)}45%{opacity:1;transform:scale(1) rotate(45deg)}60%{opacity:.9;transform:scale(.8) rotate(60deg)}}
 @keyframes ttRise{0%{opacity:0;transform:translate(0,0)}12%{opacity:1}50%{transform:translate(var(--dx),-22cqh)}85%{opacity:.8}100%{opacity:0;transform:translate(0,-44cqh)}}
-@keyframes ttShine{0%{transform:translateX(-90%)}12%,100%{transform:translateX(36%)}}
 @keyframes ttBreath{0%,100%{transform:scale(1,1)}50%{transform:scale(1.006,1.016)}}
 @keyframes ttHop{0%,58%,100%{transform:translateY(0) scale(1,1)}66%{transform:translateY(0) scale(1.08,.9)}76%{transform:translateY(-14%) scale(.95,1.06)}88%{transform:translateY(0) scale(1.05,.94)}94%{transform:translateY(0) scale(1,1)}}
 @keyframes ttBob{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-4%) rotate(-2deg)}}

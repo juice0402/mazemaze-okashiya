@@ -15,6 +15,8 @@ const ORDER = [
 ];
 // 絵：assets/art/*.webp（と png）を名前→dataURL にして埋めこむ（ソースには base64 を書かない）
 const artDir = join(root, 'assets/art');
+// フォント（assets/font/*.woff2 → @font-face「mz-<名前>」・11/18 H-024 ロゴの字）
+let FONTS = ''; try { for (const f of readdirSync(join(root, 'assets/font')).sort()) { const m = f.match(/^(.+)\.woff2$/); if (m) FONTS += `@font-face{font-family:"mz-${m[1]}";src:url(data:font/woff2;base64,${readFileSync(join(root, 'assets/font', f)).toString('base64')}) format("woff2");font-display:block}\n`; } } catch (e) {}
 const ART = {};
 for (const f of readdirSync(artDir).sort()) {
   const m = f.match(/^(.+)\.(webp|png)$/); if (!m) continue;
@@ -27,7 +29,7 @@ const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').
 // TRIAL：ためしのページ（--artifact）だけ true（こね生地などを日にちを待たずに ためせる）。遊ぶ人の index.html は false
 const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
 const fragOf = trial => rd('src/shell.html')
-  .replace('<!--STYLE-->', () => '<style>\n' + minCss(STYLES.map(rd).join('\n')) + '</style>')
+  .replace('<!--STYLE-->', () => '<style>\n' + FONTS + minCss(STYLES.map(rd).join('\n')) + '</style>')
   .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial) + '\n</script>');
 const frag = fragOf('false');
 
