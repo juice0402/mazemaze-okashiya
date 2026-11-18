@@ -359,7 +359,8 @@ function resolveRound() {
   let jamMul = 1;
   const isJam = j => !!board[j] && cardDef(board[j].cid).cat === 'jam', isFruit = j => !!board[j] && cardDef(board[j].cid).fruit;
   const scareOf = j => board[j] ? cardDef(board[j].cid).fx.scare || 1 : 1;
-  const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, ((F && F.fruitMul) || 1) * Math.max(scareOf(j - 1), scareOf(j + 1))) : d.fx; };   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
+  const fieldMul = d => !F || !F.fruitMul ? 1 : d.stage === RIPE && F.ripeMul ? F.ripeMul : F.fruitMul;   // のびのび肥料：×2・熟した実は×3
+  const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, fieldMul(d) * Math.max(scareOf(j - 1), scareOf(j + 1))) : d.fx; };   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
   /* ほかのカードにかかる効果は、バトルの画面でオーラを飛ばすので、どこからどこへかを残す（11/18 しょーくん）
      e.out＝このカードから飛ばす [{k, to, v}]（to はマスの番号の列・'heat'・'score'）。parts の4つめ＝かかった元のマス */
   const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
@@ -429,10 +430,7 @@ function resolveRound() {
           const cm = COLD_MUL[heat] || 1; if (cm !== 1) { base *= cm; parts.push(['×', cm, heatOf().names[heat]]); }
           if (candyMul !== 1) { base *= candyMul; parts.push(['×', candyMul, 'いちばん', [first]]); }
         }
-        if (d.cat === 'cake') {   // わかば①：タルト（となりが実）・デコレーション台（熟した実をのせた★3は×2）
-          if (fx.tartFruit && (isFruit(i - 1) || isFruit(i + 1))) { base *= fx.tartFruit; parts.push(['×', fx.tartFruit, 'となりの実']); }
-          if (F && F.cakeMul) { const m = fx.fruitCake ? F.fcMul : F.cakeMul; base *= m; parts.push(['×', m, 'デコ']); }
-        }
+        if (d.cat === 'cake' && fx.tartFruit && (isFruit(i - 1) || isFruit(i + 1))) { base *= fx.tartFruit; parts.push(['×', fx.tartFruit, 'となりの実']); }   // わかば①：タルト（となりが実）
         if (d.cat === 'jam') {   // わかば②：いちばんジャム・きらきら水あめ（左どなり）
           if (jamMul !== 1) { base *= jamMul; parts.push(['×', jamMul, 'いちばん', [first]]); }
           const sh = board[i - 1] && cardDef(board[i - 1].cid).fx.shine; if (sh) { base *= sh; parts.push(['×', sh, 'きらきら', [i - 1]]); }
@@ -465,6 +463,10 @@ function resolveRound() {
       if (fx.petit) {
         const n = fx.petit + petitN, pm = (COLD_MUL[heat] || 1) * candyMul;
         for (let k = 0; k < n; k++) { chain++; const pd = Math.min(DMG_CAP, Math.floor(PETIT_DMG * sm * pm)); total += pd; pet.push({ type: 'petit', i, cid: c.cid, k, n, dmg: pd, chain }); }
+      }
+      if (d.cat === 'cake' && dmg > 0 && F && F.decoHits) {   // デコレーション台：そのケーキの1割が5連撃（熟した実の★3は10連撃）・11/19 しょーくん
+        const n = F.decoHits[fx.fruitCake ? 1 : 0], pd = Math.max(1, Math.floor(dmg * F.decoRate));
+        for (let k = 0; k < n; k++) { total += pd; pet.push({ type: 'deco', i, cid: c.cid, k, n, dmg: pd }); }
       }
       const fin = i === last ? (fx.fin || 1) * (fx.koneFin ? 1 + koneFinOf(fx, d.star) * kone : 1)   // しめのコロネ：×(1＋0.5×こねた回数)
         * (fx.doneFin ? 1 + doneFinOf(fx, d.star) * doneN() : 1)

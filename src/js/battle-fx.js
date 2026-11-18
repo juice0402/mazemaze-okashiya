@@ -368,15 +368,31 @@ function chipPop(at, c) {
 
 /* ---------- 6. みなも②ちいさなキャンディ（11/19）：れんさの数・ちいさなキャンディ。動かすのは transform と opacity だけ ---------- */
 /* 舞台の右上に「Nれんさ！」。数がふえるほど字が大きく・5から金色（2れんさから・11/19 しょーくん） */
-function chainPop(n) {
+function chainPop(n, word = 'れんさ！') {
   const st = $('stage'); if (!st) return;
   const r = st.getBoundingClientRect(), p = { x: r.left + r.width * .74, y: r.top + r.height * .2 };
   document.querySelectorAll('.chainpop').forEach(el => el.remove());
-  const el = fxEl('chainpop' + (n >= 5 ? ' gold' : ''), p, `<b>${n}</b><small>れんさ！</small>`);
+  const el = fxEl('chainpop' + (n >= 5 ? ' gold' : ''), p, `<b>${n}</b><small>${word}</small>`);
   el.style.setProperty('--cs', Math.min(1.7, .9 + n * .08).toFixed(2));
   if (!REDUCED && el.animate) el.animate([{ transform: 'translate(-50%,-50%) scale(.3) rotate(-12deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.18) rotate(-6deg)', opacity: 1, offset: .25 },
     { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: .4 }, { transform: 'translate(-50%,-58%) scale(1) rotate(-6deg)', opacity: 0 }], { duration: T(1100), easing: 'ease-out', fill: 'forwards' });
   setTimeout(() => el.remove(), T(1150));
+}
+/* わかば①デコレーション台の連撃（11/19 しょーくん「連続で大量にヒットする爽快感」）：ケーキのタイルから、色とりどりのデコがつぎつぎ飛んで当たる・「N連撃！」
+   1こずつ待たずに、0.1秒ごとに追いかけて飛ぶ（さいごの1こだけ当たるまで待つ） */
+const DECO_COL = ['#ff8fb0', '#ffd45a', '#8fe0c0', '#a8c8ff', '#ffb070', '#e0a8ff'];
+function decoFx(e, run, q) {
+  const a = spot(e.i), b = spot($('mon'));
+  const land = () => {
+    monReact('hit'); if (b) { dmgNum(e.dmg, '', b); sparkBurst({ x: b.x, y: b.y, w: 10 }, 5, 'all', .6); }
+    chainPop(e.k + 1, '連撃！'); scoreTick(e.dmg, run, q);
+  };
+  if (e.k === 0) { const slot = tslot(e.i), card = slot && slot.querySelector('.pc'); if (card) replay(card, 'kon'); heroPose('support', 900); }
+  if (!a || !b || REDUCED || !document.body.animate) { setTimeout(land, T(60)); return 120; }
+  const el = fxEl('fx-deco', a, '<i></i>'), ms = T(360), side = (e.k % 2 ? 1 : -1) * (10 + (e.k % 4) * 7);
+  el.style.setProperty('--dc', DECO_COL[e.k % DECO_COL.length]); el.style.setProperty('--pr', (e.k * 53 % 360) + 'deg');
+  arcFly(el, { x: side * .3, y: -a.h * .25 }, { x: b.x - a.x, y: b.y - a.y }, ms, 50 + (e.k % 3) * 18, .5, .9, () => { el.remove(); land(); });
+  return 110 + (e.k === e.n - 1 ? 480 : 0);
 }
 /* ちいさなキャンディ：はじけキャンディのタイルから、小さな飴がぽんと はじけてモンスターへ。当たったら数字と、れんさ */
 function petitFx(e, run, q) {

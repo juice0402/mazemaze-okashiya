@@ -988,6 +988,8 @@ background:radial-gradient(120% 90% at 50% 100%,rgba(150,215,255,.38),transparen
 .fslot .bin-in img{object-fit:contain;background:rgba(255,248,232,.92);box-shadow:0 0 0 1.5px #b07a3a,0 1px 3px rgba(0,0,0,.4)}
 .fslot .bin-in i{background:rgba(48,24,8,.55);box-shadow:inset 0 0 0 1.5px rgba(255,226,170,.55)}
 .fslot.bin .ord{display:none}
+.fx-deco{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;pointer-events:none;will-change:transform}
+.fx-deco i{position:absolute;inset:0;rotate:var(--pr,0deg);background:var(--dc,#ffd45a);clip-path:polygon(50% 0,62% 36%,100% 38%,70% 60%,80% 100%,50% 76%,20% 100%,30% 60%,0 38%,38% 36%);filter:drop-shadow(0 0 4px rgba(255,244,210,.95))}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -1711,9 +1713,9 @@ oonabe: { name: '飴の大鍋', start: 4, chips: ['とろとろにする'], long
 kobo:   { name: 'ガラスの工房', start: 3, slow: 1, chips: ['あたたかにする', '冷めにくい'], long: [['置いたとき', '飴の{温度}が あたたか になる'], ['常時', '飴の{温度}が、2ラウンドに1回しか さがらない']] },
 dairiseki: { name: '大理石の台', start: 2, chain0: 1, chips: ['ひんやりにする', 'れんさ1から'], long: [['置いたとき', '飴の{温度}が ひんやり になる'], ['常時', 'ラウンドのはじめの{れんさ}が1から始まる']] },
 yatai:     { name: 'キャンディの屋台', start: 2, petit: 1, chips: ['ひんやりにする', 'ちいさな飴+1'], long: [['置いたとき', '飴の{温度}が ひんやり になる'], ['常時', '{ちいさなキャンディ}を飛ばすとき、1こ多く飛ばす']] },
-nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, alt: 'field-hatake', chips: ['育つのは2回に1回', '実の効果×2'], long: [['常時', '{くだもの}が育つのは、2ラウンドに1回'], ['常時', '{くだもの}の効果×2（実だけでも戦える）']] },
+nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 3, alt: 'field-hatake', chips: ['育つのは2回に1回', '熟した実の効果×3'], long: [['常時', '{くだもの}が育つのは、2ラウンドに1回'], ['常時', '{くだもの}の効果×2・{熟した実}は×3（実だけでも戦える）']] },
 suku:    { name: 'すくすく肥料', growAdd: 1, alt: 'card-hiryo', chips: ['1ターンはやく熟す'], long: [['常時', 'ラウンドの終わりに{くだもの}が2段育つ（1ターンはやく熟す）']] },
-decodai: { name: 'デコレーション台', cakeMul: 1.5, fcMul: 2, alt: 'field-terrace', chips: ['ケーキ×1.5', '実のケーキ×2'], long: [['常時', 'ケーキの味パワー×1.5（{熟した実}をのせた★3のケーキは×2）']] },
+decodai: { name: 'デコレーション台', decoHits: [5, 10], decoRate: 0.1, alt: 'field-terrace', chips: ['ケーキがデコ5連撃', '実のケーキは10連撃'], long: [['常時', 'ケーキが発動すると、デコで そのケーキの味パワーの1割を5回 つづけて当てる（{熟した実}をのせた★3のケーキは10回）']] },
 oobin:   { name: '大きなびん', fixed: 1, alt: 'card-ookibin', chips: ['実3つでジャム'], long: [['常時', '{くだもの}をドラッグで入れる（入れた段のまま）'], ['常時', '3つ入ると★3の{ジャム}が調理台に生まれ、びんは空にもどる（入れた実の効果がのる・熟した実ほど強い）'], ['常時', 'ずっと場にある（うれない・入れかわらない）']] },
 };
 const CHEFS = {
@@ -3277,7 +3279,8 @@ const petitN = (F && F.petit) || 0, isCandy = j => !!board[j] && cardDef(board[j
 let jamMul = 1;
 const isJam = j => !!board[j] && cardDef(board[j].cid).cat === 'jam', isFruit = j => !!board[j] && cardDef(board[j].cid).fruit;
 const scareOf = j => board[j] ? cardDef(board[j].cid).fx.scare || 1 : 1;
-const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, ((F && F.fruitMul) || 1) * Math.max(scareOf(j - 1), scareOf(j + 1))) : d.fx; };   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
+const fieldMul = d => !F || !F.fruitMul ? 1 : d.stage === RIPE && F.ripeMul ? F.ripeMul : F.fruitMul;   // のびのび肥料：×2・熟した実は×3
+const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, fieldMul(d) * Math.max(scareOf(j - 1), scareOf(j + 1))) : d.fx; };   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
 const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
 for (const i of idx) {
 const cold = cardDef(board[i].cid).fx.coldAgain && heat <= 2 ? 1 : 0;   // ひえひえミント飴：ひんやり以下なら もう1回
@@ -3344,10 +3347,7 @@ if (d.candy) {   // キャンディは冷えるほど強い・いちばんドロ
 const cm = COLD_MUL[heat] || 1; if (cm !== 1) { base *= cm; parts.push(['×', cm, heatOf().names[heat]]); }
 if (candyMul !== 1) { base *= candyMul; parts.push(['×', candyMul, 'いちばん', [first]]); }
 }
-if (d.cat === 'cake') {   // わかば①：タルト（となりが実）・デコレーション台（熟した実をのせた★3は×2）
-if (fx.tartFruit && (isFruit(i - 1) || isFruit(i + 1))) { base *= fx.tartFruit; parts.push(['×', fx.tartFruit, 'となりの実']); }
-if (F && F.cakeMul) { const m = fx.fruitCake ? F.fcMul : F.cakeMul; base *= m; parts.push(['×', m, 'デコ']); }
-}
+if (d.cat === 'cake' && fx.tartFruit && (isFruit(i - 1) || isFruit(i + 1))) { base *= fx.tartFruit; parts.push(['×', fx.tartFruit, 'となりの実']); }   // わかば①：タルト（となりが実）
 if (d.cat === 'jam') {   // わかば②：いちばんジャム・きらきら水あめ（左どなり）
 if (jamMul !== 1) { base *= jamMul; parts.push(['×', jamMul, 'いちばん', [first]]); }
 const sh = board[i - 1] && cardDef(board[i - 1].cid).fx.shine; if (sh) { base *= sh; parts.push(['×', sh, 'きらきら', [i - 1]]); }
@@ -3380,6 +3380,10 @@ const pet = [];   // はじけキャンディ：ちいさなキャンディが1�
 if (fx.petit) {
 const n = fx.petit + petitN, pm = (COLD_MUL[heat] || 1) * candyMul;
 for (let k = 0; k < n; k++) { chain++; const pd = Math.min(DMG_CAP, Math.floor(PETIT_DMG * sm * pm)); total += pd; pet.push({ type: 'petit', i, cid: c.cid, k, n, dmg: pd, chain }); }
+}
+if (d.cat === 'cake' && dmg > 0 && F && F.decoHits) {   // デコレーション台：そのケーキの1割が5連撃（熟した実の★3は10連撃）・11/19 しょーくん
+const n = F.decoHits[fx.fruitCake ? 1 : 0], pd = Math.max(1, Math.floor(dmg * F.decoRate));
+for (let k = 0; k < n; k++) { total += pd; pet.push({ type: 'deco', i, cid: c.cid, k, n, dmg: pd }); }
 }
 const fin = i === last ? (fx.fin || 1) * (fx.koneFin ? 1 + koneFinOf(fx, d.star) * kone : 1)   // しめのコロネ：×(1＋0.5×こねた回数)
 * (fx.doneFin ? 1 + doneFinOf(fx, d.star) * doneN() : 1)
@@ -3606,6 +3610,7 @@ if (done.length) { setTimeout(() => cutIn(done[0].cid, '大作 完成！'), T(t)
 return t + 250;
 }
 if (e.type === 'petit') return petitFx(e, run, q);   // みなも②：ちいさなキャンディが1こ飛ぶ（battle-fx.js）
+if (e.type === 'deco') return decoFx(e, run, q);     // わかば①：デコレーション台の連撃（battle-fx.js）
 if (e.type === 'fgrow') {   // わかば：スタートのロール生地で、くだものぜんぶ育つ（11/19）
 chipPop(tslot(e.by), { b: '育つ', s: 'くだものぜんぶ', c: 'mint' }); heroPose('support', 1000);
 const t0 = 420, gap = 240;
@@ -4239,15 +4244,29 @@ const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c)
 ch.style.setProperty('--pd', T(1000) + 'ms');
 setTimeout(() => ch.remove(), T(1020));
 }
-function chainPop(n) {
+function chainPop(n, word = 'れんさ！') {
 const st = $('stage'); if (!st) return;
 const r = st.getBoundingClientRect(), p = { x: r.left + r.width * .74, y: r.top + r.height * .2 };
 document.querySelectorAll('.chainpop').forEach(el => el.remove());
-const el = fxEl('chainpop' + (n >= 5 ? ' gold' : ''), p, `<b>${n}</b><small>れんさ！</small>`);
+const el = fxEl('chainpop' + (n >= 5 ? ' gold' : ''), p, `<b>${n}</b><small>${word}</small>`);
 el.style.setProperty('--cs', Math.min(1.7, .9 + n * .08).toFixed(2));
 if (!REDUCED && el.animate) el.animate([{ transform: 'translate(-50%,-50%) scale(.3) rotate(-12deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.18) rotate(-6deg)', opacity: 1, offset: .25 },
 { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: .4 }, { transform: 'translate(-50%,-58%) scale(1) rotate(-6deg)', opacity: 0 }], { duration: T(1100), easing: 'ease-out', fill: 'forwards' });
 setTimeout(() => el.remove(), T(1150));
+}
+const DECO_COL = ['#ff8fb0', '#ffd45a', '#8fe0c0', '#a8c8ff', '#ffb070', '#e0a8ff'];
+function decoFx(e, run, q) {
+const a = spot(e.i), b = spot($('mon'));
+const land = () => {
+monReact('hit'); if (b) { dmgNum(e.dmg, '', b); sparkBurst({ x: b.x, y: b.y, w: 10 }, 5, 'all', .6); }
+chainPop(e.k + 1, '連撃！'); scoreTick(e.dmg, run, q);
+};
+if (e.k === 0) { const slot = tslot(e.i), card = slot && slot.querySelector('.pc'); if (card) replay(card, 'kon'); heroPose('support', 900); }
+if (!a || !b || REDUCED || !document.body.animate) { setTimeout(land, T(60)); return 120; }
+const el = fxEl('fx-deco', a, '<i></i>'), ms = T(360), side = (e.k % 2 ? 1 : -1) * (10 + (e.k % 4) * 7);
+el.style.setProperty('--dc', DECO_COL[e.k % DECO_COL.length]); el.style.setProperty('--pr', (e.k * 53 % 360) + 'deg');
+arcFly(el, { x: side * .3, y: -a.h * .25 }, { x: b.x - a.x, y: b.y - a.y }, ms, 50 + (e.k % 3) * 18, .5, .9, () => { el.remove(); land(); });
+return 110 + (e.k === e.n - 1 ? 480 : 0);
 }
 function petitFx(e, run, q) {
 const a = spot(e.i), b = spot($('mon'));

@@ -157,6 +157,7 @@ function showEvent(e, run, q) {
     return t + 250;
   }
   if (e.type === 'petit') return petitFx(e, run, q);   // みなも②：ちいさなキャンディが1こ飛ぶ（battle-fx.js）
+  if (e.type === 'deco') return decoFx(e, run, q);     // わかば①：デコレーション台の連撃（battle-fx.js）
   if (e.type === 'fgrow') {   // わかば：スタートのロール生地で、くだものぜんぶ育つ（11/19）
     chipPop(tslot(e.by), { b: '育つ', s: 'くだものぜんぶ', c: 'mint' }); heroPose('support', 1000);
     const t0 = 420, gap = 240;
