@@ -17,9 +17,10 @@ function nextDay() { S.day++; goMorning(); }
 /* ---------- プロローグ（開業）：お店の外の場面に、会話の部品で ---------- */
 function renderPrologue() {
   const bg = ART['bg-shop-out'];
-  $('screen').innerHTML = `<section class="prologue fit${bg ? ' hasbg' : ''}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-    ${bg ? '' : '<div class="pr-scene" aria-hidden="true"><i class="pr-tree a"></i><i class="pr-tree b"></i><i class="pr-shop"><i class="pr-awn"></i><i class="pr-door"></i><i class="pr-win"></i></i></div>'}
-    <p class="pr-sign">まぜまぜ<br>おかし屋</p></section>`;
+  /* 絵は .pr-art（16:9）を画面の高さいっぱいにして、お店がまんなかに来るようにずらす。看板の字は絵の無地の看板の上に重ねる（絵に字を焼きこまない） */
+  $('screen').innerHTML = `<section class="prologue fit${bg ? ' hasbg' : ''}">
+    ${bg ? `<div class="pr-art"><img src="${bg}" alt=""><p class="pr-sign">まぜまぜ<br>おかし屋</p></div>`
+    : '<div class="pr-scene" aria-hidden="true"><i class="pr-tree a"></i><i class="pr-tree b"></i><i class="pr-shop"><i class="pr-awn"></i><i class="pr-door"></i><i class="pr-win"></i></i></div><p class="pr-sign">まぜまぜ<br>おかし屋</p>'}</section>`;
   if (!talking()) talk(STORY.prologue, () => { S.seen.prologue = 1; goMorning(); }, { dim: false });
 }
 

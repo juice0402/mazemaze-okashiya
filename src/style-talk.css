@@ -36,7 +36,10 @@
 
 /* ---------- プロローグ：お店の外（絵 bg-shop-out が来るまでは、コードの仮の場面） ---------- */
 #screen>section.prologue{position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(#ffd9a8,#fbe8c8 38%,#cfe3a6 60%,#8fbf6a);box-shadow:inset 0 0 0 2px #3a2318}
-#screen>section.prologue.hasbg{background:var(--bgimg) center 40%/cover no-repeat}
+#screen>section.prologue.hasbg{background:#3a2a1a}
+.pr-art{position:absolute;top:0;left:50%;height:100%;aspect-ratio:16/9;transform:translateX(-56%);container-type:size}
+.pr-art img{display:block;width:100%;height:100%}
+.pr-art .pr-sign{left:56.6%;top:26.6%;width:15%;padding:0;border:0;border-radius:0;background:none;box-shadow:none;transform:translate(-50%,-50%);font-size:4.4cqh;line-height:1.08;color:#fff3d6;-webkit-text-stroke:.7cqh #5a2a10;text-shadow:0 .4cqh 0 rgba(60,20,4,.6)}
 .pr-scene{position:absolute;inset:0}
 .pr-scene i{position:absolute;display:block}
 .pr-tree{bottom:34%;width:38%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#9ccf6e,#4f8a3a 70%);box-shadow:inset -10px -14px 0 rgba(30,60,20,.25)}
@@ -47,7 +50,6 @@
 .pr-door{left:40%;width:22%;bottom:0;height:62%;background:linear-gradient(#7a4a26,#5a3418);border:2px solid #3a1e0c;border-radius:10px 10px 0 0}
 .pr-win{left:9%;width:24%;top:32%;height:34%;background:linear-gradient(#fff4d6,#ffd98a);border:3px solid #5a3418;border-radius:4px}
 .pr-sign{position:absolute;left:50%;top:13%;transform:translateX(-50%) rotate(-3deg);margin:0;padding:8px 16px;border-radius:40%;background:linear-gradient(#c58a55,#8a5a34);border:3px solid #4a2a14;box-shadow:0 4px 0 rgba(0,0,0,.3);color:#fff3d6;font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.15;text-align:center;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill}
-.prologue.hasbg .pr-sign{display:none}
 
 /* ---------- おもてなしの結果（夜の画面の下） ---------- */
 .panel.end .end-mood{margin:2px 0 0;font-size:13px}

@@ -3,6 +3,8 @@
   python3 tools/prep_art.py one  <もとの PNG> <名前> <高さ or 幅の上限>      … 1枚の絵（立ち絵など）
   python3 tools/prep_art.py three <もとの PNG> <名前1> <名前2> <名前3> <上限> … 横に3つ並んだ絵（カード）
   python3 tools/prep_art.py two <もとの PNG> <名前1> <名前2> <上限>           … 横に2つ並んだ絵（モンスター）
+  python3 tools/prep_art.py box <もとの PNG> <名前> <上限> <x0,y0,x1,y1>      … 決まった四角で切る（立ち絵のポーズちがいを、元の絵と同じ大きさ・位置に。ほのかは 162,4,830,1528・上限760）
+  python3 tools/prep_art.py bg <もとの PNG> <名前>                             … 背景（緑は抜かない・16:9に切って横960）
 できた絵は assets/art/<名前>.webp。もとの PNG はリポジトリに入れない（作業場所の /tmp などに置いて使う。出どころは docs/ART.md に書く）。
 11/18 までのもとの PNG は枝 art-raw にある（取り出し方は docs/ART.md の「取りこみ方」）
 """
@@ -48,7 +50,17 @@ def save(im, name):
 if __name__ == '__main__':
     mode = sys.argv[1]
     src = Image.open(sys.argv[2])
-    if mode == 'one':
+    if mode == 'box':
+        x0, y0, x1, y1 = map(int, sys.argv[5].split(','))
+        im = key_green(src).crop((x0, y0, x1, y1))
+        lim = int(sys.argv[4]); sc = lim / max(im.size)
+        save(im.resize((round(im.width * sc), round(im.height * sc)), Image.LANCZOS), sys.argv[3])
+    elif mode == 'bg':
+        im = src.convert('RGB'); w, h = im.size; th = round(w * 9 / 16)
+        if th < h: im = im.crop((0, (h - th) // 2, w, (h - th) // 2 + th))
+        else: tw = round(h * 16 / 9); im = im.crop(((w - tw) // 2, 0, (w - tw) // 2 + tw, h))
+        save(im.resize((960, 540), Image.LANCZOS), sys.argv[3])
+    elif mode == 'one':
         save(trim_fit(key_green(src), int(sys.argv[4])), sys.argv[3])
     elif mode in ('two', 'three'):
         n = 2 if mode == 'two' else 3

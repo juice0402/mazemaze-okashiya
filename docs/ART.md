@@ -38,9 +38,7 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/honoka-poses.md`：ほのかの立ち絵9まい（編集・全身 1024×1536）→ honoka-yaruki・honoka-achaa・honoka-fuan・honoka-kuyashii・honoka-wakuwaku・honoka-uttori・honoka-kangaeru・honoka-kandou・honoka-doya（talk.js の TALKERS の名前）
-- art-irai `requests/okashi/bg2.md`：昼のお店の中（カウンターの奥から）・朝のキッチン・プロローグのお店の外 → bg-day・bg-morning・bg-shop-out（横960×540 の webp・緑は抜かない）
-- 次（同時に依頼中は2つまで）：お客さん4人（こども＝リボンの女の子・学生さん＝学生服の男の子・おとなの人＝お勤めの女の人・おばあちゃん＝白髪のおだんご）の正面・胸から上。まず ふつう を新しく描き、そこから うれしい・ざんねん を編集
+- art-irai `requests/okashi/customers1.md`：お客さん4人（こども＝赤いリボンの女の子・学生さん＝学生服の男の子・おとなの人＝お勤めの女の人・おばあちゃん＝白髪のおだんご）の正面・胸から上・ふつう → 描けたら、それを元に うれしい・ざんねん を編集で（customers2）
 
 ## これから頼む絵
 - ★3：クッキー以外の形の「○○タワー」（サブレ・カステラ・ショコラ・ドロップ・ゼリー・シュー）と、ちがう形どうしの★3（いまはコードで描いた仮の絵）
@@ -53,3 +51,5 @@
 | mob-slime・mob-hitsuji（スライム・くもひつじのデフォルメ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step1）・もとの PNG `assets/art/raw/mobs-chibi_step1.png` | 舞台の賑やかしのモブ |
 | mob-tokage・mob-hiyoko・mob-kurage（こんぺいトカゲ・ほのお鳥のひよこ・しずくクラゲ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step2）・もとの PNG `assets/art/raw/mobs-chibi_step2.png` | 舞台の賑やかしのモブ（あとで敵にしてもよい） |
 | 舞台の木の額縁・手前の段と草（SVG）・オーラ・光の輪・木くず | C | コード | 2026-11-18 | src/js/battle-fx.js・src/style-battle.css | バトルとショップの舞台 |
+| honoka-yaruki・honoka-achaa・honoka-fuan・honoka-kuyashii・honoka-wakuwaku・honoka-uttori・honoka-kangaeru・honoka-kandou・honoka-doya（ほのかの立ち絵：やる気・あちゃー・不安・くやしい・わくわく・うっとり・考える・感動・ドヤ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/honoka-poses.md`（step1〜9）・`prep_art.py box … 760 162,4,830,1528`（元の絵 honoka と同じ四角で切る） | 会話の部品の立ち絵（talk.js の TALKERS） |
+| bg-day・bg-morning・bg-shop-out（昼のお店の中・朝のキッチン・お店の外） | A | Codex | 2026-11-18 | art-irai `requests/okashi/bg2.md`（step1〜3）・`prep_art.py bg`（16:9 の横960） | 昼と朝の画面（昼のチャット）・プロローグ（看板の字はコードで重ねる） |
