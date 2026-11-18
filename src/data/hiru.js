@@ -93,12 +93,17 @@ function wpick(items, w) {
   return items[items.length - 1];
 }
 /* その日のお客さん（開店のときに決める）：[{ c: お客さんの id, like: すきな素材 }] */
+/* その日のお客さんの順番：同じ種類のお客さんは続けて来ない。見た目ちがいの絵（day-scene.js の custVariants）があれば、その日まだ来ていない見た目から（vr） */
 function custPlan(n, kanbanKey) {
-  const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [];
+  const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set();
+  let prev = null;
   return Array.from({ length: n }, () => {
-    const c = pick(CUSTOMERS).id, pref = CUST_LIKES[c] || [];
+    const c = pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev)); prev = c;
+    const vs = custVariants(c), fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
+    used.add(c + vr);
+    const pref = CUST_LIKES[c] || [];
     const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1));
-    return { c, like };
+    return { c, vr, like };
   });
 }
 
