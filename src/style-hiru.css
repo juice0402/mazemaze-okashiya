@@ -281,3 +281,59 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @keyframes lgBob{from{transform:translateY(0px)}to{transform:translateY(calc(-5*var(--u)))}}
 @keyframes lgTw{0%,100%{opacity:0;transform:scale(.4) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
 @media (prefers-reduced-motion:reduce){.lg *{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+
+/* ==== タイトル画面（logo.js の lgTitleHTML・昼のチャット 11/18 17時）====
+   .tt-scene＝背景の絵と同じ縦横比で画面をおおう（灯り・光の筋は絵の中の %）・.tt-stage＝キャラ（画面の下）・.tt-play＝起動して最初だけの登場
+   ずっと動くものは transform と opacity だけ。ボタンの皮・字の色はリーダーの絵のまま（大きさの脈だけ） */
+#screen>section.title.tt{width:100%;align-self:stretch;padding:10px 0 14px;gap:0;background:#140806;overflow:hidden;container-type:size;isolation:isolate}
+.tt>*{position:relative}
+.tt-scene{position:absolute;z-index:0;--w:calc(max(100cqw,calc(100cqh * var(--ar))) * var(--z));--h:calc(max(100cqh,calc(100cqw / var(--ar))) * var(--z));width:var(--w);height:var(--h);left:calc((100cqw - var(--w)) * var(--fx));top:calc((100cqh - var(--h)) * var(--fy));pointer-events:none}
+.tt-zoom{position:absolute;inset:0;transform-origin:50% 62%;animation:ttZoom 26s ease-in-out infinite alternate}
+.tt-bgi{position:absolute;inset:0;width:100%;height:100%;display:block}
+.tt-lt{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 1%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,228,165,.9),rgba(255,178,92,.4) 45%,rgba(255,150,60,0));mix-blend-mode:screen;animation:ttWin 5s ease-in-out infinite}
+.tt-lt.lamp{animation:ttFlick 2.6s linear infinite}
+.tt-lt.pool{aspect-ratio:3/1;background:radial-gradient(closest-side,rgba(255,204,128,.45),rgba(255,172,92,0));animation-duration:7s}
+.tt-lt.moon{background:radial-gradient(closest-side,rgba(255,246,220,.65),rgba(255,232,196,0));animation-duration:9s}
+.tt-ray{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--w) * 1%);height:calc(var(--h) * 1%);translate:-50% 0;rotate:var(--r);transform-origin:50% 0;background:linear-gradient(rgba(255,216,150,.45),rgba(255,192,112,.15) 55%,rgba(255,180,100,0));clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);mix-blend-mode:screen;filter:blur(3px);animation:ttRay 6s ease-in-out infinite}
+.tt-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(rgba(30,8,22,.6),rgba(30,8,22,0) 30%,rgba(30,8,22,0) 56%,rgba(22,8,4,.35) 76%,rgba(22,8,4,.85))}
+.tt-sky,.tt-fx{position:absolute;inset:0;pointer-events:none}
+.tt-sky{z-index:1}
+.tt-fx{z-index:4}
+.tt-tw{position:absolute;width:var(--s);height:var(--s);opacity:0;animation:ttTw 3s ease-in-out infinite both}
+.tt-tw svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 4px rgba(255,222,150,.95))}
+.tt-mote{position:absolute;width:calc(var(--s) * 3);height:calc(var(--s) * 3);border-radius:50%;background:radial-gradient(circle,#fff7dc 0 22%,rgba(255,204,116,.8) 38%,rgba(255,172,82,0) 70%);opacity:0;animation:ttRise 10s linear infinite}
+.tt-logo{z-index:4;margin-top:6px}
+.tt .lg-still .lg-sh{display:block}
+.tt .lg-still .lg-sh>i{animation:ttShine 6s ease-in-out infinite}
+.tt-stage{flex:1 1 0;min-height:0;width:100%;z-index:2}
+.tt-ch{position:absolute;left:calc(var(--x) * 1%);bottom:calc(var(--b, 0) * 1%);height:calc(var(--h) * 1cqh);translate:-50% 0}
+.tt-in,.tt-br,.tt-mv{display:block;height:100%;transform-origin:50% 100%}
+.tt-ch img{display:block;height:100%;width:auto;max-width:none;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5))}
+.tt-ch img.fl{scale:-1 1}
+.tt-br{animation:ttBreath 3.8s ease-in-out infinite}
+.tt-mv.hop{animation:ttHop 2.4s ease-in-out infinite}
+.tt-mv.hop2{animation:ttHop 1.9s ease-in-out infinite}
+.tt-mv.bob{animation:ttBob 3.2s ease-in-out infinite}
+.tt-mv.float{animation:ttFloat 4s ease-in-out infinite}
+.tt-fore{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:4;pointer-events:none}
+.tt-btns{z-index:5;width:min(330px,100% - 40px);display:flex;flex-direction:column;gap:8px}
+.tt-btns>button{width:100%;margin:0}
+.tt-btns>[data-act=start],.tt-btns>[data-act=continue]{animation:ttPulse 2.4s ease-in-out infinite}
+.tt-play .tt-scene{animation:ttFade 1.1s ease-out both}
+.tt-play .tt-in{animation:ttPop .7s cubic-bezier(.2,1.5,.45,1) both}
+.tt-play .tt-sky,.tt-play .tt-fx{animation:ttFade 1.2s 1s ease-out both}
+.tt-play .tt-btns{animation:ttFade .6s 2.9s ease-out both}
+@keyframes ttZoom{from{transform:scale(1)}to{transform:scale(1.045)}}
+@keyframes ttWin{0%,100%{opacity:.68}50%{opacity:1}}
+@keyframes ttFlick{0%,100%{opacity:.86}12%{opacity:.6}20%{opacity:.96}34%{opacity:.7}47%{opacity:1}58%{opacity:.76}71%{opacity:.93}83%{opacity:.64}}
+@keyframes ttRay{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes ttTw{0%,100%{opacity:0;transform:scale(.2) rotate(0deg)}45%{opacity:1;transform:scale(1) rotate(45deg)}60%{opacity:.9;transform:scale(.8) rotate(60deg)}}
+@keyframes ttRise{0%{opacity:0;transform:translate(0,0)}12%{opacity:1}50%{transform:translate(var(--dx),-22cqh)}85%{opacity:.8}100%{opacity:0;transform:translate(0,-44cqh)}}
+@keyframes ttShine{0%{transform:translateX(-90%)}12%,100%{transform:translateX(36%)}}
+@keyframes ttBreath{0%,100%{transform:scale(1,1)}50%{transform:scale(1.006,1.016)}}
+@keyframes ttHop{0%,58%,100%{transform:translateY(0) scale(1,1)}66%{transform:translateY(0) scale(1.08,.9)}76%{transform:translateY(-14%) scale(.95,1.06)}88%{transform:translateY(0) scale(1.05,.94)}94%{transform:translateY(0) scale(1,1)}}
+@keyframes ttBob{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-4%) rotate(-2deg)}}
+@keyframes ttFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12%)}}
+@keyframes ttPop{0%{opacity:0;transform:translateY(18%) scale(.9)}100%{opacity:1;transform:none}}
+@keyframes ttPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+@keyframes ttFade{from{opacity:0}to{opacity:1}}

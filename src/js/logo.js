@@ -60,3 +60,62 @@ function logoHTML() {
     </div>
   </div>`;
 }
+
+/* ==== タイトル画面（昼のチャット・11/18 17時 しょーくん「本格的なゲームのスタート画面に・全パーツ描き下ろし」）====
+   えらぶ質問で：夜のお店の前・ほのか／みなも／わかば＋モンスター5体・キラキラと光・灯りのゆらぎ・キャラが少し動く
+   main.js の renderTitle が lgTitleHTML(saved, resetArm) を置く。描き下ろしの絵（title-bg・title-honoka・title-minamo・title-wakaba・title-mon-<id>・title-fore）が
+   来るまでは、op-shop-night・立ち絵・夜のモンスターの絵で仮。ない絵の人は出さない
+   背景は .tt-scene（絵と同じ縦横比で画面をおおう）の中に置き、灯り・光の筋は絵の中の %（絵が変わったら LG_BG の数字を合わせる）
+   ずっと動くものは transform と opacity だけ（docs/PARTS.md の「軽く描く」）。画面を出たら DOM ごと消えるので止まる */
+/* 背景の絵ごとの置き方：ar＝横÷縦・fx/fy＝はみ出すとき見せる所（0〜1）・z＝おおったうえで、さらに大きくする（仮の絵の看板をロゴのうしろにかくす）・lt＝灯り [x%, y%, 大きさ(絵の横の%), win＝窓（ゆっくり）/ lamp＝ランプ（ゆらゆら）/ pool＝地面の光 / moon]
+   ray＝光の筋 [x%, y%, はば%, 長さ%, かたむき] */
+const LG_BG = {
+  'title-bg': { ar: 9 / 16, fx: .5, fy: .5, lt: [], ray: [] },
+  'op-shop-night': { ar: 16 / 9, fx: .55, fy: 1, z: 1.12,
+    lt: [[44, 55, 26, 'win'], [43, 44, 8, 'lamp'], [52, 44, 8, 'lamp'], [65, 48, 11, 'win'], [73, 44, 10, 'lamp'], [78, 49, 8, 'win'], [52, 86, 62, 'pool'], [11, 16, 12, 'moon']],
+    ray: [[44, 62, 20, 32, -4], [65, 56, 9, 30, 6]] },
+};
+/* キャラ：[名前, 絵の候補, 左%, 高さ(画面の高さの%), 前後, 出る時間] */
+const LG_CAST = [
+  ['minamo', ['title-minamo'], 23, 40, 1, .9], ['wakaba', ['title-wakaba'], 77, 40, 1, 1.0],
+  ['honoka', ['title-honoka', 'honoka'], 50, 50, 2, .75],
+];
+/* モンスター：[id, 左%, 下%, 高さ(画面の高さの%), 反転, 動き, 出る時間] */
+const LG_MONS = [
+  ['slime', 12, 0, 8.5, 1, 'hop', 1.35], ['hitsuji', 31, 1, 8.5, 1, 'bob', 1.45], ['hiyoko', 70, 0, 7.5, 0, 'hop2', 1.55],
+  ['tokage', 87, 0, 8, 0, 'bob', 1.65], ['kurage', 81, 34, 8, 0, 'float', 1.75],
+];
+/* キラキラ：舞いあがる光の粒 [左%, 下%, 大きさpx, 秒, 遅れ, 横にゆれる px]・またたく星 [左%, 上%, 大きさpx, 秒, 遅れ] */
+const LG_MOTES = [[8, 8, 6, 9, 0, 14], [18, 30, 4, 11, 3, -10], [27, 12, 5, 8, 6, 12], [36, 40, 4, 10, 1.5, -14], [45, 18, 6, 12, 7, 10], [55, 5, 5, 9, 4, -12],
+  [63, 34, 4, 11, 2, 16], [72, 14, 6, 10, 8, -10], [81, 26, 5, 8, 5, 12], [90, 10, 4, 12, 0.5, -16], [50, 48, 4, 9, 9, 8], [15, 52, 5, 10, 4.5, -8],
+  [4, 24, 4, 11, 6.5, 10], [96, 44, 5, 9, 3.5, -12], [40, 2, 5, 10, 2.5, 14], [86, 58, 4, 12, 7.5, -10]];
+const LG_TWINK = [[9, 6, 20, 3.2, 0], [86, 9, 16, 2.8, 1.2], [24, 22, 13, 3.6, 2.1], [72, 26, 18, 3.1, .6], [94, 40, 13, 2.9, 1.8], [5, 38, 16, 3.4, 2.6],
+  [40, 4, 12, 2.6, 1.5], [62, 3, 14, 3.8, .3], [33, 58, 16, 3.3, 2.9], [68, 62, 15, 3.0, 1.1], [16, 70, 13, 3.5, .9], [90, 74, 14, 2.7, 2.3]];
+const LG_STAR = '<svg viewBox="0 0 20 20"><path d="M10 0 C11 7 13 9 20 10 C13 11 11 13 10 20 C9 13 7 11 0 10 C7 9 9 7 10 0 Z" fill="#fff3c4"/></svg>';
+function lgArt(c) { for (const k of c) if (ART[k]) return ART[k]; return ''; }
+function lgTitleHTML(saved, arm) {
+  const play = !lgPlayed, logo = logoHTML();
+  const bk = ART['title-bg'] ? 'title-bg' : 'op-shop-night', B = LG_BG[bk], bg = ART[bk] || ART['bg-night'] || '';
+  const lt = B.lt.map(([x, y, s, k], i) => `<i class="tt-lt ${k}" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * 1.37).toFixed(2)}s"></i>`).join('');
+  const ray = B.ray.map(([x, y, w, h, r], i) => `<i class="tt-ray" style="--x:${x};--y:${y};--w:${w};--h:${h};--r:${r}deg;animation-delay:${(-i * 2.1).toFixed(1)}s"></i>`).join('');
+  const motes = LG_MOTES.map(([x, b, s, t, d, dx]) => `<i class="tt-mote" style="left:${x}%;bottom:${b}%;--s:${s}px;--dx:${dx}px;animation-duration:${t}s;animation-delay:${-d}s"></i>`).join('');
+  const twink = LG_TWINK.map(([x, y, s, t, d]) => `<i class="tt-tw" style="left:${x}%;top:${y}%;--s:${s}px;animation-duration:${t}s;animation-delay:${d}s">${LG_STAR}</i>`).join('');
+  const cast = LG_CAST.map(([id, c, x, h, z, d], i) => { const src = lgArt(c); return src
+    ? `<span class="tt-ch tt-${id}" style="--x:${x};--h:${h};z-index:${z}"><span class="tt-in" style="animation-delay:${d}s"><span class="tt-br" style="animation-delay:${(-i * 1.1).toFixed(1)}s"><img src="${src}" alt="" draggable="false"></span></span></span>` : ''; }).join('');
+  const mons = LG_MONS.map(([id, x, b, h, fl, mv, d], i) => { const src = lgArt(['title-mon-' + id, 'mon-' + id]); return src
+    ? `<span class="tt-ch tt-mon" style="--x:${x};--b:${b};--h:${h};z-index:3"><span class="tt-in" style="animation-delay:${d}s"><span class="tt-mv ${mv}" style="animation-delay:${(-i * .7).toFixed(1)}s"><img src="${src}" alt=""${fl ? ' class="fl"' : ''} draggable="false"></span></span></span>` : ''; }).join('');
+  const fore = ART['title-fore'] ? `<img class="tt-fore" src="${ART['title-fore']}" alt="" draggable="false">` : '';
+  const btn = saved && saved.phase !== 'title'
+    ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button><button class="sub" data-act="reset">${arm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>`
+    : '<button class="big" data-act="start">はじめる</button>';
+  if (play) setTimeout(() => { const l = document.querySelector('.tt .lg-play'); if (l) l.className = 'lg lg-still'; }, 4300);   // ロゴが動きおわったら、光がすべるのをくりかえす形に
+  return `<section class="title tt${play ? ' tt-play' : ''}">
+    <div class="tt-scene" style="--ar:${B.ar};--fx:${B.fx};--fy:${B.fy};--z:${B.z || 1}" aria-hidden="true"><div class="tt-zoom"><img class="tt-bgi" src="${bg}" alt="" draggable="false">${lt}${ray}</div></div>
+    <div class="tt-veil" aria-hidden="true"></div>
+    <div class="tt-sky" aria-hidden="true">${twink}</div>
+    <div class="t-logo tt-logo">${logo}</div>
+    <div class="tt-stage" aria-hidden="true">${cast}${mons}</div>
+    ${fore}<div class="tt-fx" aria-hidden="true">${motes}</div>
+    <div class="tt-btns">${btn}</div>
+  </section>`;
+}

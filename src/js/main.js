@@ -8,14 +8,7 @@ function renderTop() {
 }
 function renderTitle() {
   const saved = load();
-  const chef = ART.honoka || big(CHEF_SPR[0], 5), mon = ART['mon-slime'] || big(MON_SPR.slime, 3);
-  const bg = ART['bg-night'];
-  $('screen').innerHTML = `<section class="title${bg ? ' hasbg' : ''}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-    <div class="t-logo">${logoHTML()}</div>
-    <div class="hero"><img src="${chef}" alt="炎のシェフ ほのか"><img src="${mon}" alt="ぷるぷるスライム"></div>
-    ${saved && saved.phase !== 'title' ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button>
-      <button class="sub" data-act="reset">${resetArm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>` : '<button class="big" data-act="start">はじめる</button>'}
-  </section>`;
+  $('screen').innerHTML = lgTitleHTML(saved, resetArm);
 }
 function render() {
   renderTop();
