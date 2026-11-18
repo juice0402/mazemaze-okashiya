@@ -11,9 +11,9 @@ const BAKE_MS = 1500;   // 焼くのは演出だけ（約1.5秒）
 
 /* ほっぺのすす（11/18 しょーくん）：はじめて焼く（1日目の「ちょっと焦げた」＝S.seen.mBaked）までは、
    すすなしの立ち絵（ART の <名前>-clean・いまは最初に出る6まい）を会話に出す。ない表情は今までどおり */
-const susuOn = () => !(typeof S === 'object' && S && S.seen) || S.day > 1 || !!S.seen.mBaked;
+const mSusuOn = () => !(typeof S === 'object' && S && S.seen) || S.day > 1 || !!S.seen.mBaked;
 for (const [f, k] of Object.entries(TALKERS.honoka.faces))
-  Object.defineProperty(TALKERS.honoka.faces, f, { enumerable: true, get: () => (!susuOn() && ART[k + '-clean']) ? k + '-clean' : k });
+  Object.defineProperty(TALKERS.honoka.faces, f, { enumerable: true, get: () => (!mSusuOn() && ART[k + '-clean']) ? k + '-clean' : k });
 
 /* 朝のはじめ（flow.js の goMorning から呼ぶ）：はじめは仕入れが開いている */
 function startMorning() { S.morning = { shop: true, tab: 'mat', oven: [], made: null, fresh: false, talked: false }; }

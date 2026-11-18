@@ -3164,9 +3164,9 @@ renderTop();
 
 let mBusy = false, MD = null;
 const BAKE_MS = 1500;   // 焼くのは演出だけ（約1.5秒）
-const susuOn = () => !(typeof S === 'object' && S && S.seen) || S.day > 1 || !!S.seen.mBaked;
+const mSusuOn = () => !(typeof S === 'object' && S && S.seen) || S.day > 1 || !!S.seen.mBaked;
 for (const [f, k] of Object.entries(TALKERS.honoka.faces))
-Object.defineProperty(TALKERS.honoka.faces, f, { enumerable: true, get: () => (!susuOn() && ART[k + '-clean']) ? k + '-clean' : k });
+Object.defineProperty(TALKERS.honoka.faces, f, { enumerable: true, get: () => (!mSusuOn() && ART[k + '-clean']) ? k + '-clean' : k });
 function startMorning() { S.morning = { shop: true, tab: 'mat', oven: [], made: null, fresh: false, talked: false }; }
 function mState() { if (!S.morning || !Array.isArray(S.morning.oven)) startMorning(); return S.morning; }
 const MAT_ORDER = () => [...Object.keys(HIRU_MATS), ...Object.keys(MATS).filter(isMonMat)];
