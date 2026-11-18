@@ -51,6 +51,11 @@
 | src/js/logo.js | タイトルロゴとタイトル画面（昼のチャット・H-014・H-023）：logoHTML()・lgTitleHTML(saved, arm)（main.js の renderTitle が置く・夜のお店の前の背景 .tt-scene と灯り LG_BG・キャラ LG_CAST・モンスター LG_MONS・キラキラ LG_MOTES／LG_TWINK）・ロゴの字はコードの文字（assets/font/logo.woff2＝Mochiy Pop One をロゴの8文字だけにしぼったもの・"mz-logo"・OFL は assets/font/OFL-MochiyPopOne.txt・ビルドが @font-face で埋めこむ）・まわりのお菓子はゲームの絵（LG_SWEET_ART）・描き下ろし待ちの絵 title-*（来るまでは op-shop-night と立ち絵で仮）・動くのは起動して最初のタイトルだけ（lgPlayed）・見た目は style-hiru.css の .lg-*・.tt-*。名前は lg・LG_ で始める | — |
 | src/js/main.js | 画面の切りかえ render（prologue・morning・day・night・result）・タイトル・タップの表 ACTS（朝と昼のボタンは MORNING_ACTS・DAY_ACTS をまぜる）・つづきの用意 resume・boot（hot のつづき）・押したときの光 pressFx・夜/朝/昼/まとめの切りかえの幕 wipe（ギンガムのタイル・ぜんぶのせシップの pixWipe の形） | |
 
+## みなも（11/19・大作の飴細工）
+- cards.js：飴の温度 TEMP・育つ数 GROW・SIZE_MAX・sizeMul（完成×5）／MATS の cat ame（amedai〜nobashi・fx の taisaku・done・doneRally・doneFin・grow）とみなもの素材5／TOOLS の yusen〜amebell／FIELDS の oonabe・kobo（slow）／CHEFS.minamo（heat＝word・of・names・start・cool。ほのかは field）・chefNow()・heatOf()／BUILDS.taisaku（mate＝仲間が来てから）／d.grow・d.meter（board の cook は生地の焼き加減・大作の大きさ。c.ice＝固まる）
+- night.js：growStep（バトル開始時に育つ・ev の type grow）・coolDown（ラウンドの終わりに冷める・nextRound）・mixResult（大作は大きいほう）
+- night-ui.js：setHeat（温度のことば）・showEvent の grow・HEROES・POSE_MINAMO・chefArt()。battle-fx.js：tempHTML・tempFx・coolFx・chibiName。cards-ui.js：sizeIcon・meterIcon。見た目は style-battle.css のいちばん下「みなもの夜」
+
 ## データの形（S・セーブは localStorage `mazemaze-okashiya` の v:5）
 - phase：title → prologue（はじめだけ）→ morning → day → night → result → （day+1）morning
 - 1日の記録 today（newDay・朝に作る）と yesterday（きのうの分）：day・visitors（来たお客さん）・served・sales（円）・flashes（朝にひらめいたレシピ）・made・kanban（看板のレシピの key）・kanbanSoldOut・hearts・newRegulars／mon（来たモンスター）・newMon（はじめて）・score（味パワーの合計）・belly（おなかいっぱいの量）・mood（0〜3）・gifts（素材 id → 数）・coins（お礼のコイン 円）。昼の画面は visitors・served・sales・kanban・kanbanSoldOut・hearts を入れる

@@ -36,14 +36,14 @@ function startNight() {
     sel: null, view: false, last: null,
     build: open.includes(S.build) ? S.build : open[0], kone: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
   };
-  N = S.night; rollShop(); dealAnim = true;
+  N = S.night; N.heat = heatOf().start; rollShop(); dealAnim = true;   // 夜のはじめ：ほのかは中火・みなもは あたたか（11/19）
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
-function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; save(); renderNight(); }
+function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.heat = heatOf().start; save(); renderNight(); }
 function pickGo() {
   if (N.stage !== 'pick') return;
-  S.build = N.build; N.stage = 'arrive'; rollShop(); dealAnim = true;
+  S.build = N.build; N.heat = heatOf().start; N.stage = 'arrive'; rollShop(); dealAnim = true;
   save(); renderNight();
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
@@ -90,7 +90,7 @@ function rollShop() {
     N.call = false;
   }
   if (N.round === 1) {
-    while (out.filter(c => cardDef(c).dough).length < 2) out.push(pick(B.doughs));
+    while (out.filter(c => B.doughs.includes(c)).length < 2) out.push(pick(B.doughs));
   }
   while (out.length < (N.round === 1 ? ROUND1_SHOW : SHOP_N)) {
     let c = draw1(L);
@@ -103,7 +103,7 @@ function rollShop() {
 function unsel() { N.sel = null; N.view = false; }
 function place(cid, at) {
   const j = at != null && !N.board[at] ? at : N.board.indexOf(null); if (j < 0) return null;
-  N.board[j] = cardDef(cid).dough ? { cid, cook: 0 } : { cid }; return { where: 'board', i: j };
+  N.board[j] = asCard(cid); return { where: 'board', i: j };
 }
 /* 1ラウンド目は無料の枠・2ラウンド目からはコイン。n まい・cost コインはらえないわけ（はらえるなら空） */
 function payNg(n, cost) {
@@ -164,7 +164,7 @@ function reroll() {
 
 /* ---------- まぜる：同じ★で、属性の合うものどうし（cards.js の mixable）。調理台・ショップのどれどうしでも、まぜられる（ショップのカードは買いながら） ---------- */
 const canMix = (a, b) => mixable(cardDef(a.cid), cardDef(b.cid));
-const asCard = cid => cardDef(cid).dough ? { cid, cook: 0 } : { cid };   // 仕入れの生地は生（焼き加減0）
+const asCard = cid => cardDef(cid).meter ? { cid, cook: 0 } : { cid };   // 仕入れの生地は生（焼き加減0）・大作は大きさ0
 /* その場所のカード（shop＝ショップは買う前の形・board＝調理台） */
 function cardAt(p) {
   if (!p) return null;
@@ -173,8 +173,12 @@ function cardAt(p) {
 }
 /* まぜてできるカード。焼き加減は、低いほうを引きつぐ */
 function mixResult(a, b) {
-  const cid = mixCid(a.cid, b.cid), cooks = [a, b].filter(x => x.cook != null).map(x => x.cook);
-  return cardDef(cid).dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 } : { cid };
+  const cid = mixCid(a.cid, b.cid), cooks = [a, b].filter(x => x.cook != null).map(x => x.cook), D = cardDef(cid);
+  if (D.grow) {   // みなもの大作：大きいほうの大きさを引きつぐ（完成は完成のまま・11/19 しょーくん）。固まっているかも、そのカードから
+    const s = [a, b].filter(x => x.cook != null && cardDef(x.cid).grow).sort((x, y) => y.cook - x.cook)[0];
+    return s ? Object.assign({ cid, cook: s.cook }, s.ice ? { ice: 1 } : {}) : { cid, cook: 0 };
+  }
+  return D.dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 } : { cid };
 }
 /* まぜるときの代金（ショップのカードの分）と、できたカードの行き先。調理台のカードとまぜたらそのマス・ショップどうしなら左から空いているマス */
 function mixPlan(p, q) {
@@ -190,7 +194,7 @@ const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && 
 function mixRule(d) {
   if (d.cat === 'field') return 'フィールドは まぜられない';
   if (d.star >= 3) return '★3は完成。もう まぜられない';
-  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : '生地か素材'}の★${d.star}と まぜる`;
+  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : chefNow() === CHEFS.minamo ? '飴細工か素材' : '生地か素材'}の★${d.star}と まぜる`;
 }
 /* p のカードを q へ落としたら何が起きるか（ドラッグの光と案内・指をはなしたとき）。kind：mix・buy・place・move・sell */
 function dropPlan(p, q) {
@@ -265,10 +269,20 @@ function cookStep(c, add, safe) {
   c.cook = Math.min(COOK_MAX, from + Math.max(1, add));
   return { from, to: c.cook, burnt: false, cid: c.cid };
 }
+/* みなもの大作を、飴の温度 t で育てる（11/19）。完成（9）はもう変わらない。ひえひえで固まり（c.ice）、ひんやりでは固まったまま、あたたか以上でとけて育つ
+   育つ数は GROW[t]＋育つはやさ（1より少なくはならない）。変わらないときは null */
+function growStep(c, t, spd = 0) {
+  const from = c.cook || 0;
+  if (from >= SIZE_MAX) return null;
+  if (t <= 1 || (t === 2 && c.ice)) { const was = !!c.ice; c.ice = 1; return { from, to: from, ice: was ? 'stay' : 'on', cid: c.cid }; }
+  const melt = !!c.ice; delete c.ice;
+  c.cook = Math.min(SIZE_MAX, from + Math.max(1, GROW[t] + spd));
+  return { from, to: c.cook, melt, cid: c.cid };
+}
 /* 1ラウンドの計算（画面より先に、ぜんぶ決める）。board と heat は finishRound で N に入れる */
 function resolveRound() {
   const F = N.field ? FIELDS[N.field] : null, ev = [];
-  const board = N.board.map(c => c && { cid: c.cid, cook: c.cook });
+  const board = N.board.map(c => c && Object.assign({ cid: c.cid, cook: c.cook }, c.ice ? { ice: 1 } : {}));
   let heat = N.heat, burnt = 0, call = false;
   const stop = () => board.some(c => c && cardDef(c.cid).fx.stop);
   const burn = (i, r) => { if (r.burnt) { board[i] = { cid: r.cid }; burnt++; } };
@@ -283,9 +297,16 @@ function resolveRound() {
     });
     if (list.length) ev.push({ type: 'bake', heat, list, stop: stopAt >= 0 ? stopAt : null });
   }
+  // 1b. 育つ（みなもの大作・11/19）：バトルのはじめに、飴の温度で大作の大きさがいっせいに育つ（場がなくても）
+  {
+    const list = [];
+    board.forEach((c, i) => { if (!c || !cardDef(c.cid).grow) return; const r = growStep(c, heat, cardDef(c.cid).fx.spd || 0); if (r) list.push({ i, ...r }); });
+    if (list.length) ev.push({ type: 'grow', heat, list });
+  }
   // 2. 発動：左から順に
   const idx = board.map((c, i) => c ? i : -1).filter(i => i >= 0);
   const first = idx[0], last = idx[idx.length - 1];
+  const doneN = () => idx.filter(j => board[j] && cardDef(board[j].cid).grow && board[j].cook >= SIZE_MAX).length;   // 完成した大作の数（そのときの）
   const extra = Array(SLOTS).fill(0);
   let pend = 1, total = 0, rally = 0, pendEv = [], kone = N.kone || 0, panRally = 0;   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
   /* ほかのカードにかかる効果は、バトルの画面でオーラを飛ばすので、どこからどこへかを残す（11/18 しょーくん）
@@ -304,12 +325,20 @@ function resolveRound() {
         const v = fx.koneRally * sm * kone; panRally += v; e.rally = true;
         e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j) && cardDef(board[j].cid).pan), v });
       }
+      if (i === first && t === 0 && fx.doneRally && doneN()) {   // あめの花かご：完成した大作があれば、主役ぜんぶ+
+        rally += fx.doneRally * sm; e.rally = true;
+        e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j)), v: fx.doneRally * sm });
+      }
       if (fx.nb && dmgAt(i + 1)) e.out.push({ k: 'nb', to: [i + 1], v: fx.nb * sm });
       if (fx.koneUp) { e.kone = [kone, kone + fx.koneUp]; kone += fx.koneUp; }
       if (fx.heat) { const h0 = heat; heat = Math.max(1, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
       if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
         const o = board[i + 1], r = cookStep(o, fx.sear, stop() || cardDef(o.cid).fx.noburn);
         burn(i + 1, r); e.sear = { i: i + 1, ...r }; e.out.push({ k: 'sear', to: [i + 1] });
+      }
+      if (fx.grow && board[i + 1] && cardDef(board[i + 1].cid).grow && board[i + 1].cook < SIZE_MAX) {   // のばし飴・飴ばさみ：右どなりの大作が育つ（固まっていても、とける）
+        const o = board[i + 1], from = o.cook || 0; o.cook = Math.min(SIZE_MAX, from + fx.grow); delete o.ice;
+        e.grow = { i: i + 1, cid: o.cid, from, to: o.cook }; e.out.push({ k: 'grow', to: [i + 1] });
       }
       let dmg = 0;
       if (fx.dmg) {
@@ -321,6 +350,7 @@ function resolveRound() {
           const cm = cookMul(c.cook || 0); base *= cm; if (cm !== 1) parts.push(['×', cm, '焼き加減']);
           if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
         }
+        if (d.grow) { const gm = sizeMul(c.cook || 0, fx); base *= gm; if (gm !== 1) parts.push(['×', gm, c.cook >= SIZE_MAX ? '完成' : '大きさ']); }
         if (fx.lead && i === first) { base *= fx.lead; e.lead = true; parts.push(['×', fx.lead, 'スタート']); }
         if (fx.sai && i === last) {
           const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n);
@@ -341,7 +371,8 @@ function resolveRound() {
       }
       if (fx.next) { pend *= fx.next; e.next = fx.next; pendEv.push(e); }
       total += dmg;
-      const fin = i === last ? (fx.fin || 1) * (fx.koneFin ? 1 + koneFinOf(fx, d.star) * kone : 1) : 1;   // しめのコロネ：×(1＋0.5×こねた回数)
+      const fin = i === last ? (fx.fin || 1) * (fx.koneFin ? 1 + koneFinOf(fx, d.star) * kone : 1)   // しめのコロネ：×(1＋0.5×こねた回数)
+        * (fx.doneFin ? 1 + doneFinOf(fx, d.star) * doneN() : 1) : 1;                               // しあげのつや：×(1＋0.5×完成した大作の数)（11/19）
       if (fin > 1) { const add = Math.min(DMG_CAP, Math.floor(total * (fin - 1))); dmg += add; total += add; e.fin = [Math.round(fin * 100) / 100, add]; e.out.push({ k: 'fin', to: 'score' }); }
       total = Math.min(DMG_CAP, total);
       if (fx.again && t === 0 && i + 1 < SLOTS) { extra[i + 1] += fx.again; if (board[i + 1]) e.out.push({ k: 'again', to: [i + 1] }); }
@@ -388,8 +419,17 @@ function nextRound() {
   tipEv('next');
   if (N.round >= ROUNDS) return endNight();
   N.coins += INCOME + (N.last.ok ? QUOTA_BONUS : 0);
+  const cooled = coolDown();
   N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
   rollShop(); save(); renderNight();
+  if (cooled) coolFx(cooled);
+}
+/* みなもの飴は、ラウンドの終わりに1段冷める（11/19 しょーくん）。ガラスの工房は2ラウンドに1回。冷めたら [前, あと] */
+function coolDown() {
+  const H = heatOf(), F = N.field ? FIELDS[N.field] : null;
+  if (!H.cool || (F && F.slow && N.round % 2 === 1)) return null;
+  const h0 = N.heat; N.heat = Math.max(1, N.heat - H.cool);
+  return N.heat !== h0 ? [h0, N.heat] : null;
 }
 /* おもてなしの結果：満足（MOODS）で、モンスター素材（倉庫へ・次の朝から使える）とお礼のコイン（お店のお金）をくれる */
 function endNight() {

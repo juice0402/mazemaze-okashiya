@@ -279,3 +279,46 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 @keyframes qgain{0%{opacity:0;transform:translate(-50%,6px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1;transform:translate(-50%,-8px) scale(1)}100%{opacity:0;transform:translate(-50%,-16px)}}
 .quota.gain .qbar{animation:qflash .5s ease-out}
 @keyframes qflash{30%{filter:brightness(1.6) saturate(1.3)}}
+
+/* ==== みなもの夜（11/19）：飴の台・飴の温度・大作の大きさ。絵が届くまでのコードの仮（ずっと動く物は transform と opacity だけ） ==== */
+/* 属性の帯：飴細工＝水色・温度＝青 */
+.at-ame{background:linear-gradient(#a8ecff,#4cb6dc);color:#0c3a4a;text-shadow:0 .5cqw 0 rgba(240,252,255,.5)}
+.at-temp{background:linear-gradient(#7fc8ff,#2a7ad8)}
+/* 大きさのしずく：小さい＝水色・育つ＝はちみつ色・完成＝金・固まる＝霜 */
+.ck.am::before{border-radius:50%;transform:none}
+.ck.am.c0{--ckb:radial-gradient(circle at 40% 35%,#ffffff,#c8f0ff 50%,#6ab8d8)}
+.ck.am.c1{--ckb:radial-gradient(circle at 40% 35%,#ffffff,#9fe6f4 50%,#2f9cc4)}
+.ck.am.c2{--ckb:radial-gradient(circle at 40% 35%,#fff6d8,#ffc86a 50%,#d0861e)}
+.ck.am.c3{--ckb:radial-gradient(circle at 40% 35%,#fffbe0,#ffe14a 45%,#ffa21a 88%)}
+.ck.am.c3::after{border-radius:50%;transform:none}
+.ck.am.ice{--ckb:radial-gradient(circle at 40% 35%,#ffffff,#e4f6ff 55%,#9cc8e0)}
+.ck.am.ice b{color:#cfeeff}
+.cook.am.c0,.cook.am.c1{--cc:#8fe0f4}.cook.am.c2{--cc:#ffc86a}.cook.am.c3{--cc:#ffe680}
+.pc.tile.ice{box-shadow:0 0 0 1px #2a1408,0 0 0 3px #d8f2ff,0 0 10px 2px rgba(180,230,255,.8)}
+.pc.tile.ice .pc-win{filter:saturate(.55) brightness(1.1)}
+.pc.tile.freeze{animation:freeze .5s ease-out}
+@keyframes freeze{30%{transform:scale(.94)}}
+.float.ice{color:#bfeaff;text-shadow:0 0 6px rgba(120,210,255,.9),1px 1px 0 #10304a,-1px 1px 0 #10304a}
+.a-grow{--ac:#7fe0ff}
+/* 飴の台：温度で色が変わる（ひえひえ＝霜・ひんやり＝水色・あたたか＝はちみつ色・とろとろ＝湯気） */
+.tcold{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .5s;
+  background:radial-gradient(120% 90% at 50% 100%,rgba(150,215,255,.38),transparent 70%),repeating-linear-gradient(120deg,rgba(255,255,255,.08) 0 3px,transparent 3px 14px)}
+.tiles[data-t="1"] .tcold{opacity:1;background:radial-gradient(120% 90% at 50% 100%,rgba(200,236,255,.55),transparent 75%),repeating-linear-gradient(120deg,rgba(255,255,255,.2) 0 2px,transparent 2px 9px)}
+.tiles[data-t="2"] .tcold{opacity:.8}
+.tiles[data-t="3"] .tcold{opacity:1;background:radial-gradient(120% 90% at 50% 100%,rgba(255,206,120,.3),transparent 70%)}
+.tiles[data-t="4"] .tcold{opacity:1;background:radial-gradient(120% 90% at 50% 100%,rgba(255,180,80,.42),transparent 72%)}
+.tsteam{position:absolute;inset:auto 0 0;height:60%;z-index:3;pointer-events:none;overflow:hidden}
+.tst{position:absolute;bottom:4%;left:var(--x);width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.55),transparent 70%);opacity:0;display:none}
+.tiles[data-t="4"] .tst,.tiles[data-t="3"] .tst:nth-child(-n+4){display:block;animation:tsteam var(--d) ease-out calc(var(--k) * -3s) infinite}
+.tiles[data-t="1"] .tst{display:block;width:5px;height:5px;background:#eaf8ff;box-shadow:0 0 4px #bfe8ff;animation:tsnow var(--d) linear calc(var(--k) * -3s) infinite}
+@keyframes tsteam{0%{opacity:0;transform:translate(0,0) scale(.6)}30%{opacity:1}100%{opacity:0;transform:translate(var(--sx),-46px) scale(1.8)}}
+@keyframes tsnow{0%{opacity:0;transform:translate(0,-40px)}20%{opacity:.9}100%{opacity:0;transform:translate(var(--sx),4px)}}
+/* 温度のメーター：ひえひえ＝白・ひんやり＝水色・あたたか＝はちみつ色・とろとろ＝オレンジ */
+.night[data-chef="minamo"] .heat-bar i.on.h1{background:rgba(230,246,255,.92)}
+.night[data-chef="minamo"] .heat-bar i.on.h2{background:rgba(120,210,255,.92)}
+.night[data-chef="minamo"] .heat-bar i.on.h3{background:rgba(255,200,100,.95)}
+.night[data-chef="minamo"] .heat-bar i.on.h4{background:#ff9a3a;box-shadow:0 0 6px #ffc070}
+.night[data-chef="minamo"] .heat-label.h1{color:#eaf8ff}.night[data-chef="minamo"] .heat-label.h2{color:#9fdcff}
+.night[data-chef="minamo"] .heat-label.h3{color:#ffd27a}.night[data-chef="minamo"] .heat-label.h4{color:#ffab5a}
+/* 舞台の火の粉は、ほのかの夜だけ */
+.night[data-chef="minamo"] .embers{display:none}

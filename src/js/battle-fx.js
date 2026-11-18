@@ -107,6 +107,11 @@ function auraOut(e, o) {
       if (c2) replay(c2, 'sear');
       if (e.sear.burnt) burntFx(c2 && c2.parentNode); else floatAt(c2 && c2.parentNode, e.sear.to >= COOK_MAX ? 'サイコー！' : `焼き+${e.sear.to - e.sear.from}`, e.sear.to >= COOK_MAX ? 'best' : 'cookup');
     }
+    if (o.k === 'grow' && e.grow) {   // のばし飴・飴ばさみ：右どなりの大作が育つ（11/19）
+      const c2 = updTile(e.grow.i, e.grow.cid, e.grow.to);
+      if (c2) { replay(c2, 'sear'); sparkBurst(c2, 6, 'up', .6); }
+      floatAt(c2 && c2.parentNode, e.grow.to >= SIZE_MAX ? '完成！' : `大きさ+${e.grow.to - e.grow.from}`, e.grow.to >= SIZE_MAX ? 'best' : 'cookup');
+    }
   }), T(n * 90)));
 }
 
@@ -116,8 +121,9 @@ const DECO_MOBS = [
   ['mob-slime', 'mon-slime', 'm-slime'], ['mob-hitsuji', 'mon-hitsuji', 'm-hitsuji'],
   ['mob-tokage', null, 'm-tokage'], ['mob-hiyoko', null, 'm-hiyoko'], ['mob-kurage', null, 'm-kurage'],
 ];
-/* ほのかのデフォルメ：ショップ＝考える・バトル＝すわってにこにこ・大きな一撃と勝ったとき＝応援（art-irai の requests/okashi/honoka-chibi.md） */
-const chibiSrc = pose => ART['chibi-' + pose] || ART['chibi-cheer'] || ART.honoka || '';
+/* 今夜のシェフのデフォルメ：ショップ＝考える・バトル＝すわってにこにこ・大きな一撃と勝ったとき＝応援（ほのか chibi-*・みなも minamo-chibi-*・11/19） */
+const chibiName = pose => (chefArt() === 'honoka' ? '' : chefArt() + '-') + 'chibi-' + pose;
+const chibiSrc = pose => ART[chibiName(pose)] || ART['chibi-' + pose] || ART['chibi-cheer'] || ART.honoka || '';
 let grassCache = '';
 function grassSVG() {
   if (grassCache) return grassCache;
@@ -150,12 +156,12 @@ function decoHTML(mode) {
   return `<div class="deco ${mode}" id="deco" aria-hidden="true">
     <i class="dc-ledge"></i>${grassSVG()}
     <i class="dc-frame"></i><i class="dc-medal"></i>
-    <img class="dc dc-chibi${ART['chibi-' + pose] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}</div>`;
+    <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}</div>`;
 }
 /* ほのかのデフォルメのポーズをしばらく変える（ms のあと、すわってにこにこへ） */
 let chibiT = 0;
 function decoChibi(pose, ms) {
-  const el = $('dcChibi'); if (!el || !ART['chibi-' + pose]) return;
+  const el = $('dcChibi'); if (!el || !ART[chibiName(pose)]) return;
   el.src = chibiSrc(pose); clearTimeout(chibiT);
   if (ms) chibiT = setTimeout(() => { if (el.isConnected) el.src = chibiSrc('sit'); }, ms);
 }
@@ -200,6 +206,28 @@ function heatFx(z) {
   if (was == null || z === was || REDUCED) return;
   if (z > was) { replay(t, 'heatup'); pillars(t, was === 0 ? 4 : Math.min(4, z - was + 1), was === 0); t.querySelectorAll('.pc.tile.dough').forEach(c => replay(c, 'heatflash')); }
   else { replay(t, 'heatdn'); steam(t); }
+}
+/* ---------- みなもの飴の台（11/19）：鉄板の炎のかわりに、温度で台の色が変わる（ひえひえ＝霜・ひんやり＝水色・あたたか＝はちみつ色・とろとろ＝湯気がゆらゆら）
+   ずっと動く物は CSS（transform と opacity だけ）。絵が届くまでのコードの仮 ---------- */
+let tempCache = '';
+function tempHTML() {
+  if (tempCache) return tempCache;
+  const r = prng(31); let s = '';
+  for (let k = 0; k < 10; k++) s += `<i class="tst" style="--x:${(4 + r() * 92).toFixed(1)}%;--d:${(2 + r() * 1.6).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 30).toFixed(0)}px"></i>`;
+  return (tempCache = `<i class="tcold" aria-hidden="true"></i><span class="tsteam" aria-hidden="true">${s}</span>`);
+}
+let tempWas = null;
+function tempFx(h) {
+  const t = document.querySelector('.tiles'); if (!t) return;
+  const was = tempWas && tempWas.day === S.day ? tempWas.h : null;
+  tempWas = { day: S.day, h }; t.dataset.t = h;
+  if (was == null || h === was || REDUCED) return;
+  if (h > was) { replay(t, 'heatup'); sparkBurst(t, 9, 'up', .8); } else { replay(t, 'heatdn'); steam(t); }
+}
+/* ラウンドの終わりに飴が冷めたとき：メーターの所に札 */
+function coolFx([a, b]) {
+  const H = heatOf(), el = $('heatLabel'); if (!el) return;
+  floatAt(el.parentNode, `${H.names[a]}→${H.names[b]}`, 'ice');
 }
 function pillars(t, n, boom) {
   if (!document.body.animate) return;

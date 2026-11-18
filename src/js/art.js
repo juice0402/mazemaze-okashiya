@@ -80,6 +80,8 @@ function hiArt(cid) {
   }
   if (k === 's') {   // ★3：同じ形どうしは「特製○○タワー」の絵
     const [r1, r2] = id.split('|').map(recipeOf);
+    const ame = [...r1.mats, ...r2.mats].filter(m => MATS[m].cat === 'ame').sort((a, b) => MATS[b].nr - MATS[a].nr)[0];
+    if (ame) return ART['special-' + ame] || ART['card-' + ame] || null;   // みなもの★3（11/19）：★3の絵が届くまでは、いちばん主役の飴細工のカードの絵
     if (r1.noun === r2.noun) return ART[`special-${NOUN_ID[r1.noun]}-tower`] || null;
     return ART[`special-${NOUN_ID[r2.noun]}-tower`] || ART[`special-${NOUN_ID[r1.noun]}-tower`] || null;   // ちがう形どうしは、主役（うしろ）の形のタワーの絵
   }

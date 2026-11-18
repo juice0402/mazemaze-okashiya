@@ -70,6 +70,8 @@ function tipAnyEl(f) {
 const tipLines = t => (typeof STORY === 'object' && STORY.tips && STORY.tips[t.id]) || t.text;
 const tipNow = () => S.phase === 'night' && N && !busy && !fighting && !talking();
 /* renderNight のおわりに呼ぶ：出ているヒントを描きなおす・なければ、しばらくして次をさがす */
+/* ほのかの夜だけのヒント（焼く・火力・焦げ）。みなもの夜には出さない（11/19） */
+const HONOKA_TIPS = ['field', 'cooked', 'heat', 'burnt'];
 function tipSync() {
   clearTimeout(tipT);
   if (TIP && (S.phase !== 'night' || !N || TIP.t.at !== N.stage || !TIP.t.when())) TIP = null;
@@ -78,7 +80,7 @@ function tipSync() {
 }
 function tipNext() {
   if (TIP || !tipNow() || N.view) return;
-  const t = TIPS.find(t => !S.seen['t:' + t.id] && t.at === N.stage && t.when());
+  const t = TIPS.find(t => !S.seen['t:' + t.id] && t.at === N.stage && (chefArt() === 'honoka' || !HONOKA_TIPS.includes(t.id)) && t.when());
   if (!t) return;
   TIP = { t, fresh: true };
   S.seen['t:' + t.id] = 1; save();

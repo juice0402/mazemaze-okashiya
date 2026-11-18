@@ -8,16 +8,18 @@ const ORD = ['①', '②', '③', '④', '⑤'];
 /* 鉄板の火力（1〜4）。フィールドがないと焼けないので、光らせない */
 function setHeat(h) {
   const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
+  const H = heatOf(), on = !H.field || N.field;   // みなもの飴の温度（11/19）は、場がなくても効く
   [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
-  lab.textContent = N.field ? HEAT[h] : `${HEAT[h]}（場なし）`;
-  lab.className = 'heat-label h' + (N.field ? h : 0);
+  lab.textContent = on ? H.names[h] : `${H.names[h]}（場なし）`;
+  lab.className = 'heat-label h' + (on ? h : 0);
+  if (H.cool) return tempFx(h);   // 飴の温度（battle-fx.js）
   const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
   heatFx(N.field ? h : 0);   // 鉄板の炎（battle-fx.js）
 }
-/* タイル1つを描きなおす（焼き加減・焦げ） */
-function updTile(i, cid, cook) {
+/* タイル1つを描きなおす（焼き加減・焦げ・大作の大きさと固まる） */
+function updTile(i, cid, cook, ice) {
   const slot = document.querySelector(`.tslot[data-w="board"][data-i="${i}"]`); if (!slot) return null;
-  slot.innerHTML = `<i class="ord">${i + 1}</i>${cardTile(cid, { cook })}`;
+  slot.innerHTML = `<i class="ord">${i + 1}</i>${cardTile(cid, { cook, ice })}`;
   return slot.querySelector('.pc');
 }
 function burntFx(slot) { replay($('smoke'), 'on'); heroPose('burnt', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
@@ -119,6 +121,19 @@ function showEvent(e, run, q) {
     if (stops.length) setTimeout(() => stops.forEach((x, n) => setTimeout(() => aura(e.stop, x.i, 'stop'), T(n * 90))), T(t0 + e.list.length * gap));
     return 1050 + e.list.length * gap + (stops.length ? 600 : 0);
   }
+  if (e.type === 'grow') {   // みなもの大作が育つ（11/19）：場のマスの上に温度の札 → 大作のタイルが左から順にきらっ（+大きさ・完成！・固まった）
+    const fs = document.querySelector('.fslot'), H = heatOf(), cold = e.heat <= 1;
+    chipPop(fs, { b: H.names[e.heat], s: cold ? '固まる' : `大きさ+${GROW[e.heat]}`, c: e.heat <= 2 ? 'mint' : 'gold' }); heroPose('field', 1000);   // 飴の台に手をかざす
+    const t0 = 420, gap = 260, done = e.list.filter(x => x.to >= SIZE_MAX && x.from < SIZE_MAX);
+    e.list.forEach((x, n) => setTimeout(() => {
+      const card = updTile(x.i, x.cid, x.to, !!x.ice), slot = card && card.parentNode;
+      if (card) { replay(card, x.ice ? 'freeze' : 'sear'); if (!x.ice) sparkBurst(card, 6, 'up', .6); }
+      floatAt(slot, x.ice ? (x.ice === 'on' ? '固まった' : '固まったまま') : x.to >= SIZE_MAX ? '完成！' : `${x.melt ? 'とけた・' : ''}大きさ+${x.to - x.from}`, x.ice ? 'ice' : x.to >= SIZE_MAX ? 'best' : 'cookup');
+    }, T(t0 + n * gap)));
+    let t = t0 + e.list.length * gap + 400;
+    if (done.length) { setTimeout(() => cutIn(done[0].cid, '大作 完成！'), T(t)); t += 1500; }
+    return t + 250;
+  }
   const d = cardDef(e.cid), slot = tslot(e.i), card = slot && slot.querySelector('.pc');
   if (slot) slot.classList.add('now', 'done');
   if (e.again) takeBuff(e.i, e.i - 1, 'again');
@@ -127,7 +142,7 @@ function showEvent(e, run, q) {
   const C = actChips(e), H = {};
   /* ほのかの戦闘ポーズ：ダメージのあるカードは チャージ → 攻撃（★で3段・おなかの6割をこえる一撃は必殺技）、ないカードは役目のポーズ */
   if (e.dmg > 0) heroPose('charge');
-  else heroPose(e.heat ? (e.heat[1] > e.heat[0] ? 'heatup' : 'heatdown') : e.kone ? 'knead' : e.sear ? 'heatup' : 'support', 1100);
+  else heroPose(e.heat ? (e.heat[1] > e.heat[0] ? 'heatup' : 'heatdown') : e.kone ? 'knead' : e.sear ? 'heatup' : e.grow ? 'field' : 'support', 1100);
   /* 2. ダメージのあるカード：メダルが舞台へ → 計算の札が飛んできて数字が変わる */
   if (e.dmg > 0) {
     setTimeout(() => Object.assign(H, flyHub(e, e.dmg >= q / 3)), T(t)); t += 360;
@@ -161,7 +176,7 @@ function showEvent(e, run, q) {
 /* 計算の札のデータ：calc＝数字にすいこまれる札（v＝この札のあとの数字・p＝前の数字・src＝効果の元のマス・k＝マスに残った札の種類）
    outs＝ほかのカードへの効果（out＝e.out の番号）。c＝札の色（gold・ember・pink・mint・koge） */
 const PART_K = l => l === '次の主役' ? 'next' : l === 'となり' ? 'nb' : l === 'スタート' ? 'rally' : l.startsWith('サイコー') ? 'best' : '';
-const PART_C = l => l === '次の主役' ? 'pink' : l === 'となり' ? 'mint' : l === '焼き加減' || l === 'フィールド' || l.startsWith('サイコー') ? 'ember' : 'gold';
+const PART_C = l => l === '次の主役' ? 'pink' : l === 'となり' || l === '大きさ' ? 'mint' : l === '焼き加減' || l === 'フィールド' || l.startsWith('サイコー') ? 'ember' : 'gold';
 function actChips(e) {
   const d = cardDef(e.cid), calc = [], outs = [], out = k => { const n = (e.out || []).findIndex(o => o.k === k); return n < 0 ? null : n; };
   let v = 0;
@@ -173,8 +188,9 @@ function actChips(e) {
   if (e.fin) calc.push({ b: '×' + fmtMul(e.fin[0]), s: 'アンカー：合計', c: 'gold', v: e.dmg, p: v, out: out('fin') });
   const rl = out('rally'); if (rl != null) outs.push({ b: '+' + fmt(e.out[rl].v), s: d.fx.koneRally ? 'パンぜんぶへ' : '主役ぜんぶへ', c: 'mint', out: rl });
   const nb = out('nb'); if (nb != null) outs.push({ b: '+' + fmt(e.out[nb].v), s: 'となりへ', c: 'mint', out: nb });
-  if (e.heat) outs.push({ b: `${HEAT[e.heat[0]]}→${HEAT[e.heat[1]]}`, s: '火力', c: 'ember', out: out('heat') });
+  if (e.heat) { const H = heatOf(); outs.push({ b: `${H.names[e.heat[0]]}→${H.names[e.heat[1]]}`, s: H.word, c: H.cool && e.heat[1] < e.heat[0] ? 'mint' : 'ember', out: out('heat') }); }
   if (e.sear) outs.push(e.sear.burnt ? { b: '焦げた', s: '右の生地', c: 'koge', out: out('sear') } : { b: `焼き+${e.sear.to - e.sear.from}`, s: '右の生地', c: 'ember', out: out('sear') });
+  if (e.grow) outs.push({ b: e.grow.to >= SIZE_MAX ? '完成！' : `大きさ+${e.grow.to - e.grow.from}`, s: '右の大作', c: 'mint', out: out('grow') });
   if (e.next) outs.push({ b: '×' + fmtMul(e.next), s: '次の主役へ', c: 'pink', out: out('next') });
   if (fxOn(d, 'again') && !e.again) outs.push({ b: 'もう1回', s: '右どなり', c: 'mint', out: out('again') });
   if (e.call) outs.push({ b: 'フィールド', s: '次のショップ', c: 'mint' });
@@ -284,10 +300,14 @@ function mixFx(from, ca, cb, cr, to, done) {
   }, HIT + HOLD + LAND);
 }
 
-/* ほのかの立ち絵：バトルは右向きのかまえ。表情の絵は左向きなので左右反転して右向きにする */
-const HERO = { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true] };
-function heroPick(k) { const [n, flip] = HERO[k]; return ART[n] ? { src: ART[n], flip } : { src: ART.honoka || big(CHEF_SPR[0], 8), flip: !!ART.honoka }; }
-function heroImg(k) { const h = heroPick(k); return `<img class="chef${ART.honoka ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="chef" src="${h.src}" alt="炎のシェフ ほのか">`; }
+/* 今夜のシェフの立ち絵：バトルは右向きのかまえ。ほのかの表情の絵は左向きなので左右反転して右向きにする（みなもの絵は右向き・正面なのでそのまま・11/19） */
+const HEROES = {
+  honoka: { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true] },
+  minamo: { battle: ['minamo-battle', false], joy: ['minamo-win', false], surprise: ['minamo-bikkuri', false], oops: ['minamo-shonbori', false] },
+};
+const chefArt = () => chefNow().art || 'honoka';
+function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka }; }
+function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="chef${ART[chefArt()] ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="chef" data-chef="${chefArt()}" src="${h.src}" alt="${esc(C.job + ' ' + C.name)}">`; }
 let heroT = 0;
 function heroFor(k, ms) {
   const el = $('chef'); if (!el) return;
@@ -301,10 +321,16 @@ const POSE = {
   special: ['honoka-special', 'battle'], win: ['honoka-win', 'joy'], support: ['honoka-support', 'battle'], heatup: ['honoka-heatup', 'battle'],
   heatdown: ['honoka-heatdown', 'battle'], knead: ['honoka-knead', 'battle'], field: ['honoka-field', 'battle'], burnt: ['honoka-burnt', 'oops'],
 };
+/* みなもの戦闘ポーズは6まい（11/19）：攻撃は★のちがいなく1まい・温度の上げ下げと台に手をかざすのは支援のポーズ */
+const POSE_MINAMO = {
+  stance: 'minamo-battle', charge: 'minamo-charge', atk1: 'minamo-atk', atk2: 'minamo-atk', atk3: 'minamo-atk', special: 'minamo-special', win: 'minamo-win',
+  support: 'minamo-support', heatup: 'minamo-support', heatdown: 'minamo-support', knead: 'minamo-support', field: 'minamo-support', burnt: 'minamo-shonbori',
+};
 let poseT = 0;
 function heroPose(p, ms) {
   const el = $('chef'); if (!el || !POSE[p]) return;
-  const [n, alt] = POSE[p], h = ART[n] ? { src: ART[n], flip: false } : heroPick(alt);
+  const mi = chefArt() === 'minamo' && ART[POSE_MINAMO[p]];
+  const [n, alt] = POSE[p], h = mi ? { src: mi, flip: false } : chefArt() === 'honoka' && ART[n] ? { src: ART[n], flip: false } : heroPick(alt);
   if (el.getAttribute('src') !== h.src) el.src = h.src;
   el.classList.toggle('flip', h.flip); el.dataset.pose = p;
   clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
@@ -382,7 +408,7 @@ function pickHTML() {
       <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
   return `<div class="pickov"><p class="pk-ttl">今夜の おもてなし</p><div class="pk-list">${list}</div>
-    ${TRIAL ? '<p class="pk-trial">ためしのページ：こね生地は、本番では8日目から</p>' : ''}</div>`;
+    ${TRIAL ? '<p class="pk-trial">ためしのページ：本番では、こね生地は8日目から・みなもは仲間になってから</p>' : ''}</div>`;
 }
 
 /* ---------- 夜の画面 ---------- */
@@ -401,13 +427,13 @@ function renderNight() {
       </div><button class="big" data-act="toResult">1日のまとめへ</button>`;
   } else {
     const shop = N.stage === 'shop';
-    body = `<div class="tiles" data-z="${N.field ? N.heat : 0}">${boardFireHTML()}<button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
-        `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
+    body = `<div class="tiles" data-chef="${chefArt()}" data-z="${heatOf().cool ? 0 : N.field ? N.heat : 0}" data-t="${heatOf().cool ? N.heat : 0}">${heatOf().cool ? tempHTML() : boardFireHTML()}<button class="tslot fslot" data-act="card" ${shop && N.field ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}</button>${N.board.map((c, i) =>
+        `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
-  $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}">
+  $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
     <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0"${ART['bg-night'] ? ` style="--bgimg:url('${ART['bg-night']}')"` : ''}>${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
       ${heroImg(after ? (happy ? 'joy' : 'oops') : 'battle')}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-idle="${monIdle(mon.id)}" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
