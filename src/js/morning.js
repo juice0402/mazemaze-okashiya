@@ -189,6 +189,7 @@ function mOpen() {
 
 /* ---------- 雑貨屋（お店のグッズ） ---------- */
 function goodNext(id) {
+  if (id.startsWith('t-')) { const t = M_TOOLS.find(x => 't-' + x.id === id); return t && mToolOpen(t.id) && !mToolHas(t.id) ? t.price : null; }
   if (id === 'tatekanban') { const lv = S.goods.tatekanban || 0; return lv < GOODS.tatekanban.price.length ? GOODS.tatekanban.price[lv] : null; }
   if (id === 'showcase') { const lv = S.goods.showcase || 0; return lv < GOODS.showcase.price.length && shelfMaxN() < SHELF_MAX ? GOODS.showcase.price[lv] : null; }
   const k = GOODS.kazari.find(x => x.id === id); return k && !S.goods[id] ? k.price : null;
@@ -199,6 +200,7 @@ function buyGood(id) {
   S.money -= p;
   if (id === 'showcase') { S.goods.showcase = (S.goods.showcase || 0) + 1; S.shelfMax = Math.min(SHELF_MAX, shelfMaxN() + GOODS.showcase.add); toast('棚のマスがふえた！'); }
   else if (id === 'tatekanban') { S.goods.tatekanban = (S.goods.tatekanban || 0) + 1; toast('立て看板を置いた！お客さんがふえるよ'); }
+  else if (id.startsWith('t-')) { S.goods[id] = 1; toast((M_TOOLS.find(x => 't-' + x.id === id) || {}).name + 'が、お店にきた！'); }
   else { S.goods[id] = 1; toast('お店にかざった！'); }
   save(); renderMorning();
 }
@@ -337,6 +339,7 @@ function kitchenHTML(M) {
   return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
     <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
       <span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
+      <div class="m-tools">${mAutoBakeOk() ? `<button class="pill sub" data-act="m-auto"${mBusy ? ' disabled' : ''}>きのうと同じに焼く</button>` : ''}<button class="round m-bookb" data-act="m-book" aria-label="レシピ帳">${M_BOOK_SVG}</button></div>
       <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
       <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
     </div>
@@ -355,7 +358,7 @@ function displayHTML(M) {
   const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${esc(candyOf(b.key).name)}</span></div>`).join('');
   return `<section class="morning mdisp fit" id="msec">
     <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-      <p class="md-tip">${esc(tip)}</p>
+      <p class="md-tip">${esc(tip)}</p>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}
       <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${(rib => slots.map((o, i) => mSlotHTML(o, i, ks, rib[i])).join(''))(dSoroiRibs(slots))}</div>
     </div>
     <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span><div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
@@ -369,7 +372,7 @@ function zakkaHTML() {
     const tx = GOODS[id] ? G.text : '見た目だけ';
     const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置けない' : 'かざった';
     return `<div class="ms-good"><span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
-  }).join('')}</div>`;
+  }).join('')}${mToolRows()}</div>`;
   const sbg = ART['bg-zakka'];
   return `<section class="morning mzakka fit" id="msec">
     <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
@@ -382,7 +385,7 @@ function zakkaHTML() {
 }
 function renderMorning() {
   const M = mState(), v = M.view;
-  $('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : kitchenHTML(M);
+  $('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : v === 'book' ? bookHTML() : kitchenHTML(M);
   $('msec').addEventListener('pointerdown', mDown);
   /* トレーの右にまだあるときは、右はしに「›」（すべるのは中の .mt-row・ふちの外枠はすべらない） */
   document.querySelectorAll('#msec .mt-row').forEach(el => {
@@ -406,6 +409,105 @@ function renderMorning() {
 }
 function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 
+/* ---------- べんり道具（11/19・hiru.js の M_TOOLS）：雑貨屋の行・おまかせオーブン・からくり陳列人形 ---------- */
+function mToolRows() {
+  const open = M_TOOLS.filter(t => mToolOpen(t.id)); if (!open.length) return '';
+  return `<p class="ms-sec">べんり道具</p>` + open.map(t => {
+    const id = 't-' + t.id, p = goodNext(id);
+    return `<div class="ms-good"><span class="msg-nm">${esc(t.name)}</span><span class="msg-tx">${esc(t.text)}</span>${p == null ? '<span class="msg-done">お店にある</span>' : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
+  }).join('');
+}
+/* おまかせオーブン：きのう作ったお菓子（S.yesterday.made の順）を、棚のあきと お財布のぶんだけ まとめて焼く */
+const mAutoList = () => ((S.yesterday && S.yesterday.made) || []).filter(k => String(k).split('+').every(m => HIRU_MATS[m] || isMonMat(m)));
+const mAutoBakeOk = () => mToolHas('oven') && mAutoList().length > 0 && shelfRoom();
+function mAutoBake() {
+  const M = mState(); if (mBusy || !mAutoBakeOk()) return;
+  for (const m of M.oven.splice(0)) S.stock[m] = (S.stock[m] || 0) + 1;
+  let made = 0, skip = 0;
+  for (const key of mAutoList()) {
+    if (!shelfRoom()) break;
+    const mats = key.split('+');
+    if (!mOk(mats)) { skip++; continue; }
+    mUse(mats); S.today.made.push(key); M.baked.push({ key, n: BATCH }); made++;
+  }
+  save();
+  mBusy = true; renderMorning();
+  setTimeout(() => {
+    mBusy = false; renderMorning();
+    toast(made ? `${made}つ焼けた！` + (skip ? `（${skip}つは材料が足りなかった）` : '') : 'お財布か材料が足りなかった……');
+  }, REDUCED ? 300 : BAKE_MS);
+}
+/* からくり陳列人形：棚と天板のお菓子を、看板（きまっていなければ いちばん高いお菓子）とおそろいの段を考えて並べなおす */
+function mAutoArrange() {
+  const M = mState(); if (mBusy) return;
+  const n = shelfMaxN(), ks = kanbanSlot(n), rows = n / SHELF_COLS;
+  const pool = [...S.shelf.filter(x => x.n > 0), ...M.baked];
+  if (!pool.length) return;
+  const price = o => candyOf(o.key).price;
+  pool.sort((a, b) => price(b) - price(a));
+  const slots = Array(n).fill(null);
+  const kan = (M.kanban && pool.find(o => o.key === M.kanban)) || pool[0];
+  slots[ks] = kan; pool.splice(pool.indexOf(kan), 1);
+  /* 段ごとに、のこりのお菓子に いちばん多くふくまれる素材でそろえる（看板の段は看板の素材から） */
+  const order = [Math.floor(ks / SHELF_COLS), ...Array.from({ length: rows }, (_, r) => r).filter(r => r !== Math.floor(ks / SHELF_COLS))];
+  for (const r of order) {
+    const idx = Array.from({ length: SHELF_COLS }, (_, c) => r * SHELF_COLS + c), free = idx.filter(i => !slots[i]);
+    const fixed = idx.filter(i => slots[i]).map(i => slots[i]);
+    const cand = [...new Set(pool.flatMap(o => o.key.split('+')))].filter(m => fixed.every(o => candyHas(o.key, m)));
+    let best = null, bc = 0;
+    for (const m of cand) { const c = pool.filter(o => candyHas(o.key, m)).length; if (c >= free.length && c > bc) { best = m; bc = c; } }
+    if (!best) continue;
+    for (const i of free) { const o = pool.find(x => candyHas(x.key, best)); slots[i] = o; pool.splice(pool.indexOf(o), 1); }
+  }
+  for (let i = 0; i < n && pool.length; i++) if (!slots[i]) slots[i] = pool.shift();
+  /* shelfSlots は看板を ks に置き、のこりを前からつめる → 看板いがいの並びがそのまま段になるよう、ks をとばした順で */
+  S.shelf = [slots[ks], ...slots.filter((o, i) => o && i !== ks)];
+  M.baked = pool; M.kanban = kan.key;
+  save(); renderMorning(); toast('からくり人形が、並べてくれた！');
+}
+
+/* ---------- レシピ帳（11/19 しょーくん「作り込みとほのかの一言をクスッとくるように」）：ひらめいたお菓子と、ほのかのひとこと（STORY.note） ---------- */
+const M_BOOK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c2.6-1 5.2-1 8 .6 2.8-1.6 5.4-1.6 8-.6v13c-2.6-1-5.2-1-8 .6-2.8-1.6-5.4-1.6-8-.6z" fill="#fff4e4" stroke="#5a3418" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.1v13" stroke="#5a3418" stroke-width="1.4"/><path d="M6.5 9h3.5M6.5 12h3.5M14 9h3.5M14 12h3.5" stroke="#e8607a" stroke-width="1.2" stroke-linecap="round"/></svg>';
+const M_FORMS = ['mugi', 'hachimitsu', 'milk', 'egg', 'ichigo', 'mizuame', 'herb'];
+function mBookSecs() {
+  const base = Object.keys(HIRU_RECIPES), known = k => S.recipes && S.recipes[k] != null;
+  const secs = [
+    { ttl: 'きほんのお菓子', keys: base.filter(k => !k.includes('mizuame') && !k.includes('herb')) },
+    { ttl: 'みなもの水あめ', keys: base.filter(k => k.includes('mizuame') && !k.includes('herb')), show: matUnlocked('mizuame') },
+    { ttl: 'わかばのハーブ', keys: base.filter(k => k.includes('herb')), show: matUnlocked('herb') },
+  ];
+  const seen = new Set(typeof seenMats === 'function' ? seenMats() : []);
+  for (const m of Object.keys(MON_WORD)) secs.push({ ttl: (MON_WORD[m]) + '（' + matShort(m) + '）', keys: M_FORMS.map(f => recipeKey(m, f)), mon: m, show: seen.has(m) || Object.keys(S.recipes || {}).some(k => k.split('+').includes(m)) });
+  const par = Object.keys(S.recipes || {}).find(k => { const [a, b] = k.split('+'); return isMonMat(a) && isMonMat(b); });
+  secs.push({ ttl: 'とくべつ', keys: [par || 'parfait'], par: true, show: !!par || Object.keys(MON_WORD).filter(m => seen.has(m)).length >= 2 });
+  for (const x of secs) x.known = x.keys.filter(k => known(k));
+  return secs;
+}
+function bookHTML() {
+  const secs = mBookSecs();
+  STORY.bookAll = 15 + 6 + 7 + Object.keys(MON_WORD).length * 7 + 1;
+  const got = secs.reduce((a, x) => a + x.known.length, 0);
+  const note = (k, x) => x.par ? STORY.parfait : x.mon ? (STORY.monNote[x.mon] || [''])[M_FORMS.indexOf(k.split('+').find(m => m !== x.mon) || x.mon) % (STORY.monNote[x.mon] || ['']).length] : (STORY.note[k] || '');
+  const row = (k, x) => {
+    if (S.recipes && S.recipes[k] != null) {
+      const c = candyOf(k);
+      return `<div class="ms-good bk-rec"><span class="bk-ico">${candyIcon(k)}</span><span class="bk-body"><span class="bk-nm">${esc(c.name)}<em>${c.mats.map(matShort).join('＋')}</em></span><span class="bk-note">${esc(note(k, x))}</span></span></div>`;
+    }
+    const hint = x.par ? '？＋？' : (x.mon ? matShort(x.mon) : matShort(k.split('+')[0])) + '＋？';
+    return `<div class="ms-good bk-rec un"><span class="bk-ico">？</span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(hint)}</em></span><span class="bk-note">まだ、ひらめいていない</span></span></div>`;
+  };
+  const body = secs.filter(x => x.show !== false).map(x => `<p class="ms-sec">${esc(x.ttl)}<em>${x.known.length}/${x.keys.length}</em></p>${x.keys.map(k => row(k, x)).join('')}`).join('');
+  const sbg = ART['bg-zakka'];
+  return `<section class="morning mzakka mbook fit" id="msec">
+    <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
+      <div class="ms-top"><span class="ms-ttl">レシピ帳</span><span class="bk-cnt">${got} / ${STORY.bookAll}</span></div>
+      <div class="ms-goods">${body}</div>
+    </div></div>
+    <div class="mz-foot gingham"><p class="mz-hint bk-top"><b>ほのか</b>${esc(STORY.bookTop(got))}</p></div>
+    <div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
+  </section>`;
+}
+
 /* 朝の画面のボタン（data-act）。main.js の ACTS に入る */
 const MORNING_ACTS = {
   'm-zakka': () => mView('zakka'),
@@ -414,5 +516,8 @@ const MORNING_ACTS = {
   'm-open': () => mOpen(),
   'm-shop': el => mView(el.dataset.o === '1' ? 'zakka' : 'kitchen'),   // 前の名前（tools/audit.py の m-shop）
   'm-good': el => buyGood(el.dataset.id),
+  'm-book': () => { if (!mBusy) mView('book'); },
+  'm-auto': () => mAutoBake(),
+  'm-arr': () => mAutoArrange(),
   toShelf: () => renderMorning(),   // 前の形のボタン（main.js の toCard もここへ）
 };
