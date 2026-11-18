@@ -796,3 +796,31 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .tiles .tf.tf.x{background-image:var(--ui-flame-mid)}
 .tiles[data-z="4"] .tf.tf{background-image:var(--ui-flame-mid);filter:brightness(1.15)}
 .tiles[data-z="4"] .tf.tf.x{background-image:var(--ui-flame-wide)}
+/* ==== UI の絵 その8（11/18 夜 art-irai ui-misc1）==== */
+/* こげ茶の木の札（ui-label・320×95・左右のはし約48が角）：夜の舞台の上の札・ショップの題とコイン・朝昼の札・お財布 */
+.ov-top>span,.sh-ttl.sh-ttl,.sh-coin.sh-coin,.mo-hint.mo-hint,.md-tip.md-tip,.d-tip.d-tip,.m-wallet.m-wallet{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 15% fill/50% 1.1em stretch}
+.m-wallet.m-wallet::before,.mz-wallet.mz-wallet::before{content:"";display:inline-block;width:1.5em;height:1.35em;margin:-3px 4px -3px -3px;vertical-align:middle;background:var(--ui-purse) center/contain no-repeat}
+/* クリーム色の紙の行（ui-strip・480×169・四すみに真ちゅうのびょう）：雑貨屋の品物・ドラッグの札・トースト */
+.ms-good.ms-good,.dragtip.dragtip,#toast{background:none;box-shadow:none;border:2px solid transparent;border-radius:0;border-image:var(--ui-strip) 30 fill/9px stretch}
+.dragtip.dragtip,#toast{filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+/* 木のトレー（ui-tray・442×286）：焼けたお菓子の台・1日のまとめの板。木の上の字はクリーム色 */
+.m-baked.m-baked,.panel.sum.sum{background:none;box-shadow:none;border:3px solid transparent;border-radius:0;border-image:var(--ui-tray) 46 fill/14px stretch}
+.m-baked.m-baked{padding:9px 12px 10px}
+.m-baked.m-baked .mb-lbl{color:#fff4e4;text-shadow:0 1px 0 rgba(30,12,4,.85)}
+.m-baked.m-baked .mb-none{color:#f6e4c8;text-shadow:0 1px 0 rgba(30,12,4,.7)}
+/* 木の小さなマス（ui-tile・160×160）：材料だなの .mt・天板の .mw */
+.mt.mt,.mw.mw{background:none;box-shadow:none;border:2px solid transparent;border-radius:0;border-image:var(--ui-tile) 26 fill/9px stretch}
+/* オーブンの台の丸い受け皿（ui-ovenslot） */
+.mo-slot.mo-slot{border:0;box-shadow:none;background:var(--ui-ovenslot) center/100% 100% no-repeat}
+/* ==== UI の絵 その9（11/18 夜 art-irai ui-cards）==== */
+/* カードのふち（ui-card-bronze／silver／gold／field・224×360・5:7）：のばさない（まるごと）。窓 9.8〜89.7%×11.4〜56.1%・リボン 58〜67%・紙 69〜94%。
+   調理台のタイル（.pc.tile）とカットインはいままでのふち */
+.pc:not(.tile):not(.ci-card){background:var(--ui-card-bronze) center/100% 100% no-repeat;box-shadow:0 4px 8px rgba(0,0,0,.45)}
+.pc.s2:not(.tile):not(.ci-card){background-image:var(--ui-card-silver)}
+.pc.s3:not(.tile):not(.ci-card){background-image:var(--ui-card-gold);box-shadow:0 0 14px rgba(255,210,80,.85),0 4px 8px rgba(0,0,0,.45)}
+.pc.k-b:not(.tile):not(.ci-card){background-image:var(--ui-card-field)}
+.pc:not(.tile):not(.ci-card) .pc-win{left:9.8%;right:10.3%;top:11.4%;bottom:43.9%;border-radius:4.5cqw}
+.pc:not(.tile):not(.ci-card) .pc-name{left:13%;right:13%;top:58.2%;height:8.6%;padding:0 2cqw;background:none;clip-path:none}
+.pc:not(.tile):not(.ci-card) .pc-name span{color:#4a2414;text-shadow:0 1px 0 rgba(255,250,235,.7);font-size:9.4cqw}
+.pc:not(.tile):not(.ci-card) .pc-attr{left:12%;right:12%;top:70%;height:6.4%}
+.pc:not(.tile):not(.ci-card) .pc-text{left:11%;right:11%;top:77.5%;bottom:7%;background:none;box-shadow:none}
