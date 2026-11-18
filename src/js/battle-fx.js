@@ -2,7 +2,8 @@
    1. 発動したカードが跳ねる：★1 ぽん・★2 大きく・★3 は高く跳ねて縦にくるっと1回転 → ズドン（シャドバのように派手に）
    2. ほかのカードにかかる効果は、そのカードから相手のカードへオーラを飛ばす。相手のマスには札（×2・+30・もう1回）が残り、効くときに吸いこまれる
    3. 舞台の賑やかし（ペパマリの戦闘・ゼンゼロのように）：木の額縁・手前の草・デフォルメのほのかと食材モンスターのモブがぴょこぴょこ
-   4. ほのかの炎（Version 38）：鉄板が火力で燃える・舞台に火の粉・炎の柱・火花・画面いっぱいの炎・モンスターのもにもに ==== */
+   4. ほのかの炎（Version 38）：鉄板が火力で燃える・舞台に火の粉・炎の柱・火花・画面いっぱいの炎・モンスターのもにもに
+   5. 発動（11/18 16時）：メダルと計算の札が舞台へ飛び、数字がモンスターへバーン（説明のパネルはやめた） ==== */
 
 /* ---------- 1. 跳ねる ---------- */
 const tslot = i => document.querySelector(`.tslot[data-w="board"][data-i="${i}"]`);
@@ -172,13 +173,13 @@ function decoReact(kind, ms = 700) {
    ずっと動く物は CSS（transform と opacity だけ）。一回きりの物は #fxl（画面の上の層）に出して消す ---------- */
 const prng = seed => () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
 let fireCache = '', emberCache = '';
-/* 鉄板の炎：マスのすきまとふちから上がる（マスのうしろ）。火の粉は強火から */
+/* 鉄板の炎：マスの下のふちの手前で小さくゆらめく（11/18 16時 しょーくん「炎がカードよりも後ろにあるのが、カードが浮いてるみたいに見える」）。火の粉は強火から */
 function boardFireHTML() {
   if (fireCache) return fireCache;
   const r = prng(7); let f = '', s = '';
-  for (let k = 0; k < 14; k++) {
-    const x = Math.floor(k / 2) / 6 * 100 + (k % 2 ? 2.4 : -2.4);   // 7つのすきま（左右のふち・マスのあいだ）に2本ずつ
-    f += `<i class="tf${k % 3 === 1 ? ' x' : ''}" style="--x:${Math.max(1, Math.min(99, x)).toFixed(1)}%;--d:${(.8 + r() * .6).toFixed(2)}s;--k:${r().toFixed(2)};--w:${(24 + r() * 18).toFixed(0)}px"></i>`;
+  for (let k = 0; k < 18; k++) {
+    const x = (Math.floor(k / 3) + .5) / 6 * 100 + (k % 3 - 1) * 4.2;   // 6つのマスの下のふちに3本ずつ（まんなかの1本は強火から）・11/18 16時 マスの手前へ小さく
+    f += `<i class="tf${k % 3 === 1 ? ' x' : ''}" style="--x:${x.toFixed(1)}%;--d:${(.8 + r() * .6).toFixed(2)}s;--k:${r().toFixed(2)};--w:${(16 + r() * 10).toFixed(0)}px"></i>`;
   }
   for (let k = 0; k < 8; k++) s += `<i class="tsp" style="--x:${(5 + r() * 90).toFixed(1)}%;--d:${(1.3 + r() * 1.1).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 44).toFixed(0)}px"></i>`;
   return (fireCache = `<i class="tglow" aria-hidden="true"></i><span class="tfire" aria-hidden="true">${f}</span><span class="tsparks" aria-hidden="true">${s}</span>`);
@@ -197,7 +198,7 @@ function heatFx(z) {
   const was = heatWas && heatWas.day === S.day ? heatWas.z : null;
   heatWas = { day: S.day, z }; t.dataset.z = z;
   if (was == null || z === was || REDUCED) return;
-  if (z > was) { replay(t, 'heatup'); pillars(t, was === 0 ? 6 : Math.min(6, (z - was) * 2 + 1), was === 0); }
+  if (z > was) { replay(t, 'heatup'); pillars(t, was === 0 ? 4 : Math.min(4, z - was + 1), was === 0); t.querySelectorAll('.pc.tile.dough').forEach(c => replay(c, 'heatflash')); }
   else { replay(t, 'heatdn'); steam(t); }
 }
 function pillars(t, n, boom) {
@@ -207,10 +208,10 @@ function pillars(t, n, boom) {
     const s = slots[k].getBoundingClientRect(), p = document.createElement('i');
     p.className = 'pillar' + (boom ? ' boom' : '');
     p.style.left = s.left + s.width / 2 + 'px'; p.style.top = s.bottom + 'px';
-    p.style.setProperty('--pw', s.width * 1.15 + 'px'); p.style.setProperty('--ph', Math.min(innerHeight * .5, s.height * (1.8 + Math.random() * .9) + (boom ? 50 : 0)) + 'px');
+    p.style.setProperty('--pw', s.width * 1.15 + 'px'); p.style.setProperty('--ph', Math.min(innerHeight * .3, s.height * (.9 + Math.random() * .4) + (boom ? 24 : 0)) + 'px');   // 11/18 16時 しょーくん「少し炎の演出を弱めて」
     L.appendChild(p); setTimeout(() => p.remove(), 950);
   }, T(j * 55)));
-  sparkBurst(t, boom ? 26 : 14, 'up', boom ? 1.6 : 1.2);
+  sparkBurst(t, boom ? 18 : 9, 'up', boom ? 1.3 : 1);
   if (boom) {
     const r = t.getBoundingClientRect(), b = document.createElement('b');
     b.className = 'zudon boh'; b.textContent = 'ボッ！'; b.style.left = r.left + r.width / 2 + 'px'; b.style.top = r.top - 30 + 'px';
@@ -271,4 +272,63 @@ function dmgNum(dmg, size, p) {
   e.style.left = Math.max(R.left + w / 2 + 6, Math.min(R.left + R.width - w / 2 - 6, x)) + 'px';
   e.style.top = Math.max(R.top + 30, (p ? p.y : R.top + 120) - (size ? 46 : 34)) + 'px';
   setTimeout(() => e.remove(), 1100);
+}
+
+/* ---------- 5. 発動の演出（11/18 16時 しょーくん「せっかくの戦闘シーンが、効果発動の吹き出しで見えない」「吹き出しなしで、発動のアイコンだけ、戦闘画面の上にヒュ、ヒュって飛んできて、ダメージが敵にバーンとあたる」）
+   発動したカードのメダルが舞台へ飛ぶ → 計算の札（×3 焼き加減など）が1まいずつ飛んできて数字にすいこまれる → 数字がモンスターへバーン（night-ui.js の hitFx）
+   ほかのカードへの効果の札は、そのタイルの上にぽんと出て上へ消える。札とメダルの面は描き下ろしの絵が来たら差しかえる（art-irai の ui-chips）
+   動かすのは transform と opacity だけ（Web Animations）。ぜんぶ #fxl に出して消す ---------- */
+const hubPoint = () => { const st = $('stage'); if (!st) return null; const r = st.getBoundingClientRect(); return { x: r.left + r.width * .5, y: r.top + r.height * .34 }; };
+const chipHTML = c => `<b>${esc(c.b)}</b><small>${esc(c.s)}</small>`;
+function fxEl(cls, p, html) {
+  const el = document.createElement('div'); el.className = cls; el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; el.innerHTML = html;
+  fxLayer().appendChild(el); return el;
+}
+/* 置いた場所から見て f → t（どちらも {x,y} のずれ）へ、弧をえがいて飛ぶ。scale は s0 → s1。着いたら done */
+function arcFly(el, f, t, ms, lift, s0, s1, done) {
+  if (REDUCED || !el.animate) { el.style.transform = `translate(${t.x}px,${t.y}px) scale(${s1})`; setTimeout(done, 30); return; }
+  const k = [];
+  for (let n = 0; n <= 10; n++) { const u = n / 10; k.push({ transform: `translate(${f.x + (t.x - f.x) * u}px,${f.y + (t.y - f.y) * u - 4 * lift * u * (1 - u)}px) scale(${s0 + (s1 - s0) * u})` }); }
+  el.animate(k, { duration: ms, easing: 'cubic-bezier(.4,0,.3,1)', fill: 'forwards' });
+  setTimeout(done, ms);
+}
+/* 1. メダルが舞台へ：タイルから舞台のまんなかの上へヒュッ。返すのは {el, num}（数字は最初の札が着いたら出る） */
+function flyHub(e, hot) {
+  const b = hubPoint(); if (!b) return {};
+  const a = spot(e.i) || b, el = fxEl('flyhub' + (hot ? ' hot' : ''), b, `<span class="fh-ico">${artImg(e.cid)}</span><b class="fh-num"><b>0</b></b>`);
+  const H = { el, num: el.querySelector('.fh-num'), shown: false };
+  arcFly(el, { x: a.x - b.x, y: a.y - b.y }, { x: 0, y: 0 }, T(330), 46, .45, 1, () => { el.classList.add('land'); ringAt(el.firstElementChild, 'r-gold'); sparkBurst(el.firstElementChild, 6, 'all', .6); });
+  return H;
+}
+/* 2. 計算の札が飛んできて、数字にすいこまれる（効果の元のカードがあれば、そのマスから。マスに残った札があればすいこむ） */
+function chipFly(e, c, H) {
+  let from = e.i;
+  if (c.src && c.src.length) { const got = c.src.map(s => takeBuff(e.i, s, c.k)); if (!got.some(Boolean)) from = c.src[0]; }
+  const a = spot(from), tgt = H.num ? spot(H.num.firstElementChild) : null, b = tgt || hubPoint();
+  const land = () => {
+    if (H.num) {
+      const n = H.num.firstElementChild;
+      if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); n.textContent = fmt(Math.floor(c.v)); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(240)); }
+      replay(H.num, 'bump');
+    }
+    if (b) sparkBurst({ x: b.x, y: b.y, w: 16 }, 4, 'all', .5);
+    if (c.out != null) auraOut(e, e.out[c.out]);
+  };
+  if (!a || !b) return land();
+  const p = { x: a.x, y: a.y - a.h * .3 }, ch = fxEl(`fchip c-${c.c}`, p, chipHTML(c));
+  arcFly(ch, { x: 0, y: 0 }, { x: b.x - p.x, y: b.y - p.y }, T(300), 34, 1.15, .8, () => { ch.classList.add('gone'); setTimeout(() => ch.remove(), 240); land(); });
+}
+/* 3. 数字が決まる（金色にはねる） */
+function hubFin(H, dmg) {
+  if (!H.num) return;
+  const n = H.num.firstElementChild; H.shown = true;
+  H.num.classList.add('in', 'fin'); n.textContent = fmt(dmg); replay(H.num, 'bump');
+  ringAt(n, 'r-gold');
+}
+/* ほかのカードへの効果の札：タイル（か要素）の上にぽんと出て、上へ消える */
+function chipPop(at, c) {
+  const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a) return;
+  const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c));
+  ch.style.setProperty('--pd', T(1000) + 'ms');
+  setTimeout(() => ch.remove(), T(1020));
 }

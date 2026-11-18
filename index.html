@@ -202,10 +202,6 @@ box-shadow:0 0 0 1px rgba(42,23,12,.8)}
 .pc.kon{animation:kon .42s cubic-bezier(.3,1.5,.5,1)}
 @keyframes kon{0%{transform:none}35%{transform:translateY(-11px) scale(1.22) rotate(-5deg)}65%{transform:translateY(1px) scale(.95)}100%{transform:translateY(-3px) scale(1.08)}}
 @keyframes ring{from{opacity:1;scale:.8}to{opacity:0;scale:1.4}}
-.callout{position:absolute;left:0;right:0;top:2px;z-index:6;height:52px;border-radius:12px;isolation:isolate;background:var(--cream);color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.35)}
-.callout:empty{display:none}
-.callout.pop::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 3px #ffe2a0,0 0 22px 6px rgba(255,138,61,.8);opacity:0;animation:coflash .45s ease-out}
-@keyframes coflash{0%{opacity:1}}
 .cutin{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden;display:grid;place-items:center;animation:cidim var(--cd) ease-out forwards}
 .ci-flash{position:absolute;inset:0;background:#fff6dc;opacity:0;animation:ciflash var(--cd) ease-out forwards}
 .ci-band{position:relative;width:100%;height:clamp(150px,30vh,230px);transform:skewY(-8deg) scaleY(0);animation:ciband var(--cd) cubic-bezier(.2,.9,.3,1) forwards;
@@ -423,7 +419,7 @@ filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
 .sh-price{box-shadow:0 0 0 2px #3a1c08,inset 0 1px 0 #fff,0 3px 0 rgba(0,0,0,.35)}
 .shcard:not(.sold)::after{content:"";position:absolute;left:8%;right:8%;bottom:-6px;height:10px;z-index:-1;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(3px)}
 .viewer{background:radial-gradient(90% 70% at 50% 40%,rgba(60,26,8,.6),rgba(14,6,2,.88))}
-.cinfo,.callout{background:linear-gradient(#fffaf0,#f6e4c8);box-shadow:inset 0 0 0 1.5px rgba(217,168,90,.8),0 3px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35)}
+.cinfo{background:linear-gradient(#fffaf0,#f6e4c8);box-shadow:inset 0 0 0 1.5px rgba(217,168,90,.8),0 3px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35)}
 .vbox.result{background:radial-gradient(90% 60% at 50% 0%,rgba(255,214,150,.25),transparent 70%),linear-gradient(#8a5a38,#5a3824);box-shadow:inset 0 0 0 2px var(--brass),0 6px 0 rgba(0,0,0,.4),0 14px 30px rgba(0,0,0,.5)}
 .r-num{color:#ffe08a}
 .mf-sfx,.mf-name span,.ci-title span{font-family:var(--disp);font-weight:400}
@@ -505,44 +501,6 @@ mix-blend-mode:screen;transform-origin:50% 100%}
 .ci-fx .tg.pos{color:#3a1c08;background:linear-gradient(#ffe48a,#e3a52a);box-shadow:inset 0 0 0 1px rgba(120,70,0,.55),0 2px 0 rgba(0,0,0,.2)}
 .ci-fx p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
 .ci-fx .kw{color:#a84400;background:linear-gradient(transparent 42%,#ffd84a 42% 94%,transparent 94%)}
-.night .callout{inset:auto 7px 12px;height:var(--hh);z-index:8;border-radius:14px;container-type:size}
-.night .stage:has(.callout:not(:empty)) :is(.chef,.mon,.dc){translate:0 calc(var(--hh) * -.55);transition:translate .3s}
-.night .stage :is(.chef,.mon,.dc,.ov-heat){transition:translate .3s}
-.night .stage:has(.callout:not(:empty)) .ov-heat{translate:0 calc(var(--hh) * -1 - 4px)}
-.night .bp::before{top:auto;bottom:-9px;border:9px solid transparent;border-bottom:0;border-top-color:#f6e4c8}
-.bp{position:absolute;inset:0;display:grid;grid-template-columns:min(28%,112px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:12px;row-gap:2px;padding:12px 14px 10px 12px;border-radius:14px;--ch:1}
-.bp::before{content:"";position:absolute;left:var(--x);top:-9px;translate:-50% 0;border:9px solid transparent;border-top:0;border-bottom-color:#fffaf0}
-.callout.pop .bp{animation:bpin .26s cubic-bezier(.2,1.2,.4,1)}
-@keyframes bpin{from{opacity:0;transform:translateX(26px)}}
-.bp-card{grid-row:1/3;align-self:center;width:100%;aspect-ratio:5/7}
-.bp-card .pc{width:100%;height:100%}
-.bp-main{grid-column:2;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px;padding:4px 2px}
-.bp-main>:first-child{margin-top:auto}.bp-main>:last-child{margin-bottom:auto}
-.bp-name{flex:none;margin:0;font-family:var(--disp);font-weight:400;font-size:19px;line-height:1.2;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bp-name em{font-family:var(--font);font-style:normal;font-size:11px;font-weight:900;color:#fff;background:var(--strawberry);padding:1px 7px;border-radius:8px;margin-right:5px;vertical-align:2px}
-.bp-sub{margin:-3px 0 0;font-size:11px;line-height:1.4;color:var(--ink-soft)}
-.bp-f{--cs:calc(var(--ch) * var(--fit,1));display:flex;flex-wrap:wrap;gap:calc(6px * var(--cs)) calc(11px * var(--cs))}
-.bp-f.many{--cs:calc(var(--ch) * .84 * var(--fit,1))}
-.bp-f.lots{--cs:calc(var(--ch) * .72 * var(--fit,1))}
-.f-chip{display:inline-flex;flex-direction:column;align-items:center;min-width:calc(54px * var(--cs,1));padding:calc(4px * var(--cs,1)) calc(9px * var(--cs,1)) calc(5px * var(--cs,1));border-radius:10px;color:#fff4e0;background:linear-gradient(#7a4a2c,#4a2a18);box-shadow:inset 0 0 0 1px rgba(255,214,140,.5),0 2px 0 rgba(0,0,0,.3);opacity:0}
-.f-chip b{font-family:var(--disp);font-weight:400;font-size:calc(20px * var(--cs,1));line-height:1.1;color:#ffe9a8;white-space:nowrap}
-.f-chip small{font-size:calc(11px * var(--cs,1));font-weight:700;line-height:1.25;color:#f0d8b8;white-space:nowrap}
-.f-chip.base{background:linear-gradient(#ffb35a,#e0641e)}.f-chip.base b{color:#fff}
-.f-chip.pos,.f-chip.best,.f-chip.c3{background:linear-gradient(#ffeb9a,#dda020)}
-.f-chip.pos b,.f-chip.best b,.f-chip.c3 b{color:#3a1c08}.f-chip.pos small,.f-chip.best small,.f-chip.c3 small{color:#5a3008}
-.f-chip.next{background:linear-gradient(#f590b0,#c4446c)}
-.f-chip.koge{background:linear-gradient(#6a5248,#2e2018)}
-.f-chip.h1{background:linear-gradient(#f0c070,#c08030)}.f-chip.h2{background:linear-gradient(#ffa25a,#e0641e)}.f-chip.h3{background:linear-gradient(#ff7a5a,#c8301e)}.f-chip.h4{background:linear-gradient(#ff5a3a,#a8140a)}
-.f-chip.c0{background:linear-gradient(#cdb89e,#8e765c)}.f-chip.c1{background:linear-gradient(#ffd75e,#c89010)}.f-chip.c2{background:linear-gradient(#ffa25a,#d0601a)}
-.bp-dmg{grid-column:2;min-width:0;text-align:right;line-height:1;container-type:inline-size;opacity:0}
-.bp-dmg.in{animation:bpdmg .45s cubic-bezier(.2,1.7,.4,1) forwards}
-@keyframes bpdmg{0%{opacity:0;transform:scale(1.8) rotate(-10deg)}40%{opacity:1}100%{opacity:1;transform:none}}
-.bp-dmg b{font-family:var(--disp);font-weight:400;font-size:min(calc(40px * var(--ch)),calc(100cqw / var(--len,4)));line-height:1;color:#ff8a24;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;text-shadow:0 3px 0 #3a1004;font-variant-numeric:tabular-nums}
-.bp-dmg.hot b{font-size:min(calc(46px * var(--ch)),calc(100cqw / var(--len,4)));color:#ff5a1a;text-shadow:0 3px 0 #3a1004,0 0 14px rgba(255,140,40,.9)}
-.bp-dmg.soft b{font-size:20px;color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
-@container (max-height:214px){.bp{--ch:.88}.bp-name{font-size:17px}}
-@container (max-height:180px){.bp{--ch:.76;row-gap:0;padding-block:9px 7px}.bp-name{font-size:15px}.bp-main{gap:4px}}
-@container (max-height:150px){.bp{--ch:.66}.bp-name{font-size:14px}}
 .tslot .float{top:14%;z-index:6;font-size:12px}
 .float.cookup{color:#ffb35a}
 .float.best{color:#ffe066;font-size:14px;text-shadow:0 0 8px rgba(255,214,80,.9),1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
@@ -696,18 +654,34 @@ filter:drop-shadow(0 3px 3px rgba(0,0,0,.5));animation:dchop 1.7s ease-in-out in
 @keyframes slamflash{from{opacity:.95}to{opacity:0}}
 .tiles.tquake{animation:tquake .38s linear}
 @keyframes tquake{10%,50%{transform:translate(0,5px)}30%,70%{transform:translate(0,-4px)}90%{transform:translate(0,2px)}}
-.bp-card .pc.bpon{animation:bpon var(--ad,.48s) cubic-bezier(.25,1.5,.45,1)}
-@keyframes bpon{0%{transform:translateY(16px) scale(.6) rotate(-10deg);opacity:0}45%{transform:translateY(-10px) scale(1.12) rotate(4deg);opacity:1}100%{transform:none}}
-.f-chip{position:relative}
-.f-chip.in{animation:chipon var(--ad,.36s) cubic-bezier(.2,1.7,.4,1) forwards}
-@keyframes chipon{0%{opacity:0;transform:translateY(12px) scale(.4)}55%{opacity:1;transform:translateY(-8px) scale(1.2)}100%{opacity:1;transform:none}}
-.f-chip.in:not(.cur){filter:saturate(.8) brightness(.9)}
-.f-chip.cur{z-index:1;box-shadow:inset 0 0 0 1px rgba(255,236,190,.9),0 0 0 2px #fff3c0,0 0 12px 3px rgba(255,200,80,.85)}
-.f-chip.calc~.f-chip.calc::before{content:"";position:absolute;left:-9px;top:50%;width:0;height:0;translate:0 -50%;border:5px solid transparent;border-right:0;border-left:6px solid #b07a4a}
-.bp-dmg b{display:inline-block}
-.bp-dmg.bump b{animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
+.flyhub{position:absolute;translate:-50% -50%;display:flex;align-items:center;gap:8px;pointer-events:none;will-change:transform}
+.fh-ico{flex:none;width:54px;height:54px;display:grid;place-items:center;border-radius:50%;overflow:hidden;
+background:radial-gradient(circle at 50% 38%,#fffaf0,#f2d4a4 72%);box-shadow:0 0 0 3px #e0b060,0 0 0 5px #5a3410,0 4px 10px rgba(0,0,0,.5),0 0 18px 4px rgba(255,200,90,.65)}
+.fh-ico img{width:80%;height:80%;object-fit:contain;image-rendering:pixelated}
+.fh-ico img.hi{image-rendering:auto}
+.fh-num{opacity:0;font-family:var(--disp);font-weight:400;font-size:42px;line-height:1;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:6px #4a1404;paint-order:stroke fill;text-shadow:0 4px 0 #2a0c02,0 0 18px rgba(255,170,50,.85)}
+.fh-num>b{display:inline-block;font-weight:400;color:inherit}
+.fh-num.in{opacity:1}
+.fh-num.bump>b{animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
 @keyframes numbump{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-4deg)}100%{transform:none}}
-.bp-dmg.fin b{color:#ffe066;text-shadow:0 3px 0 #3a1004,0 0 16px rgba(255,170,40,.95)}
+.fh-num.fin{color:#ffe066}
+.flyhub.hot .fh-num.fin{color:#ffb040;text-shadow:0 4px 0 #2a0c02,0 0 22px rgba(255,120,30,.95)}
+.flyhub.shot .fh-ico{opacity:0;transition:opacity .1s}
+.flyhub.shot .fh-num{filter:drop-shadow(0 0 10px #ff8a3d) drop-shadow(0 0 4px #fff3c0)}
+.fchip{position:absolute;translate:-50% -50%;display:flex;flex-direction:column;align-items:center;min-width:52px;padding:3px 11px 4px;border-radius:999px;pointer-events:none;white-space:nowrap;will-change:transform;
+background:linear-gradient(var(--c1),var(--c2));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 0 rgba(0,0,0,.18),0 0 0 2px #e0b060,0 0 0 3.5px #4a2408,0 3px 6px rgba(0,0,0,.45)}
+.fchip b{font-family:var(--disp);font-weight:400;font-size:18px;line-height:1.1;color:var(--ct,#3a1c08)}
+.fchip small{font-size:10px;font-weight:800;line-height:1.2;color:var(--cs,#5a3008)}
+.fchip.c-gold{--c1:#fff2b8;--c2:#e8b440}
+.fchip.c-ember{--c1:#ffc27a;--c2:#e8641e;--ct:#fff;--cs:#fff0dc}
+.fchip.c-pink{--c1:#ffc4d4;--c2:#e0567e;--ct:#fff;--cs:#fff0f4}
+.fchip.c-mint{--c1:#dcf8ea;--c2:#5cbc96;--ct:#123a2c;--cs:#1e4a3a}
+.fchip.c-koge{--c1:#7a6258;--c2:#2e2018;--ct:#f0e0d0;--cs:#d8c8b8}
+.fchip.c-ember b,.fchip.c-pink b{-webkit-text-stroke:3px #6a1a08;paint-order:stroke fill}
+.fchip.gone{animation:chipgone .22s ease-in forwards}
+@keyframes chipgone{to{opacity:0;scale:.2}}
+.fchip.pop{animation:chippop var(--pd,1s) cubic-bezier(.2,1.3,.4,1) forwards}
+@keyframes chippop{0%{opacity:0;transform:translateY(10px) scale(.4)}18%{opacity:1;transform:translateY(-8px) scale(1.15)}30%{transform:translateY(-10px) scale(1)}78%{opacity:1;transform:translateY(-30px)}100%{opacity:0;transform:translateY(-44px)}}
 #fxl{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
 .aura{position:absolute;width:calc(20px * var(--s,1));height:calc(20px * var(--s,1));margin:calc(-10px * var(--s,1)) 0 0 calc(-10px * var(--s,1));border-radius:50%;
 background:radial-gradient(circle,#fff 0 24%,var(--ac) 48%,transparent 72%);box-shadow:0 0 14px 5px var(--ac)}
@@ -734,18 +708,18 @@ background:var(--bc);box-shadow:0 0 0 1.5px #2a1408,0 0 9px 2px var(--bc);animat
 #heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
 .night .quota{position:relative;z-index:2}
 .tiles>:where(.tslot){z-index:1}
-.tiles{--fs:.2;--fo:.5;--go:.1}
-.tiles[data-z="1"]{--fs:.42;--fo:.8;--go:.3}
-.tiles[data-z="2"]{--fs:.66;--fo:.92;--go:.52}
-.tiles[data-z="3"]{--fs:.95;--fo:1;--go:.78}
-.tiles[data-z="4"]{--fs:1.25;--fo:1;--go:1}
+.tiles{--fs:.3;--fo:.35;--go:.05}
+.tiles[data-z="1"]{--fs:.5;--fo:.55;--go:.14}
+.tiles[data-z="2"]{--fs:.68;--fo:.68;--go:.24}
+.tiles[data-z="3"]{--fs:.85;--fo:.8;--go:.36}
+.tiles[data-z="4"]{--fs:1;--fo:.9;--go:.48}
 .tglow{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:var(--go);transition:opacity .5s}
 .tglow::before{content:"";position:absolute;inset:0;border-radius:inherit;
 background:radial-gradient(75% 95% at 50% 100%,rgba(255,96,24,.9),rgba(190,36,8,.5) 50%,transparent 82%),linear-gradient(transparent 25%,rgba(255,70,16,.45));
 box-shadow:inset 0 0 0 2px rgba(255,150,70,.8),inset 0 0 20px 5px rgba(255,90,20,.65);animation:tglow 1.9s ease-in-out infinite}
 @keyframes tglow{0%,100%{opacity:.72}50%{opacity:1}}
-.tfire{position:absolute;inset:0;z-index:0;pointer-events:none;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
-.tf{position:absolute;bottom:-8px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
+.tfire{position:absolute;inset:auto 0 0;height:32%;z-index:3;pointer-events:none;mix-blend-mode:screen;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
+.tf{position:absolute;bottom:-5px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
 background:radial-gradient(46% 58% at 50% 82%,#fff7cc 0,#ffd34e 24%,#ff7a1e 52%,rgba(214,40,8,.6) 72%,transparent 88%);
 animation:tf var(--d) ease-in-out infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
 .tf.x{display:none}
@@ -754,8 +728,16 @@ animation:tf var(--d) ease-in-out infinite;animation-delay:calc(var(--k) * var(-
 @keyframes tf{0%,100%{transform:scale(1,1);opacity:.92}25%{transform:translateY(-5%) scale(.86,1.2);opacity:1}50%{transform:scale(1.12,.86);opacity:.82}75%{transform:translateX(7%) scale(.9,1.12);opacity:1}}
 .tiles.heatup .tfire{animation:heatup .65s cubic-bezier(.3,1.4,.5,1)}
 .tiles.heatdn .tfire{animation:heatdn .7s ease-out}
-@keyframes heatup{0%{scale:1 .5}35%{scale:1.06 1.9}100%{scale:1 1}}
+@keyframes heatup{0%{scale:1 .6}35%{scale:1.04 1.35}100%{scale:1 1}}
 @keyframes heatdn{0%{scale:1 1.15}30%{scale:1.12 .25;opacity:.4}100%{scale:1 1}}
+.tiles{--hz:.4}.tiles[data-z="1"]{--hz:.7}.tiles[data-z="2"]{--hz:.85}.tiles[data-z="3"]{--hz:1}.tiles[data-z="4"]{--hz:1.15}
+.tiles .pc.tile.dough .pc-win::after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;pointer-events:none;
+background:linear-gradient(to top,rgba(236,70,8,.78) 0%,rgba(255,120,30,.42) 28%,rgba(255,170,70,.12) 50%,rgba(255,190,90,0) 66%);box-shadow:inset 0 -6px 10px -2px rgba(255,90,20,.7);
+opacity:calc(min(.85,.2 + var(--ck,0) * .072) * var(--hz));transition:opacity .45s}
+.tiles[data-z="3"] .pc.tile.dough .pc-win::after,.tiles[data-z="4"] .pc.tile.dough .pc-win::after{animation:heatflick 1.7s ease-in-out infinite}
+@keyframes heatflick{50%{opacity:calc(min(.85,.2 + var(--ck,0) * .072) * var(--hz) * .72)}}
+.tiles .pc.tile.dough.heatflash .pc-win::after{animation:heatflash .7s ease-out}
+@keyframes heatflash{0%{opacity:1}}
 .tsparks{position:absolute;inset:0;z-index:0;pointer-events:none;display:none}
 .tiles[data-z="3"] .tsparks,.tiles[data-z="4"] .tsparks{display:block}
 .tiles[data-z="3"] .tsp:nth-child(n+5){display:none}
@@ -800,12 +782,15 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .fx-dmg.s-big{font-size:min(50px,12vw)}
 .fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
 @keyframes dmgfly{0%{opacity:0;transform:scale(2.8) rotate(-10deg)}16%{opacity:1;transform:scale(1) rotate(-4deg)}24%{transform:scale(1.12) rotate(-4deg)}32%{transform:scale(1) rotate(-4deg)}78%{opacity:1;transform:translateY(-20px) rotate(-4deg)}100%{opacity:0;transform:translateY(-38px) scale(.92) rotate(-4deg)}}
-@media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
+@media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.fchip.pop{animation-duration:.01s}.tiles .pc.tile.dough .pc-win::after{animation:none}}
 .tipb{position:fixed;left:0;top:0;z-index:44;max-width:240px;padding:7px 24px 8px 11px;border-radius:13px;background:var(--cream);color:var(--ink);border:2px solid #5a3418;box-shadow:0 3px 0 rgba(42,20,8,.45),0 8px 18px rgba(0,0,0,.35);font-size:min(12.5px,3.25vw);font-weight:700;line-height:1.5;cursor:pointer;transform-origin:0 100%;-webkit-tap-highlight-color:transparent}
 .tipb p{margin:0;white-space:nowrap}
 .tipb .kw{color:#8a3c00}
 .tipb::before,.tipb::after{content:"";position:absolute;left:-11px;bottom:9px;border:7px solid transparent;border-right:11px solid #5a3418;border-left:0}
 .tipb::after{left:-7px;bottom:10px;border-width:6px 9px 6px 0;border-right-color:var(--cream)}
+.tipb.down{transform-origin:50% 100%}
+.tipb.down::before{left:50%;bottom:-11px;margin-left:-7px;border:7px solid transparent;border-top:11px solid #5a3418;border-bottom:0}
+.tipb.down::after{left:50%;bottom:-7px;margin-left:-6px;border:6px solid transparent;border-top:9px solid var(--cream);border-bottom:0}
 .tip-x{position:absolute;right:5px;top:4px;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:11px;line-height:1;color:#fff;background:#8a5a34}
 .tipb.pop{animation:tippop .38s cubic-bezier(.3,1.45,.5,1) both}
 @keyframes tippop{from{opacity:0;transform:scale(.55) translateY(6px)}to{opacity:1;transform:none}}
@@ -2035,7 +2020,7 @@ ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
 function cardMini(cid, opt = {}) { return cardFace(cid, 'mini', opt); }
 function cardTile(cid, opt = {}) {
 const d = cardDef(cid), cook = d.dough ? opt.cook || 0 : null, dmg = cardDmg(d, cook);
-return `<div class="pc tile k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}">
+return `<div class="pc tile k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}${cook != null ? ` dough" style="--ck:${cook}` : ''}">
 <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
 ${starGems(d)}${dmg ? powBadge(dmg) : ''}
 ${cook != null ? `${cookIcon(cook)}<i class="cook c${cookStage(cook)}" style="--c:${cook}"></i>` : ''}${glossI(d)}</div>`;
@@ -2520,22 +2505,24 @@ const t0 = performance.now();
 const tick = now => { const t = Math.min(1, (now - t0) / ms), v = from + (to - from) * (1 - Math.pow(1 - t, 3)); el.textContent = f(Math.floor(v)); if (t < 1) requestAnimationFrame(tick); };
 requestAnimationFrame(tick);
 }
-function hitFx(dmg, q) {
-const chef = $('chef'), a = spot(chef), b = spot($('mon'));
+function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（battle-fx.js の flyHub）。あればそれがモンスターへ飛ぶ（なければ ほのかの手から火の玉）
+const chef = $('chef'), a = spot(proj || chef), b = spot($('mon'));
 replay(chef, 'act');
 const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(size ? 380 : 320);
 const land = p => {
+if (proj) proj.remove();
 monReact(size ? 'hitbig' : 'hit'); dmgNum(dmg, size, p);
 decoReact(size ? 'jump' : 'hop', size ? 800 : 500);
 if (size) decoChibi('cheer', 1400);
 if (size === 'huge') fireWall(); else if (size) replay($('stage'), 'quake');
 };
 if (REDUCED || !a || !b || !document.body.animate) return land(b);
-const L = fxLayer(), x0 = a.x + a.w * .32, y0 = a.y - a.h * .18, x1 = b.x - b.w * .05, y1 = b.y;
-const at = t => { const u = t * t; return { x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u - 88 * u * (1 - u) }; };   // ゆっくり出て速くなる・少し弧をえがく
-const ball = document.createElement('i'), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
-ball.className = 'fx-ball' + (size ? ' s-' + size : ''); ball.style.left = x0 + 'px'; ball.style.top = y0 + 'px'; L.appendChild(ball);
-ball.animate([...Array(9)].map((_, k) => { const t = k / 8, p = at(t); return { transform: `translate(${p.x - x0}px,${p.y - y0}px) rotate(${ang}deg) scale(${.55 + .85 * t})` }; }), { duration: fly, fill: 'forwards' });
+const L = fxLayer(), x0 = proj ? a.x : a.x + a.w * .32, y0 = proj ? a.y : a.y - a.h * .18, x1 = b.x - b.w * .05, y1 = b.y;
+const at = t => { const u = t * t; return { x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u - (proj ? 40 : 88) * u * (1 - u) }; };   // ゆっくり出て速くなる・少し弧をえがく
+const ball = proj || document.createElement('i'), ang = proj ? 0 : Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+if (proj) proj.classList.add('shot');
+else { ball.className = 'fx-ball' + (size ? ' s-' + size : ''); ball.style.left = x0 + 'px'; ball.style.top = y0 + 'px'; L.appendChild(ball); }
+ball.animate([...Array(9)].map((_, k) => { const t = k / 8, p = at(t); return { transform: `translate(${p.x - x0}px,${p.y - y0}px) rotate(${ang}deg) scale(${proj ? 1 + .5 * t : .55 + .85 * t})` }; }), { duration: fly, fill: 'forwards' });
 for (let k = 1; k < 8; k++) setTimeout(() => sparkBurst({ ...at(k / 8), w: 8 }, size ? 3 : 2, 'all', .35), fly * k / 8);
 setTimeout(() => {
 ball.remove(); land({ x: x1, y: y1 });
@@ -2562,9 +2549,9 @@ setTimeout(() => { el.remove(); done(); }, ms);
 }
 function showEvent(e, run, q) {
 document.querySelectorAll('.tslot.now').forEach(s => s.classList.remove('now'));
-const co = $('callout');
 if (e.type === 'bake') {
-if (co) { co.innerHTML = bakePanel(e); fitPanel(co); replay(co, 'pop'); }
+const fs = document.querySelector('.fslot'), best = e.list.filter(x => !x.burnt && x.to >= COOK_MAX).length, nb = e.list.filter(x => x.burnt).length;
+chipPop(fs, { b: HEAT[e.heat], s: `焼き+${e.heat}`, c: 'ember' });
 replay($('stage'), 'sizzle'); replay(document.querySelector('.tiles'), 'bakefx');   // 鉄板の下から炎がゆらっと上がる
 const t0 = 420, gap = 260;
 e.list.forEach((x, n) => setTimeout(() => {
@@ -2573,6 +2560,7 @@ if (card) { replay(card, 'sear'); sparkBurst(card, 6, 'up', .6); }
 if (x.burnt) burntFx(slot);
 else floatAt(slot, x.to >= COOK_MAX ? 'サイコー！' : `焼き+${x.to - x.from}`, x.to >= COOK_MAX ? 'best' : 'cookup');
 }, T(t0 + n * gap)));
+if (best || nb) setTimeout(() => chipPop(fs, nb ? { b: '焦げ', s: `${nb}枚`, c: 'koge' } : { b: 'サイコー', s: `${best}枚`, c: 'gold' }), T(t0 + e.list.length * gap));
 const stops = e.stop == null ? [] : e.list.filter(x => x.i !== e.stop);
 if (stops.length) setTimeout(() => stops.forEach((x, n) => setTimeout(() => aura(e.stop, x.i, 'stop'), T(n * 90))), T(t0 + e.list.length * gap));
 return 1050 + e.list.length * gap + (stops.length ? 600 : 0);
@@ -2580,23 +2568,22 @@ return 1050 + e.list.length * gap + (stops.length ? 600 : 0);
 const d = cardDef(e.cid), slot = tslot(e.i), card = slot && slot.querySelector('.pc');
 if (slot) slot.classList.add('now', 'done');
 if (e.again) takeBuff(e.i, e.i - 1, 'again');
-const lead = card ? actBounce(card, d.star) : 300;
-if (co) {
-co.innerHTML = actPanel(e, q); fitPanel(co); replay(co, 'pop');
-const bc = co.querySelector('.bp-card .pc'); if (bc) { bc.style.setProperty('--ad', T(d.star >= 3 ? 700 : 480) + 'ms'); replay(bc, 'bpon'); }
+let t = card ? actBounce(card, d.star) : 300;
+const C = actChips(e), H = {};
+if (e.dmg > 0) {
+setTimeout(() => Object.assign(H, flyHub(e, e.dmg >= q / 3)), T(t)); t += 360;
+C.calc.forEach(c => { setTimeout(() => chipFly(e, c, H), T(t)); t += c.src && c.src.length ? 340 : 300; });
+t += 260;
 }
-const chips = co ? [...co.querySelectorAll('.f-chip')] : [], num = co && co.querySelector('.bp-dmg');
-let t = lead;
-chips.forEach((ch, n) => {
-setTimeout(() => chipStep(e, ch, chips[n - 1], num), T(t));
-t += ch.dataset.out != null || ch.dataset.src ? 480 : 380;
+C.outs.forEach(c => {
+setTimeout(() => { chipPop(slot, c); if (c.out != null) auraOut(e, e.out[c.out]); if (c.kone) setKone(c.kone); }, T(t));
+t += c.out != null ? 460 : 380;
 });
 if (e.dmg > 0) {
-t += 120;
-setTimeout(() => { if (num) { num.classList.add('in', 'fin'); num.querySelector('b').textContent = fmt(e.dmg); replay(num, 'bump'); } }, T(t));
-t += 320;
+setTimeout(() => hubFin(H, e.dmg), T(t));
+t += 300;
 setTimeout(() => {
-hitFx(e.dmg, q);
+hitFx(e.dmg, q, H.el);
 const sc = $('score'), before = N.score + run - e.dmg;
 countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');
 $('qfill').style.width = Math.min(100, run / q * 100) + '%';
@@ -2607,58 +2594,26 @@ t += 760;
 } else t += 420;
 return t;
 }
-function chipStep(e, ch, prev, num) {
-if (prev) prev.classList.remove('cur');
-ch.style.setProperty('--ad', T(360) + 'ms');
-ch.classList.add('in', 'cur');
-if (ch.dataset.v != null && num) {
-const b = num.querySelector('b'), v = +ch.dataset.v;
-if (!num.classList.contains('in')) { num.classList.add('in'); b.textContent = fmt(Math.floor(v)); }
-else countUp(b, Math.floor(+ch.dataset.p || 0), Math.floor(v), T(260));
-replay(num, 'bump');
-}
-if (ch.dataset.src) auraIn(e, ch.dataset.src.split(',').map(Number), ch.dataset.k);
-if (ch.dataset.out != null) auraOut(e, e.out[+ch.dataset.out]);
-if (ch.dataset.kone) setKone(+ch.dataset.kone);
-}
-const tileX = j => `--x:${(j + .5) / (SLOTS + 1) * 100}%`;
-const fchip = (op, v, label, cls = '', data = '') => `<span class="f-chip ${cls}"${data}><b>${op}${fmtMul(v)}</b><small>${label}</small></span>`;
-const chipData = o => Object.entries(o).filter(([, v]) => v != null && v !== '').map(([k, v]) => ` data-${k}="${v}"`).join('');
 const PART_K = l => l === '次の主役' ? 'next' : l === 'となり' ? 'nb' : l === 'スタート' ? 'rally' : l.startsWith('サイコー') ? 'best' : '';
-function bakePanel(e) {
-const F = FIELDS[N.field], nb = e.list.filter(x => x.burnt).length, best = e.list.filter(x => !x.burnt && x.to >= COOK_MAX).length;
-const ch = [`<span class="f-chip in h${e.heat}"><b>${HEAT[e.heat]}</b><small>焼き+${e.heat}</small></span>`];
-if (best) ch.push(`<span class="f-chip in best"><b>サイコー</b><small>${best}枚</small></span>`);
-if (nb) ch.push(`<span class="f-chip in koge"><b>焦げ</b><small>${nb}枚</small></span>`);
-return `<div class="bp" style="${tileX(0)}"><div class="bp-card">${cardMini('b:' + N.field)}</div>
-<div class="bp-main"><p class="bp-name">${esc(F.name)}で焼く！</p><p class="bp-sub">バトル開始時・調理台の生地がいっせいに焼ける</p><div class="bp-f">${ch.join('')}</div></div><b class="bp-dmg soft in"><b>ジュッ</b></b></div>`;
-}
-function fitPanel(co) {   // 札が枠に入りきらないときだけ、少しずつ小さくする（11/18）
-const m = co.querySelector('.bp-main'), f = co.querySelector('.bp-f'); if (!m || !f) return;
-for (let k = .92; m.scrollHeight > m.clientHeight + 1 && k > .5; k -= .08) f.style.setProperty('--fit', k.toFixed(2));
-}
-const chipsCls = n => n >= 7 ? ' lots' : n >= 5 ? ' many' : '';
-const numLen = v => [...fmt(Math.floor(v))].reduce((a, c) => a + (/[0-9]/.test(c) ? .8 : /[,.]/.test(c) ? .38 : 1.05), .3).toFixed(2);
-function actPanel(e, q) {
-const d = cardDef(e.cid), ch = [], out = k => { const n = (e.out || []).findIndex(o => o.k === k); return n < 0 ? null : n; };
-let v = 0, top = e.dmg || 0;
-if (e.dmg > 0 && e.base) { v = e.base; ch.push(`<span class="f-chip base calc"${chipData({ v })}><b>${fmt(e.base)}</b><small>味パワー</small></span>`); }
+const PART_C = l => l === '次の主役' ? 'pink' : l === 'となり' ? 'mint' : l === '焼き加減' || l === 'フィールド' || l.startsWith('サイコー') ? 'ember' : 'gold';
+function actChips(e) {
+const d = cardDef(e.cid), calc = [], outs = [], out = k => { const n = (e.out || []).findIndex(o => o.k === k); return n < 0 ? null : n; };
+let v = 0;
+if (e.dmg > 0 && e.base) { v = e.base; calc.push({ b: fmt(e.base), s: '味パワー', c: 'gold', v }); }
 for (const [op, x, label, src] of e.parts || []) {
-const p = v; v = op === '×' ? v * x : v + x; top = Math.max(top, v);
-ch.push(fchip(op, x, label, 'calc ' + (label === 'スタート' ? 'pos' : label.startsWith('サイコー') ? 'best' : label === '次の主役' ? 'next' : ''), chipData({ v, p, src: src && src.join(','), k: src && PART_K(label) })));
+const p = v; v = op === '×' ? v * x : v + x;
+calc.push({ b: op + fmtMul(x), s: label, c: PART_C(label), v, p, src: src && src.filter(j => j !== e.i), k: src && PART_K(label) });
 }
-if (e.fin) ch.push(fchip('×', e.fin[0], 'アンカー：合計', 'calc pos', chipData({ v: e.dmg, p: v, out: out('fin') })));
-const rl = out('rally'); if (rl != null) ch.push(fchip('+', e.out[rl].v, d.fx.koneRally ? 'パンぜんぶへ' : '主役ぜんぶへ', 'pos', chipData({ out: rl })));
-const nb = out('nb'); if (nb != null) ch.push(fchip('+', e.out[nb].v, 'となりへ', 'pos', chipData({ out: nb })));
-if (e.heat) ch.push(`<span class="f-chip h${e.heat[1]}"${chipData({ out: out('heat') })}><b>${HEAT[e.heat[0]]}→${HEAT[e.heat[1]]}</b><small>火力</small></span>`);
-if (e.sear) ch.push(e.sear.burnt ? `<span class="f-chip koge"${chipData({ out: out('sear') })}><b>焦げた</b><small>右の生地</small></span>` : `<span class="f-chip c${cookStage(e.sear.to)}"${chipData({ out: out('sear') })}><b>焼き+${e.sear.to - e.sear.from}</b><small>右の生地</small></span>`);
-if (e.next) ch.push(fchip('×', e.next, '次の主役へ', 'next', chipData({ out: out('next') })));
-if (fxOn(d, 'again') && !e.again) ch.push(`<span class="f-chip"${chipData({ out: out('again') })}><b>もう1回</b><small>右どなり</small></span>`);
-if (e.call) ch.push('<span class="f-chip"><b>フィールド</b><small>次のショップ</small></span>');
-if (e.kone) ch.push(`<span class="f-chip"${chipData({ kone: e.kone[1] })}><b>こね+${e.kone[1] - e.kone[0]}</b><small>こねた回数</small></span>`);
-const dmg = e.dmg > 0 ? `<b class="bp-dmg${e.dmg >= q / 3 ? ' hot' : ''}" style="--len:${numLen(top)}"><b>0</b></b>` : '';
-return `<div class="bp" style="${tileX(e.i + 1)}"><div class="bp-card">${cardMini(e.cid, { cook: e.cook })}</div>
-<div class="bp-main"><p class="bp-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><div class="bp-f${chipsCls(ch.length)}">${ch.join('')}</div></div>${dmg}</div>`;
+if (e.fin) calc.push({ b: '×' + fmtMul(e.fin[0]), s: 'アンカー：合計', c: 'gold', v: e.dmg, p: v, out: out('fin') });
+const rl = out('rally'); if (rl != null) outs.push({ b: '+' + fmt(e.out[rl].v), s: d.fx.koneRally ? 'パンぜんぶへ' : '主役ぜんぶへ', c: 'mint', out: rl });
+const nb = out('nb'); if (nb != null) outs.push({ b: '+' + fmt(e.out[nb].v), s: 'となりへ', c: 'mint', out: nb });
+if (e.heat) outs.push({ b: `${HEAT[e.heat[0]]}→${HEAT[e.heat[1]]}`, s: '火力', c: 'ember', out: out('heat') });
+if (e.sear) outs.push(e.sear.burnt ? { b: '焦げた', s: '右の生地', c: 'koge', out: out('sear') } : { b: `焼き+${e.sear.to - e.sear.from}`, s: '右の生地', c: 'ember', out: out('sear') });
+if (e.next) outs.push({ b: '×' + fmtMul(e.next), s: '次の主役へ', c: 'pink', out: out('next') });
+if (fxOn(d, 'again') && !e.again) outs.push({ b: 'もう1回', s: '右どなり', c: 'mint', out: out('again') });
+if (e.call) outs.push({ b: 'フィールド', s: '次のショップ', c: 'mint' });
+if (e.kone) outs.push({ b: `こね+${e.kone[1] - e.kone[0]}`, s: 'こねた回数', c: 'gold', kone: e.kone[1] });
+return { calc, outs };
 }
 const fxOn = (d, k) => !!d.fx[k];
 const cookStage = c => (c || 0) >= COOK_MAX ? 3 : (c || 0) >= 6 ? 2 : (c || 0) >= 3 ? 1 : 0;
@@ -2853,7 +2808,7 @@ ${heroImg(after ? (happy ? 'joy' : 'oops') : 'battle')}
 ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
 <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}</div>
-${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}${N.stage === 'end' ? '' : '<div class="callout" id="callout"></div>'}</div>
+${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
 <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
 ${body}</section>`;
 setHeat(N.heat);
@@ -3014,9 +2969,9 @@ let fireCache = '', emberCache = '';
 function boardFireHTML() {
 if (fireCache) return fireCache;
 const r = prng(7); let f = '', s = '';
-for (let k = 0; k < 14; k++) {
-const x = Math.floor(k / 2) / 6 * 100 + (k % 2 ? 2.4 : -2.4);   // 7つのすきま（左右のふち・マスのあいだ）に2本ずつ
-f += `<i class="tf${k % 3 === 1 ? ' x' : ''}" style="--x:${Math.max(1, Math.min(99, x)).toFixed(1)}%;--d:${(.8 + r() * .6).toFixed(2)}s;--k:${r().toFixed(2)};--w:${(24 + r() * 18).toFixed(0)}px"></i>`;
+for (let k = 0; k < 18; k++) {
+const x = (Math.floor(k / 3) + .5) / 6 * 100 + (k % 3 - 1) * 4.2;   // 6つのマスの下のふちに3本ずつ（まんなかの1本は強火から）・11/18 16時 マスの手前へ小さく
+f += `<i class="tf${k % 3 === 1 ? ' x' : ''}" style="--x:${x.toFixed(1)}%;--d:${(.8 + r() * .6).toFixed(2)}s;--k:${r().toFixed(2)};--w:${(16 + r() * 10).toFixed(0)}px"></i>`;
 }
 for (let k = 0; k < 8; k++) s += `<i class="tsp" style="--x:${(5 + r() * 90).toFixed(1)}%;--d:${(1.3 + r() * 1.1).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 44).toFixed(0)}px"></i>`;
 return (fireCache = `<i class="tglow" aria-hidden="true"></i><span class="tfire" aria-hidden="true">${f}</span><span class="tsparks" aria-hidden="true">${s}</span>`);
@@ -3033,7 +2988,7 @@ const t = document.querySelector('.tiles'); if (!t) return;
 const was = heatWas && heatWas.day === S.day ? heatWas.z : null;
 heatWas = { day: S.day, z }; t.dataset.z = z;
 if (was == null || z === was || REDUCED) return;
-if (z > was) { replay(t, 'heatup'); pillars(t, was === 0 ? 6 : Math.min(6, (z - was) * 2 + 1), was === 0); }
+if (z > was) { replay(t, 'heatup'); pillars(t, was === 0 ? 4 : Math.min(4, z - was + 1), was === 0); t.querySelectorAll('.pc.tile.dough').forEach(c => replay(c, 'heatflash')); }
 else { replay(t, 'heatdn'); steam(t); }
 }
 function pillars(t, n, boom) {
@@ -3043,10 +2998,10 @@ ks.forEach((k, j) => setTimeout(() => {
 const s = slots[k].getBoundingClientRect(), p = document.createElement('i');
 p.className = 'pillar' + (boom ? ' boom' : '');
 p.style.left = s.left + s.width / 2 + 'px'; p.style.top = s.bottom + 'px';
-p.style.setProperty('--pw', s.width * 1.15 + 'px'); p.style.setProperty('--ph', Math.min(innerHeight * .5, s.height * (1.8 + Math.random() * .9) + (boom ? 50 : 0)) + 'px');
+p.style.setProperty('--pw', s.width * 1.15 + 'px'); p.style.setProperty('--ph', Math.min(innerHeight * .3, s.height * (.9 + Math.random() * .4) + (boom ? 24 : 0)) + 'px');   // 11/18 16時 しょーくん「少し炎の演出を弱めて」
 L.appendChild(p); setTimeout(() => p.remove(), 950);
 }, T(j * 55)));
-sparkBurst(t, boom ? 26 : 14, 'up', boom ? 1.6 : 1.2);
+sparkBurst(t, boom ? 18 : 9, 'up', boom ? 1.3 : 1);
 if (boom) {
 const r = t.getBoundingClientRect(), b = document.createElement('b');
 b.className = 'zudon boh'; b.textContent = 'ボッ！'; b.style.left = r.left + r.width / 2 + 'px'; b.style.top = r.top - 30 + 'px';
@@ -3102,6 +3057,55 @@ const w = e.offsetWidth, x = p ? p.x : R.left + R.width / 2;
 e.style.left = Math.max(R.left + w / 2 + 6, Math.min(R.left + R.width - w / 2 - 6, x)) + 'px';
 e.style.top = Math.max(R.top + 30, (p ? p.y : R.top + 120) - (size ? 46 : 34)) + 'px';
 setTimeout(() => e.remove(), 1100);
+}
+const hubPoint = () => { const st = $('stage'); if (!st) return null; const r = st.getBoundingClientRect(); return { x: r.left + r.width * .5, y: r.top + r.height * .34 }; };
+const chipHTML = c => `<b>${esc(c.b)}</b><small>${esc(c.s)}</small>`;
+function fxEl(cls, p, html) {
+const el = document.createElement('div'); el.className = cls; el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; el.innerHTML = html;
+fxLayer().appendChild(el); return el;
+}
+function arcFly(el, f, t, ms, lift, s0, s1, done) {
+if (REDUCED || !el.animate) { el.style.transform = `translate(${t.x}px,${t.y}px) scale(${s1})`; setTimeout(done, 30); return; }
+const k = [];
+for (let n = 0; n <= 10; n++) { const u = n / 10; k.push({ transform: `translate(${f.x + (t.x - f.x) * u}px,${f.y + (t.y - f.y) * u - 4 * lift * u * (1 - u)}px) scale(${s0 + (s1 - s0) * u})` }); }
+el.animate(k, { duration: ms, easing: 'cubic-bezier(.4,0,.3,1)', fill: 'forwards' });
+setTimeout(done, ms);
+}
+function flyHub(e, hot) {
+const b = hubPoint(); if (!b) return {};
+const a = spot(e.i) || b, el = fxEl('flyhub' + (hot ? ' hot' : ''), b, `<span class="fh-ico">${artImg(e.cid)}</span><b class="fh-num"><b>0</b></b>`);
+const H = { el, num: el.querySelector('.fh-num'), shown: false };
+arcFly(el, { x: a.x - b.x, y: a.y - b.y }, { x: 0, y: 0 }, T(330), 46, .45, 1, () => { el.classList.add('land'); ringAt(el.firstElementChild, 'r-gold'); sparkBurst(el.firstElementChild, 6, 'all', .6); });
+return H;
+}
+function chipFly(e, c, H) {
+let from = e.i;
+if (c.src && c.src.length) { const got = c.src.map(s => takeBuff(e.i, s, c.k)); if (!got.some(Boolean)) from = c.src[0]; }
+const a = spot(from), tgt = H.num ? spot(H.num.firstElementChild) : null, b = tgt || hubPoint();
+const land = () => {
+if (H.num) {
+const n = H.num.firstElementChild;
+if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); n.textContent = fmt(Math.floor(c.v)); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(240)); }
+replay(H.num, 'bump');
+}
+if (b) sparkBurst({ x: b.x, y: b.y, w: 16 }, 4, 'all', .5);
+if (c.out != null) auraOut(e, e.out[c.out]);
+};
+if (!a || !b) return land();
+const p = { x: a.x, y: a.y - a.h * .3 }, ch = fxEl(`fchip c-${c.c}`, p, chipHTML(c));
+arcFly(ch, { x: 0, y: 0 }, { x: b.x - p.x, y: b.y - p.y }, T(300), 34, 1.15, .8, () => { ch.classList.add('gone'); setTimeout(() => ch.remove(), 240); land(); });
+}
+function hubFin(H, dmg) {
+if (!H.num) return;
+const n = H.num.firstElementChild; H.shown = true;
+H.num.classList.add('in', 'fin'); n.textContent = fmt(dmg); replay(H.num, 'bump');
+ringAt(n, 'r-gold');
+}
+function chipPop(at, c) {
+const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a) return;
+const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c));
+ch.style.setProperty('--pd', T(1000) + 'ms');
+setTimeout(() => ch.remove(), T(1020));
 }
 
 /* src/js/drag.js */
@@ -3318,6 +3322,13 @@ const left = has ? base.left + ch.offsetLeft + ch.offsetWidth - 4 : sr.left + 10
 b.style.left = Math.round(left) + 'px';
 b.style.maxWidth = Math.round(Math.max(150, sr.right - left - 8)) + 'px';
 b.style.top = Math.round(Math.max(sr.top + 6, foot - b.offsetHeight)) + 'px';   // 幅が決まってから高さで合わせなおす
+const box = document.querySelector('.vbox.result');
+if (box) {
+const r = box.getBoundingClientRect(), W = scr.getBoundingClientRect();
+b.classList.add('down'); b.style.maxWidth = Math.round(W.width - 16) + 'px';
+b.style.left = Math.round(Math.max(W.left + 8, Math.min(W.right - 8 - b.offsetWidth, r.left + r.width / 2 - b.offsetWidth / 2))) + 'px';
+b.style.top = Math.round(Math.max(6, r.top - b.offsetHeight - 14)) + 'px';
+}
 TIP.fresh = false;
 const h = TIP.t.hand();
 if (!h || !h[0] || (h.length > 1 && !h[1])) return;

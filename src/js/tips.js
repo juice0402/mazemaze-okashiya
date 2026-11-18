@@ -111,6 +111,14 @@ function tipDraw() {
   b.style.left = Math.round(left) + 'px';
   b.style.maxWidth = Math.round(Math.max(150, sr.right - left - 8)) + 'px';
   b.style.top = Math.round(Math.max(sr.top + 6, foot - b.offsetHeight)) + 'px';   // 幅が決まってから高さで合わせなおす
+  /* ラウンドの結果が出ているときは、結果の窓の上に（11/18 16時 しょーくん「チュートリアルの吹き出しがモーダルに被ってた」） */
+  const box = document.querySelector('.vbox.result');
+  if (box) {
+    const r = box.getBoundingClientRect(), W = scr.getBoundingClientRect();
+    b.classList.add('down'); b.style.maxWidth = Math.round(W.width - 16) + 'px';
+    b.style.left = Math.round(Math.max(W.left + 8, Math.min(W.right - 8 - b.offsetWidth, r.left + r.width / 2 - b.offsetWidth / 2))) + 'px';
+    b.style.top = Math.round(Math.max(6, r.top - b.offsetHeight - 14)) + 'px';
+  }
   TIP.fresh = false;
   const h = TIP.t.hand();
   if (!h || !h[0] || (h.length > 1 && !h[1])) return;

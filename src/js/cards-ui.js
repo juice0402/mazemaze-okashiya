@@ -68,7 +68,7 @@ function cardMini(cid, opt = {}) { return cardFace(cid, 'mini', opt); }
 /* 調理台のタイル：同じふちと絵の窓。数字は右上の紋章、★は左上の下、生地は左下に焼き加減の炎と、となりにメーター（9段階。サイコーは金に光る） */
 function cardTile(cid, opt = {}) {
   const d = cardDef(cid), cook = d.dough ? opt.cook || 0 : null, dmg = cardDmg(d, cook);
-  return `<div class="pc tile k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}">
+  return `<div class="pc tile k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}${cook != null ? ` dough" style="--ck:${cook}` : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
     ${starGems(d)}${dmg ? powBadge(dmg) : ''}
     ${cook != null ? `${cookIcon(cook)}<i class="cook c${cookStage(cook)}" style="--c:${cook}"></i>` : ''}${glossI(d)}</div>`;

@@ -220,14 +220,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @keyframes kon{0%{transform:none}35%{transform:translateY(-11px) scale(1.22) rotate(-5deg)}65%{transform:translateY(1px) scale(.95)}100%{transform:translateY(-3px) scale(1.08)}}
 @keyframes ring{from{opacity:1;scale:.8}to{opacity:0;scale:1.4}}
 
-/* バトルの間だけ出る説明：タイル行のすぐ下、手札の上にかぶせる。発動したカードの名前・効果・火加減と、大きなダメージ */
-.callout{position:absolute;left:0;right:0;top:2px;z-index:6;height:52px;border-radius:12px;isolation:isolate;background:var(--cream);color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.35)}
-.callout:empty{display:none}
 
 
 
-.callout.pop::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 3px #ffe2a0,0 0 22px 6px rgba(255,138,61,.8);opacity:0;animation:coflash .45s ease-out}   /* 光った輪の濃さだけ動かす（11/18 軽量化） */
-@keyframes coflash{0%{opacity:1}}
 
 /* 手札（仕入れ）：扇形に重ねる。枚数で幅を決めて、はしのカードも画面に収める */
 
@@ -497,7 +492,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 
 /* 大きく見る画面・バトルの説明・結果：羊皮紙と真ちゅうのふち */
 .viewer{background:radial-gradient(90% 70% at 50% 40%,rgba(60,26,8,.6),rgba(14,6,2,.88))}
-.cinfo,.callout{background:linear-gradient(#fffaf0,#f6e4c8);box-shadow:inset 0 0 0 1.5px rgba(217,168,90,.8),0 3px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35)}
+.cinfo{background:linear-gradient(#fffaf0,#f6e4c8);box-shadow:inset 0 0 0 1.5px rgba(217,168,90,.8),0 3px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35)}
 .vbox.result{background:radial-gradient(90% 60% at 50% 0%,rgba(255,214,150,.25),transparent 70%),linear-gradient(#8a5a38,#5a3824);box-shadow:inset 0 0 0 2px var(--brass),0 6px 0 rgba(0,0,0,.4),0 14px 30px rgba(0,0,0,.5)}
 .r-num{color:#ffe08a}
 .mf-sfx,.mf-name span,.ci-title span{font-family:var(--disp);font-weight:400}
@@ -597,48 +592,6 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .ci-fx p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
 .ci-fx .kw{color:#a84400;background:linear-gradient(transparent 42%,#ffd84a 42% 94%,transparent 94%)}
 
-/* バトルの下のパネル（手札の所にまるごとかぶせる）：左にカード、右に名前と計算の札（1つずつハンコのように出る）、右下に大きなダメージ。
-   11/18 見直し（しょーくん「表示が多いと枠の中がとんでもないことに」）：札が多い・パネルが低いときは札を小さく、数字は右の幅に収まる大きさ（--len＝いちばん長い数字の幅）。枠からははみ出さない */
-.night .callout{inset:auto 7px 12px;height:var(--hh);z-index:8;border-radius:14px;container-type:size}   /* 11/18 手札をなくした：舞台の下にかぶせる */
-.night .stage:has(.callout:not(:empty)) :is(.chef,.mon,.dc){translate:0 calc(var(--hh) * -.55);transition:translate .3s}
-.night .stage :is(.chef,.mon,.dc,.ov-heat){transition:translate .3s}
-.night .stage:has(.callout:not(:empty)) .ov-heat{translate:0 calc(var(--hh) * -1 - 4px)}
-.night .bp::before{top:auto;bottom:-9px;border:9px solid transparent;border-bottom:0;border-top-color:#f6e4c8}
-.bp{position:absolute;inset:0;display:grid;grid-template-columns:min(28%,112px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;column-gap:12px;row-gap:2px;padding:12px 14px 10px 12px;border-radius:14px;--ch:1}
-.bp::before{content:"";position:absolute;left:var(--x);top:-9px;translate:-50% 0;border:9px solid transparent;border-top:0;border-bottom-color:#fffaf0}
-.callout.pop .bp{animation:bpin .26s cubic-bezier(.2,1.2,.4,1)}
-@keyframes bpin{from{opacity:0;transform:translateX(26px)}}
-.bp-card{grid-row:1/3;align-self:center;width:100%;aspect-ratio:5/7}
-.bp-card .pc{width:100%;height:100%}
-.bp-main{grid-column:2;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px;padding:4px 2px}
-.bp-main>:first-child{margin-top:auto}.bp-main>:last-child{margin-bottom:auto}   /* ふだんはまんなか・入りきらないときも名前は切れない */
-.bp-name{flex:none;margin:0;font-family:var(--disp);font-weight:400;font-size:19px;line-height:1.2;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bp-name em{font-family:var(--font);font-style:normal;font-size:11px;font-weight:900;color:#fff;background:var(--strawberry);padding:1px 7px;border-radius:8px;margin-right:5px;vertical-align:2px}
-.bp-sub{margin:-3px 0 0;font-size:11px;line-height:1.4;color:var(--ink-soft)}
-.bp-f{--cs:calc(var(--ch) * var(--fit,1));display:flex;flex-wrap:wrap;gap:calc(6px * var(--cs)) calc(11px * var(--cs))}
-.bp-f.many{--cs:calc(var(--ch) * .84 * var(--fit,1))}
-.bp-f.lots{--cs:calc(var(--ch) * .72 * var(--fit,1))}
-.f-chip{display:inline-flex;flex-direction:column;align-items:center;min-width:calc(54px * var(--cs,1));padding:calc(4px * var(--cs,1)) calc(9px * var(--cs,1)) calc(5px * var(--cs,1));border-radius:10px;color:#fff4e0;background:linear-gradient(#7a4a2c,#4a2a18);box-shadow:inset 0 0 0 1px rgba(255,214,140,.5),0 2px 0 rgba(0,0,0,.3);opacity:0}
-.f-chip b{font-family:var(--disp);font-weight:400;font-size:calc(20px * var(--cs,1));line-height:1.1;color:#ffe9a8;white-space:nowrap}
-.f-chip small{font-size:calc(11px * var(--cs,1));font-weight:700;line-height:1.25;color:#f0d8b8;white-space:nowrap}
-.f-chip.base{background:linear-gradient(#ffb35a,#e0641e)}.f-chip.base b{color:#fff}
-.f-chip.pos,.f-chip.best,.f-chip.c3{background:linear-gradient(#ffeb9a,#dda020)}
-.f-chip.pos b,.f-chip.best b,.f-chip.c3 b{color:#3a1c08}.f-chip.pos small,.f-chip.best small,.f-chip.c3 small{color:#5a3008}
-.f-chip.next{background:linear-gradient(#f590b0,#c4446c)}
-.f-chip.koge{background:linear-gradient(#6a5248,#2e2018)}
-.f-chip.h1{background:linear-gradient(#f0c070,#c08030)}.f-chip.h2{background:linear-gradient(#ffa25a,#e0641e)}.f-chip.h3{background:linear-gradient(#ff7a5a,#c8301e)}.f-chip.h4{background:linear-gradient(#ff5a3a,#a8140a)}
-.f-chip.c0{background:linear-gradient(#cdb89e,#8e765c)}.f-chip.c1{background:linear-gradient(#ffd75e,#c89010)}.f-chip.c2{background:linear-gradient(#ffa25a,#d0601a)}
-.bp-dmg{grid-column:2;min-width:0;text-align:right;line-height:1;container-type:inline-size;opacity:0}
-.bp-dmg.in{animation:bpdmg .45s cubic-bezier(.2,1.7,.4,1) forwards}
-@keyframes bpdmg{0%{opacity:0;transform:scale(1.8) rotate(-10deg)}40%{opacity:1}100%{opacity:1;transform:none}}
-.bp-dmg b{font-family:var(--disp);font-weight:400;font-size:min(calc(40px * var(--ch)),calc(100cqw / var(--len,4)));line-height:1;color:#ff8a24;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;text-shadow:0 3px 0 #3a1004;font-variant-numeric:tabular-nums}
-.bp-dmg.hot b{font-size:min(calc(46px * var(--ch)),calc(100cqw / var(--len,4)));color:#ff5a1a;text-shadow:0 3px 0 #3a1004,0 0 14px rgba(255,140,40,.9)}
-.bp-dmg.soft b{font-size:20px;color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
-/* パネルが低い（小さいスマホ）ときは、札・名前・数字をひとまわり小さく */
-@container (max-height:214px){.bp{--ch:.88}.bp-name{font-size:17px}}
-@container (max-height:180px){.bp{--ch:.76;row-gap:0;padding-block:9px 7px}.bp-name{font-size:15px}.bp-main{gap:4px}}
-@container (max-height:150px){.bp{--ch:.66}.bp-name{font-size:14px}}
-/* それでも入りきらないとき（札がとても多い）は、night-ui.js の fitPanel が --fit で札だけさらに小さくする */
 .tslot .float{top:14%;z-index:6;font-size:12px}
 .float.cookup{color:#ffb35a}
 .float.best{color:#ffe066;font-size:14px;text-shadow:0 0 8px rgba(255,214,80,.9),1px 1px 0 #2a170c,-1px 1px 0 #2a170c}

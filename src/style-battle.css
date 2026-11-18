@@ -68,21 +68,35 @@
 @keyframes slamflash{from{opacity:.95}to{opacity:0}}
 .tiles.tquake{animation:tquake .38s linear}
 @keyframes tquake{10%,50%{transform:translate(0,5px)}30%,70%{transform:translate(0,-4px)}90%{transform:translate(0,2px)}}
-/* 下のパネルのカードもぽん */
-.bp-card .pc.bpon{animation:bpon var(--ad,.48s) cubic-bezier(.25,1.5,.45,1)}
-@keyframes bpon{0%{transform:translateY(16px) scale(.6) rotate(-10deg);opacity:0}45%{transform:translateY(-10px) scale(1.12) rotate(4deg);opacity:1}100%{transform:none}}
-
-/* ---------- 下のパネルの札：ぽんと跳ねて出る・いま効いている札が光る・計算の札は › でつながる・右の数字がはねる ---------- */
-.f-chip{position:relative}
-.f-chip.in{animation:chipon var(--ad,.36s) cubic-bezier(.2,1.7,.4,1) forwards}
-@keyframes chipon{0%{opacity:0;transform:translateY(12px) scale(.4)}55%{opacity:1;transform:translateY(-8px) scale(1.2)}100%{opacity:1;transform:none}}
-.f-chip.in:not(.cur){filter:saturate(.8) brightness(.9)}
-.f-chip.cur{z-index:1;box-shadow:inset 0 0 0 1px rgba(255,236,190,.9),0 0 0 2px #fff3c0,0 0 12px 3px rgba(255,200,80,.85)}
-.f-chip.calc~.f-chip.calc::before{content:"";position:absolute;left:-9px;top:50%;width:0;height:0;translate:0 -50%;border:5px solid transparent;border-right:0;border-left:6px solid #b07a4a}
-.bp-dmg b{display:inline-block}
-.bp-dmg.bump b{animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
+/* ---------- 発動の演出（11/18 16時・battle-fx.js の 5）：舞台へ飛ぶメダルと数字・計算の札。面は描き下ろしの絵（ui-chips）が来たら差しかえる ---------- */
+.flyhub{position:absolute;translate:-50% -50%;display:flex;align-items:center;gap:8px;pointer-events:none;will-change:transform}
+.fh-ico{flex:none;width:54px;height:54px;display:grid;place-items:center;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle at 50% 38%,#fffaf0,#f2d4a4 72%);box-shadow:0 0 0 3px #e0b060,0 0 0 5px #5a3410,0 4px 10px rgba(0,0,0,.5),0 0 18px 4px rgba(255,200,90,.65)}
+.fh-ico img{width:80%;height:80%;object-fit:contain;image-rendering:pixelated}
+.fh-ico img.hi{image-rendering:auto}
+.fh-num{opacity:0;font-family:var(--disp);font-weight:400;font-size:42px;line-height:1;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:6px #4a1404;paint-order:stroke fill;text-shadow:0 4px 0 #2a0c02,0 0 18px rgba(255,170,50,.85)}
+.fh-num>b{display:inline-block;font-weight:400;color:inherit}
+.fh-num.in{opacity:1}
+.fh-num.bump>b{animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
 @keyframes numbump{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-4deg)}100%{transform:none}}
-.bp-dmg.fin b{color:#ffe066;text-shadow:0 3px 0 #3a1004,0 0 16px rgba(255,170,40,.95)}
+.fh-num.fin{color:#ffe066}
+.flyhub.hot .fh-num.fin{color:#ffb040;text-shadow:0 4px 0 #2a0c02,0 0 22px rgba(255,120,30,.95)}
+.flyhub.shot .fh-ico{opacity:0;transition:opacity .1s}
+.flyhub.shot .fh-num{filter:drop-shadow(0 0 10px #ff8a3d) drop-shadow(0 0 4px #fff3c0)}
+.fchip{position:absolute;translate:-50% -50%;display:flex;flex-direction:column;align-items:center;min-width:52px;padding:3px 11px 4px;border-radius:999px;pointer-events:none;white-space:nowrap;will-change:transform;
+  background:linear-gradient(var(--c1),var(--c2));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 0 rgba(0,0,0,.18),0 0 0 2px #e0b060,0 0 0 3.5px #4a2408,0 3px 6px rgba(0,0,0,.45)}
+.fchip b{font-family:var(--disp);font-weight:400;font-size:18px;line-height:1.1;color:var(--ct,#3a1c08)}
+.fchip small{font-size:10px;font-weight:800;line-height:1.2;color:var(--cs,#5a3008)}
+.fchip.c-gold{--c1:#fff2b8;--c2:#e8b440}
+.fchip.c-ember{--c1:#ffc27a;--c2:#e8641e;--ct:#fff;--cs:#fff0dc}
+.fchip.c-pink{--c1:#ffc4d4;--c2:#e0567e;--ct:#fff;--cs:#fff0f4}
+.fchip.c-mint{--c1:#dcf8ea;--c2:#5cbc96;--ct:#123a2c;--cs:#1e4a3a}
+.fchip.c-koge{--c1:#7a6258;--c2:#2e2018;--ct:#f0e0d0;--cs:#d8c8b8}
+.fchip.c-ember b,.fchip.c-pink b{-webkit-text-stroke:3px #6a1a08;paint-order:stroke fill}
+.fchip.gone{animation:chipgone .22s ease-in forwards}
+@keyframes chipgone{to{opacity:0;scale:.2}}
+.fchip.pop{animation:chippop var(--pd,1s) cubic-bezier(.2,1.3,.4,1) forwards}
+@keyframes chippop{0%{opacity:0;transform:translateY(10px) scale(.4)}18%{opacity:1;transform:translateY(-8px) scale(1.15)}30%{transform:translateY(-10px) scale(1)}78%{opacity:1;transform:translateY(-30px)}100%{opacity:0;transform:translateY(-44px)}}
 
 /* ---------- オーラ（ほかのカードにかかる効果）・光の輪・木くず・ズドン・マスに残る札 ---------- */
 #fxl{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
@@ -111,21 +125,21 @@
 #heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
 
 /* ---------- ほのかの炎（Version 38・動きは battle-fx.js の 4） ---------- */
-/* 鉄板の炎：マスのうしろ（すきま・ふち・上のふちの先に見える）。.tiles の data-z（0＝場なし（種火）・1 弱火〜4 火力マックス）で燃え方が変わる */
+/* 鉄板の炎：マスの下のふちの手前で小さく（11/18 16時 しょーくん「カードが浮いてるみたい」「少し炎の演出を弱めて前に」）。.tiles の data-z（0＝場なし（種火）・1 弱火〜4 火力マックス）で燃え方が変わる */
 .night .quota{position:relative;z-index:2}
 .tiles>:where(.tslot){z-index:1}
-.tiles{--fs:.2;--fo:.5;--go:.1}
-.tiles[data-z="1"]{--fs:.42;--fo:.8;--go:.3}
-.tiles[data-z="2"]{--fs:.66;--fo:.92;--go:.52}
-.tiles[data-z="3"]{--fs:.95;--fo:1;--go:.78}
-.tiles[data-z="4"]{--fs:1.25;--fo:1;--go:1}
+.tiles{--fs:.3;--fo:.35;--go:.05}
+.tiles[data-z="1"]{--fs:.5;--fo:.55;--go:.14}
+.tiles[data-z="2"]{--fs:.68;--fo:.68;--go:.24}
+.tiles[data-z="3"]{--fs:.85;--fo:.8;--go:.36}
+.tiles[data-z="4"]{--fs:1;--fo:.9;--go:.48}
 .tglow{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:var(--go);transition:opacity .5s}
 .tglow::before{content:"";position:absolute;inset:0;border-radius:inherit;
   background:radial-gradient(75% 95% at 50% 100%,rgba(255,96,24,.9),rgba(190,36,8,.5) 50%,transparent 82%),linear-gradient(transparent 25%,rgba(255,70,16,.45));
   box-shadow:inset 0 0 0 2px rgba(255,150,70,.8),inset 0 0 20px 5px rgba(255,90,20,.65);animation:tglow 1.9s ease-in-out infinite}
 @keyframes tglow{0%,100%{opacity:.72}50%{opacity:1}}
-.tfire{position:absolute;inset:0;z-index:0;pointer-events:none;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
-.tf{position:absolute;bottom:-8px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
+.tfire{position:absolute;inset:auto 0 0;height:32%;z-index:3;pointer-events:none;mix-blend-mode:screen;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
+.tf{position:absolute;bottom:-5px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
   background:radial-gradient(46% 58% at 50% 82%,#fff7cc 0,#ffd34e 24%,#ff7a1e 52%,rgba(214,40,8,.6) 72%,transparent 88%);
   animation:tf var(--d) ease-in-out infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
 .tf.x{display:none}
@@ -134,8 +148,17 @@
 @keyframes tf{0%,100%{transform:scale(1,1);opacity:.92}25%{transform:translateY(-5%) scale(.86,1.2);opacity:1}50%{transform:scale(1.12,.86);opacity:.82}75%{transform:translateX(7%) scale(.9,1.12);opacity:1}}
 .tiles.heatup .tfire{animation:heatup .65s cubic-bezier(.3,1.4,.5,1)}
 .tiles.heatdn .tfire{animation:heatdn .7s ease-out}
-@keyframes heatup{0%{scale:1 .5}35%{scale:1.06 1.9}100%{scale:1 1}}
+@keyframes heatup{0%{scale:1 .6}35%{scale:1.04 1.35}100%{scale:1 1}}
 @keyframes heatdn{0%{scale:1 1.15}30%{scale:1.12 .25;opacity:.4}100%{scale:1 1}}
+/* 生地のタイルが熱される：下からオレンジに色づく（焼き加減 --ck が進むほど濃く・火力が強いほど明るく・11/18 16時）。火力が上がると、ぱっと光る */
+.tiles{--hz:.4}.tiles[data-z="1"]{--hz:.7}.tiles[data-z="2"]{--hz:.85}.tiles[data-z="3"]{--hz:1}.tiles[data-z="4"]{--hz:1.15}
+.tiles .pc.tile.dough .pc-win::after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(to top,rgba(236,70,8,.78) 0%,rgba(255,120,30,.42) 28%,rgba(255,170,70,.12) 50%,rgba(255,190,90,0) 66%);box-shadow:inset 0 -6px 10px -2px rgba(255,90,20,.7);
+  opacity:calc(min(.85,.2 + var(--ck,0) * .072) * var(--hz));transition:opacity .45s}
+.tiles[data-z="3"] .pc.tile.dough .pc-win::after,.tiles[data-z="4"] .pc.tile.dough .pc-win::after{animation:heatflick 1.7s ease-in-out infinite}
+@keyframes heatflick{50%{opacity:calc(min(.85,.2 + var(--ck,0) * .072) * var(--hz) * .72)}}
+.tiles .pc.tile.dough.heatflash .pc-win::after{animation:heatflash .7s ease-out}
+@keyframes heatflash{0%{opacity:1}}
 /* 強火から、鉄板から火の粉が上がる */
 .tsparks{position:absolute;inset:0;z-index:0;pointer-events:none;display:none}
 .tiles[data-z="3"] .tsparks,.tiles[data-z="4"] .tsparks{display:block}
@@ -185,7 +208,7 @@
 .fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
 @keyframes dmgfly{0%{opacity:0;transform:scale(2.8) rotate(-10deg)}16%{opacity:1;transform:scale(1) rotate(-4deg)}24%{transform:scale(1.12) rotate(-4deg)}32%{transform:scale(1) rotate(-4deg)}78%{opacity:1;transform:translateY(-20px) rotate(-4deg)}100%{opacity:0;transform:translateY(-38px) scale(.92) rotate(-4deg)}}
 
-@media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.f-chip.in{animation-duration:.01s}}
+@media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.fchip.pop{animation-duration:.01s}.tiles .pc.tile.dough .pc-win::after{animation:none}}
 
 /* ---------- 夜のヒント（tips.js）：ほのかの吹き出し .tipb と指 .tipf。ずっと動くのは指の transform と opacity だけ ---------- */
 .tipb{position:fixed;left:0;top:0;z-index:44;max-width:240px;padding:7px 24px 8px 11px;border-radius:13px;background:var(--cream);color:var(--ink);border:2px solid #5a3418;box-shadow:0 3px 0 rgba(42,20,8,.45),0 8px 18px rgba(0,0,0,.35);font-size:min(12.5px,3.25vw);font-weight:700;line-height:1.5;cursor:pointer;transform-origin:0 100%;-webkit-tap-highlight-color:transparent}
@@ -193,6 +216,9 @@
 .tipb .kw{color:#8a3c00}
 .tipb::before,.tipb::after{content:"";position:absolute;left:-11px;bottom:9px;border:7px solid transparent;border-right:11px solid #5a3418;border-left:0}
 .tipb::after{left:-7px;bottom:10px;border-width:6px 9px 6px 0;border-right-color:var(--cream)}
+.tipb.down{transform-origin:50% 100%}
+.tipb.down::before{left:50%;bottom:-11px;margin-left:-7px;border:7px solid transparent;border-top:11px solid #5a3418;border-bottom:0}
+.tipb.down::after{left:50%;bottom:-7px;margin-left:-6px;border:6px solid transparent;border-top:9px solid var(--cream);border-bottom:0}
 .tip-x{position:absolute;right:5px;top:4px;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:11px;line-height:1;color:#fff;background:#8a5a34}
 .tipb.pop{animation:tippop .38s cubic-bezier(.3,1.45,.5,1) both}
 @keyframes tippop{from{opacity:0;transform:scale(.55) translateY(6px)}to{opacity:1;transform:none}}

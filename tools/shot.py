@@ -18,8 +18,7 @@ BOARD = ("N.picks = 0; N.field = 'teppan'; N.heat = 3; N.board = [{ cid: 'm:ichi
          "{ cid: 's:komugi+komugi|komugi+komugi', cook: 0 }, { cid: 't:maki', cook: 0 }, { cid: 'm:tamago', cook: 0 }]; "
          "renderNight()")
 PANEL = ("const e = { type: 'act', cid: 'm:shime', i: 4, cook: 9, dmg: 3030, base: 180, parts: [['×', 3, '焼き加減'], ['×', 2, '次の主役', [2]]], fin: [2.25], out: [{ k: 'fin', v: 2.25 }] }; "
-         "fighting = true; renderNight(); const co = $('callout'); co.innerHTML = actPanel(e, 2000); fitPanel(co); "
-         "co.querySelectorAll('.f-chip').forEach(c => c.classList.add('in')); const n = co.querySelector('.bp-dmg'); n.classList.add('in', 'fin'); n.querySelector('b').textContent = fmt(e.dmg)")
+         "fighting = true; renderNight(); showEvent(e, 3030, 2000)")   # 発動の演出（メダルと札が舞台へ飛ぶ）のとちゅうを撮る
 PRE = {
     'title': ("S = newState(); S.phase = 'title'; render()", 800),
     'prologue': ("localStorage.clear(); S = newState(); goPrologue()", 1600),
@@ -27,7 +26,7 @@ PRE = {
     'shop': ("talkClose(true); localStorage.clear(); S = newState(); S.day = 2; S.today = newDay(2); startNight()", 1800),
     'board': (BOARD, 1500),
     'battle': (BOARD + "; omotenashi()", 5200),
-    'panel': (PANEL, 900),
+    'panel': (PANEL, 1500),
     'end': ("talkClose(true); N.score = Math.round(nightHP(S.day) * 0.7); endNight()", 2200),
     'morning': ("goMorning(); render()", 1000),
     'day': ("goDay(); render()", 1500),
