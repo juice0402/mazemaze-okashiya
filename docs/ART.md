@@ -38,8 +38,8 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/ui-stage.md`（夜の舞台の額縁＋別の部品のメダル）・`op2.md`（オープニングの横長の森 op-forest の出しなおし。H-015）が依頼中（11/18 14:20 に issue #3 で @codex）。op1 の op-mix・op-shop-night は済
-- 待ち（2つずつ依頼中に）：`ui-shop`（ショップの日よけと板）・`ui-board`（調理台・おなかの帯・マス・コイン・火力のメーター・値札）・`ui-cards`（カードのふち4つ）・`ui-parts`（紋章・星・まっすぐな帯・ハンコ）・`ui-day`（棚・オーブン・看板・びん）
+- art-irai `requests/okashi/ui-shop.md`（ショップの日よけと板・板のふちなし＝舞台の額縁の中に入る）・`ui-board.md`（調理台・おなかの帯・マス・コイン・火力のメーター・値札）が依頼中（11/18 夕方）。ui-stage・op1・op2 は済
+- 待ち（2つずつ依頼中に）：`ui-cards`（カードのふち4つ）・`ui-parts`（紋章・星・まっすぐな帯・ハンコ）・`ui-day`（棚・オーブン・看板・びん）
 - 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
 - 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
 
@@ -67,3 +67,4 @@
 | ui-stage-frame・ui-stage-medal（夜の舞台の額縁・上のまんなかのメダル） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-stage.md`（PR #56・1086×1448 のたて長）・`prep_art.py parts … 400 ui-stage-frame -` と `parts … 150 - ui-stage-medal`。額縁は9分割（角74px・木のふち37px・辺は round）・メダルはコードで重ねる |
 | logo-ma・logo-ze・logo-o・logo-ka・logo-shi・logo-ya・logo-san・logo-ma-g・logo-ze-g（タイトルロゴの文字・-g は残像と光の型） | C | フォントで描いた文字（Mochiy Pop One・OFL）。AI の絵ではない | 2026-11-18 | 昼のチャット（枝 hiru/logo-tab・H-014）。3倍の大きさの絵（フォントのファイルはビルドが埋めこめないので絵にした） | タイトルのロゴ（src/js/logo.js の logoHTML） |
 | op-mix・op-shop-night（オープニング：朝の厨房でまぜるほのか・夜のお店の外観） | A | Codex | 2026-11-18 | art-irai `requests/okashi/op1.md`（step1・step3・PR #54）・`prep_art.py bg`（16:9 の横960）。op-shop-night は bg-shop-out と同じお店を夜に。op-forest（step2）は不合格で op2 に出しなおし | オープニング（昼のチャット・H-015） |
+| op-forest（オープニング：厨房の窓から夕方の森へ流れる横長の景色） | A | Codex | 2026-11-18 | art-irai `requests/okashi/op2.md`（PR #58・2172×724）。上64px・下49px を切って 32:9 → 横1920×540 の webp（quality 76）。人・生き物・字なし | オープニングの②③で横に流す背景（昼のチャットが使う・H-015） |
