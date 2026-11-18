@@ -33,6 +33,7 @@
 | tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL）。parts＝UI のシートを部品ごとに切る・--strict＝ほぼ純な緑だけ抜く（ミントなど緑っぽい絵） | |
 | tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
+| tools/mado.py | 昼のお店の窓の型を作る道具（11/18 昼のチャット・H-021）：bg-day から3つの窓のガラスだけの型 bg-day-mado と、それをぼかした光 bg-day-mado-glow を作る（Python・PIL） |
 | .ignore | 検索（ripgrep）から index.html・assets/ を外す（1行が大きすぎるため） | |
 | src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
 | src/js/day-scene.js | 昼の舞台とお客さんの絵（昼のチャット）：matIcon・candyIcon・dayStageBg・dayStageFront・custHTML（絵は cust-<id>・cust-<id>-happy・cust-<id>-sad。なければコードの仮の人） | |
