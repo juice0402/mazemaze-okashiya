@@ -11,10 +11,8 @@ function renderTitle() {
   const chef = ART.honoka || big(CHEF_SPR[0], 5), mon = ART['mon-slime'] || big(MON_SPR.slime, 3);
   const bg = ART['bg-night'];
   $('screen').innerHTML = `<section class="title${bg ? ' hasbg' : ''}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-    <div class="t-logo"><small>お菓子屋さんと おもてなしカード</small>${logoHTML()}</div>
+    <div class="t-logo">${logoHTML()}</div>
     <div class="hero"><img src="${chef}" alt="炎のシェフ ほのか"><img src="${mon}" alt="ぷるぷるスライム"></div>
-    <p class="t-lead">夜になると、あまい匂いにつられて食材モンスターがやってくる！</p>
-    <ul class="t-steps"><li><b>朝</b>材料をまぜてお菓子づくり</li><li><b>昼</b>棚に並べてお店で販売</li><li><b>夜</b>カードを並べておもてなし。まぜて★2へ</li></ul>
     ${saved && saved.phase !== 'title' ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button>
       <button class="sub" data-act="reset">${resetArm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>` : '<button class="big" data-act="start">はじめる</button>'}
   </section>`;
