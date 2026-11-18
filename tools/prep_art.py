@@ -72,7 +72,11 @@ def trim_fit(im, limit, pad=6):
 
 
 def save(im, name):
-    im.save(OUT + name + '.webp', 'WEBP', quality=86, method=6)
+    # 強さは tools/slim_art.py の opts（11/19 軽くした・取りこんだあと slim_art.py をかけると表に入る）
+    import sys as _s, os as _o
+    _s.dont_write_bytecode = True; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)))
+    from slim_art import opts
+    im.save(OUT + name + '.webp', 'WEBP', **opts(name))
     print(name, im.size)
 
 

@@ -162,6 +162,7 @@ function showEvent(e, run, q) {
     setTimeout(() => heroPose(atk, 820), T(t + 120));   // 数字が飛ぶのに合わせて、ほのかが攻撃
     t += 300;
     setTimeout(() => {
+      if (!$('qfill')) return;   // 夜の画面からはなれたあと（11/19）
       hitFx(e.dmg, q, H.el);
       const sc = $('score'), before = N.score + run - e.dmg;
       countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');

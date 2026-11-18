@@ -1,7 +1,7 @@
 // まぜまぜおかし屋のビルド（Node の標準だけ）。node tools/build.mjs
 // src/shell.html の <!--STYLE--> に src/style.css、<!--SCRIPT--> に JS を順に入れて index.html を作る
 // --artifact <ファイル> をつけると、アーティファクト用（doctype などなし）も書く
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -27,7 +27,7 @@ for (const f of readdirSync(artDir).sort()) {
 const minCss = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '\n').replace(/\n+/g, '\n').trim();
 const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').replace(/^[ \t]*\/\/.*$/gm, '').replace(/^[ \t]+/gm, '').replace(/\n{2,}/g, '\n');
 // TRIAL：ためしのページ（--artifact）だけ true（こね生地などを日にちを待たずに ためせる）。遊ぶ人の index.html は false
-const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
+const js = "(() => {\n'use strict';\nconst ART = new Proxy(" + JSON.stringify(ART) + ", { get: artGet });\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
 const fragOf = trial => rd('src/shell.html')
   .replace('<!--STYLE-->', () => '<style>\n' + FONTS + minCss(STYLES.map(rd).join('\n')) + '</style>')
   .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial) + '\n</script>');
@@ -53,5 +53,14 @@ ${body}
 `;
 writeFileSync(join(root, 'index.html'), page);
 console.log('index.html', page.length, 'art', Object.keys(ART).length);
+// 大きさの点検（11/19 しょーくん「ファイルを開くのが重い」）：まだ軽くしていない絵と、いちばん大きい絵を出す。index.html が BUDGET をこえたら知らせる
+{
+  const BUDGET = 11e6;   // 11/19 軽くしたあと 約10MB。こえたら、使っていない絵を assets/art-stock へ・大きすぎる絵を小さく
+  let slim = {}; try { slim = JSON.parse(readFileSync(join(root, 'assets/slim.json'), 'utf8')); } catch (e) { /* 表がない */ }
+  const files = readdirSync(artDir).filter(f => /\.(webp|png)$/.test(f)).map(f => ({ n: f.replace(/\.\w+$/, ''), f, b: statSync(join(artDir, f)).size }));
+  const raw = files.filter(x => slim[x.n] !== x.b);
+  if (raw.length) console.log(`まだ軽くしていない絵 ${raw.length}まい（python3 -I tools/slim_art.py をかけてね）：` + raw.slice(0, 8).map(x => x.n).join(' '));
+  if (page.length > BUDGET) console.log(`index.html が ${(page.length / 1e6).toFixed(1)}MB（めやす ${BUDGET / 1e6}MB）。大きい絵：` + files.sort((a, b) => b.b - a.b).slice(0, 5).map(x => `${x.n} ${Math.round(x.b / 1e3)}KB`).join('・'));
+}
 const ai = process.argv.indexOf('--artifact');
 if (ai > 0 && process.argv[ai + 1]) { const af = fragOf('true'); writeFileSync(process.argv[ai + 1], af); console.log('artifact', af.length); }

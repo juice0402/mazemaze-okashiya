@@ -322,3 +322,9 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .night[data-chef="minamo"] .heat-label.h3{color:#ffd27a}.night[data-chef="minamo"] .heat-label.h4{color:#ffab5a}
 /* 舞台の火の粉は、ほのかの夜だけ */
 .night[data-chef="minamo"] .embers{display:none}
+
+/* ==== 軽く描く（11/19 しょーくん「フレームレートも見直して」）：見えていない物は描かない・動かさない ==== */
+/* ショップとビルドえらびが舞台をおおっているあいだ、うしろのシェフ・モンスター・光・火の粉・煙は描かない（重なった層の合成がへる） */
+.stage:has(.shopov:not(.out)) :is(#chef,#mon,.glow,.embers,.smoke),.stage:has(.pickov) :is(#chef,#mon,.glow,.embers,.smoke){display:none}   /* visibility:hidden だと、うごきが毎こま計算されて かえって重い */
+/* 大きく見る画面：うしろをぼかさない（ぼかしは、うしろのカードが光るたびに画面ぜんぶを描きなおす）。かわりに少し濃く */
+.viewer{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(24,12,6,.84)}
