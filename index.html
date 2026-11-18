@@ -1494,6 +1494,7 @@ herb:       { name: 'ハーブ',         short: 'ハーブ',   price: 160, form:
 };
 const BASE_IDS = ['mugi', 'hachimitsu', 'milk', 'egg', 'ichigo'];
 const MON_PRICE = 400;   // モンスター素材は1こ400円として数える（売値の計算だけ。仕入れはできない）
+const MON_PRICE_RARE = 450;   // レアモンスターの素材（にじいろ水あめ・きらきらミント）。お菓子1こが600円までになるように（11/18 しょーくん）
 const HIRU_RECIPES = {};
 [
 ['mugi', 'mugi', 'かりかりラスク'], ['mugi', 'hachimitsu', 'はちみつクッキー'], ['mugi', 'milk', 'ミルクスコーン'], ['mugi', 'egg', 'マドレーヌ'], ['mugi', 'ichigo', 'いちごタルト'],
@@ -1503,12 +1504,12 @@ const HIRU_RECIPES = {};
 ['mizuame', 'mugi', 'ステンドクッキー'], ['mizuame', 'hachimitsu', 'こはく糖'], ['mizuame', 'milk', 'ミルク飴'], ['mizuame', 'egg', 'マシュマロ'], ['mizuame', 'ichigo', 'いちごドロップ'], ['mizuame', 'mizuame', 'しずくキャンディ'],
 ['herb', 'mugi', 'ハーブサブレ'], ['herb', 'hachimitsu', 'ハーブのど飴'], ['herb', 'milk', 'ハーブムース'], ['herb', 'egg', 'ハーブシフォン'], ['herb', 'ichigo', 'ハーブゼリー'], ['herb', 'herb', 'ハーブティー'], ['herb', 'mizuame', 'ハーブキャンディ'],
 ].forEach(([a, b, name]) => { HIRU_RECIPES[recipeKey(a, b)] = name; });
-const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじいろ', minto: 'ミント' };
+const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじいろ', minto: 'ミント', hoshi: 'ほしぞら', karamel: 'こんがり', kanten: 'ひんやり' };
 const isHiruMat = m => !!HIRU_MATS[m];
 const isMonMat = m => !!(MATS[m] && MATS[m].fushigi);
 const matShort = m => HIRU_MATS[m] ? HIRU_MATS[m].short : MATS[m] ? MATS[m].short : m;
 const matName = m => HIRU_MATS[m] ? HIRU_MATS[m].name : MATS[m] ? MATS[m].name : m;
-const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? MON_PRICE : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
+const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? (MATS[m].rare ? MON_PRICE_RARE : MON_PRICE) : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
 function candyOf(key) {
 const mats = String(key).split('+'), [a, b] = mats;
 if (!(isHiruMat(a) || isHiruMat(b))) {
@@ -1533,10 +1534,10 @@ const LIKE_W = 3;         // お客さんごとの出やすい味（下）は3�
 const KANBAN_W = 2;       // 看板のお菓子の素材がすきなお客さんは2倍来やすい
 const OTHER_BUY = 0.5;    // すきな味のお菓子がないとき、ほかのお菓子を1こ買う人の割合（ハートなし）
 const CUST_LIKES = {
-kodomo: ['ichigo', 'hachimitsu', 'zeri'],
-gakusei: ['milk', 'ichigo', 'minto'],
-otona: ['mugi', 'egg', 'herb'],
-obaachan: ['hachimitsu', 'egg', 'mizuame'],
+kodomo: ['ichigo', 'hachimitsu', 'zeri', 'niji'],
+gakusei: ['milk', 'ichigo', 'minto', 'hoshi'],
+otona: ['mugi', 'egg', 'herb', 'hoippu', 'karamel'],
+obaachan: ['hachimitsu', 'egg', 'mizuame', 'kanten'],
 };
 function custCount() {
 if (S.day <= 1) return CUST_DAY1;
