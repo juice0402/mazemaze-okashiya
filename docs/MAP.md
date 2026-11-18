@@ -29,8 +29,10 @@
 | src/data/cards.js | 生地と素材 MATS（cat）・道具 TOOLS・焦げ BURNT・火力 HEAT（1〜4）・焼き加減 COOK_MAX/cookMul・フィールド FIELDS・シェフ CHEFS（doughs＝ビルドの生地・common＝ほのか共通の素材と道具・fields）・★の倍率 STAR_MUL・DMG_CAP と計算の順番・名前は8文字まで（NAME_MAX・nounName：シュークリーム→シュー など・specialName・toolSetName は道具の mini）・レシピ（recipeOf・mergeFx）・カード（cardDef・attrsOf）・まぜる（mixable・mixCid）・fxList・fxText（カードの紙：1つの効果を1行で短く「スタート：×3」。大事な順・紙は上の2つ。ことばは 次・発動・焼き加減・焦げ（状態）・ショップ にそろえる）・fxLong（大きく見る画面：[いつ, 文]。いつ＝スタート・アンカー・発動時・常時・バトル開始時・焼かれるとき・焦げたとき・置いたとき。文の {ことば} は黄色でタップすると説明。状態は「○○状態にならない」）・KW（ことばといつの説明）・FIELDS の long | 数字を変えるのはここ。仕様は claude/okashi-battle-spec.md |
 | src/data/world.js | 食材モンスター MONSTERS・ノルマ quota（160×1.9^(ラウンド−1)）/nightHP・お客さん CUSTOMERS（名前と見た目）・HEARTS_REGULAR | 数字を変えるのはここ |
 | src/data/hiru.js | 朝と昼の数字（昼のチャット）：OVENS・BATCH・CUST_BASE・LIKE_MUL・OTHER_BUY・お客さんのすきな味 CUST_LIKES／likesOf | |
-| assets/art/ | ハイグラの絵（webp）。ビルドが名前→dataURL の表 ART にして埋めこむ。もとの PNG は assets/art/raw/（埋めこまない）。一覧は docs/ART.md | |
+| assets/art/ | ハイグラの絵（webp）。ビルドが名前→dataURL の表 ART にして埋めこむ。もとの PNG は main に置かない（11/18 までの分は枝 art-raw・取り出し方は docs/ART.md）。一覧は docs/ART.md | |
 | tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL） | |
+| tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
+| .ignore | 検索（ripgrep）から index.html・assets/ を外す（1行が大きすぎるため） | |
 | src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
 | src/js/scene.js | 場面の絵のしくみ（96×48）：mountScene・sceneLoop（絵の canvas がない画面では止まる）・painter。いまは昼だけ | |
 | src/js/day-scene.js | 昼の場面の絵（昼のチャット）：dayBg・drawDay（棚・お客さん scn.cust） | |

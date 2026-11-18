@@ -2,6 +2,7 @@
 
 - 企画と決まったことは、ネット副業プロジェクトの `claude/okashi-game-idea.md`
 - 2つのチャットで作る（リーダー【okashi】＝夜・共通の所・main／昼【okashi-hiru】＝朝と昼の画面・枝 hiru/…）。決まりはプロジェクトの `claude/okashi-bunntan.md`。直してよいファイルは `docs/MAP.md` の「持ち主」、共通の部品の使い方は `docs/PARTS.md`
+- 読み方（トークンの節約）：地図 `docs/MAP.md` → 検索 → その範囲だけ読む。`index.html`・`assets/` は検索から外してある（`.ignore`）ので読まない。もとの PNG は main になく枝 `art-raw`（要る1まいだけ取る・`docs/ART.md`）。見た目の確かめは `python3 -I tools/shot.py <PNG> <場面…>` で1まいに並べて撮る
 - 地図は `docs/MAP.md`。直すのは `src/`（役目ごとのファイル・数字は `src/data/`）。直したら `node tools/build.mjs` で `index.html` を作り、両方をコミットする（index.html は手で直さない）
 - 試しに遊ぶアーティファクトは `node tools/build.mjs --artifact <ファイル>` で作ったものを、同じ URL に出しなおす
 - 1日の流れ：夜（食材モンスターの襲撃を9ラウンドのカードで撃退）→ 朝（ひらめいたレシピでお菓子を作り、カードにするか売るか）→ 昼（棚1つで販売）→ まとめ
