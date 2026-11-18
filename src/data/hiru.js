@@ -146,7 +146,7 @@ const M_TOOLS = [
   { id: 'bell', name: 'ひるねの鐘', text: '鳴らすと、お昼がすーっと閉店まで進む', price: 12000, by: 'wakaba', after: 4 },
 ];
 const mToolHas = id => !!(S.goods && S.goods['t-' + id]);
-const mToolOpen = id => !!(S.seen && S.seen['u:' + id]);
+const mToolOpen = id => (typeof TRIAL !== 'undefined' && TRIAL) || !!(S.seen && S.seen['u:' + id]);   // 試しのページ（TRIAL）は、はじめから雑貨屋に並ぶ（紹介の朝はふつうに出る）
 const DAY_SUPER = 4;      // 超はやおくりの速さ（砂時計）
 
 /* ---------- 昼のできごと（11/19 しょーくん「ランダムイベントとか、飽きない工夫をたくさん」）

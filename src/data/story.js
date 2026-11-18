@@ -227,7 +227,7 @@ const STORY = {
       return STORY.m9;
     }
     /* べんり道具の紹介（仲間になった次の朝から after 日あと・1日に1つ） */
-    for (const t of M_TOOLS) if (!mToolOpen(t.id) && STORY.mate(t.by) && S.day >= STORY.mateDay(t.by) + 1 + t.after) { S.seen['u:' + t.id] = S.day; return STORY.toolTalk[t.id](); }
+    for (const t of M_TOOLS) if (!S.seen['u:' + t.id] && STORY.mate(t.by) && S.day >= STORY.mateDay(t.by) + 1 + t.after) { S.seen['u:' + t.id] = S.day; return STORY.toolTalk[t.id](); }
     if (rec.day === 2 && S.stock.zeri && !S.seen.m5) {
       S.seen.m5 = 1;
       return [
