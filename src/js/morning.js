@@ -212,8 +212,9 @@ function shopHTMLm() {
         const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置けない' : 'かざった';
         return `<div class="ms-good"><span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
       }).join('')}</div>`;
-  return `<div class="shopov mshop">
-    <div class="ms-top"><span class="ms-tabs"><button class="pill${mat ? ' on' : ''}" data-act="m-tab" data-t="mat">素材</button><button class="pill${mat ? '' : ' on'}" data-act="m-tab" data-t="goods">お店</button></span><span class="ms-wallet">お財布 <b>${fmt(S.money)}</b>円</span></div>
+  const sbg = ART[mat ? 'bg-market' : 'bg-zakka'];
+  return `<div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
+    <div class="ms-top"><span class="ms-tabs"><button class="tab${mat ? ' on' : ''}" data-act="m-tab" data-t="mat">市場</button><button class="tab${mat ? '' : ' on'}" data-act="m-tab" data-t="goods">雑貨屋</button></span><span class="ms-wallet">お財布 <b>${fmt(S.money)}</b>円</span></div>
     ${body}
     <p class="ms-hint">${mat ? 'タップで1こ買う・下の倉庫へドラッグしても買えるよ' : '立て看板とショーケースは、つぎの日からずっと効くよ'}</p>
     <button class="go2 ms-close" data-act="m-shop" data-o="0">仕入れおわり</button>
@@ -227,7 +228,7 @@ function renderMorning(pop) {
   }).join('<i class="mo-plus">+</i>');
   const made = M.made ? `<div class="m-made${pop ? ' pop' : ''}" data-mdrag="made">${candyIcon(M.made)}<span class="mm-nm">${esc(candyOf(M.made).name)}</span>${M.fresh ? '<span class="mm-flash">レシピ ひらめき！</span>' : ''}</div>` : '';
   const { slots, ks } = shelfSlots(null);
-  $('screen').innerHTML = `<section class="morning fit${mBusy ? ' busy' : ''}" id="msec">
+  $('screen').innerHTML = `<section class="morning fit${mBusy ? ' busy' : ''}${M.shop ? ' shopping' : ''}" id="msec">
     <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
       <div class="m-oven${M.made ? ' done' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row">${ovenSlots}</span></div>
       ${made}
