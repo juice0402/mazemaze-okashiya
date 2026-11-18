@@ -1,11 +1,13 @@
-/* ==== 朝：材料だなの素材を2つまぜて焼く → 棚へ自動で並ぶ（持ち主：昼のチャット【okashi-hiru】・11/18 作りなおし）
+/* ==== 朝：キッチン（まぜて焼く）→ 商品を並べる（陳列）→ お店を開ける。雑貨屋は別の画面（持ち主：昼のチャット【okashi-hiru】・11/18 作りなおし）
    操作は夜と同じ：つかんで動かす（行き先が光る・札に「はなすと どうなるか」）。11/18 しょーくん「デッキバトルのお店と場みたいに、倉庫から素材を二つ混ぜて焼ける感じ」
-   11/18 しょーくん「仕入れ→料理→陳列がわかりにくい・直感操作で」→ 案A：仕入れの画面をなくし、焼けたら棚へ自動で飛ぶ
-     下の材料だな：基本素材はいつも並ぶ（持っていれば数・なければ値札）。モンスター素材は倉庫にある分だけ
-     材料 → オーブンへ（2つ入ったらすぐ焼く）・ほかの材料の上へ（その2つをまぜてすぐ焼く）。持っていない分は、その場で買う
-     オーブンの素材 → 材料だなへもどす（倉庫に入る）。雑貨屋（グッズだけ）は下のボタンから
-   タップはすぐ動く：材料はオーブンへ・オーブンの素材はもどす
-   つなぎ目（リーダー）：flow.js の goMorning → startMorning()・画面は renderMorning()・ボタンは MORNING_ACTS・昼へは data-act="openShop"（goDay）
+   11/18 しょーくん「仕入れ→料理→陳列がわかりにくい・直感操作で」→ 案A（仕入れの画面なし）
+   11/18 15:00 しょーくん「料理の段階では陳列棚は不要・雑貨屋は別ページ・お店を開けるだと陳列せずに開店しちゃう → 商品を並べる をフル画面で・最後にお店を開ける」
+   S.morning.view：kitchen（キッチン）・display（商品を並べる）・zakka（雑貨屋）
+     キッチン：下の材料だな（基本素材はいつも並ぶ・持っていれば数・なければ値札）→ オーブンへ（2つ入ったらすぐ焼く）・材料どうしを重ねる（まぜてすぐ焼く）。
+       持っていない分は、その場で買う。焼けたお菓子は作業台の天板へ（S.morning.baked・まだ棚ではない）。焼ける数は棚のマスまで
+     商品を並べる：天板のお菓子 → 棚のマスへ（まんなかは看板の枠 S.morning.kanban）。棚のお菓子どうしで入れかえ・天板へもどす・タップで看板に
+       お店を開ける → 並べていないお菓子は空いたマスへ → goDay → すぐ営業（看板は S.morning.kanban を day.js の startDay が使う）
+   つなぎ目（リーダー）：flow.js の goMorning → startMorning()・画面は renderMorning()・ボタンは MORNING_ACTS・昼へは goDay()
    朝のお菓子はカードにしない。数字は hiru.js・絵は day-scene.js・セリフは story.js ==== */
 
 let mBusy = false, MD = null, mSpent = 0;
@@ -17,13 +19,22 @@ const mSusuOn = () => !(typeof S === 'object' && S && S.seen) || S.day > 1 || !!
 for (const [f, k] of Object.entries(TALKERS.honoka.faces))
   Object.defineProperty(TALKERS.honoka.faces, f, { enumerable: true, get: () => (!mSusuOn() && ART[k + '-clean']) ? k + '-clean' : k });
 
-/* 朝のはじめ（flow.js の goMorning から呼ぶ）：すぐキッチン（shop＝雑貨屋が開いているか） */
-function startMorning() { S.morning = { shop: false, oven: [], made: null, fresh: false, talked: false }; }
-function mState() { if (!S.morning || !Array.isArray(S.morning.oven)) startMorning(); return S.morning; }
+/* 朝のはじめ（flow.js の goMorning から呼ぶ）：baked＝焼けて天板にあるお菓子・kanban＝看板の枠のお菓子の key */
+function startMorning() { S.morning = { view: 'kitchen', oven: [], baked: [], kanban: null, talked: false }; }
+function mState() {
+  if (!S.morning || !Array.isArray(S.morning.oven)) startMorning();
+  const M = S.morning;
+  if (!Array.isArray(M.baked)) M.baked = [];
+  if (!M.view) M.view = 'kitchen';
+  if (M.made) { M.baked.push({ key: M.made, n: BATCH }); M.made = null; }   // 前の形のセーブ（できたお菓子が待っていた）
+  return M;
+}
 function matUnlocked(m) { const who = HIRU_MATS[m] && HIRU_MATS[m].who; return !who || !!S.seen[who] || (S.stock[m] || 0) > 0; }
 const shopMats = () => Object.keys(HIRU_MATS).filter(matUnlocked);
 const shelfMaxN = () => Math.min(SHELF_MAX, S.shelfMax || 6);
-const shelfRoom = () => S.shelf.filter(s => s.n > 0).length + (S.morning && S.morning.made ? 1 : 0) < shelfMaxN();
+const placedN = () => S.shelf.filter(s => s.n > 0).length;
+const mRoomN = () => shelfMaxN() - placedN() - mState().baked.length;   // あと何回焼けるか（棚のマス − 棚にある − 天板にある）
+const shelfRoom = () => mRoomN() > 0;
 const isNewRecipe = key => !(key in S.recipes);
 /* 下の材料だなに出す素材：基本素材（仲間の素材は来てから）＋倉庫にあるモンスター素材 */
 const trayMats = () => [...shopMats(), ...Object.keys(MATS).filter(m => isMonMat(m) && (S.stock[m] || 0) > 0)];
@@ -40,7 +51,7 @@ function mCost(list) {
 }
 const mOk = list => { const c = mCost(list); return c != null && c <= S.money; };
 
-/* ---------- 動き ---------- */
+/* ---------- キッチン ---------- */
 function takeStock(m, n = 1) { S.stock[m] = (S.stock[m] || 0) - n; if (S.stock[m] <= 0) delete S.stock[m]; }
 /* 足りない分をその場で買ってから使う（使えたら true） */
 function mUse(list) {
@@ -54,7 +65,7 @@ function mUse(list) {
 }
 function bakeNg() {
   if (mBusy) return 'busy';
-  if (!shelfRoom()) return '棚がいっぱい！お店をあけに行こう';
+  if (!shelfRoom()) return '棚がいっぱい！商品を並べよう';
   return '';
 }
 function toOven(m) {
@@ -79,7 +90,7 @@ function mixTwo(a, b) {
   M.oven = [a, b]; save();
   bake();
 }
-/* 焼けたら、棚の空いたマスへ自動で並ぶ（オーブンの上にぽん → 棚へ飛ぶ） */
+/* 焼けたら、作業台の天板へ（オーブンの上にぽん → 天板へ飛ぶ） */
 function bake() {
   const M = mState(); if (mBusy || M.oven.length < 2) return;
   const key = recipeKey(M.oven[0], M.oven[1]), fresh = isNewRecipe(key);
@@ -88,7 +99,7 @@ function bake() {
     setTimeout(() => {
       mBusy = false; M.oven = [];
       if (fresh) { S.recipes[key] = S.day; S.today.flashes.push(key); }
-      S.today.made.push(key); S.shelf.push({ key, n: BATCH }); save();
+      S.today.made.push(key); M.baked.push({ key, n: BATCH }); save();
       renderMorning(); const t = mFly(key, fresh);
       if (S.day === 1 && !S.seen.mBaked) { S.seen.mBaked = 1; save(); setTimeout(() => talk([...STORY.mTut.baked, ...STORY.mTut.shelf], () => {}, { dim: false }), t); }
     }, REDUCED ? 300 : BAKE_MS);
@@ -96,9 +107,9 @@ function bake() {
   if (S.day === 1 && !S.seen.mBake) { S.seen.mBake = 1; save(); talk(STORY.mTut.bake, run, { dim: false }); }
   else run();
 }
-/* できたお菓子の札が、オーブンの上にぽんと出て、棚のマスへ飛ぶ（transform と opacity だけ）。かかる時間を返す */
+/* できたお菓子の札が、オーブンの上にぽんと出て、天板の最後のお菓子へ飛ぶ（transform と opacity だけ）。かかる時間を返す */
 function mFly(key, fresh) {
-  const ov = document.querySelector('.m-oven'), sl = document.querySelectorAll('.mshelf .dslot:not(.empty)'), to = sl[sl.length - 1];
+  const ov = document.querySelector('.m-oven'), to = document.querySelector('.mb-row .mb-item:last-child');
   if (!ov || !to || !document.body.animate) return 0;
   const f = document.createElement('div');
   f.className = 'm-fly';
@@ -111,21 +122,72 @@ function mFly(key, fresh) {
   to.classList.add('m-wait');
   f.animate([{ transform: 'scale(.2)', opacity: 0 }, { transform: 'scale(1.1)', opacity: 1, offset: .7 }, { transform: 'scale(1)', opacity: 1 }], { duration: pop, easing: 'ease-out', fill: 'forwards' });
   setTimeout(() => {
-    const go1 = f.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(.45)`, opacity: .2 }], { duration: go, easing: 'cubic-bezier(.5,0,.7,1)', fill: 'forwards' });
+    const go1 = f.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(.35)`, opacity: .2 }], { duration: go, easing: 'cubic-bezier(.5,0,.7,1)', fill: 'forwards' });
     go1.onfinish = () => {
       f.remove();
-      const s2 = document.querySelectorAll('.mshelf .dslot:not(.empty)'), last = s2[s2.length - 1];
-      document.querySelectorAll('.mshelf .m-wait').forEach(x => x.classList.remove('m-wait'));
-      if (last) last.classList.add('pop');
+      document.querySelectorAll('.m-wait').forEach(x => x.classList.remove('m-wait'));
+      const last = document.querySelector('.mb-row .mb-item:last-child'); if (last) last.classList.add('pop');
     };
   }, pop + hold);
   return pop + hold + go;
 }
-/* 前の形のセーブ（できたお菓子がオーブンの上で待っていた）：そのまま棚へ */
-function placeMade() {
-  const M = mState(); if (!M.made || mBusy) return;
-  S.shelf.push({ key: M.made, n: BATCH }); M.made = null; M.fresh = false; save();
+
+/* ---------- 商品を並べる（陳列）：天板のお菓子 → 棚のマスへ。まんなかは看板の枠 ---------- */
+const dSlots = () => shelfSlots(mState().kanban);
+function dFixKan() { const M = mState(); if (M.kanban && !S.shelf.some(s => s.key === M.kanban && s.n > 0)) M.kanban = null; }
+function dPop(item) {
+  const i = S.shelf.indexOf(item), el = i >= 0 && document.querySelector(`.md-case [data-mdrag="ds:${i}"]`);
+  if (el) el.classList.add('pop');
 }
+/* 天板の wi 番目を、棚の idx のマスへ（idx なし＝空いたマスへ）。入っていたお菓子は天板へもどす */
+function dPut(wi, idx) {
+  const M = mState(), b = M.baked[wi]; if (!b) return;
+  const { slots, ks } = dSlots();
+  if (idx == null) {
+    idx = slots.findIndex((o, j) => !o && j !== ks);
+    if (idx < 0) idx = slots[ks] ? -1 : ks;
+    if (idx < 0) return toast('棚がいっぱい！');
+  }
+  const o = slots[idx];
+  M.baked.splice(wi, 1);
+  if (o) M.baked.push(S.shelf.splice(o.i, 1, b)[0]);
+  else S.shelf.push(b);
+  if (idx === ks) M.kanban = b.key;
+  dFixKan(); save(); renderMorning(); dPop(b);
+}
+/* 棚の si 番目を、棚の idx のマスへ（看板の枠へ・入れかえ・空いたマスへ） */
+function dMove(si, idx) {
+  const M = mState(), s = S.shelf[si]; if (!s) return;
+  const { slots, ks } = dSlots(), o = slots[idx], fromKan = !!slots[ks] && slots[ks].i === si;
+  if (o && o.i === si) return;
+  if (idx === ks) M.kanban = s.key;
+  else if (fromKan) M.kanban = o ? S.shelf[o.i].key : null;
+  else if (o) { S.shelf[si] = S.shelf[o.i]; S.shelf[o.i] = s; }
+  else { S.shelf.splice(si, 1); S.shelf.push(s); }
+  save(); renderMorning(); dPop(s);
+}
+function dOff(si) {
+  const M = mState(), s = S.shelf.splice(si, 1)[0]; if (!s) return;
+  M.baked.push(s); dFixKan(); save(); renderMorning();
+}
+/* 棚のお菓子をタップ：看板にする（看板ならはずす） */
+function dKan(si) {
+  const M = mState(), s = S.shelf[si]; if (!s) return;
+  const { slots, ks } = dSlots();
+  M.kanban = slots[ks] && slots[ks].i === si ? null : s.key;
+  save(); renderMorning(); dPop(s);
+}
+/* お店を開ける：並べていないお菓子は空いたマスへ → 昼へ（すぐ営業） */
+function mOpen() {
+  const M = mState(); if (mBusy) return;
+  if (placedN() + M.baked.length > 0 && !M.kanban) return toast('看板にするお菓子を、まんなかに置いてね');
+  while (M.baked.length) S.shelf.push(M.baked.shift());
+  S.seen.dayPre = 1; save();
+  goDay();
+  if (S.dayRun && S.dayRun.kanban) openDay();
+}
+
+/* ---------- 雑貨屋（お店のグッズ） ---------- */
 function goodNext(id) {
   if (id === 'tatekanban') { const lv = S.goods.tatekanban || 0; return lv < GOODS.tatekanban.price.length ? GOODS.tatekanban.price[lv] : null; }
   if (id === 'showcase') { const lv = S.goods.showcase || 0; return lv < GOODS.showcase.price.length && shelfMaxN() < SHELF_MAX ? GOODS.showcase.price[lv] : null; }
@@ -141,11 +203,15 @@ function buyGood(id) {
   save(); renderMorning();
 }
 
-/* ---------- つかんで動かす（夜の drag.js と同じ考え方：はなした所で決まる・行き先が光る・札） ---------- */
+/* ---------- つかんで動かす（夜の drag.js と同じ考え方：はなした所で決まる・行き先が光る・札） ----------
+   mat:<素材>（材料だな）・oven:<i>（オーブンの丸）・wait:<i>（陳列の天板）・ds:<i>（陳列の棚のお菓子＝S.shelf の i 番目）
+   行き先：oven・slot:<i>（オーブン）・mat:<素材>・tray（材料だな）・ds:<マス>（棚のマス）・wait（陳列の天板） */
 function mCan(src) {
   const [k, a] = src.split(':');
   if (k === 'mat') return v => shelfRoom() && (v === 'oven' || v.startsWith('slot:') ? mOk([a]) : v.startsWith('mat:') && mOk([a, v.slice(4)]));
   if (k === 'oven') return v => v === 'tray';
+  if (k === 'wait') return v => v.startsWith('ds:');
+  if (k === 'ds') return v => v === 'wait' || (v.startsWith('ds:') && (dSlots().slots[+v.slice(3)] || {}).i !== +a);
   return () => false;
 }
 const mPay = list => { const c = mCost(list); return c ? `・${fmt(c)}円で買う` : ''; };
@@ -160,7 +226,10 @@ function mTipText(src, v) {
     return bakeTip(a, v.slice(4)) + mPay([a, v.slice(4)]);
   }
   if (k === 'oven') return '材料だなへもどす';
-  return '';
+  if (v === 'wait') return '天板にもどす';
+  const { slots, ks } = dSlots(), j = +v.slice(3);
+  if (j === ks) return '看板にする';
+  return slots[j] ? 'いれかえる' : k === 'wait' ? '棚に並べる' : 'ここへ動かす';
 }
 function mDown(e) {
   if (e.button > 0 || mBusy || talking() || MD) return;
@@ -195,9 +264,9 @@ function mMove(e) {
     MD.over = ok; if (ok) ok.classList.add('hot');
     MD.tip.hidden = !ok; if (ok) MD.tip.textContent = mTipText(MD.src, ok.dataset.mdrop);
   }
-  /* 札は指から遠いほう：指が下半分なら舞台の上、上半分なら倉庫の上 */
+  /* 札は指から遠いほう：指が下半分なら上の舞台（棚）の上、上半分なら下の材料だな（天板）の上 */
   if (ok) {
-    const st = $('mstage'), tr = document.querySelector('.mtray');
+    const st = document.querySelector('#mstage, .md-room'), tr = document.querySelector('.mtray, .md-wait');
     const y = e.clientY > innerHeight * 0.5 ? (st ? st.getBoundingClientRect().top + 10 : 10) : (tr ? tr.getBoundingClientRect().top - 40 : innerHeight - 120);
     MD.tip.style.transform = `translate(-50%,${Math.round(y)}px)`;
   }
@@ -219,81 +288,113 @@ function mUp(e) {
   if (!moved) return mTap(src);
   if (over) mDrop(src, over.dataset.mdrop);
 }
+/* タップはすぐ動く：材料はオーブンへ・オーブンの素材はもどす・天板のお菓子は空いたマスへ・棚のお菓子は看板に */
 function mTap(src) {
   const [k, a] = src.split(':');
   if (k === 'mat') toOven(a);
   else if (k === 'oven') fromOven(+a);
+  else if (k === 'wait') dPut(+a);
+  else if (k === 'ds') dKan(+a);
 }
 function mDrop(src, v) {
   const [k, a] = src.split(':');
   if (k === 'mat') return v.startsWith('mat:') ? mixTwo(a, v.slice(4)) : toOven(a);
   if (k === 'oven') return fromOven(+a);
+  if (k === 'wait') return dPut(+a, +v.slice(3));
+  if (k === 'ds') return v === 'wait' ? dOff(+a) : dMove(+a, +v.slice(3));
 }
 
 /* ---------- 画面 ---------- */
-/* 材料だなの1つ：持っていれば数（赤い丸）・なければ値札（お財布がたりなければ灰色） */
+/* 材料だなの1つ：基本素材は値札（お財布がたりなくて持っていなければ灰色）・持っていれば数（赤い丸）。モンスター素材は「とくべつ」 */
 function mTile(m) {
-  const n = S.stock[m] || 0, p = HIRU_MATS[m] ? HIRU_MATS[m].price : 0;
-  return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && p > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm">${esc(matShort(m))}</span>${n ? `<em class="mt-n">${n}</em>` : `<span class="mt-pr">${fmt(p)}円</span>`}</div>`;
-}
-/* 雑貨屋（お店のグッズ）：夜のショップ .shopov の形で舞台にかぶさる。背景は店の中 bg-zakka */
-function shopHTMLm() {
-  const body = `<div class="ms-goods">${['tatekanban', 'showcase', ...GOODS.kazari.map(k => k.id)].map(id => {
-        const G = GOODS[id] || GOODS.kazari.find(k => k.id === id), p = goodNext(id);
-        const lv = id === 'tatekanban' ? S.goods.tatekanban || 0 : id === 'showcase' ? S.goods.showcase || 0 : 0;
-        const tx = GOODS[id] ? G.text : '見た目だけ';
-        const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置けない' : 'かざった';
-        return `<div class="ms-good"><span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
-      }).join('')}</div>`;
-  const sbg = ART['bg-zakka'];
-  return `<div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
-    <div class="ms-top"><span class="ms-ttl">雑貨屋</span><span class="ms-wallet">お財布 <b>${fmt(S.money)}</b>円</span></div>
-    ${body}
-    <p class="ms-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p>
-    <button class="go2 ms-close" data-act="m-shop" data-o="0">キッチンへもどる</button>
-  </div>`;
+  const n = S.stock[m] || 0, H = HIRU_MATS[m];
+  const tag = H ? `<span class="mt-pr">${fmt(H.price)}円</span>` : '<span class="mt-pr sp">とくべつ</span>';
+  return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && H && H.price > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm">${esc(matShort(m))}</span>${tag}${n ? `<em class="mt-n">${n}</em>` : ''}</div>`;
 }
 /* オーブンの上の札：つぎにすること */
 function mHint(M) {
   if (mBusy) return '焼いてるよ……';
-  if (!shelfRoom()) return '棚がいっぱい！お店をあけに行こう';
+  if (!shelfRoom()) return '棚がいっぱい！商品を並べよう';
   return M.oven.length ? 'あと1つ！' : '材料を2つ入れてね';
 }
-function renderMorning() {
-  const M = mState(), bg = ART['bg-morning'];
-  if (M.made) placeMade();
+function kitchenHTML(M) {
+  const bg = ART['bg-morning'], room = mRoomN();
   const ovenSlots = [0, 1].map(i => {
     const m = M.oven[i];
     return m ? `<span class="mo-slot full" data-mdrag="oven:${i}" data-mdrop="slot:${i}">${matIcon(m)}</span>` : `<span class="mo-slot" data-mdrop="slot:${i}"></span>`;
   }).join('<i class="mo-plus">+</i>');
   const spent = mSpent ? `<i class="m-spent">−${fmt(mSpent)}円</i>` : ''; mSpent = 0;
   const wait = !mBusy && M.oven.length < 2 && shelfRoom();
-  const { slots, ks } = shelfSlots(null);
-  $('screen').innerHTML = `<section class="morning fit${mBusy ? ' busy' : ''}${M.shop ? ' shopping' : ''}" id="msec">
+  const baked = M.baked.map(b => `<span class="mb-item">${candyIcon(b.key)}</span>`).join('');
+  return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
     <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
       <span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
       <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
-      ${M.shop ? shopHTMLm() : ''}
+      <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
     </div>
-    <div class="mshelf" data-mdrop="shelf" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => slotHTML(o, i, ks, false)).join('')}</div>
     <div class="mtray gingham" data-mdrop="tray">${trayMats().map(mTile).join('')}</div>
-    <div class="m-bar"><button class="sub" data-act="m-shop" data-o="1">雑貨屋</button><button class="big" data-act="openShop"${mBusy ? ' disabled' : ''}>お店をあけに行く</button></div>
+    <div class="m-bar"><button class="sub" data-act="m-zakka">雑貨屋</button><button class="big" data-act="m-disp"${mBusy ? ' disabled' : ''}>商品を並べる</button></div>
   </section>`;
+}
+function mSlotHTML(o, idx, ks) {
+  const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
+  if (!o) return `<div class="dslot empty${kan}" data-mdrop="ds:${idx}">${kl}</div>`;
+  return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span></div>`;
+}
+function displayHTML(M) {
+  const bg = ART['bg-day'], { slots, ks } = dSlots();
+  const tip = M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
+  const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${esc(candyOf(b.key).name)}</span></div>`).join('');
+  return `<section class="morning mdisp fit" id="msec">
+    <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
+      <p class="md-tip">${esc(tip)}</p>
+      <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${slots.map((o, i) => mSlotHTML(o, i, ks)).join('')}</div>
+    </div>
+    <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span>${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div>
+    <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
+  </section>`;
+}
+function zakkaHTML() {
+  const body = `<div class="ms-goods">${['tatekanban', 'showcase', ...GOODS.kazari.map(k => k.id)].map(id => {
+    const G = GOODS[id] || GOODS.kazari.find(k => k.id === id), p = goodNext(id);
+    const lv = id === 'tatekanban' ? S.goods.tatekanban || 0 : id === 'showcase' ? S.goods.showcase || 0 : 0;
+    const tx = GOODS[id] ? G.text : '見た目だけ';
+    const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置けない' : 'かざった';
+    return `<div class="ms-good"><span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
+  }).join('')}</div>`;
+  const sbg = ART['bg-zakka'];
+  return `<section class="morning mzakka fit" id="msec">
+    <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
+      <div class="ms-top"><span class="ms-ttl">雑貨屋</span><span class="ms-wallet">お財布 <b>${fmt(S.money)}</b>円</span></div>
+      ${body}
+      <p class="ms-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p>
+    </div></div>
+    <div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
+  </section>`;
+}
+function renderMorning() {
+  const M = mState(), v = M.view;
+  $('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : kitchenHTML(M);
   $('msec').addEventListener('pointerdown', mDown);
-  if (!M.talked && !talking()) {
+  if (v === 'kitchen' && !M.talked && !talking()) {
     M.talked = true;
     const tut = S.day === 1 && !S.seen.mOven ? (S.seen.mOven = 1, STORY.mTut.oven) : [];
     const lines = [...STORY.morning(S.today, S.yesterday), ...tut];
     save();
     if (lines.length) talk(lines, () => {}, { dim: false });
   }
-  if (M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
+  if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}, { dim: false }); }
+  if (v === 'kitchen' && M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
 }
-function setShop(open) { const M = mState(); M.shop = open; save(); renderMorning(); }
+function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 
 /* 朝の画面のボタン（data-act）。main.js の ACTS に入る */
 const MORNING_ACTS = {
-  'm-shop': el => setShop(el.dataset.o === '1'),
+  'm-zakka': () => mView('zakka'),
+  'm-disp': () => { if (!mBusy) mView('display'); },
+  'm-kitchen': () => mView('kitchen'),
+  'm-open': () => mOpen(),
+  'm-shop': el => mView(el.dataset.o === '1' ? 'zakka' : 'kitchen'),   // 前の名前（tools/audit.py の m-shop）
   'm-good': el => buyGood(el.dataset.id),
-  toShelf: () => { placeMade(); renderMorning(); },   // 前の形のボタン（main.js の toCard もここへ）
+  toShelf: () => renderMorning(),   // 前の形のボタン（main.js の toCard もここへ）
 };

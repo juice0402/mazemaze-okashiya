@@ -10,8 +10,10 @@ let dayTick = 0, dayPrev = 0, daySpeed = 1;
 const V_ARRIVE = 900, V_ASK = 2200, V_LEAVE = 3500, V_END = 4200;
 
 /* 昼のはじめ（flow.js の goDay から呼ぶ） */
+/* 看板は朝の「商品を並べる」で決めたもの（S.morning.kanban）。朝の「お店を開ける」から来たら、すぐ営業（morning.js の mOpen が openDay を呼ぶ） */
 function startDay() {
-  S.dayRun = { open: false, done: false, kanban: null, t: 0, plan: [], i: 0, cur: null };
+  const k = S.morning && S.morning.kanban, kan = k && S.shelf.some(s => s.key === k && s.n > 0) ? k : null;
+  S.dayRun = { open: false, done: false, kanban: kan, t: 0, plan: [], i: 0, cur: null };
 }
 /* 昼をおえる（flow.js の goEvening から呼ぶ）：売り切れのマスを棚からはずす（売れのこりは次の日も棚に） */
 function stopDay() {
