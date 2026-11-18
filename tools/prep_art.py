@@ -6,6 +6,7 @@
   python3 tools/prep_art.py box <もとの PNG> <名前> <上限> <x0,y0,x1,y1>      … 決まった四角で切る（立ち絵のポーズちがいを、元の絵と同じ大きさ・位置に。ほのかは 162,4,830,1528・上限760）
   python3 tools/prep_art.py bg <もとの PNG> <名前>                             … 背景（緑は抜かない・16:9に切って横960）
   python3 tools/prep_art.py parts <もとの PNG> <幅の上限> <名前1> <名前2> …   … UI のシート（緑で区切られた部品を、上の段から左→右の順に1つずつ。'-' は飛ばす）
+  どのモードも --strict をつけると、ほぼ純な緑だけ抜く（ミントのリボンなど、緑っぽい色が消えてしまう絵に）
 できた絵は assets/art/<名前>.webp。もとの PNG はリポジトリに入れない（作業場所の /tmp などに置いて使う。出どころは docs/ART.md に書く）。
 11/18 までのもとの PNG は枝 art-raw にある（取り出し方は docs/ART.md の「取りこみ方」）
 """
@@ -15,8 +16,35 @@ from PIL import Image
 OUT = 'assets/art/'
 
 
+def key_green_strict(im):
+    """ミントなど緑っぽい色のある絵用（--strict）：ほぼ純な緑だけ抜き、緑みを消すのは抜いた所のとなり2px だけ"""
+    im = im.convert('RGBA')
+    px = im.load()
+    w, h = im.size
+    bg = [[False] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if g > 170 and r < 110 and b < 110 and g - max(r, b) > 90:
+                bg[y][x] = True
+                px[x, y] = (0, 0, 0, 0)
+    for y in range(h):
+        for x in range(w):
+            if bg[y][x]:
+                continue
+            if any(bg[yy][xx] for yy in range(max(0, y - 2), min(h, y + 3)) for xx in range(max(0, x - 2), min(w, x + 3))):
+                r, g, b, a = px[x, y]
+                m = max(r, b)
+                if g > m + 10:
+                    k = min(1.0, (g - m) / 80)
+                    px[x, y] = (r, m, b, int(a * (1 - 0.6 * k)))
+    return im
+
+
 def key_green(im):
     """背景の緑 #00FF00 を透明にし、ふちに残る緑みを消す"""
+    if STRICT:
+        return key_green_strict(im)
     im = im.convert('RGBA')
     px = im.load()
     w, h = im.size
@@ -47,6 +75,10 @@ def save(im, name):
     im.save(OUT + name + '.webp', 'WEBP', quality=86, method=6)
     print(name, im.size)
 
+
+STRICT = '--strict' in sys.argv
+if STRICT:
+    sys.argv.remove('--strict')
 
 if __name__ == '__main__':
     mode = sys.argv[1]

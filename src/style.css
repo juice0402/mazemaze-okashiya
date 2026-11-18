@@ -739,3 +739,34 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .vbox.result .r-msg{color:#a8433a}
 .vbox.result.ok .r-msg{color:#2f8a5c;border-color:#2f8a5c}
 .cinfo{background:none;box-shadow:none;border:14px solid transparent;border-radius:0;border-image:var(--ui-window) 42 fill/14px stretch;padding:0 4px}
+
+/* ==== UI の絵 その3（11/18 art-irai ui-shop・ui-board）==== */
+/* 夜のショップの板（ui-shop・400×600）：上の日よけ（絵の上から52px）は上のふちに、木の板はまんなかでのびる。左右と下はふちなし（舞台の額縁の中に入る）。
+   日よけの高さは、絵の形のまま画面のはばに合わせる。朝の仕入れ（.mshop）は昼のチャットの持ち物なので、まだ前の形 */
+.night .shopov{background:none;box-shadow:none;border-radius:0;border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);padding-top:2px;border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch}
+.night .shopov::before{display:none}
+.night.drag-own .shopov.over{box-shadow:inset 0 0 0 3px #ffd0a0,inset 0 0 24px rgba(255,190,120,.45)}
+/* 調理台（ui-board-tray）：こげ茶の木のふちと真ちゅうの角・面は鉄板。絵は padding の中まで（マスはその上） */
+.tiles{background:none;box-shadow:none;border-radius:0;padding:10px 9px 9px;border-image:var(--ui-board-tray) 30 fill/17px stretch}
+/* マス（ui-slot＝空きマス・ui-fslot＝場のマス。カードと同じ 5:7 なので、まるごとのばす）。カードがのっていれば今までどおり */
+.tslot:not(:has(.pc)){background:var(--ui-slot) center/100% 100% no-repeat;box-shadow:none}
+.fslot:not(:has(.pc)){background-image:var(--ui-fslot)}
+.tslot:not(:has(.pc))::after{display:none}
+.tslot.put:not(:has(.pc)){box-shadow:inset 0 0 0 2px rgba(255,214,120,.9),inset 0 0 14px rgba(255,214,120,.55)}
+.tslot.put:not(:has(.pc))::after{display:block}
+.tslot.put.over:not(:has(.pc)){box-shadow:inset 0 0 0 3px #ffe2a0,inset 0 0 20px rgba(255,214,120,.85)}
+/* おなかの帯（ui-quota・640×23）：真ちゅうの管。左右の丸いはしはそのまま、まんなかがのびる。ゲージは中の溝に */
+.qbar{height:12px;padding:3px 9px;background:none;box-shadow:none;border-radius:0;border-image:var(--ui-quota) 0 19 fill/0 10px stretch;overflow:visible}
+.qbar i{border-radius:4px}
+/* 火力のメーター（ui-heat・300×82）：真ちゅうのわくに4つのマス。わくはまるごと（形はかえない）、マスに火の色 */
+.heat-bar{flex:none;max-width:none;width:96px;aspect-ratio:300/82;padding:3.2% 3% 3.6%;gap:0 2.4%;background:var(--ui-heat) center/100% 100% no-repeat}
+.heat-bar i{height:100%;border-radius:4px;background:transparent}
+.heat-bar i.on.h1{background:rgba(246,210,154,.85)}.heat-bar i.on.h2{background:rgba(255,150,60,.9)}.heat-bar i.on.h3{background:rgba(232,64,42,.92)}.heat-bar i.on.h4{background:#ff3a1a;box-shadow:0 0 6px #ff7a2a}
+.night .ov-heat{left:22%;right:22%}
+/* コイン（ui-coin）：ショップのコイン・値札・入れかえの値段 */
+.sh-coin i,.sh-price i,.sh-roll .cn{background:var(--ui-coin) center/contain no-repeat;box-shadow:none;border-radius:0}
+/* 値札（ui-price・300×119）：左のとがった所と真ちゅうの穴はそのまま、右へのびる。字はこげ茶 */
+.sh-price{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 6px 3px 12px;border-image:var(--ui-price) 22 22 22 62 fill/3px 6px 3px 12px stretch;padding:1px 2px 0 0;color:#3a1c08}
+.sh-price.ng{background:none;color:#a03a2a}
+/* まぜの札（ui-ribbon・300×68・ミントのリボン）：左右の切りこみはそのまま。字は深緑 */
+.mixmark,.tslot.can::before{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:2px 7px;border-image:var(--ui-ribbon) 10 28 fill/2px 7px stretch;padding:0 2px;color:#103a2c}

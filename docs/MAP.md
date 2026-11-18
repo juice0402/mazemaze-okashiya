@@ -30,7 +30,7 @@
 | src/data/world.js | 食材モンスター MONSTERS（drop＝満足するとくれる素材・from＝その日からお客さんに〔しずくクラゲ3・こんぺいトカゲ6・ひよこ9〕・rare＝レア）と来る子 nightMonster（新顔が先・ふだんはきのうの子の次）・お金 START_MONEY・YEN_PER_VALUE（売値＝材料の value×7 円）・満足とお礼 MOODS/moodOf（ちょっと満足・満足・大満足＝素材1〜3・コイン200〜800円）・おなか quota（160×1.9^(ラウンド−1)）/nightHP（おなかいっぱいの量）・お客さん CUSTOMERS（名前と見た目）・HEARTS_REGULAR・レアモンスター（rare＝来られる日・alt＝仮の絵）と夕方のモンスター nightMonster（前の夜が大満足ならレア） | 数字を変えるのはここ |
 | src/data/hiru.js | 朝と昼の数字（昼のチャット）：朝昼の素材 HIRU_MATS・レシピ表 HIRU_RECIPES・モンスター素材のことば MON_WORD・お菓子 candyOf・棚 kanbanSlot（看板の枠はまんなか）・昼のお客さん custCount/custPlan・すきな味 CUST_LIKES・グッズ GOODS・評判のびん REP_JAR | |
 | assets/art/ | ハイグラの絵（webp）。ビルドが名前→dataURL の表 ART にして埋めこむ。もとの PNG は main に置かない（11/18 までの分は枝 art-raw・取り出し方は docs/ART.md）。一覧は docs/ART.md | |
-| tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL）。parts＝UI のシートを部品ごとに切る | |
+| tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL）。parts＝UI のシートを部品ごとに切る・--strict＝ほぼ純な緑だけ抜く（ミントなど緑っぽい絵） | |
 | tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
 | .ignore | 検索（ripgrep）から index.html・assets/ を外す（1行が大きすぎるため） | |

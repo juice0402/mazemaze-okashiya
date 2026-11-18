@@ -38,7 +38,7 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/ui-shop.md`（ショップの日よけと板・板のふちなし＝舞台の額縁の中に入る）・`ui-board.md`（調理台・おなかの帯・マス・コイン・火力のメーター・値札）が依頼中（11/18 夕方）。ui-stage・op1・op2 は済
+- art-irai `requests/okashi/monsters2.md`（しずくクラゲ・こんぺいトカゲ・ほのお鳥のひよこの大きい立ち姿 → mon-kurage・mon-tokage・mon-hiyoko）・`cards12.md`（しずく寒天・ほしくずシュガー・ほのおカラメル → card-kanten・card-hoshi・card-karamel）が依頼中（11/18 15時・H-016）。ui-shop・ui-board・ui-stage・op1・op2 は済
 - 待ち（2つずつ依頼中に）：`ui-cards`（カードのふち4つ）・`ui-parts`（紋章・星・まっすぐな帯・ハンコ）・`ui-day`（棚・オーブン・看板・びん）
 - 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
 - 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
@@ -65,6 +65,8 @@
 | ui-panel・ui-window・ui-nameplate・ui-diary（紙のパネル・会話の窓・名前の札・日記の紙） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-panels.md`（PR #52）・`prep_art.py parts … 640`（上の段から） | ラウンドの結果・おもてなしの結果（ui-panel）／会話の窓・大きく見る画面の説明（ui-window）／会話の名前の札／日記の紙（すべて border-image の9分割） |
 | ui-diary-tape（日記の紙のマスキングテープ） | A | Codex（切りわけ） | 2026-11-18 | ui-diary の左上のテープを切りわけた（9分割でのびないように）。紙のテープの下は、右の紙をうつしてつないだ | .diary の左上（::before） |
 | ui-stage-frame・ui-stage-medal（夜の舞台の額縁・上のまんなかのメダル） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-stage.md`（PR #56・1086×1448 のたて長）・`prep_art.py parts … 400 ui-stage-frame -` と `parts … 150 - ui-stage-medal`。額縁は9分割（角74px・木のふち37px・辺は round）・メダルはコードで重ねる |
+| ui-shop（夜のショップの板：しましまの日よけ＋木の板・ふちなし） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-shop.md`（PR #61・1024×1536）・`prep_art.py parts … 400 ui-shop`（緑なし＝まるごと）。上52px の日よけは border-image の上のふち（高さは画面のはばに合わせる）・板はまんなかでのばす | 夜のショップ `.night .shopov`（朝の仕入れ .mshop はまだ前の形・昼のチャットと相談） |
+| ui-board-tray・ui-quota・ui-slot・ui-fslot・ui-coin・ui-heat・ui-price・ui-ribbon（調理台・おなかの帯・空きマス・場のマス・コイン・火力のメーター・値札・ミントのリボン） | A | Codex | 2026-11-18 | art-irai `requests/okashi/ui-board.md`（PR #60・1536×1024 の4段）・`prep_art.py parts` を上限ちがいで4回（640＝調理台と帯・220＝マス2つ・96＝コイン・300＝メーターと値札とリボン）。リボンはミントが緑に近いので `--strict` | 調理台 `.tiles`（9分割 30）・おなかの帯 `.qbar`（左右19）・空きマス `.tslot`／場のマス `.fslot`（まるごと）・コイン `.sh-coin i`／`.sh-price i`／`.sh-roll .cn`・火力のメーター `.heat-bar`（まるごと・マスに火の色）・値札 `.sh-price`（左62）・まぜの札 `.mixmark`／`.tslot.can::before`（左右28） |
 | logo-ma・logo-ze・logo-o・logo-ka・logo-shi・logo-ya・logo-san・logo-ma-g・logo-ze-g（タイトルロゴの文字・-g は残像と光の型） | C | フォントで描いた文字（Mochiy Pop One・OFL）。AI の絵ではない | 2026-11-18 | 昼のチャット（枝 hiru/logo-tab・H-014）。3倍の大きさの絵（フォントのファイルはビルドが埋めこめないので絵にした） | タイトルのロゴ（src/js/logo.js の logoHTML） |
 | op-mix・op-shop-night（オープニング：朝の厨房でまぜるほのか・夜のお店の外観） | A | Codex | 2026-11-18 | art-irai `requests/okashi/op1.md`（step1・step3・PR #54）・`prep_art.py bg`（16:9 の横960）。op-shop-night は bg-shop-out と同じお店を夜に。op-forest（step2）は不合格で op2 に出しなおし | オープニング（昼のチャット・H-015） |
 | op-forest（オープニング：厨房の窓から夕方の森へ流れる横長の景色） | A | Codex | 2026-11-18 | art-irai `requests/okashi/op2.md`（PR #58・2172×724）。上64px・下49px を切って 32:9 → 横1920×540 の webp（quality 76）。人・生き物・字なし | オープニングの②③で横に流す背景（昼のチャットが使う・H-015） |
