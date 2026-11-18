@@ -4,7 +4,17 @@
 const MONSTERS = [
   { id: 'slime', name: 'ぷるぷるスライム', drop: 'zeri', text: 'ゼリーでできたスライム。お店の砂糖をねらってきた' },
   { id: 'hitsuji', name: 'くもひつじ', drop: 'hoippu', text: 'ホイップの毛のひつじ。ふわふわ食べ歩き中' },
+  /* レアモンスター（11/18 H-009）：rare の日から、前の夜が大満足なら次の夕方に来る（1回だけ）。alt は絵が届くまでの仮の絵 */
+  { id: 'nijikurage', name: 'にじいろクラゲ', drop: 'niji', rare: 5, alt: 'mob-kurage', text: 'しずくクラゲのめずらしい仲間。にじいろにきらきら光る' },
+  { id: 'mintousagi', name: 'ミントうさぎ', drop: 'minto', rare: 11, text: '葉っぱの耳のうさぎ。ふつうは人になつかない' },
 ];
+/* その日の夕方に来るモンスター（MONSTERS の番号）：ふだんは rare のない子を順番に。レアは前の夜（S.yesterday）が大満足のときだけ */
+function nightMonster() {
+  const r = MONSTERS.findIndex(m => m.rare && S.day >= m.rare && !S.seenMon.includes(m.id));
+  if (r >= 0 && S.yesterday && S.yesterday.mood >= 3) return r;
+  const reg = MONSTERS.filter(m => !m.rare);
+  return MONSTERS.indexOf(reg[(S.day - 1) % reg.length]);
+}
 
 /* お金（11/18 しょーくん「現実の値段っぽく。売値・原価・モンスターのお金のバランスが崩れないように」）
    お菓子1こ：ふつう200〜300円・モンスター素材入り400〜600円（cards.js の recipeOf の price＝材料の value×YEN_PER_VALUE）

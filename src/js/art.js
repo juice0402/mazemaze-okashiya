@@ -90,7 +90,7 @@ function cardIconURL(cid) {
   if (URLS.has(cid)) return URLS.get(cid);
   const k = cid[0], id = cid.slice(2);
   const src = k === 'o' ? candyCanvas(id) : k === 's' ? specialCanvas(id) : k === 'k' ? ICON['koge' + id] : k === 'u' || k === 'w' ? ICON[id.split(/[+|]/)[0]] : ICON[id];
-  const u = big(src, k === 's' ? 3 : 4);
+  const u = big(src || ICON.zeri, k === 's' ? 3 : 4);   // 絵のない材料（レアの素材など）は仮の絵
   URLS.set(cid, u);
   return u;
 }

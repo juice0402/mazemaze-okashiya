@@ -304,7 +304,7 @@ function heroFor(k, ms) {
   set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
 }
 const MON_URL = {};
-const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || big(MON_SPR[id], 8));
+const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || ART[(MONSTERS.find(m => m.id === id) || {}).alt] || big(MON_SPR[id] || MON_SPR.slime, 8));
 const monIsArt = id => !!ART['mon-' + id];
 function heatCells() { return Array.from({ length: HEAT_MAX }, () => '<i></i>').join(''); }
 

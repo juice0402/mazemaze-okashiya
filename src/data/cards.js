@@ -29,6 +29,9 @@ const MATS = {
   /* ふしぎな材料（食材モンスターが落とす素材） */
   zeri:   { cat: 'mat', name: 'ぷるぷるスライムのゼリー', short: 'スライムゼリー', fushigi: true, taste: 'ぷるぷる', adj: 'ぷるぷる', noun: 'ゼリー', nr: 6, value: 60, col: '#7fd6e0', fx: { again: 1, nb: 20 } },
   hoippu: { cat: 'mat', name: 'くもひつじのホイップ', short: 'ひつじホイップ', fushigi: true, taste: 'ふわふわ', adj: 'ふわっと', noun: 'シュークリーム', nr: 6, value: 60, col: '#fff4f8', fx: { next: 3 } },
+  /* レアモンスターがくれる素材（11/18 H-009）。朝のお菓子の材料だけ（fx がないので夜のショップには出ない。夜のカードにするかは、あとでしょーくんと） */
+  niji:   { cat: 'mat', name: 'にじいろの水あめ', short: 'にじいろ水あめ', fushigi: true, rare: true, taste: 'あまい', adj: 'にじいろ', noun: 'キャンディ', nr: 1, value: 90, col: '#f6a8d8' },
+  minto:  { cat: 'mat', name: 'きらきらミント', short: 'きらきらミント', fushigi: true, rare: true, taste: 'さわやか', adj: 'ミント', noun: 'ゼリー', nr: 6, value: 90, col: '#8fe0a8' },
 };
 
 /* ほのかの道具（ほのかのビルドどうしで共通） */

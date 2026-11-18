@@ -1033,6 +1033,8 @@ choco:  { cat: 'mat', name: 'カカオゴーレムのかけら', short: 'ゴー�
 mitsu:  { cat: 'mat', name: 'ハチドラゴンのはちみつ', short: 'はちみつ', taste: 'あまい', adj: 'はちみつ', noun: 'キャンディ', nr: 1, value: 20, col: '#f2b33a', fx: { again: 1 } },
 zeri:   { cat: 'mat', name: 'ぷるぷるスライムのゼリー', short: 'スライムゼリー', fushigi: true, taste: 'ぷるぷる', adj: 'ぷるぷる', noun: 'ゼリー', nr: 6, value: 60, col: '#7fd6e0', fx: { again: 1, nb: 20 } },
 hoippu: { cat: 'mat', name: 'くもひつじのホイップ', short: 'ひつじホイップ', fushigi: true, taste: 'ふわふわ', adj: 'ふわっと', noun: 'シュークリーム', nr: 6, value: 60, col: '#fff4f8', fx: { next: 3 } },
+niji:   { cat: 'mat', name: 'にじいろの水あめ', short: 'にじいろ水あめ', fushigi: true, rare: true, taste: 'あまい', adj: 'にじいろ', noun: 'キャンディ', nr: 1, value: 90, col: '#f6a8d8' },
+minto:  { cat: 'mat', name: 'きらきらミント', short: 'きらきらミント', fushigi: true, rare: true, taste: 'さわやか', adj: 'ミント', noun: 'ゼリー', nr: 6, value: 90, col: '#8fe0a8' },
 };
 const TOOLS = {
 maki:     { name: 'おばけ樹木のまき', short: 'おばけまき', mini: 'まき', role: '火力', fx: { heat: 1 } },
@@ -1218,7 +1220,15 @@ const KW = {
 const MONSTERS = [
 { id: 'slime', name: 'ぷるぷるスライム', drop: 'zeri', text: 'ゼリーでできたスライム。お店の砂糖をねらってきた' },
 { id: 'hitsuji', name: 'くもひつじ', drop: 'hoippu', text: 'ホイップの毛のひつじ。ふわふわ食べ歩き中' },
+{ id: 'nijikurage', name: 'にじいろクラゲ', drop: 'niji', rare: 5, alt: 'mob-kurage', text: 'しずくクラゲのめずらしい仲間。にじいろにきらきら光る' },
+{ id: 'mintousagi', name: 'ミントうさぎ', drop: 'minto', rare: 11, text: '葉っぱの耳のうさぎ。ふつうは人になつかない' },
 ];
+function nightMonster() {
+const r = MONSTERS.findIndex(m => m.rare && S.day >= m.rare && !S.seenMon.includes(m.id));
+if (r >= 0 && S.yesterday && S.yesterday.mood >= 3) return r;
+const reg = MONSTERS.filter(m => !m.rare);
+return MONSTERS.indexOf(reg[(S.day - 1) % reg.length]);
+}
 const START_MONEY = 1000;    // はじめのお金（プロローグ「お財布、さみしい」）
 const YEN_PER_VALUE = 7;
 const MOODS = [
@@ -1275,6 +1285,19 @@ if (rec.day === 1) return [
 'ほのか【やる気】：よーし、それなら、おもてなしだ！',
 'ほのか【ドヤ】：とびっきりのクッキー、ふるまってあげる！',
 ];
+if (rec.mon === 'nijikurage' && rec.newMon) return [
+'（夕方。いつもとちがう、きらきらの光）',
+'ほのか【びっくり】：わぁ……にじいろのクラゲ！？',
+'にじいろクラゲ：ふわ……（ゆらゆら）',
+'ほのか【やる気】：めずらしいお客さん！とっておきで、おもてなしだ！',
+];
+if (rec.mon === 'mintousagi' && rec.newMon) return [
+'（夕方。すーっとさわやかな香り）',
+'ほのか【うっとり】：なんだろう、すっごくいい香り……',
+'みなも：……うさぎ。葉っぱの',
+'ミントうさぎ：ぴょこ……（すんすん）',
+'ほのか【わくわく】：かわいい〜！おもてなしするよ！',
+];
 return [];
 },
 thanks(rec) {
@@ -1285,6 +1308,16 @@ if (rec.day === 1) return [
 'ほのか【びっくり】：これ……スライムのゼリー？',
 'ほのか【うっとり】：ぷるぷるしてる……新しいレシピに使えるかも！',
 'ほのか【わくわく】：なんだか、明日が楽しみになってきた！',
+];
+if (rec.mon === 'nijikurage' && rec.newMon) return [
+'（にじいろの水あめを置いていく）',
+'ほのか【感動】：にじいろの水あめ……！',
+'ほのか【うっとり】：きれい……食べるのがもったいない！',
+];
+if (rec.mon === 'mintousagi' && rec.newMon) return [
+'（きらきらのミントを置いていく）',
+'ほのか【わくわく】：きらきらのミント……！',
+'みなも：……めずらしい。ふつうは、人になつかない',
 ];
 return [];
 },
@@ -1385,7 +1418,7 @@ const hi = hiArt(cid); if (hi) return hi;
 if (URLS.has(cid)) return URLS.get(cid);
 const k = cid[0], id = cid.slice(2);
 const src = k === 'o' ? candyCanvas(id) : k === 's' ? specialCanvas(id) : k === 'k' ? ICON['koge' + id] : k === 'u' || k === 'w' ? ICON[id.split(/[+|]/)[0]] : ICON[id];
-const u = big(src, k === 's' ? 3 : 4);
+const u = big(src || ICON.zeri, k === 's' ? 3 : 4);   // 絵のない材料（レアの素材など）は仮の絵
 URLS.set(cid, u);
 return u;
 }
@@ -1578,7 +1611,7 @@ let fighting = false;  // バトルの間（ショップをとじて、舞台で
 function startNight() {
 S.phase = 'night';
 if (!S.today) S.today = newDay(S.day);
-const mon = (S.day - 1) % MONSTERS.length, id = MONSTERS[mon].id;
+const mon = nightMonster(), id = MONSTERS[mon].id;
 Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id), belly: nightHP(S.day) });
 S.night = {
 mon, field: null, heat: START_HEAT, call: false, stage: 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
@@ -1607,7 +1640,8 @@ const C = CHEFS[S.chef], L = [];
 for (const cid of C.doughs) L.push([cid, 3]);
 for (const cid of C.common) L.push([cid, 2]);
 for (const id of C.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
-if (N.round >= 3 || N.met > 0) L.push(['m:' + MONSTERS[N.mon].drop, 2]);
+const dr = MONSTERS[N.mon].drop;
+if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
 return L;
 }
 function draw1(L) {
@@ -2178,7 +2212,7 @@ const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle(
 set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
 }
 const MON_URL = {};
-const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || big(MON_SPR[id], 8));
+const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || ART[(MONSTERS.find(m => m.id === id) || {}).alt] || big(MON_SPR[id] || MON_SPR.slime, 8));
 const monIsArt = id => !!ART['mon-' + id];
 function heatCells() { return Array.from({ length: HEAT_MAX }, () => '<i></i>').join(''); }
 function viewerHTML() {
@@ -2637,6 +2671,8 @@ wakaba: { name: 'わかば', side: 'r', faces: {} },
 kodomo: { name: 'こども', side: 'r', faces: {} },
 slime: { name: 'スライム', side: 'r', mon: 'slime' },
 hitsuji: { name: 'くもひつじ', side: 'r', mon: 'hitsuji' },
+nijikurage: { name: 'にじいろクラゲ', side: 'r', mon: 'nijikurage' },
+mintousagi: { name: 'ミントうさぎ', side: 'r', mon: 'mintousagi' },
 };
 const TALKER_ID = Object.assign({ ぷるぷるスライム: 'slime', ひつじ: 'hitsuji' },
 ...Object.entries(TALKERS).map(([id, t]) => ({ [t.name]: id })));

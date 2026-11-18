@@ -27,7 +27,7 @@ let fighting = false;  // バトルの間（ショップをとじて、舞台で
 function startNight() {
   S.phase = 'night';
   if (!S.today) S.today = newDay(S.day);
-  const mon = (S.day - 1) % MONSTERS.length, id = MONSTERS[mon].id;
+  const mon = nightMonster(), id = MONSTERS[mon].id;
   Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id), belly: nightHP(S.day) });
   S.night = {
     mon, field: null, heat: START_HEAT, call: false, stage: 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
@@ -60,7 +60,8 @@ function poolList() {
   for (const cid of C.doughs) L.push([cid, 3]);
   for (const cid of C.common) L.push([cid, 2]);
   for (const id of C.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
-  if (N.round >= 3 || N.met > 0) L.push(['m:' + MONSTERS[N.mon].drop, 2]);
+  const dr = MONSTERS[N.mon].drop;
+  if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
   return L;
 }
 function draw1(L) {

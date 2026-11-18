@@ -20,6 +20,8 @@ const TALKERS = {
   kodomo: { name: 'こども', side: 'r', faces: {} },
   slime: { name: 'スライム', side: 'r', mon: 'slime' },
   hitsuji: { name: 'くもひつじ', side: 'r', mon: 'hitsuji' },
+  nijikurage: { name: 'にじいろクラゲ', side: 'r', mon: 'nijikurage' },
+  mintousagi: { name: 'ミントうさぎ', side: 'r', mon: 'mintousagi' },
 };
 const TALKER_ID = Object.assign({ ぷるぷるスライム: 'slime', ひつじ: 'hitsuji' },
   ...Object.entries(TALKERS).map(([id, t]) => ({ [t.name]: id })));
