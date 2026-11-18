@@ -27,13 +27,13 @@
 /* 焼けたお菓子の札：オーブンの上にぽん → 棚のマスへ飛ぶ（morning.js の mFly・Web Animations で transform と opacity だけ） */
 .m-fly{position:fixed;z-index:40;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px 7px;background:#fffaf0;border:2.5px solid var(--brass);border-radius:16px;box-shadow:0 0 0 3px rgba(255,236,190,.55),0 5px 0 rgba(0,0,0,.3);pointer-events:none;opacity:0}
 .m-fly .hico{width:52px;height:52px}
-.mshelf .dslot.m-wait > *{opacity:0}
+.mb-item.m-wait{opacity:0}
 .mm-nm{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
 .mm-flash{position:absolute;left:50%;top:-14px;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;font-family:var(--disp);font-size:12px;color:#3a1c08;background:linear-gradient(var(--brass-hi),var(--gold));border:1.5px solid var(--brass-lo);border-radius:999px;padding:1px 10px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
-/* 雑貨屋（お店のグッズだけ）：夜のショップ .shopov（日よけ）の形。背景は店の中 bg-zakka。開いているあいだは棚をかくして広く（.morning.shopping） */
+/* 雑貨屋（お店のグッズだけ・別の画面 .mzakka）：夜のショップ .shopov（日よけ）の形を .mz-wrap いっぱいに。背景は店の中 bg-zakka */
+.mz-wrap{position:relative;flex:1;min-height:0;border-radius:14px;overflow:hidden}
 .mshop{padding:26px 10px 10px;gap:6px}
 .shopov.mshop.ms-bg{background:linear-gradient(rgba(36,16,6,.58),rgba(36,16,6,.1) 28%,rgba(36,16,6,.1) 72%,rgba(36,16,6,.72)),var(--msbg) 50% 50%/cover no-repeat,#5a3824}
-.morning.shopping .mshelf{display:none}
 .ms-top{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
 .ms-ttl{font-family:var(--disp);font-size:18px;color:var(--milk);text-shadow:0 2px 0 rgba(0,0,0,.45)}
 .ms-wallet{font-size:12px;color:var(--milk);white-space:nowrap}
@@ -52,26 +52,46 @@
 .m-wallet b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--brass-hi)}
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
 @keyframes mspent{0%{opacity:0;transform:translateY(-6px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
-/* 棚（昼のショーケースと同じ形を小さく） */
-.mshelf{flex:0 1 calc(var(--rows) * 60px + 16px);min-height:calc(var(--rows) * 44px + 16px)}
-.mshelf .d-nm{font-size:9.5px}
-.mshelf .dslot .hico{height:min(30px,54%)}
-.mshelf .d-dots{display:none}
 /* 材料だな：共通の部品 .gingham（ギンガムの布）の上に素材。持っていれば数（赤い丸）・なければ下に値札 */
-.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:12px 6px;padding:11px 11px 17px;min-height:72px}
-.mt{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 1px 4px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
-.mt .hico{width:30px;height:30px}
+.mtray{flex:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px 6px;padding:12px;min-height:84px}
+.mt{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 1px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
+.mt .hico{width:34px;height:34px}
 .mt-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden}
 .mt-n{position:absolute;right:-5px;top:-6px;min-width:19px;height:19px;border-radius:10px;padding:0 4px;font-style:normal;font-size:11px;font-weight:700;line-height:19px;text-align:center;color:#fff;background:var(--strawberry);border:1.5px solid #fff}
 .mt.mmat{border-color:var(--brass-lo);background:radial-gradient(circle at 50% 30%,#fffbe8,#ffe2a6)}
 .mt.mmat .mt-nm{font-size:9px;letter-spacing:-.8px}
-.mt-pr{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%) rotate(-2deg);white-space:nowrap;font-size:10px;font-weight:700;line-height:15px;color:#6b2e0e;background:#ffe9a8;border:1.5px solid #8a4a1c;border-radius:4px;padding:0 5px;box-shadow:0 1.5px 0 rgba(0,0,0,.3)}
+.mt-pr{white-space:nowrap;font-size:10px;font-weight:700;line-height:15px;color:#6b2e0e;background:#ffe9a8;border:1.5px solid #8a4a1c;border-radius:4px;padding:0 5px;box-shadow:0 1.5px 0 rgba(0,0,0,.3)}
 .mt.poor{opacity:.55}
 .mt.poor .mt-pr{color:#5a4a3a;background:#d9d0c4;border-color:#7a6a5a}
+.mt-pr.sp{color:#5a3404;background:linear-gradient(var(--brass-hi),var(--gold));border-color:var(--brass-lo)}
 .m-bar{flex:none;display:flex;gap:8px;padding-bottom:8px}
 .m-bar .sub{flex:none;padding:8px 16px}
 .m-bar .big{flex:1;width:auto}
-.morning.busy .mtray,.morning.busy .mshelf{opacity:.7}
+.morning.busy .mtray{opacity:.7}
+/* 作業台の天板：焼けたお菓子がならぶ（まだ棚ではない） */
+.m-baked{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;display:flex;flex-direction:column;gap:3px;padding:5px 8px 6px;border-radius:10px;background:linear-gradient(#e9e4dc,#b9b1a6);border:2px solid #5a4636;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 0 rgba(0,0,0,.15),0 3px 0 rgba(0,0,0,.35)}
+.mb-lbl{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11px;font-weight:700;color:var(--ink)}
+.mb-lbl em{font-style:normal;font-size:11px;color:#8a3a14}
+.mb-row{display:flex;flex-wrap:wrap;gap:4px;min-height:34px;align-items:center}
+.mb-item{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fffaf0,#efe2cc);box-shadow:0 1.5px 0 rgba(0,0,0,.25)}
+.mb-item .hico{width:26px;height:26px}
+.mb-item.pop{animation:spop .35s ease-out}
+.mb-none{font-style:normal;font-size:11px;color:var(--ink-soft)}
+/* 商品を並べる（陳列・別の画面 .mdisp）：お店の中（bg-day）に大きな棚・下に天板 */
+.md-room{position:relative;flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;overflow:hidden;border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4);background:linear-gradient(rgba(36,16,6,.45),rgba(36,16,6,.2) 30%,rgba(36,16,6,.55)),var(--bgimg) 50% 40%/cover no-repeat,#8d6142}
+.md-room.noart{background:linear-gradient(#8d6142,#5e3c28)}
+.md-tip{flex:none;align-self:center;max-width:100%;font-size:13px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.82);border:1.5px solid var(--brass);border-radius:999px;padding:4px 14px;text-align:center}
+.dcase.md-case{flex:1 1 0;min-height:0}
+.md-case .dslot{touch-action:none;user-select:none;cursor:grab}
+.md-case .dslot.empty{cursor:default}
+.md-case .dslot .hico{height:min(64px,52%)}
+.md-case .d-nm{font-size:12px}
+.md-wait{flex:none;position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;padding:20px 10px 10px;min-height:96px}
+.mw-lbl{position:absolute;left:10px;top:3px;font-size:11px;font-weight:700;color:var(--milk);text-shadow:0 1px 0 rgba(0,0,0,.5)}
+.mw{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
+.mw .hico{width:40px;height:40px}
+.mw-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-empty{grid-column:1 / -1;margin:auto;font-size:12px;color:var(--milk-soft)}
 /* つかんで動かす */
 .mghost{position:fixed;z-index:50;margin:0;pointer-events:none;box-shadow:0 10px 18px rgba(0,0,0,.4);transition:none;animation:none}
 .morning .lift{opacity:.35}
@@ -160,7 +180,7 @@
 @keyframes dfly{0%{transform:translate(-50%,0) scale(1.2)}100%{transform:translate(calc(var(--dx) - 50%),var(--dy)) scale(.5);opacity:.7}}
 /* ショーケース：3列・まんなかが看板の枠 */
 .dcase{flex:0 1 calc(var(--rows) * 78px + 18px);min-height:calc(var(--rows) * 52px + 18px)}
-.dcase,.mshelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px;padding:8px;border-radius:12px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0) 40%),linear-gradient(#fff8ec,#f2dcb8);border:3px solid #5a3418;box-shadow:inset 0 0 0 2px var(--brass),0 4px 0 rgba(0,0,0,.4)}
+.dcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px;padding:8px;border-radius:12px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0) 40%),linear-gradient(#fff8ec,#f2dcb8);border:3px solid #5a3418;box-shadow:inset 0 0 0 2px var(--brass),0 4px 0 rgba(0,0,0,.4)}
 .dslot{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px 3px;margin:0;border-radius:10px;background:rgba(255,255,255,.6);border:1.5px solid rgba(122,82,54,.35);box-shadow:none;color:var(--ink);font:inherit;overflow:hidden}
 button.dslot:active{transform:scale(.96);box-shadow:none}
 .dslot .hico{width:auto;height:min(40px,56%);aspect-ratio:1}
