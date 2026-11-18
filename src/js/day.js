@@ -139,12 +139,12 @@ function serve(v) {
   let s = null, love = false;
   if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
   else if (items.length && Math.random() < OTHER_BUY) s = pick(items);
-  if (!s) return { kind: 'none', say: pick(STORY.cust.none) };
+  if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
   const price = candyOf(s.key).price;
   s.n--; S.money += price; T.sales += price; T.served++;
   if (s.n <= 0 && s.key === T.kanban) T.kanbanSoldOut = true;
   if (love) { S.rep++; T.hearts++; }
-  return { kind: love ? 'love' : 'other', key: s.key, say: pick(STORY.cust[love ? 'love' : 'other']) };
+  return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other') };
 }
 function closeDay(msg) {
   const R = S.dayRun; R.done = true; R.cur = null;
