@@ -37,6 +37,7 @@
 | candy-sable・candy-castella・candy-brownie（★2 サブレ・カステラ・ショコラ） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards10.md`・もとの PNG `assets/art/raw/cards10.png` | ★2 のお菓子（形だけの絵。材料の絵がのった candy-形-材料 があればそちら） |
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
+- ストックの置き場（11/18 夜）：まだゲームで使っていない絵（みなものカード26・戦闘ポーズ6・デフォルメ3。これから届くわかばの分・立ち絵のストックも）は assets/art-stock/ に置く。ビルドは assets/art だけを埋めこむので、index.html が重くならない。使うときに assets/art へ git mv する
 ## 依頼中（11/18）
 - 依頼中（11/18 23時55分〜・4つまで）：art-irai `requests/okashi/wakaba-poses.md`・`title-wakaba.md`（@codex 1本目）と `wakaba-battle.md`・`wakaba-chibi.md`（@codex 2本目）。pan3・minamo-battle・minamo-chibi・wakaba とそれより前は済
 - 11/18 17時10分 司令塔（art-irai PR #68・game-art-rule.md）：okashi の依頼中は4つまで・@codex は2本まで並べてよい（issue #3 にコメントを2つ別々に・それぞれ「@codex AGENTS.md の決まりで、次の依頼書だけ描いて、カギで送って PR を作って：requests/okashi/<名前1>.md・requests/okashi/<名前2>.md」・2つのコメントで同じ依頼書を書かない）。パスを書かないと依頼中をぜんぶ見る（多くて3つ）。GPT の利用上限が減ってきたら司令塔に教える（2つにもどす）
