@@ -139,7 +139,9 @@ function grassSVG() {
     <path d="${blades(16, 30, .62)}" fill="#3f7a2e"/><path d="${blades(10, 22, .58)}" fill="#5ea33c"/><path d="${blades(6, 14, .55)}" fill="#86c652"/>${fl}</svg>`);
 }
 function decoHTML(mode) {
-  const mobs = DECO_MOBS.map(([n, alt, cls], k) => {
+  /* 今夜のお客さん（とその仮の絵の子）は、応援のモブからはずす（H-016） */
+  const g = N && MONSTERS[N.mon];
+  const mobs = DECO_MOBS.filter(([n]) => !g || (n !== 'mob-' + g.id && n !== g.alt)).map(([n, alt, cls], k) => {
     const src = ART[n] || (alt && ART[alt]);
     return src ? `<img class="dc dc-mob ${cls}${ART[n] ? '' : ' tmp'}" style="--k:${k}" src="${src}" alt="">` : '';
   }).join('');

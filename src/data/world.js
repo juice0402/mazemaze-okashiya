@@ -7,13 +7,22 @@ const MONSTERS = [
   /* レアモンスター（11/18 H-009）：rare の日から、前の夜が大満足なら次の夕方に来る（1回だけ）。alt は絵が届くまでの仮の絵 */
   { id: 'nijikurage', name: 'にじいろクラゲ', drop: 'niji', rare: 5, alt: 'mob-kurage', text: 'しずくクラゲのめずらしい仲間。にじいろにきらきら光る' },
   { id: 'mintousagi', name: 'ミントうさぎ', drop: 'minto', rare: 11, text: '葉っぱの耳のうさぎ。ふつうは人になつかない' },
+  /* モブ3体も夜のお客さんに（11/18 H-016 しょーくん）：from の日にはじめて来て、次からスライム・くもひつじと順番に。
+     しずくクラゲが先（にじいろクラゲの前ふり）。おなかとお礼はみんな同じ。セーブの S.night.mon は番号なので、新しい子はうしろに足す */
+  { id: 'kurage', name: 'しずくクラゲ', drop: 'kanten', from: 3, alt: 'mob-kurage', text: 'しずくでできた小さなクラゲ。ひんやりした夜風といっしょに来る' },
+  { id: 'tokage', name: 'こんぺいトカゲ', drop: 'hoshi', from: 6, alt: 'mob-tokage', text: 'しっぽが金平糖のトカゲ。星くずみたいな砂糖をこぼして歩く' },
+  { id: 'hiyoko', name: 'ほのお鳥のひよこ', drop: 'karamel', from: 9, alt: 'mob-hiyoko', text: 'ほのお鳥のひよこ。ぽかぽかの羽で、さわるとあったかい' },
 ];
-/* その日の夕方に来るモンスター（MONSTERS の番号）：ふだんは rare のない子を順番に。レアは前の夜（S.yesterday）が大満足のときだけ */
+/* その日の夕方に来るモンスター（MONSTERS の番号）：ふだんは rare のない子を順番に（from の日から入る）。
+   レアは前の夜（S.yesterday）が大満足のときだけ。from の日をすぎて、まだ来ていない子は先に来る */
 function nightMonster() {
   const r = MONSTERS.findIndex(m => m.rare && S.day >= m.rare && !S.seenMon.includes(m.id));
   if (r >= 0 && S.yesterday && S.yesterday.mood >= 3) return r;
-  const reg = MONSTERS.filter(m => !m.rare);
-  return MONSTERS.indexOf(reg[(S.day - 1) % reg.length]);
+  const nw = MONSTERS.findIndex(m => m.from && S.day >= m.from && !S.seenMon.includes(m.id));
+  if (nw >= 0) return nw;
+  const reg = MONSTERS.filter(m => !m.rare && (m.from || 1) <= S.day);
+  const y = S.yesterday ? reg.findIndex(m => m.id === S.yesterday.mon) : -1;   // きのうの子の次（同じ子が続かない）
+  return MONSTERS.indexOf(reg[y >= 0 ? (y + 1) % reg.length : (S.day - 1) % reg.length]);
 }
 
 /* お金（11/18 しょーくん「現実の値段っぽく。売値・原価・モンスターのお金のバランスが崩れないように」）

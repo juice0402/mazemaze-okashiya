@@ -1262,6 +1262,9 @@ zeri:   { cat: 'mat', name: 'ぷるぷるスライムのゼリー', short: 'ス�
 hoippu: { cat: 'mat', name: 'くもひつじのホイップ', short: 'ひつじホイップ', fushigi: true, taste: 'ふわふわ', adj: 'ふわっと', noun: 'シュークリーム', nr: 6, value: 60, col: '#fff4f8', fx: { next: 3 } },
 niji:   { cat: 'mat', name: 'にじいろの水あめ', short: 'にじいろ水あめ', fushigi: true, rare: true, taste: 'あまい', adj: 'にじいろ', noun: 'キャンディ', nr: 1, value: 90, col: '#f6a8d8' },
 minto:  { cat: 'mat', name: 'きらきらミント', short: 'きらきらミント', fushigi: true, rare: true, taste: 'さわやか', adj: 'ミント', noun: 'ゼリー', nr: 6, value: 90, col: '#8fe0a8' },
+hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 40 } },
+karamel: { cat: 'mat', name: 'ひよこのほのおカラメル', short: 'ほのおカラメル', fushigi: true, taste: 'こんがり', adj: 'こんがり', noun: 'サブレ', nr: 2, value: 60, col: '#d9822b', alt: 'mob-hiyoko', fx: { fin: 2 } },
+kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 40, heat: -1 } },
 };
 const TOOLS = {
 maki:     { name: 'おばけ樹木のまき', short: 'おばけまき', mini: 'まき', role: '火力', fx: { heat: 1 } },
@@ -1291,6 +1294,9 @@ choco: 'チョコでできたゴーレムのかけら。いちばん最初にと
 mitsu: 'ハチドラゴンの巣からとれた、とろとろのはちみつ。右どなりがもう一度。',
 zeri: '夜にあらわれたスライムのゼリー。ぷるんとはねて、となりをもう一度。',
 hoippu: '雲のようなひつじの毛のホイップ。次の一撃をふわっと大きく。',
+hoshi: '金平糖のしっぽからこぼれた、星くずの砂糖。いちばん最初にふりかけると、みんながきらきら。',
+karamel: 'ほのお鳥のひよこが焦がした、こんがりカラメル。最後にかけると、ぜんぶがつやつや倍に。',
+kanten: 'しずくクラゲのひんやり寒天。となりをおいしくして、鉄板をひとつ冷ます。',
 maki: 'おばけ樹木の枝。くべると、鉄板がひとつ熱くなる。',
 hiokoshi: 'サラマンダーの火種。鉄板が一気にふたつ熱くなる。',
 mizu: 'しずくクラゲに分けてもらった水。熱すぎたら、これ。',
@@ -1449,12 +1455,18 @@ const MONSTERS = [
 { id: 'hitsuji', name: 'くもひつじ', drop: 'hoippu', text: 'ホイップの毛のひつじ。ふわふわ食べ歩き中' },
 { id: 'nijikurage', name: 'にじいろクラゲ', drop: 'niji', rare: 5, alt: 'mob-kurage', text: 'しずくクラゲのめずらしい仲間。にじいろにきらきら光る' },
 { id: 'mintousagi', name: 'ミントうさぎ', drop: 'minto', rare: 11, text: '葉っぱの耳のうさぎ。ふつうは人になつかない' },
+{ id: 'kurage', name: 'しずくクラゲ', drop: 'kanten', from: 3, alt: 'mob-kurage', text: 'しずくでできた小さなクラゲ。ひんやりした夜風といっしょに来る' },
+{ id: 'tokage', name: 'こんぺいトカゲ', drop: 'hoshi', from: 6, alt: 'mob-tokage', text: 'しっぽが金平糖のトカゲ。星くずみたいな砂糖をこぼして歩く' },
+{ id: 'hiyoko', name: 'ほのお鳥のひよこ', drop: 'karamel', from: 9, alt: 'mob-hiyoko', text: 'ほのお鳥のひよこ。ぽかぽかの羽で、さわるとあったかい' },
 ];
 function nightMonster() {
 const r = MONSTERS.findIndex(m => m.rare && S.day >= m.rare && !S.seenMon.includes(m.id));
 if (r >= 0 && S.yesterday && S.yesterday.mood >= 3) return r;
-const reg = MONSTERS.filter(m => !m.rare);
-return MONSTERS.indexOf(reg[(S.day - 1) % reg.length]);
+const nw = MONSTERS.findIndex(m => m.from && S.day >= m.from && !S.seenMon.includes(m.id));
+if (nw >= 0) return nw;
+const reg = MONSTERS.filter(m => !m.rare && (m.from || 1) <= S.day);
+const y = S.yesterday ? reg.findIndex(m => m.id === S.yesterday.mon) : -1;   // きのうの子の次（同じ子が続かない）
+return MONSTERS.indexOf(reg[y >= 0 ? (y + 1) % reg.length : (S.day - 1) % reg.length]);
 }
 const START_MONEY = 1000;    // はじめのお金（プロローグ「お財布、さみしい」）
 const YEN_PER_VALUE = 7;
@@ -1797,7 +1809,7 @@ return o;
 const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンディ': 'candy', 'カステラ': 'castella', 'ブラウニー': 'brownie', 'ゼリー': 'jelly', 'シュークリーム': 'puff' };
 function hiArt(cid) {
 const k = cid[0], id = cid.slice(2);
-if (k === 'm' || k === 't') return ART['card-' + id] || null;
+if (k === 'm' || k === 't') return ART['card-' + id] || (MATS[id] && ART[MATS[id].alt]) || null;   // alt＝絵が届くまでの仮の絵
 if (k === 'b') return ART['field-' + id] || null;   // フィールド（ほのかの鉄板・ごうごう石窯）
 if (k === 'k') return ART['burnt-' + id] || null;   // 焦げ（★1〜★3）
 if (k === 'u' || k === 'w') return ART['card-' + id.split(/[+|]/)[0]] || null;   // 道具の★2・★3は、1つめの道具の絵
@@ -2804,7 +2816,8 @@ return (grassCache = `<svg class="dc-grass" viewBox="0 0 400 40" preserveAspectR
 <path d="${blades(16, 30, .62)}" fill="#3f7a2e"/><path d="${blades(10, 22, .58)}" fill="#5ea33c"/><path d="${blades(6, 14, .55)}" fill="#86c652"/>${fl}</svg>`);
 }
 function decoHTML(mode) {
-const mobs = DECO_MOBS.map(([n, alt, cls], k) => {
+const g = N && MONSTERS[N.mon];
+const mobs = DECO_MOBS.filter(([n]) => !g || (n !== 'mob-' + g.id && n !== g.alt)).map(([n, alt, cls], k) => {
 const src = ART[n] || (alt && ART[alt]);
 return src ? `<img class="dc dc-mob ${cls}${ART[n] ? '' : ' tmp'}" style="--k:${k}" src="${src}" alt="">` : '';
 }).join('');

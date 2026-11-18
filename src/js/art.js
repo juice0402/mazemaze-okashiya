@@ -68,7 +68,7 @@ function specialCanvas(id) {
 const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンディ': 'candy', 'カステラ': 'castella', 'ブラウニー': 'brownie', 'ゼリー': 'jelly', 'シュークリーム': 'puff' };
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
-  if (k === 'm' || k === 't') return ART['card-' + id] || null;
+  if (k === 'm' || k === 't') return ART['card-' + id] || (MATS[id] && ART[MATS[id].alt]) || null;   // alt＝絵が届くまでの仮の絵
   if (k === 'b') return ART['field-' + id] || null;   // フィールド（ほのかの鉄板・ごうごう石窯）
   if (k === 'k') return ART['burnt-' + id] || null;   // 焦げ（★1〜★3）
   if (k === 'u' || k === 'w') return ART['card-' + id.split(/[+|]/)[0]] || null;   // 道具の★2・★3は、1つめの道具の絵

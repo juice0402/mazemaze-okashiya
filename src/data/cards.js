@@ -32,6 +32,10 @@ const MATS = {
   /* レアモンスターがくれる素材（11/18 H-009）。朝のお菓子の材料だけ（fx がないので夜のショップには出ない。夜のカードにするかは、あとでしょーくんと） */
   niji:   { cat: 'mat', name: 'にじいろの水あめ', short: 'にじいろ水あめ', fushigi: true, rare: true, taste: 'あまい', adj: 'にじいろ', noun: 'キャンディ', nr: 1, value: 90, col: '#f6a8d8' },
   minto:  { cat: 'mat', name: 'きらきらミント', short: 'きらきらミント', fushigi: true, rare: true, taste: 'さわやか', adj: 'ミント', noun: 'ゼリー', nr: 6, value: 90, col: '#8fe0a8' },
+  /* モブ3体がくれる素材（11/18 H-016 しょーくん「キャラらしく」）。夜のデッキのトカゲ砂糖・ほのおたまご・クラゲの水とはべつの物。alt は素材の絵が届くまでの仮の絵（その子のデフォルメ） */
+  hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 40 } },
+  karamel: { cat: 'mat', name: 'ひよこのほのおカラメル', short: 'ほのおカラメル', fushigi: true, taste: 'こんがり', adj: 'こんがり', noun: 'サブレ', nr: 2, value: 60, col: '#d9822b', alt: 'mob-hiyoko', fx: { fin: 2 } },
+  kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 40, heat: -1 } },
 };
 
 /* ほのかの道具（ほのかのビルドどうしで共通） */
@@ -67,6 +71,9 @@ const FLAVOR = {
   mitsu: 'ハチドラゴンの巣からとれた、とろとろのはちみつ。右どなりがもう一度。',
   zeri: '夜にあらわれたスライムのゼリー。ぷるんとはねて、となりをもう一度。',
   hoippu: '雲のようなひつじの毛のホイップ。次の一撃をふわっと大きく。',
+  hoshi: '金平糖のしっぽからこぼれた、星くずの砂糖。いちばん最初にふりかけると、みんながきらきら。',
+  karamel: 'ほのお鳥のひよこが焦がした、こんがりカラメル。最後にかけると、ぜんぶがつやつや倍に。',
+  kanten: 'しずくクラゲのひんやり寒天。となりをおいしくして、鉄板をひとつ冷ます。',
   maki: 'おばけ樹木の枝。くべると、鉄板がひとつ熱くなる。',
   hiokoshi: 'サラマンダーの火種。鉄板が一気にふたつ熱くなる。',
   mizu: 'しずくクラゲに分けてもらった水。熱すぎたら、これ。',
