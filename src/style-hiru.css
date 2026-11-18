@@ -17,19 +17,108 @@
 .made .candy{width:54px;height:54px}
 .made .tag{color:var(--gold)}
 
-/* 昼 */
-.scene-wrap{position:relative;flex:1 1 0;min-height:72px;max-height:calc((min(100vw, 460px) - 32px) / 2);border:3px solid #3a2318;border-radius:12px;overflow:hidden;background:#fbe3d4}
-.scene-wrap canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
-.shelf{flex:none;display:flex;gap:10px;align-items:flex-start;font-size:12px}
-.shelf .lbl{color:var(--milk-soft);flex:none}
-#shelfList{display:flex;gap:4px 12px;flex-wrap:wrap}
-#shelfList .item{display:flex;align-items:center;gap:4px}
-#shelfList img{width:24px;height:24px;object-fit:contain;image-rendering:pixelated}
-.log{flex:1;min-height:48px;list-style:none;margin:0;padding:6px 10px;background:rgba(42,23,12,.45);border:2px solid #3a2318;border-radius:10px;display:flex;flex-direction:column;gap:3px;font-size:12px;overflow-y:auto}
-.log li{flex:none}
-.log li.love{color:var(--gold)}
-.log li.no{color:var(--milk-soft)}
 /* 今どきの見た目の皮（もとは style.css のいちばん下） */
 .recipe{background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;box-shadow:inset 0 0 0 1px rgba(217,168,90,.7),0 3px 0 #3a1c08}
-.scene-wrap{border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4)}
-.log{background:rgba(30,14,6,.55);border:2px solid #24130a;box-shadow:inset 0 0 0 1px rgba(255,214,140,.3)}
+.hico{display:block;width:32px;height:32px;object-fit:contain;flex:none}
+
+/* ==== 昼：カウンター越しの舞台（上）・ショーケース（下）・下のボタン（11/18 作りなおし）
+   ずっと動くのは transform と opacity だけ（docs/PARTS.md の「軽く描く」）。速さは舞台の --sp（はやおくりで2） ==== */
+.dstage{position:relative;flex:1 1 0;min-height:150px;border-radius:14px;overflow:hidden;container-type:size;border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4);background:#f6e2c4}
+/* 舞台のうしろ（絵 bg-day が来るまでの仮の形）：かべ・窓・棚・ドア・ランプ・腰板 */
+.ds-bg{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 8%,rgba(255,240,200,.85),transparent 70%),repeating-linear-gradient(90deg,#f7e4c6 0 16px,#f1d9b6 16px 32px)}
+.ds-bg.art{background:var(--bgimg) 50% 100%/cover no-repeat}
+/* 絵のカウンターの上の線は、絵の下から14.8%（絵は下をそろえて cover。絵の高さ＝max(舞台の高さ, 舞台の幅×540/960)） */
+.ds-front{position:absolute;inset:0;z-index:3;background:var(--bgimg) 50% 100%/cover no-repeat;clip-path:inset(calc(100cqh - .148 * max(100cqh, 56.25cqw)) 0 0 0);pointer-events:none}
+.dstage.pre .ds-bg{filter:brightness(.9) saturate(.9)}
+.ds-bg i{position:absolute;display:block}
+.ds-wains{left:0;right:0;bottom:0;height:38%;background:repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 40px),linear-gradient(#b07648,#8a5530);border-top:3px solid #5a3418}
+.ds-win{left:5%;top:13%;width:30%;height:40%;border:5px solid #7a4a26;border-radius:10px 10px 4px 4px;background:linear-gradient(#fff6dc,#ffe7b0 70%,#f6d690);overflow:hidden;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+.ds-win .ds-pane{inset:0;background:linear-gradient(90deg,transparent calc(50% - 2px),#7a4a26 calc(50% - 2px) calc(50% + 2px),transparent calc(50% + 2px)),linear-gradient(transparent calc(50% - 2px),#7a4a26 calc(50% - 2px) calc(50% + 2px),transparent calc(50% + 2px))}
+.ds-tree{bottom:-18%;width:60%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#9cd17a,#5f9a48 70%)}
+.ds-tree.a{left:-15%}.ds-tree.b{right:-20%;bottom:-28%;background:radial-gradient(circle at 40% 35%,#b5dc86,#6fa852 70%)}
+.ds-rack{left:70%;top:20%;width:22%;height:20%;border-bottom:6px solid #7a4a26;border-radius:0 0 3px 3px}
+.ds-jar{bottom:0;width:26%;height:72%;border-radius:6px 6px 4px 4px;border:2px solid rgba(90,48,16,.6)}
+.ds-jar.a{left:4%;background:linear-gradient(#ffe2a6 30%,#f2a93b 30%)}.ds-jar.b{left:37%;height:90%;background:linear-gradient(#fff 25%,#f6b0c0 25%)}.ds-jar.c{left:70%;height:60%;background:linear-gradient(#fff 30%,#b5dc86 30%)}
+.ds-door{left:39%;top:11%;width:22%;height:80%;border:4px solid #5a3418;border-bottom:0;border-radius:12px 12px 0 0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.1) 0 2px,transparent 2px 25%),linear-gradient(#a86a3c,#8a5530)}
+.ds-dwin{left:18%;right:18%;top:8%;height:30%;border-radius:40px 40px 4px 4px;border:3px solid #5a3418;background:linear-gradient(#fff6dc,#ffe2a0)}
+.ds-knob{left:10%;top:55%;width:9%;aspect-ratio:1;border-radius:50%;background:var(--brass);border:1.5px solid var(--brass-lo)}
+.ds-sign{position:absolute;left:50%;top:46%;transform:translateX(-50%);z-index:1;white-space:nowrap;text-align:center;font-size:clamp(9px,4cqh,13px);font-weight:700;color:#3a1c08;background:linear-gradient(#fff6e0,#f6dcae);border:2px solid #5a3418;border-radius:6px;padding:2px 8px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ds-sign.on-art{top:38%}
+.ds-lamp{left:calc(50% - 7%);top:0;width:14%;height:12%;border-radius:0 0 50% 50% / 0 0 100% 100%;background:linear-gradient(#f4c24e,#d98a2a);border:2px solid #7a4a1c;border-top:0}
+.ds-counter{position:absolute;left:0;right:0;bottom:0;height:15%;z-index:3;background:linear-gradient(#d8a06a,#a8693a 35%,#7a4a26);border-top:4px solid var(--brass);box-shadow:0 -3px 8px rgba(60,30,10,.35)}
+/* 時間（開店から閉店まで）と評判のびん（flow.js の jarHTML をそのまま小さく） */
+.d-time{position:absolute;left:10px;top:9px;z-index:4;width:40%;height:15px;display:flex;align-items:center}
+.d-track{flex:1;height:10px;border-radius:999px;background:rgba(36,19,10,.55);border:1.5px solid var(--brass);overflow:hidden}
+.d-track i{display:block;height:100%;transform-origin:0 50%;background:linear-gradient(90deg,#ffd27a,#ff9a4a);transition:transform .12s linear}
+.d-sun{width:16px;height:16px;margin-right:-5px;position:relative;z-index:1;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff3b0,#ffc23a 60%,#e8902a);border:1.5px solid #a0581a;flex:none}
+.d-jar{position:absolute;right:8px;top:6px;z-index:4;transform:scale(.72);transform-origin:100% 0}
+.d-jar .jar-fill{transition:transform .5s cubic-bezier(.2,.8,.3,1)}
+.d-jar.bump{animation:jbump .4s ease-out}
+@keyframes jbump{40%{transform:scale(.84)}100%{transform:scale(.72)}}
+.d-tip{position:absolute;left:50%;bottom:20%;z-index:5;margin:0;white-space:nowrap;font-size:13px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.85);border:1.5px solid var(--brass);border-radius:999px;padding:6px 14px;animation:tipbob 1.6s ease-in-out infinite}
+@keyframes tipbob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
+/* お客さん：まんなかのドアから入ってきて、正面のカウンターへ。胸から下はカウンターのかげ */
+.d-cust{position:absolute;inset:0;z-index:2}
+.cu{position:absolute;left:50%;bottom:6cqh;width:44cqh;height:66cqh;margin-left:-22cqh;transform-origin:50% 100%;transform:translate(0,-24cqh) scale(.42);opacity:0;transition:transform calc(.8s / var(--sp,1)) cubic-bezier(.3,.8,.4,1),opacity calc(.45s / var(--sp,1))}
+.cu.at{transform:none;opacity:1}
+.cu.at.leave{transform:translate(0,-24cqh) scale(.42);opacity:0;transition-duration:calc(.7s / var(--sp,1))}
+.cu.still{transition:none}
+.cu.cu-kodomo{width:38cqh;height:56cqh;margin-left:-19cqh}
+.cu-fig{position:absolute;inset:0;transform-origin:50% 100%}
+.cu.at .cu-fig{animation:cubob 2.4s ease-in-out infinite}
+.cu.happy .cu-fig{animation:cuhop .5s ease-out 2,cubob 2.4s 1s ease-in-out infinite}
+@keyframes cubob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5%)}}
+@keyframes cuhop{0%,100%{transform:translateY(0)}40%{transform:translateY(-7%)}}
+.cu-fig.art img{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%)}
+.cu-fig i{position:absolute;display:block}
+.cu-torso{left:8%;right:8%;bottom:0;height:40%;border-radius:48% 48% 0 0 / 70% 70% 0 0;background:var(--shirt);border:2px solid rgba(40,20,10,.55);border-bottom:0}
+.cu-collar{left:34%;right:34%;top:-2%;height:36%;background:#fff;clip-path:polygon(0 0,100% 0,50% 100%)}
+.cu-head{left:18%;right:18%;top:8%;height:54%;border-radius:50% 50% 48% 48%;background:var(--skin);border:2px solid rgba(60,30,15,.55)}
+.cu-hair{left:-7%;right:-7%;top:-8%;height:50%;border-radius:50% 50% 30% 30% / 80% 80% 20% 20%;background:var(--hair)}
+.cu-bun{left:32%;width:36%;top:-24%;height:30%;border-radius:50%;background:var(--hair)}
+.cu-ribbon{right:4%;top:-12%;width:34%;height:22%;z-index:1;border-radius:40% 40% 40% 40%;background:var(--acc);clip-path:polygon(0 0,50% 40%,100% 0,100% 100%,50% 60%,0 100%)}
+.cu-cap{left:-8%;right:-8%;top:-14%;height:30%;z-index:1;border-radius:50% 50% 8% 8% / 90% 90% 10% 10%;background:#3a3a48}
+.cu-eye{top:52%;width:10%;height:13%;border-radius:50%;background:#3a2318}
+.cu-eye.l{left:28%}.cu-eye.r{right:28%}
+.cu-cheek{top:66%;width:13%;height:7%;border-radius:50%;background:#ff9aa8;opacity:.45}
+.cu-cheek.l{left:15%}.cu-cheek.r{right:15%}
+.cu-mouth{left:43%;width:14%;top:72%;height:6%;border-bottom:3px solid #a84040;border-radius:0 0 50% 50%}
+.cu.happy .cu-eye{height:7%;top:55%;background:none;border-top:3px solid #3a2318;border-radius:50% 50% 0 0}
+.cu.happy .cu-mouth{left:40%;width:20%;height:11%;background:#c84a50;border:0;border-radius:0 0 60% 60%}
+.cu.happy .cu-cheek{opacity:.95}
+.cu.sad .cu-eye{height:9%;top:55%}
+.cu.sad .cu-mouth{top:76%;border-bottom:0;border-top:3px solid #a84040;border-radius:50% 50% 0 0}
+/* 吹き出し：すきな素材のアイコン → 買ったらハート */
+.cu-bub{position:absolute;left:52%;bottom:88%;z-index:2;display:flex;align-items:center;gap:4px;width:max-content;max-width:42cqw;line-height:1.25;font-size:12px;font-weight:700;color:var(--ink);background:#fff;border:2px solid #3a2318;border-radius:14px;padding:3px 10px 3px 5px;box-shadow:0 2px 0 rgba(0,0,0,.25);transform-origin:0 100%;transform:scale(.3);opacity:0;transition:transform .22s cubic-bezier(.3,1.6,.5,1),opacity .15s}
+.cu-bub::after{content:'';position:absolute;left:8px;bottom:-7px;width:10px;height:10px;background:#fff;border:2px solid #3a2318;border-top:0;border-left:0;transform:rotate(45deg)}
+.cu-bub.show{transform:none;opacity:1}
+.cu-bub .hico{width:28px;height:28px}
+.cu-bub.res.none{color:var(--ink-soft)}
+.cu-bub .bh{font-size:22px;line-height:1;color:#e8506c;animation:bhpop .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes bhpop{0%{transform:scale(.2)}100%{transform:none}}
+.d-fly{position:absolute;z-index:6;font-style:normal;font-size:26px;line-height:1;color:#e8506c;text-shadow:0 0 4px #fff,0 2px 0 rgba(120,20,40,.4);pointer-events:none;animation:dfly calc(.75s / var(--sp,1)) cubic-bezier(.5,0,.8,.6) forwards}
+@keyframes dfly{0%{transform:translate(-50%,0) scale(1.2)}100%{transform:translate(calc(var(--dx) - 50%),var(--dy)) scale(.5);opacity:.7}}
+/* ショーケース：3列・まんなかが看板の枠 */
+.dcase{flex:0 1 calc(var(--rows) * 78px + 18px);min-height:calc(var(--rows) * 52px + 18px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px;padding:8px;border-radius:12px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0) 40%),linear-gradient(#fff8ec,#f2dcb8);border:3px solid #5a3418;box-shadow:inset 0 0 0 2px var(--brass),0 4px 0 rgba(0,0,0,.4)}
+.day .dslot{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px 3px;margin:0;border-radius:10px;background:rgba(255,255,255,.6);border:1.5px solid rgba(122,82,54,.35);box-shadow:none;color:var(--ink);font:inherit;overflow:hidden}
+.day button.dslot:active{transform:scale(.96);box-shadow:none}
+.dslot .hico{width:auto;height:min(40px,56%);aspect-ratio:1}
+.d-nm{max-width:100%;font-size:10.5px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden}
+.d-dots{display:flex;gap:3px;height:6px}
+.d-dots i{width:6px;height:6px;border-radius:50%;background:#c97a2e;box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
+.day .dslot.empty{border-style:dashed;background:rgba(255,255,255,.22)}
+.day .dslot.kan{border:2px solid var(--brass);background:radial-gradient(circle at 50% 40%,#fffbe8,#ffe9b0);box-shadow:0 0 0 2px rgba(244,194,78,.35)}
+.d-kl{position:absolute;left:50%;top:0;transform:translateX(-50%);font-family:var(--disp);font-size:9px;line-height:1.5;color:#3a1c08;background:linear-gradient(var(--brass-hi),var(--brass));border:1px solid var(--brass-lo);border-top:0;border-radius:0 0 6px 6px;padding:0 7px}
+.dcase.pre .dslot.kan.empty::after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid var(--gold);animation:kpulse 1.1s ease-in-out infinite}
+@keyframes kpulse{0%,100%{opacity:.2}50%{opacity:1}}
+.dslot.out .hico{opacity:.3}
+.dslot.out .d-nm{opacity:.5}
+.d-out{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) rotate(-12deg);font-family:var(--disp);font-size:12px;color:var(--strawberry);border:2px solid var(--strawberry);border-radius:6px;padding:0 5px;background:rgba(255,255,255,.7)}
+.dslot.pop{animation:spop .35s ease-out}
+@keyframes spop{40%{transform:scale(1.08)}}
+.d-sold{position:absolute;left:50%;top:26%;z-index:1;font-size:11px;font-weight:700;color:#fff;background:var(--strawberry);border-radius:999px;padding:1px 8px;white-space:nowrap;pointer-events:none;animation:dsold 1s ease-out forwards}
+@keyframes dsold{0%{transform:translate(-50%,6px);opacity:0}20%{transform:translate(-50%,0);opacity:1}75%{opacity:1}100%{transform:translate(-50%,-14px);opacity:0}}
+.d-bar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 8px}
+.d-lbl{font-family:var(--disp);font-size:15px;color:var(--milk)}
+.d-bar .sub{padding:8px 16px}
+@media (prefers-reduced-motion:reduce){.cu.at .cu-fig,.d-tip,.dcase.pre .dslot.kan.empty::after{animation:none}}
