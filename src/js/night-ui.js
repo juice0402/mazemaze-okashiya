@@ -28,6 +28,17 @@ function floatAt(el, text, cls = '') {
   el.appendChild(f); setTimeout(() => f.remove(), 1000);
 }
 function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+/* ---------- こね生地（11/18）：こねた回数の札（ショップの上と、バトル中は火力のメーターのとなり）・こねたときの演出 ---------- */
+const koneOn = () => N && N.build === 'kone';
+const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}"><small>こね</small><b>${N.kone}</b></span>` : '';
+function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
+function kneadFx(i, add, born) {
+  const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
+  setKone(N.kone); heroFor('joy', 900);
+  document.querySelectorAll('.tslot .pc.born').forEach(c => floatAt(c.parentNode, 'パン種', 'best'));
+  if (!born) toast('調理台がいっぱいで、パン種は生まれなかった');
+}
+function taneFx() { document.querySelectorAll('.tslot .pc.born').forEach(c => floatAt(c.parentNode, 'パン種', 'best')); }
 /* 数字をかぞえ上げる（ms のあいだ） */
 function countUp(el, from, to, ms, f = fmt) {
   if (!el) return;
@@ -148,6 +159,7 @@ function chipStep(e, ch, prev, num) {
   }
   if (ch.dataset.src) auraIn(e, ch.dataset.src.split(',').map(Number), ch.dataset.k);
   if (ch.dataset.out != null) auraOut(e, e.out[+ch.dataset.out]);
+  if (ch.dataset.kone) setKone(+ch.dataset.kone);
 }
 /* 説明のパネル（舞台の下にかぶせる・下向きの矢印でマスを指す）：左にカード・名前・計算の札・右に大きなダメージ。--x は指す場所（「場」が0） */
 const tileX = j => `--x:${(j + .5) / (SLOTS + 1) * 100}%`;
@@ -179,13 +191,14 @@ function actPanel(e, q) {
     ch.push(fchip(op, x, label, 'calc ' + (label === 'スタート' ? 'pos' : label.startsWith('サイコー') ? 'best' : label === '次の主役' ? 'next' : ''), chipData({ v, p, src: src && src.join(','), k: src && PART_K(label) })));
   }
   if (e.fin) ch.push(fchip('×', e.fin[0], 'アンカー：合計', 'calc pos', chipData({ v: e.dmg, p: v, out: out('fin') })));
-  const rl = out('rally'); if (rl != null) ch.push(fchip('+', e.out[rl].v, '主役ぜんぶへ', 'pos', chipData({ out: rl })));
+  const rl = out('rally'); if (rl != null) ch.push(fchip('+', e.out[rl].v, d.fx.koneRally ? 'パンぜんぶへ' : '主役ぜんぶへ', 'pos', chipData({ out: rl })));
   const nb = out('nb'); if (nb != null) ch.push(fchip('+', e.out[nb].v, 'となりへ', 'pos', chipData({ out: nb })));
   if (e.heat) ch.push(`<span class="f-chip h${e.heat[1]}"${chipData({ out: out('heat') })}><b>${HEAT[e.heat[0]]}→${HEAT[e.heat[1]]}</b><small>火力</small></span>`);
   if (e.sear) ch.push(e.sear.burnt ? `<span class="f-chip koge"${chipData({ out: out('sear') })}><b>焦げた</b><small>右の生地</small></span>` : `<span class="f-chip c${cookStage(e.sear.to)}"${chipData({ out: out('sear') })}><b>焼き+${e.sear.to - e.sear.from}</b><small>右の生地</small></span>`);
   if (e.next) ch.push(fchip('×', e.next, '次の主役へ', 'next', chipData({ out: out('next') })));
   if (fxOn(d, 'again') && !e.again) ch.push(`<span class="f-chip"${chipData({ out: out('again') })}><b>もう1回</b><small>右どなり</small></span>`);
   if (e.call) ch.push('<span class="f-chip"><b>フィールド</b><small>次のショップ</small></span>');
+  if (e.kone) ch.push(`<span class="f-chip"${chipData({ kone: e.kone[1] })}><b>こね+${e.kone[1] - e.kone[0]}</b><small>こねた回数</small></span>`);
   const dmg = e.dmg > 0 ? `<b class="bp-dmg${e.dmg >= q / 3 ? ' hot' : ''}" style="--len:${numLen(top)}"><b>0</b></b>` : '';
   return `<div class="bp" style="${tileX(e.i + 1)}"><div class="bp-card">${cardMini(e.cid, { cook: e.cook })}</div>
     <div class="bp-main"><p class="bp-name">${e.again ? '<em>もう1回</em>' : ''}${esc(d.short)}</p><div class="bp-f${chipsCls(ch.length)}">${ch.join('')}</div></div>${dmg}</div>`;
@@ -333,12 +346,13 @@ function viewerHTML() {
   return box(c.cid, c.cook, sellBtn(), `${ORD[s.i]}番め・${mixRule(cardDef(c.cid))}`);
 }
 /* うる（1ラウンド目の★1は「もどす」＝無料の枠がもどる） */
-function sellLabel(d) { const v = sellValue(d); return v ? `うる <small>+${v}</small>` : 'もどす'; }
+function sellLabel(d) { const v = sellValue(d); return v ? `うる <small>+${v}</small>` : d.tane ? 'うる <small>+0</small>' : 'もどす'; }
 function sellBtn() {
   const s = N.sel, c = s.where === 'field' ? { cid: 'b:' + N.field } : cardAt(s);
   return `<button class="pill sub" data-act="sell">${sellLabel(cardDef(c.cid))}</button>`;
 }
 function barHTML() {
+  if (N.stage === 'pick') return '<button class="bake" data-act="pickGo">これにする！</button>';
   if (fighting) return `<button class="pill sub spd${bSpeed > 1 ? ' on' : ''}" data-act="spd">${spdLabel()}</button>`;   // バトル中は、はやおくり
   return `<button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>おもてなし！</button>`;
 }
@@ -350,11 +364,25 @@ function shopHTML() {
     : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
   const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
   return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
-    <div class="sh-top"><b class="sh-ttl">ショップ</b>${head}</div>
+    <div class="sh-top"><b class="sh-ttl">ショップ</b>${koneBadge()}${head}</div>
     <div class="sh-cards">${list.map((cid, i) => cid
       ? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid)}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
       : '<span class="shcard sold"></span>').join('')}</div>
     <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
+}
+
+/* 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩・前の夜のビルドがえらばれている）。カードはシェフの絵・ビルドの名前・特性・代表のカード3まい・ひとこと */
+function pickHTML() {
+  const list = openBuilds().map(id => {
+    const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;
+    return `<button class="pk-card${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
+      <span class="pk-pic">${pic ? `<img src="${pic}" alt="">` : ''}</span>
+      <span class="pk-body"><b class="pk-name">${esc(B.name)}</b><span class="pk-chef">${esc(C.name)}・特性 ${esc(C.trait)}</span>
+      <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
+      <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
+  }).join('');
+  return `<div class="pickov"><p class="pk-ttl">今夜の おもてなし</p><div class="pk-list">${list}</div>
+    ${TRIAL ? '<p class="pk-trial">ためしのページ：こね生地は、本番では8日目から</p>' : ''}</div>`;
 }
 
 /* ---------- 夜の画面 ---------- */
@@ -383,10 +411,10 @@ function renderNight() {
     <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0"${ART['bg-night'] ? ` style="--bgimg:url('${ART['bg-night']}')"` : ''}>${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
       ${heroImg(after ? (happy ? 'joy' : 'oops') : 'battle')}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-idle="${monIdle(mon.id)}" src="${monURL(mon.id)}" alt="${esc(mon.name)}">
-      ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
+      ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
-      <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div></div>
-      ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'end' ? '' : '<div class="callout" id="callout"></div>'}</div>
+      <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}</div>
+      ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}${N.stage === 'end' ? '' : '<div class="callout" id="callout"></div>'}</div>
     <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
     ${body}</section>`;
   setHeat(N.heat);

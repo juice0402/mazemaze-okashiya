@@ -24,10 +24,12 @@ for (const f of readdirSync(artDir).sort()) {
 // CSS：/* */ を消して空白をつめる。JS：1行まるごとのコメント（// と /* */）と行の頭の空白だけ消す（文字列やテンプレートの中には書かない決まり）
 const minCss = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '\n').replace(/\n+/g, '\n').trim();
 const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').replace(/^[ \t]*\/\/.*$/gm, '').replace(/^[ \t]+/gm, '').replace(/\n{2,}/g, '\n');
-const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
-const frag = rd('src/shell.html')
+// TRIAL：ためしのページ（--artifact）だけ true（こね生地などを日にちを待たずに ためせる）。遊ぶ人の index.html は false
+const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
+const fragOf = trial => rd('src/shell.html')
   .replace('<!--STYLE-->', () => '<style>\n' + minCss(STYLES.map(rd).join('\n')) + '</style>')
-  .replace('<!--SCRIPT-->', () => '<script>\n' + js + '\n</script>');
+  .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial) + '\n</script>');
+const frag = fragOf('false');
 
 const cut = frag.indexOf('<div id="app">');
 const head = frag.slice(0, cut).trim(), body = frag.slice(cut).trim();
@@ -50,4 +52,4 @@ ${body}
 writeFileSync(join(root, 'index.html'), page);
 console.log('index.html', page.length, 'art', Object.keys(ART).length);
 const ai = process.argv.indexOf('--artifact');
-if (ai > 0 && process.argv[ai + 1]) { writeFileSync(process.argv[ai + 1], frag); console.log('artifact', frag.length); }
+if (ai > 0 && process.argv[ai + 1]) { const af = fragOf('true'); writeFileSync(process.argv[ai + 1], af); console.log('artifact', af.length); }

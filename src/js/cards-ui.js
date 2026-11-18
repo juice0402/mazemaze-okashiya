@@ -18,7 +18,7 @@ function attrBar(d) {
 const plainLine = d => d.role === '主役' ? '味パワーを出す' : attrsOf(d).join('・');
 /* ことば（KW）を黄色に。tap なら、タップで説明が出る（大きく見る画面だけ） */
 const kwTag = (w, tap, show = w) => `<b class="kw"${tap ? ` data-act="kw" data-kw="${w}"` : ''}>${show}</b>`;
-const KW_SHORT = /スタート|アンカー|サイコー|火力|焦げ/g;   // カードの紙
+const KW_SHORT = /スタート|アンカー|サイコー|火力|焦げ|パン種|こね/g;   // カードの紙（パン種・こね は こね生地のビルド）
 const kwShort = (t, tap) => esc(t).replace(KW_SHORT, w => kwTag(w, tap));
 const kwLong = (t, tap) => esc(t).replace(/\{([^}]+)\}/g, (s, w) => kwTag(w, tap));   // 効果の文の {ことば}
 /* ことばの説明の吹き出し（もう一度タップ・ほかの所をタップでとじる） */

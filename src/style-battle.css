@@ -200,3 +200,31 @@
 .tipf svg{display:block;width:100%;height:100%}
 .tipf-ring{position:absolute;left:19px;top:2px;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(255,190,90,.7);opacity:0}
 .night.dragging~.tipf{display:none}
+
+/* ---------- 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩）：ショップと同じ日よけの板に、ビルドのカード（紙のパネルの絵 ui-panel）を並べる ---------- */
+.pickov{position:absolute;inset:6px;z-index:7;display:flex;flex-direction:column;gap:6px;padding:2px 10px max(72px,21%);border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch;animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
+.stage:has(.pickov) .ov-top,.stage:has(.pickov) .ov-heat{visibility:hidden}
+.stage:has(.pickov) .dc-chibi{display:none}   /* えらぶ画面には大きなほのかがいるので、デフォルメのほのかは休み（カードの字にかぶらない） */
+.pk-ttl{flex:none;margin:0;text-align:center;font-family:var(--disp);font-size:17px;letter-spacing:2px;color:#ffe9b0;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
+.pk-list{flex:1;min-height:0;display:flex;gap:10px;align-items:stretch;justify-content:center}
+button.pk-card{position:relative;flex:1 1 0;max-width:200px;min-width:0;display:flex;flex-direction:column;padding:0;border:16px solid transparent;border-radius:0;border-image:var(--ui-panel) 70 fill/16px stretch;background:none;box-shadow:none;color:#4a2814;text-align:left;font-weight:700;filter:brightness(.78) saturate(.75);transition:filter .2s,transform .2s}
+button.pk-card.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 10px rgba(255,190,80,.85));transform:translateY(-3px)}
+button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
+.pk-pic{flex:1 1 0;min-height:56px;position:relative;margin:-6px -6px 6px;border-radius:9px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#fff3d6,#e9c48e)}
+.pk-pic img{position:absolute;left:50%;top:2%;height:175%;max-width:none;transform:translateX(-50%)}
+.pk-body{flex:none;display:flex;flex-direction:column;gap:4px}
+.pk-name{font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.1;color:#7a1a0c}
+.pk-chef{font-size:11px;color:#7a5a4a}
+.pk-cards{display:flex;gap:4px}
+.pk-mini{flex:1;min-width:0;aspect-ratio:5/7}
+.pk-mini .pc{width:100%;height:100%}
+.pk-mini :is(.pc-name,.pc-attr,.pc-text,.pc-pow,.pc-cost,.pc-star){display:none}
+.pk-mini .pc-win{bottom:5.5cqw}
+.pk-text{font-size:11.5px;line-height:1.4;color:#4a2814}
+.pk-on{position:absolute;right:-10px;top:-14px;padding:2px 8px;border-radius:999px;font-style:normal;font-size:11px;font-weight:900;color:#fff;background:#d8503a;box-shadow:0 0 0 2px #fff4e0,0 2px 0 rgba(0,0,0,.35)}
+.pk-trial{flex:none;margin:0;text-align:center;font-size:10.5px;color:#fff0d8;text-shadow:0 1px 0 #2a170c}
+/* こねた回数の札（こね生地・ショップの上と、バトル中は火力のメーターのとなり） */
+.kone-n{flex:none;display:inline-flex;align-items:baseline;gap:3px;padding:1px 9px;border-radius:999px;background:linear-gradient(#fff6e2,#f0d9b0);box-shadow:0 0 0 1.5px #7a4e1c,0 2px 0 rgba(0,0,0,.35);color:#5a3418;font-weight:900;text-shadow:none}
+.kone-n small{font-size:10px;color:#7a5a4a}
+.kone-n b{font-family:var(--disp);font-weight:400;font-size:15px;color:#c2541c;font-variant-numeric:tabular-nums}
+.kone-n.bump b{display:inline-block;animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}

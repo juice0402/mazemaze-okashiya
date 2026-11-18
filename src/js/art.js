@@ -52,7 +52,7 @@ function candyCanvas(key) {
   if (main.noun === 'ブラウニー') pal.b = '#6b3a1e';
   if (main.noun === 'クッキー') pal.b = main.col;   // 生地の色のクッキー
   if (main.noun === 'キャンディ' || main.noun === 'ゼリー') pal.a = a === b ? main.col : (other.col === '#fff4f8' ? main.col : other.col);
-  return fromMap(CANDY_MAPS[main.noun], pal);
+  return fromMap(CANDY_MAPS[main.noun] || CANDY_MAPS['カステラ'], pal);   // 菓子パン（こね生地）は、絵が届くまでカステラの形
 }
 
 /* ★3 スペシャル：お菓子の絵に金のふちと、きらきら */
@@ -69,12 +69,13 @@ const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンデ�
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
   if (k === 'm' || k === 't') return ART['card-' + id] || (MATS[id] && ART[MATS[id].alt]) || null;   // alt＝絵が届くまでの仮の絵
-  if (k === 'b') return ART['field-' + id] || null;   // フィールド（ほのかの鉄板・ごうごう石窯）
+  if (k === 'b') return ART['field-' + id] || (FIELDS[id] && ART[FIELDS[id].alt]) || null;   // フィールド（ほのかの鉄板・ごうごう石窯。めん棒は絵が届くまで alt）
   if (k === 'k') return ART['burnt-' + id] || null;   // 焦げ（★1〜★3）
   if (k === 'u' || k === 'w') return ART['card-' + id.split(/[+|]/)[0]] || null;   // 道具の★2・★3は、1つめの道具の絵
   if (k === 'o') {   // 形（noun）ともう1つの材料で絵をさがす（candy-cookie-bata など）。なければ形だけの絵
     const r = recipeOf(id), nid = NOUN_ID[r.noun], other = r.mats.find(m => MATS[m].noun !== r.noun);
-    return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || null;
+    const mm = MATS[r.mats.find(m => MATS[m].noun === r.noun)];   // 菓子パンの★2は、絵が届くまで主役の素材の仮の絵（alt）
+    return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || (mm && ART[mm.alt]) || null;
   }
   if (k === 's') {   // ★3：同じ形どうしは「特製○○タワー」の絵
     const [r1, r2] = id.split('|').map(recipeOf);

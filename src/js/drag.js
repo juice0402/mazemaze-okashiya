@@ -56,7 +56,8 @@ function dragBegin(D) {
     return { z, q, P };
   });
   const v = sellValue(cardDef(D.cid)), sv = $('sellv');
-  if (sv) { sv.textContent = v ? `コイン+${v}` : '（無料の枠がもどる）'; sv.previousElementSibling.textContent = v ? 'はなすと うる' : 'はなすと もどす'; }
+  const tn = cardDef(D.cid).tane;   // パン種は0コイン（無料の枠ももどらない）
+  if (sv) { sv.textContent = v ? `コイン+${v}` : tn ? '（0コイン）' : '（無料の枠がもどる）'; sv.previousElementSibling.textContent = v || tn ? 'はなすと うる' : 'はなすと もどす'; }
   /* 調理台の上では、つかんだカードを調理台のマスと同じ大きさに（調理台が見えるように） */
   const tl = document.querySelector('.tiles'), sl = document.querySelector('.tslot');
   D.tiles = tl && tl.getBoundingClientRect(); D.small = sl ? sl.offsetWidth / D.w : 1; D.k = 1;
@@ -84,11 +85,11 @@ function dragMove(D, x, y) {
 function tipHTML(cid, P) {
   const d = cardDef(cid);
   if (P && P.kind === 'mix') {
-    const r = cardDef(P.r.cid), flash = !P.ng && r.star === 2 && r.food && S.recipes[P.r.cid.slice(2)] == null;
+    const r = cardDef(P.r.cid), kn = !P.ng && P.kn;   // 11/18 夜のまぜまぜではレシピはひらめかない（朝に）。こね生地は「こねる」
     const price = P.P.n ? `（${N.round === 1 ? `無料${P.P.n}まい` : `コイン${P.P.cost}`}）` : '';
     return `<span class="dt-card">${cardMini(P.r.cid)}</span><div class="dt-body"><p class="dt-main">${'★'.repeat(r.star)} ${esc(r.name)}</p>
       <p class="dt-sub">${P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと まぜる${price}`}</p>
-      <p class="dt-fx">${kwShort(fxText(r.fx, r.star))}</p>${flash ? '<p class="dt-flash">レシピがひらめく！</p>' : ''}</div>`;
+      <p class="dt-fx">${kwShort(fxText(r.fx, r.star))}</p>${kn ? `<p class="dt-flash">こねる！ こね+${kn.kone}・パン種+${kn.tane}</p>` : ''}</div>`;
   }
   const t = !P ? (d.cat === 'field' ? '左の「場」へ' : mixRule(d))
     : P.kind === 'buy' ? (P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと ${N.round === 1 ? 'えらぶ（無料）' : `買う（コイン${P.cost}）`}`)

@@ -20,6 +20,15 @@ const MATS = {
   ichiban:  { cat: 'dough', name: 'いちばんのりクッキー生地', short: 'いちばん生地', taste: 'さくさく', adj: 'いちばん', noun: 'クッキー', nr: 9, value: 20, col: '#f6d36b', fx: { dmg: 30, lead: 2 } },
   shime:    { cat: 'dough', name: 'しめくくりクッキー生地', short: 'しめくくり生地', taste: 'さくさく', adj: 'しめの', noun: 'クッキー', nr: 9, value: 20, col: '#e8a0b0', fx: { dmg: 20, sai: 2 } },
   horoniga: { cat: 'dough', name: 'ほろにがココア生地', short: 'ほろにが生地', taste: 'こんがり', adj: 'ほろにが', noun: 'クッキー', nr: 9, value: 20, col: '#6b3a1e', fx: { dmg: 30, bitter: 1 } },
+  /* こね生地のビルドの生地（主役・菓子パン。11/18 H-012・名前と数字はぽぽちの仮）。pan＝パン生地（パン生地どうしをまぜると「こねる」）・tane＝パン種（ショップに出ない・うっても0コイン）
+     nr はお菓子の素材（いちばん大きいのは 6）より大きくして、まぜた名前の主役がいつもパンになるように。nshort は名前が8文字をこえるときの短い形。alt はカードの絵が届くまでの仮の絵 */
+  melonpan: { cat: 'dough', pan: 1, name: 'さくさく皮のメロンパン生地', short: 'メロンパン生地', nshort: 'メロン', taste: 'さくさく', adj: 'さくさく', noun: 'メロンパン', nr: 8.5, value: 20, col: '#f2cf6e', alt: 'candy-sable', fx: { dmg: 30, perKone: 10 } },
+  creampan: { cat: 'dough', pan: 1, name: 'とろーりクリームパン', short: 'クリームパン', nshort: 'クリーム', taste: 'とろーり', adj: 'とろり', noun: 'クリームパン', nr: 8, value: 20, col: '#f6e0a8', alt: 'candy-puff', fx: { dmg: 20, tane2: 1 } },
+  cinnamon: { cat: 'dough', pan: 1, name: 'うずまきシナモンロール', short: 'シナモンロール', taste: 'こくまろ', adj: 'くるくる', noun: 'ロール', nr: 9.5, value: 20, col: '#c98a4b', alt: 'candy-castella', fx: { dmg: 20, koneUp: 1 } },
+  anpan:    { cat: 'dough', pan: 1, name: 'いちばんのりあんパン', short: 'いちばんあんパン', taste: 'あまい', adj: 'いちばん', noun: 'あんパン', nr: 9, value: 20, col: '#b8743c', alt: 'candy-brownie', fx: { dmg: 30, koneRally: 5 } },
+  koronet:  { cat: 'dough', pan: 1, name: 'しめくくりチョココロネ', short: 'しめのコロネ', taste: 'とろーり', adj: 'しめの', noun: 'コロネ', nr: 10, value: 20, col: '#7a4424', alt: 'card-choco', fx: { dmg: 20, koneFin: 0.5 } },
+  tanebin:  { cat: 'dough', pan: 1, name: 'パン種のびん', short: 'パン種のびん', taste: 'ふわふわ', adj: 'ふっくら', noun: 'パン', nr: 7.5, value: 15, col: '#f6ead0', alt: 'card-mizu', fx: { dmg: 10, taneSpawn: 1 } },
+  panetane: { cat: 'dough', pan: 1, tane: 1, name: 'パン種', short: 'パン種', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'パン', nr: 7, value: 0, col: '#fff2dc', alt: 'card-komugi', fx: { dmg: 10 } },
   /* ほのかの素材（支援・ほのかのビルドどうしで共通） */
   bata:   { cat: 'mat', name: 'ゴーゴーヤギのバター', short: 'ヤギバター', taste: 'こくまろ', adj: 'バター', noun: 'サブレ', nr: 2, value: 20, col: '#f6d36b', fx: { nb: 30 } },
   sato:   { cat: 'mat', name: 'こんぺいトカゲの砂糖', short: 'トカゲ砂糖', taste: 'あまい', adj: 'あまあま', noun: 'キャンディ', nr: 1, value: 15, col: '#f28cab', fx: { next: 2 } },
@@ -97,17 +106,32 @@ const cookMul = c => c >= COOK_MAX ? 5 : 1 + c / 3;
 const FIELDS = {
   teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['中火で焼く'], long: [['置いたとき', '鉄板の{火力}が中火になる'], ['バトル開始時', '調理台の生地を焼く']] },
   ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['強火で焼く', 'サイコー×1.5'], long: [['置いたとき', '鉄板の{火力}が強火になる'], ['バトル開始時', '調理台の生地を焼く'], ['常時', '{サイコー}の生地のダメージ×1.5']] },
+  /* こね生地のフィールド（11/18 名前はしょーくん・効果はぽぽちの仮）。kone＝1回こねると数える回数・tane＝こねると多く生まれるパン種。alt はカードの絵が届くまでの仮の絵 */
+  menbo:     { name: '力のめん棒', start: 3, kone: 2, alt: 'field-ishigama', chips: ['強火で焼く', 'こね×2'], long: [['置いたとき', '鉄板の{火力}が強火になる'], ['バトル開始時', '調理台の生地を焼く'], ['常時', '1回{こね}ると、こねた回数が2ふえる']] },
+  karumenbo: { name: '軽量めん棒', start: 2, tane: 1, alt: 'field-teppan', chips: ['中火で焼く', 'パン種+1'], long: [['置いたとき', '鉄板の{火力}が中火になる'], ['バトル開始時', '調理台の生地を焼く'], ['常時', '{こね}ると、{パン種}が1こ多く生まれる（パン種どうしのときは ふえない）']] },
 };
 
-/* シェフ：固有のデッキプールとフィールド。水の飴細工職人・草のパティシエは、あとで常連さんから仲間になる（素材も道具も別） */
+/* シェフ：特性と、シェフの2ビルドで共通の素材と道具。水の飴細工職人・草のパティシエは、あとで常連さんから仲間になる（素材も道具も別） */
 const CHEFS = {
   honoka: {
-    name: 'ほのか', job: '炎のシェフ',
-    doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'],   // クッキーのビルド
+    name: 'ほのか', job: '炎のシェフ', trait: '火力',
     common: ['m:bata', 'm:sato', 'm:tamago', 'm:choco', 'm:mitsu', 't:maki', 't:hiokoshi', 't:mizu', 't:yakigote', 't:yobirin'],   // ほのか共通
-    fields: ['teppan', 'ishigama'],
   },
 };
+/* ビルド（11/18 しょーくん）：夕方にシェフとビルドを1つえらぶ（使えるのが1つのうちは出さない）。主役6種（そのビルドだけ）＋シェフの共通＋フィールド2
+   from＝使えるようになる日（11/18 しょーくん：こね生地は8日目から）。pic＝えらぶ画面の絵・show＝えらぶ画面に出すカード3まい・text＝ひとこと */
+const BUILDS = {
+  cookie: {
+    chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text: '鉄板で生地を焼いて、サイコーをそろえる。アンカーで倍々',
+    doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
+  },
+  kone: {
+    chef: 'honoka', name: 'こね生地', from: 8, pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
+    doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
+  },
+};
+/* その日に使えるビルド（ためしのページ＝TRIAL では、ぜんぶ） */
+const openBuilds = () => Object.keys(BUILDS).filter(id => TRIAL || S.day >= BUILDS[id].from);
 
 const STAR_MUL = [0, 1, 1.5, 3];   // ★1・★2・★3 の強さの倍率（まぜるほど倍々）
 const DMG_CAP = 9999999;           // 1回のダメージとスコアの上限
@@ -121,12 +145,15 @@ const recipeKey = (a, b) => [a, b].sort().join('+');
 const NAME_MAX = 8;
 const NOUN_NAME = { 'シュークリーム': 'シュー', 'ブラウニー': 'ショコラ', 'キャンディ': 'ドロップ' };
 const nounName = n => NOUN_NAME[n] || n;
+const nlen = s => [...s].length;
+/* ようす＋形。8文字をこえるときは、形の短い名前（nshort・メロンパン→メロン）で */
+const adjName = (adj, M) => { const n = adj + nounName(M.noun); return nlen(n) > NAME_MAX && M.nshort ? adj + M.nshort : n; };
 function recipeOf(key) {
   const [a, b] = key.split('+'), A = MATS[a], B = MATS[b];
   const main = B.nr > A.nr ? B : A, other = main === A ? B : A;
   return {
     key, mats: [a, b],
-    name: a === b ? A.twin || A.adj + nounName(A.noun) : other.adj + nounName(main.noun), noun: main.noun, nr: main.nr,
+    name: a === b ? A.twin || adjName(A.adj, A) : adjName(other.adj, main), noun: main.noun, ns: main.nshort, nr: main.nr,
     tastes: [...new Set([A.taste, B.taste])],
     price: Math.round((A.value + B.value) * YEN_PER_VALUE / 10) * 10,   // 1この売値（円）。ふつう200〜300円・モンスター素材入り400〜600円
     needs: [a, b].filter(m => MATS[m].fushigi),
@@ -135,7 +162,8 @@ function recipeOf(key) {
 /* まぜた効果：数は合計、倍率はかけ算（上限あり）、しるしはどちらかにあれば */
 function mergeFx(a, b) {
   const o = {};
-  for (const k of ['dmg', 'spd', 'nb', 'rally', 'heat', 'sear']) { const v = (a[k] || 0) + (b[k] || 0); if (v) o[k] = v; }
+  for (const k of ['dmg', 'spd', 'nb', 'rally', 'heat', 'sear', 'perKone', 'koneRally', 'koneUp', 'tane2', 'taneSpawn']) { const v = (a[k] || 0) + (b[k] || 0); if (v) o[k] = v; }
+  const kf = Math.max(a.koneFin || 0, b.koneFin || 0) + (a.koneFin && b.koneFin ? 0.25 : 0); if (kf) o.koneFin = kf;
   const nx = (a.next || 1) * (b.next || 1); if (nx > 1) o.next = Math.min(6, nx);
   const ld = Math.max(a.lead || 0, b.lead || 0) + (a.lead && b.lead ? 1 : 0); if (ld) o.lead = ld;
   const fn = (a.fin || 1) * (b.fin || 1); if (fn > 1) o.fin = Math.min(3, fn);
@@ -153,9 +181,10 @@ const ROLE = { dough: '主役', mat: '支援', burnt: '主役' };   // 11/18 し
 const foodCat = mats => mats.some(m => MATS[m].cat === 'dough') ? 'dough' : 'mat';
 /* ★3：同じ形どうしは「○○タワー」、ちがう形どうしは2つの形をつなげる（主役の形をうしろに） */
 function specialName(r1, r2) {
-  if (r1.noun === r2.noun) return nounName(r1.noun) + 'タワー';
+  const nn = r => nounName(r.noun), ns = r => r.ns || nn(r), fit = (...c) => c.find(n => nlen(n) <= NAME_MAX) || [...c[c.length - 1]].slice(0, NAME_MAX).join('');
+  if (r1.noun === r2.noun) return fit(nn(r1) + 'タワー', ns(r1) + 'タワー');
   const [x, y] = r1.nr > r2.nr || (r1.nr === r2.nr && r1.noun > r2.noun) ? [r2, r1] : [r1, r2];
-  return nounName(x.noun) + nounName(y.noun);
+  return fit(nn(x) + nn(y), ns(x) + nn(y), ns(x) + ns(y));   // 菓子パンは形の名前が長いので、8文字をこえたら短い形で（クリームパン→クリーム）
 }
 function toolSetName(a, b) { return a === b ? 'ダブル' + TOOLS[a].short : TOOLS[a].mini + '＆' + TOOLS[b].mini; }
 const DEFS = new Map();
@@ -180,6 +209,8 @@ function cardDef(cid) {
   d.role = d.role || ROLE[d.cat] || '';
   d.food = d.cat === 'dough' || d.cat === 'mat';
   d.dough = d.cat === 'dough';
+  d.pan = d.dough && d.mats.some(m => MATS[m].pan);                 // パン生地（パン生地どうしをまぜると「こねる」）
+  d.tane = d.mats.length > 0 && d.mats.every(m => MATS[m].tane);    // パン種だけでできたカード（うっても0コイン）
   d.short = d.short || d.name;
   DEFS.set(cid, d);
   return d;
@@ -204,10 +235,16 @@ function fxList(fx, star = 1) {
   if (fx.lead) p.push(`スタート：×${fx.lead}`);
   if (fx.sai) p.push(`アンカー：サイコー毎×${fx.sai + 0.5 * (star - 1)}`);
   if (fx.fin) p.push(`アンカー：合計×${fx.fin}`);
+  if (fx.koneFin) p.push(`アンカー：こね毎 合計×+${koneFinOf(fx, star)}`);
   if (fx.rally) p.push(`スタート：主役ぜんぶ+${f(fx.rally)}`);
+  if (fx.koneRally) p.push(`スタート：パン+${f(fx.koneRally)}×こね`);
+  if (fx.perKone) p.push(`こね毎に+${f(fx.perKone)}`);
   if (fx.next) p.push(`次の主役×${fx.next}`);
   if (fx.nb) p.push(`となり+${f(fx.nb)}`);
   if (fx.again) p.push(`右がもう${fx.again}回`);
+  if (fx.koneUp) p.push(`発動：こね+${fx.koneUp}`);
+  if (fx.tane2) p.push(`こねるとパン種+${fx.tane2}`);
+  if (fx.taneSpawn) p.push(`置くとパン種+${fx.taneSpawn}`);
   if (fx.stop) p.push('全生地：焦げ無効');
   if (fx.noburn) p.push('焦げ無効');
   if (fx.sear) p.push(`右の生地：焼き+${fx.sear}`);
@@ -218,6 +255,8 @@ function fxList(fx, star = 1) {
   return p;
 }
 function fxText(fx, star = 1) { return fxList(fx, star).join('・'); }
+/* しめのコロネの「こね1回ごと」の倍率（★2・★3で +0.25 ずつ） */
+const koneFinOf = (fx, star = 1) => fx.koneFin + 0.25 * (star - 1);
 
 /* 大きく見る画面の効果：[いつ, なにが起きる]（ゼンゼロの形）。いつ＝スタート・アンカー（置く場所）か、発動時・常時・バトル開始時・焼かれるとき・焦げたとき・置いたとき
    文の {ことば} は黄色で、タップすると KW の説明。状態（いまは焦げ）は「○○状態にならない」の形で、ほかの状態がふえても同じ書き方 */
@@ -226,10 +265,16 @@ function fxLong(fx, star = 1) {
   if (fx.lead) p.push(['スタート', `このカードの味パワー×${fx.lead}`]);
   if (fx.sai) p.push(['アンカー', `{焼き加減}が{サイコー}の生地1枚ごとに、このカードの味パワー×${fx.sai + 0.5 * (star - 1)}`]);
   if (fx.fin) p.push(['アンカー', `このラウンドの味パワー合計×${fx.fin}`]);
+  if (fx.koneFin) p.push(['アンカー', `このラウンドの味パワー合計×（1＋${koneFinOf(fx, star)}×{こね}た回数）`]);
   if (fx.rally) p.push(['スタート', `このラウンドの主役のカードぜんぶの味パワー+${f(fx.rally)}`]);
+  if (fx.koneRally) p.push(['スタート', `このラウンドのパン生地ぜんぶの味パワー+${f(fx.koneRally)}×{こね}た回数`]);
+  if (fx.perKone) p.push(['常時', `{こね}た回数1回ごとに、このカードの味パワー+${f(fx.perKone)}`]);
   if (fx.next) p.push(['発動時', `次の主役のカードの味パワー×${fx.next}`]);
   if (fx.nb) p.push(['常時', `両どなりのカードの味パワー+${f(fx.nb)}`]);
   if (fx.again) p.push(['発動時', `右どなりのカードを、もう${fx.again}回発動させる`]);
+  if (fx.koneUp) p.push(['発動時', `{こね}た回数+${fx.koneUp}（このラウンドのあとのカードにも効く）`]);
+  if (fx.tane2) p.push(['こねたとき', `{パン種}が${fx.tane2}こ多く生まれる`]);
+  if (fx.taneSpawn) p.push(['置いたとき', `空いているマスに{パン種}が${fx.taneSpawn}こ生まれる`]);
   if (fx.stop) p.push(['常時', 'ほかの生地も{焦げ}状態にならない（{サイコー}で止まる）']);
   if (fx.noburn) p.push(['常時', '{焦げ}状態にならない（{サイコー}で止まる）']);
   if (fx.sear) p.push(['発動時', `右どなりの生地の{焼き加減}+${fx.sear}（{場}がなくても焼ける）`]);
@@ -246,7 +291,10 @@ const KW = {
   発動時: 'バトルで、このカードの番がきたとき（左から順に1枚ずつ発動する）',
   常時: '調理台に置いているあいだ、ずっと',
   バトル開始時: 'バトルのはじめ、カードが発動する前',
-  置いたとき: '「場」に置いたとき',
+  置いたとき: 'ショップから調理台（フィールドは「場」）に置いたとき',
+  こねたとき: 'このカードを、ほかのパン生地と こねたとき',
+  こね: 'パン生地どうし（パン種も）を まぜること。こねるたびに、空いているマスにパン種が生まれる。こねた回数は、この夜のあいだ残る',
+  パン種: 'こねると生まれる小さなパン生地（味パワー10）。ショップには出ない・うっても0コイン。パン種どうしも こねられる',
   焼かれるとき: 'この生地が、鉄板やカードで焼かれるとき',
   焦げたとき: 'この生地が、焦げ状態になったとき',
   サイコー: '焼き加減9（いちばんおいしい）。生地の味パワー×5。このまま もう一度焼かれると焦げ状態になる',

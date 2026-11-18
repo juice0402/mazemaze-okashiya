@@ -78,7 +78,7 @@ function big(src, s) {
 let S = null;
 function newState() {
   return {
-    v: VER, day: 1, phase: 'title', money: START_MONEY, chef: 'honoka',
+    v: VER, day: 1, phase: 'title', money: START_MONEY, chef: 'honoka', build: 'cookie',   // build＝前の夜にえらんだビルド（BUILDS・11/18）
     recipes: { 'komugi+sato': 0 }, // 知っているレシピ（値は朝にひらめいた日。0 は最初から）
     stock: {},                     // 倉庫：素材の id → 数（モンスター素材も、朝に仕入れた基本素材も。使うとへる）
     shelf: [], shelfMax: 6,        // 棚のお菓子 [{ key, n }]・棚のマスの数（ショーケースでふえる）
@@ -114,6 +114,7 @@ function sanitize(o) {
   for (const k of ['stock', 'goods', 'seen', 'hearts', 'recipes']) if (!o[k] || typeof o[k] !== 'object') o[k] = {};
   if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
   for (const k of ['money', 'rep', 'shelfMax']) if (!Number.isFinite(o[k])) o[k] = d[k];
+  if (!BUILDS[o.build]) o.build = 'cookie';
   /* レシピと棚はいまの材料だけ。倉庫は数が正しい物だけ（基本素材の id は昼のチャットの hiru.js なので、名前ではけさない） */
   const okMat = m => MATS[m] || (typeof HIRU_MATS !== 'undefined' && HIRU_MATS[m]);   // 夜の素材と朝昼の素材（H-010）
   const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(okMat);
