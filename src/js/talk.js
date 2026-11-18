@@ -17,7 +17,7 @@ const TALKERS = {
   } },
   minamo: { name: 'みなも', side: 'r', faces: {} },
   wakaba: { name: 'わかば', side: 'r', faces: {} },
-  kodomo: { name: 'こども', side: 'r', faces: {} },
+  kodomo: { name: '妖精の子', side: 'r', faces: {} },
   slime: { name: 'スライム', side: 'r', mon: 'slime' },
   hitsuji: { name: 'くもひつじ', side: 'r', mon: 'hitsuji' },
   nijikurage: { name: 'にじいろクラゲ', side: 'r', mon: 'nijikurage' },
