@@ -38,10 +38,10 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- 依頼中（11/18 23時30分〜・4つまで）：art-irai `requests/okashi/pan3.md`・`minamo-battle.md`（@codex 1本目）と `minamo-chibi.md`・`wakaba.md`（@codex 2本目）。cards-minamo3〜5・sweets3 とそれより前は済
+- 依頼中（11/18 23時55分〜・4つまで）：art-irai `requests/okashi/wakaba-poses.md`・`title-wakaba.md`（@codex 1本目）と `wakaba-battle.md`・`wakaba-chibi.md`（@codex 2本目）。pan3・minamo-battle・minamo-chibi・wakaba とそれより前は済
 - 11/18 17時10分 司令塔（art-irai PR #68・game-art-rule.md）：okashi の依頼中は4つまで・@codex は2本まで並べてよい（issue #3 にコメントを2つ別々に・それぞれ「@codex AGENTS.md の決まりで、次の依頼書だけ描いて、カギで送って PR を作って：requests/okashi/<名前1>.md・requests/okashi/<名前2>.md」・2つのコメントで同じ依頼書を書かない）。パスを書かないと依頼中をぜんぶ見る（多くて3つ）。GPT の利用上限が減ってきたら司令塔に教える（2つにもどす）
-- 依頼中の取りこみ：pan3（special-<パン>-tower）／minamo-battle（minamo と同じ四角・minamo-battle・-charge・-atk・-special・-win・-support）／minamo-chibi（minamo-chibi-think・-cheer・-sit）／wakaba（one … 760 --strict・sources/okashi/wakaba.png に置く）
-- 待ち（この順・11/18 22時半 しょーくん「夜のうちに作れる絵・必要になるかもしれない絵・ボタン・作り込んでない所も全部」「ほのか・みなも・わかばの立ち絵も増産してストック」「おすすめで進めて」）：`pan3`（菓子パンの★3のタワー）→ `minamo-battle`・`minamo-chibi` → `wakaba` → `wakaba-poses`・`title-wakaba`・`wakaba-battle`・`wakaba-chibi`（wakaba.png を置いてから）→ `cards-wakaba1`〜`cards-wakaba6` → `honoka-poses2`・`minamo-poses2`・`wakaba-poses2`（立ち絵のストック）。カードの名前と id はぽぽちの仮
+- 依頼中の取りこみ：wakaba-poses（gen/posebox.py で wakaba と同じ四角・名前は依頼書 → TALKERS.wakaba の faces）／title-wakaba（one … 760 --strict）／wakaba-battle（posebox・wakaba-battle・-charge・-atk・-special・-win・-support）／wakaba-chibi（three … 320 --strict）
+- 待ち（この順・11/18 22時半 しょーくん「夜のうちに作れる絵・必要になるかもしれない絵・ボタン・作り込んでない所も全部」「ほのか・みなも・わかばの立ち絵も増産してストック」「おすすめで進めて」）：`pan3`（菓子パンの★3のタワー）→ `minamo-battle`・`minamo-chibi` → `wakaba` → `cards-wakaba1`〜`cards-wakaba6` → `honoka-poses2`・`minamo-poses2`・`wakaba-poses2`（立ち絵のストック）。カードの名前と id はぽぽちの仮
 - 11/18 しょーくん「ボタンや枠やフレームも妥協することなく全て絵を描き下ろしてほしい」：UI も A（Codex）に。素材は木と真ちゅう＋お菓子の飾り。字はコードで重ねる
 - 11/18 司令塔の決まり（game-art-rule.md の okashi の例外）：大きさの変わる枠・ボタンは border-image（9分割）で使える形に描かせる（角・辺・まんなかがはっきり分かれる・辺はくり返しても切れ目が目立たない・まんなかは無地か小さな模様）。押したとき・使えないときの形がいる部品は同じ絵で描かせる（待ちの ui-* に入れた）
 
@@ -92,6 +92,10 @@
 | field-oonabe・field-kobo・field-dairiseki・field-yatai・card-yusen・pot・korimizu・amebasami・amebell・shioame・korizato・urokoto・pearl・mizuchi（みなものフィールド4・道具5・素材5・ストック） | A | Codex | 2026-11-18 | art-irai `requests/okashi/cards-minamo3.md`〜`cards-minamo5.md`・マス目で切って --strict（ガラスの物は --despill）・上限300 | みなものビルドを作るとき |
 | card-niji・card-minto（レアの素材：にじいろの水あめ・きらきらミント） | A | Codex | 2026-11-18 | art-irai `requests/okashi/cards-minamo5.md`・同上 | 朝の材料・倉庫（MATS の niji・minto。art.js が ART["card-<id>"] を先に使う） |
 | special-sable-tower・castella・brownie・candy・jelly・puff（★3 のタワー6） | A | Codex | 2026-11-18 | art-irai `requests/okashi/sweets3.md`・マス目で切った・上限300 | ★3 のカード（同じ形どうし・ちがう形は主役の形のタワー） |
+| special-melonpan-tower・creampan・roll・anpan・koronet・pan（菓子パンの★3 のタワー6） | A | Codex | 2026-11-18 | art-irai `requests/okashi/pan3.md`・マス目で切った・上限300 | こね生地の★3（art.js の NOUN_ID にパンの形） |
+| minamo-battle・-charge・-atk・-special・-win・-support（みなもの戦闘ポーズ6・ストック） | A | Codex | 2026-11-18 | art-irai `requests/okashi/minamo-battle.md`・minamo と同じ四角（174,13,775,1528・strict・はみ出しははしをぼかす・上限760。scratchpad の gen/posebox.py） | みなものビルドを作るとき（POSE の形を足す） |
+| minamo-chibi-think・-cheer・-sit（みなものデフォルメ3・ストック） | A | Codex | 2026-11-18 | art-irai `requests/okashi/minamo-chibi.md`・`three … 320 --strict` | みなもがシェフの夜のショップのヒント |
+| wakaba（わかばの立ち姿・栗色の三つ編み・庭師風） | A | Codex | 2026-11-18 | art-irai `requests/okashi/wakaba.md`（PR #99）・`one … 760 --strict`。もとの PNG は sources/okashi/wakaba.png | 会話（TALKERS.wakaba のふつう）・あとでタイトル・夜 |
 | title-bg・title-honoka・title-mon-slime・-hitsuji・-kurage・-tokage・-hiyoko・title-fore（タイトル画面：夜のお店の前・泡立て器のほのか・見上げるモンスター5体・手前のランタンと花） | A | Codex | 2026-11-18 | art-irai `requests/okashi/title-bg.md`・`title-honoka.md`・`title-mons.md`・`title-fore.md`（PR #78・#80・#77・#79）。title-bg は抜かずに 720×1080・title-fore は `--strict` で抜いて大きさはそのまま 720×1080（位置がずれないよう切らない）・title-honoka は one … 760・title-mons は parts … 300。op-mix・op-forest・op-shop-night（前のオープニング）はけずった | タイトル画面（昼のチャットの logo.js の lgTitleHTML。位置は LG_BG・LG_CAST・LG_MONS） |
 | mon-tokage・mon-hiyoko・mon-kurage（こんぺいトカゲ・ほのお鳥のひよこ・しずくクラゲの大きい立ち姿・左向き） | A | Codex | 2026-11-18 | art-irai `requests/okashi/monsters2.md`（PR #63・1536×1024）。トカゲのしっぽが3等分の線をこえるので、すき間（x=543・1040）で切って trim_fit 520。トカゲは緑の星を残すため --strict | 夜の舞台のお客さん（monURL が mon-<id> を見る） |
 | card-kanten・card-hoshi・card-karamel（しずく寒天・ほしくずシュガー・ほのおカラメル） | A | Codex | 2026-11-18 | art-irai `requests/okashi/cards12.md`（PR #62）・`prep_art.py three … 300` | 夜のふしぎな素材のカード（MATS の alt より先） |
