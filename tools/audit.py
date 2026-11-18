@@ -78,7 +78,6 @@ STEPS = [
     ('talk', "talkClose(true); talk(['ほのか【yaruki】：いらっしゃいませ！'], () => {})", 900),
     ('morning', "talkClose(true); fighting = false; goMorning(); render()", 1200),
     ('m-shop', "talkClose(true); document.querySelector('[data-act=\"m-shop\"][data-o=\"1\"]')?.click()", 700),
-    ('m-goods', "document.querySelector('[data-act=\"m-tab\"][data-t=\"goods\"]')?.click()", 600),
     ('day-pre', "talkClose(true); goDay(); render()", 1200),
     ('result', "talkClose(true); S.today = S.today || newDay(S.day); goResult()", 1400),
 ]

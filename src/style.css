@@ -770,3 +770,7 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .sh-price.ng{background:none;color:#a03a2a}
 /* まぜの札（ui-ribbon・300×68・ミントのリボン）：左右の切りこみはそのまま。字は深緑 */
 .mixmark,.tslot.can::before{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:2px 7px;border-image:var(--ui-ribbon) 10 28 fill/2px 7px stretch;padding:0 2px;color:#103a2c}
+/* マスの番号と「場」（11/18 しょーくん「枠の中に馴染ませて」「カード置いたら隠れるように」）：空きマスのまんなかに、木に彫った字のように。カードがのると消える */
+.tslot .ord{left:0;right:0;top:46%;z-index:1;width:auto;height:auto;transform:translateY(-50%);background:none;box-shadow:none;border-radius:0;font-size:min(24px,6.6vw);line-height:1;color:rgba(255,230,186,.30);text-shadow:0 -1px 0 rgba(16,6,2,.6),0 1px 0 rgba(255,236,200,.16);pointer-events:none}
+.fslot .ord{top:42%;color:rgba(255,214,130,.40);background:none}
+.tslot:has(.pc) .ord{display:none}
