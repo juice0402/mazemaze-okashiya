@@ -67,8 +67,12 @@ function dayStageFront() {
   return bg ? `<i class="ds-front" style="--bgimg:url('${bg}')"></i>` : '<i class="ds-counter"></i>';
 }
 /* お客さん（正面・胸から上）。face：'' ふつう・'happy' うれしい・'sad' ざんねん */
-function custHTML(id, face = '') {
-  const c = CUST[id] || CUSTOMERS[0], img = ART['cust-' + id + (face ? '-' + face : '')] || ART['cust-' + id];
+/* お客さんの見た目ちがい（11/18 しょーくん「服も何もかも同じ人が再度来店すると、また戻ってきたのかなって思っちゃう」）：
+   絵 cust-<id>-<n>（n＝2・3…・表情は cust-<id>-<n>-happy / -sad）があれば、別の人として出す。1 は cust-<id> */
+const custVariants = id => [1, ...[2, 3, 4, 5].filter(n => ART['cust-' + id + '-' + n])];
+function custHTML(id, face = '', vr = 1) {
+  const c = CUST[id] || CUSTOMERS[0], b = 'cust-' + id + (vr > 1 && ART['cust-' + id + '-' + vr] ? '-' + vr : '');
+  const img = ART[b + (face ? '-' + face : '')] || ART[b] || ART['cust-' + id + (face ? '-' + face : '')] || ART['cust-' + id];
   if (img) return `<div class="cu-fig art"><img src="${img}" alt=""></div>`;
   const acc = id === 'kodomo' ? '<i class="cu-ribbon"></i>' : id === 'obaachan' ? '<i class="cu-bun"></i>' : id === 'gakusei' ? '<i class="cu-cap"></i>' : '';
   return `<div class="cu-fig" style="--skin:${c.skin};--hair:${c.hair};--shirt:${c.shirt};--arm:${c.arm};--acc:${c.hat || c.collar || c.pants}">

@@ -115,7 +115,7 @@ function dayStep(R, dt) {
 }
 function startVisit(R) {
   const p = R.plan[R.i++];
-  R.cur = { c: p.c, like: p.like, t: 0, step: 0, res: null };
+  R.cur = { c: p.c, vr: p.vr || 1, like: p.like, t: 0, step: 0, res: null };
   S.today.visitors++; save();
   showCust(R.cur, false);
 }
@@ -160,21 +160,22 @@ const faceOf = v => (v.step >= 2 && v.res ? (v.res.kind === 'love' ? 'happy' : v
 function showCust(v, now) {
   const box = $('dCust'); if (!box) return;
   const face = faceOf(v);
-  box.innerHTML = `<div class="cu cu-${v.c}${face ? ' ' + face : ''}${now ? ' at still' : ''}${v.step >= 3 ? ' leave' : ''}">${custHTML(v.c, face)}<div class="cu-bub" id="dBub"></div></div>`;
+  box.innerHTML = `<div class="cu cu-${v.c}${face ? ' ' + face : ''}${now ? ' at still' : ''}${v.step >= 3 ? ' leave' : ''}">${custHTML(v.c, face, v.vr)}<div class="cu-bub" id="dBub"></div></div>`;
   if (!now) { const el = custEl(); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('at'))); }
   if (v.step === 1) showBubble(v);
   if (v.step === 2) showResult(v, true);
 }
 function showBubble(v) {
   const b = $('dBub'); if (!b) return;
-  b.className = 'cu-bub show ask';
+  /* すきな味は「思っている」吹き出し（しゃべる吹き出しとは別・11/18 しょーくん「喋ってるのと同じだと『たまご』って言ってるみたい」） */
+  b.className = 'cu-bub show ask think';
   b.innerHTML = `${matIcon(v.like)}<span>${esc(matShort(v.like))}</span>`;
 }
 function showResult(v, now) {
   const b = $('dBub'), el = custEl(), r = v.res; if (!b || !el || !r) return;
   const face = faceOf(v);
   el.classList.remove('happy', 'sad'); if (face) el.classList.add(face);
-  const fig = el.querySelector('.cu-fig'); if (fig && fig.classList.contains('art')) fig.outerHTML = custHTML(v.c, face);
+  const fig = el.querySelector('.cu-fig'); if (fig && fig.classList.contains('art')) fig.outerHTML = custHTML(v.c, face, v.vr);
   b.className = 'cu-bub show res ' + r.kind;
   b.innerHTML = r.kind === 'love' ? `<b class="bh">${HEART}</b><span>${esc(r.say)}</span>`
     : r.kind === 'other' ? `${candyIcon(r.key)}<span>${esc(r.say)}</span>` : `<span>${esc(r.say)}</span>`;
