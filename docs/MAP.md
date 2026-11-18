@@ -64,10 +64,15 @@
 - night.js の resolveRound：chain（キャンディで+1・素材や道具で0・飴ばさみは切らない）・candyMul・ちいさなキャンディは ev の type petit（act のあと）。mixRule はキャンディか素材
 - night-ui.js：showEvent の petit・e.chain（2から chainPop）・scoreTick・actChips の clead／link／chainUp・pickHTML は4つ以上で .pk-list.many（2×2）。battle-fx.js：chainPop・petitFx。見た目は style-battle.css のいちばん下
 
+## わかば（11/19・くだものケーキと飴ジャム）
+- cards.js：FRUITS（5つの実・段ごとの効果 st）→ MATS の `<実><段>`（cat fruit・stage 0 花・1 青い実・2 熟した実・RIPE・絵は alt の card-<実>-<段>）・scaleFx（のびのび×2・かかし×1.5）／MATS の cat cake（sponge〜hachiroll：tartFruit・rollGrow・ripeFin・perGrow・fruitAgain）と cat jam（garabin〜jamnabe：binNow・jamLead・jamFin・toro・shine・perJam）／TOOLS の joro〜hatabell（water・fert・scare・basket・call）／FIELDS の nobi（slowGrow・fruitMul）・suku（growAdd）・decodai（cakeMul・fcMul）・oobin（fixed＝場がいつも大きなびん）／CHEFS.wakaba（heat.none＝メーターなし）／BUILDS.fruitcake・jam（bin）／binNight()・カード 'c:★2のケーキ|熟した実'（★3のくだものケーキ・fruitCake・fruitCakeName）・'j:実+実+実'（★3のジャム・JAM_DMG・jamTop・jamName）／ripeFinOf・jamFinOf・KW の くだもの〜大きなびん
+- night.js：nightPrep（夜のはじめ：場・bin・jamN）・大きなびん BIN_MAX・fixedField・binWeight（とろとろで熟した実は2つ分）・binCount・binPlan・binIn（3つで 'j:' が調理台へ）・dropPlan の kind bin・fruitEnd（ラウンドの終わりに育つ：nextRound）・fruitGrow（育つ・もりのシフォンの plus）・resolveRound の fxAt（くだものの効果の倍）・1c の fgrow（ロール生地）・water・fert・basket・jamMul・shine・cake の×・ripeFin（ケーキにのせた実も数える）・jamFin
+- night-ui.js：jamBadge・binFx・fruitFx・binHTML（場のびんの中の実）・showEvent の fgrow・actChips の water／shine／fert／basket・HEROES.wakaba・POSE_WAKABA（POSE_SIX）。battle-fx.js の auraOut の water。cards-ui.js の cardDmg の plus。見た目は style-battle.css のいちばん下「わかばの夜」
+
 ## データの形（S・セーブは localStorage `mazemaze-okashiya` の v:5）
 - phase：title → prologue（はじめだけ）→ morning → day → night → result → （day+1）morning
 - 1日の記録 today（newDay・朝に作る）と yesterday（きのうの分）：day・visitors（来たお客さん）・served・sales（円）・flashes（朝にひらめいたレシピ）・made・kanban（看板のレシピの key）・kanbanSoldOut・hearts・newRegulars／mon（来たモンスター）・newMon（はじめて）・score（味パワーの合計）・belly（おなかいっぱいの量）・mood（0〜3）・gifts（素材 id → 数）・coins（お礼のコイン 円）。昼の画面は visitors・served・sales・kanban・kanbanSoldOut・hearts を入れる
 - money（お店のお金・はじめ1000円）・recipes：{ 'a+b': 朝にひらめいた日 }（0 は最初から）・stock：倉庫（素材 id → 数。モンスター素材も基本素材も）・shelf：[{key, n}]・shelfMax（棚のマス・はじめ6）・goods：グッズの id → 数・rep：評判（ハートの数）・seenMon・seen（見た物語の場面）
 - morning（昼のチャット）・dayRun（昼のチャット。kanban・open も入れてよい）
-- night：stage（arrive＝来店の会話・shop・roundEnd・thanks＝お礼の会話・end）・field（フィールドの id か null）・heat（鉄板の火力 1〜4・ラウンドをまたいで残る）・call（よびりん）・board（調理台5マス {cid, cook}・cook は生地の焼き加減 0〜9・①〜⑤の順）・shop・coins（夜のショップのコイン。お店のお金とは別）・round・score・met（おなかをまんぞくさせた数）・burnt・sel・view（手札はなくした・前のセーブの held は調理台の空きへ）
-- カードの id：`m:生地か素材`・`t:道具`・`b:フィールド`（★1）・`o:食材+食材`（生地・素材の★2）・`s:★2|★2`（★3）・`u:道具+道具`（道具の★2）・`w:★2|★2`（道具の★3）・`k:1〜3`（焦げの★1〜★3）
+- night：stage（arrive＝来店の会話・shop・roundEnd・thanks＝お礼の会話・end）・field（フィールドの id か null）・heat（鉄板の火力 1〜4・ラウンドをまたいで残る）・call（よびりん）・bin（大きなびんの中の実）・jamN（この夜に作ったジャムの数）・fert・basket・board（調理台5マス {cid, cook, plus}・cook は生地の焼き加減 0〜9・①〜⑤の順）・shop・coins（夜のショップのコイン。お店のお金とは別）・round・score・met（おなかをまんぞくさせた数）・burnt・sel・view（手札はなくした・前のセーブの held は調理台の空きへ）
+- カードの id：`m:生地か素材`・`t:道具`・`b:フィールド`（★1）・`o:食材+食材`（生地・素材の★2）・`s:★2|★2`（★3）・`u:道具+道具`（道具の★2）・`w:★2|★2`（道具の★3）・`k:1〜3`（焦げの★1〜★3）・`c:★2のケーキ|熟した実`（わかばの★3のくだものケーキ）・`j:実+実+実`（わかばの★3のジャム）

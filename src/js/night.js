@@ -36,17 +36,19 @@ function startNight() {
     sel: null, view: false, last: null,
     build: open.includes(S.build) ? S.build : open[0], kone: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
   };
-  N = S.night; N.heat = heatOf().start; rollShop(); dealAnim = true;   // 夜のはじめ：ほのかは中火・みなもは あたたか（11/19）
+  N = S.night; nightPrep(); rollShop(); dealAnim = true;   // 夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
-function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.heat = heatOf().start; save(); renderNight(); }
+function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; nightPrep(); save(); renderNight(); }
 function pickGo() {
   if (N.stage !== 'pick') return;
-  S.build = N.build; N.heat = heatOf().start; N.stage = 'arrive'; rollShop(); dealAnim = true;
+  S.build = N.build; nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
   save(); renderNight();
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
+/* 今夜のビルドに合わせた夜のはじめ（11/19 わかば：飴ジャムの夜は場がいつも大きなびん・bin＝びんの中の実・jamN＝この夜に作ったジャムの数） */
+function nightPrep() { N.heat = heatOf().start; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
 /* 来店とお礼の会話（会話の部品 talk.js・文は story.js）。会話がない日はすぐ次へ */
 function nightTalk() {
   if (talking()) return;
@@ -62,6 +64,9 @@ function nightOk(n) {
     if (n.field && !FIELDS[n.field]) return false;
     if (!BUILDS[n.build]) n.build = 'cookie';
     if (!Number.isFinite(n.kone)) n.kone = 0;
+    if (!Array.isArray(n.bin)) n.bin = []; n.bin = n.bin.filter(m => MATS[m] && MATS[m].fruit);
+    if (!Number.isFinite(n.jamN)) n.jamN = 0;
+    if (BUILDS[n.build].bin) n.field = BUILDS[n.build].bin;
     return true;
   } catch (e) { return false; }
 }
@@ -84,11 +89,13 @@ function draw1(L) {
 }
 function rollShop() {
   const B = curBuild(), L = poolList(), out = [];
-  if (N.call) {   // よびりん：フィールドをかならず1枚
+  if (N.call) {   // よびりん：フィールドをかならず1枚（飴ジャムの夜の畑のベルは、フィールドがないので熟した実を1枚・11/19）
     const f = B.fields.filter(id => id !== N.field);
-    if (f.length) out.push('b:' + pick(f));
+    if (B.bin) out.push('m:' + pick(FRUIT_IDS) + RIPE);
+    else if (f.length) out.push('b:' + pick(f));
     N.call = false;
   }
+  for (; N.basket > 0; N.basket--) out.push('m:' + pick(FRUIT_IDS) + '0');   // 収穫かご：くだもの（花）が多く出る
   if (N.round === 1) {
     while (out.filter(c => B.doughs.includes(c)).length < 2) out.push(pick(B.doughs));
   }
@@ -120,8 +127,9 @@ function buy(i, to) {
   const d = cardDef(cid), ng = payNg(1, d.cost);
   if (ng) return toast(ng);
   if (d.cat === 'field') {
+    if (fixedField()) return toast('今夜の場は大きなびん（入れかえられない）');
     if (N.field) toast('フィールドを入れかえた');
-    N.field = cid.slice(2); N.heat = FIELDS[N.field].start;
+    N.field = cid.slice(2); if (FIELDS[N.field].start) N.heat = FIELDS[N.field].start;   // わかばの肥料は温度も火力も変えない
   } else {
     const at = to && to.where === 'board' ? to.i : freeSlot();
     if (at < 0) return toast(BOARD_FULL);
@@ -145,10 +153,36 @@ function kneadPlan(A, B) {
   const F = N.field ? FIELDS[N.field] : {}, both = A.tane && B.tane;
   return { kone: F.kone || 1, tane: 1 + (both ? 0 : (A.fx.tane2 || 0) + (B.fx.tane2 || 0) + (F.tane || 0)) };
 }
+/* ---------- わかば②飴ジャム（11/19 しょーくん）：場はいつも大きなびん。くだものをドラッグで入れる（入れた段のまま）。3つで★3のジャムが調理台に生まれ、びんは空に
+   ジャムの行き先は、調理台から入れた実の空いたマス → 左の空き。とろとろジャムが調理台にあると、熟した実は2つ分 ---------- */
+const BIN_MAX = 3;
+const fixedField = () => !!(N.field && FIELDS[N.field] && FIELDS[N.field].fixed);
+const binWeight = m => MATS[m].stage === RIPE && N.board.some(c => c && cardDef(c.cid).fx.toro) ? 2 : 1;
+const binCount = () => N.bin.reduce((t, m) => t + binWeight(m), 0);
+function binPlan(p, d) {
+  const jam = binCount() + binWeight(d.mats[0]) >= BIN_MAX, n = p.where === 'shop' ? 1 : 0, cost = n ? d.cost : 0;
+  const ng = jam && p.where !== 'board' && freeSlot() < 0 ? 'ジャムを置くマスがない。調理台を1つあけよう' : payNg(n, cost);
+  return { kind: 'bin', n, cost, jam, ng };
+}
+function binIn(p) {
+  const a = cardAt(p); if (!a || busy || N.stage !== 'shop' || !fixedField()) return;
+  const d = cardDef(a.cid); if (!d.fruit || d.star !== 1) return;
+  const P = binPlan(p, d); if (P.ng) return toast(P.ng);
+  pay(P.n, P.cost);
+  if (p.where === 'shop') N.shop[p.i] = null; else N.board[p.i] = null;
+  N.bin.push(d.mats[0]); unsel(); tipEv('buy');
+  let made = null;
+  if (binCount() >= BIN_MAX) {
+    made = 'j:' + N.bin.slice().sort().join('+');
+    N.board[p.where === 'board' ? p.i : freeSlot()] = { cid: made, born: 1 }; N.bin = []; N.jamN++;
+  }
+  save(); renderNight(); binFx(made);
+}
 /* うる・もどす（1ラウンド目の★1は「もどす」＝無料の枠がもどる） */
 function sellValue(d) { return d.tane || (N.round === 1 && d.star === 1 && d.cat !== 'burnt') ? 0 : SELL[d.star]; }
 function sellAt(p) {
   if (busy || N.stage !== 'shop' || !p) return;
+  if (p.where === 'field' && fixedField()) return toast('大きなびんは うれない');
   const c = p.where === 'field' ? (N.field ? { cid: 'b:' + N.field } : null) : cardAt(p); if (!c || p.where === 'shop') return;
   const d = cardDef(c.cid), v = sellValue(d);
   if (v) N.coins += v; else if (!d.tane) N.picks = Math.min(ROUND1_PICKS, N.picks + 1);   // パン種は0コイン（無料の枠ももどらない）
@@ -178,7 +212,8 @@ function mixResult(a, b) {
     const s = [a, b].filter(x => x.cook != null && cardDef(x.cid).grow).sort((x, y) => y.cook - x.cook)[0];
     return s ? Object.assign({ cid, cook: s.cook }, s.ice ? { ice: 1 } : {}) : { cid, cook: 0 };
   }
-  return D.dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 } : { cid };
+  const plus = (a.plus || 0) + (b.plus || 0);   // もりのシフォン：育った実でふえた味パワーは、まぜても引きつぐ（11/19）
+  return D.dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 } : plus && D.fx.perGrow ? { cid, plus } : { cid };
 }
 /* まぜるときの代金（ショップのカードの分）と、できたカードの行き先。調理台のカードとまぜたらそのマス・ショップどうしなら左から空いているマス */
 function mixPlan(p, q) {
@@ -192,19 +227,20 @@ function mixNg(P) { return P.to.i < 0 ? BOARD_FULL : payNg(P.n, P.cost); }
 const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
 /* まぜられる相手の決まり（ドラッグの案内・大きく見る画面） */
 function mixRule(d) {
-  if (d.cat === 'field') return 'フィールドは まぜられない';
+  if (d.cat === 'field') return fixedField() && d.cid === 'b:' + N.field ? 'くだものを入れて、3つでジャム' : 'フィールドは まぜられない';
   if (d.star >= 3) return '★3は完成。もう まぜられない';
-  const main = d.cat === 'ame' || d.cat === 'candy' ? CAT_NAME[d.cat] : candyNight() ? 'キャンディ' : chefNow() === CHEFS.minamo ? '飴細工' : '生地';
-  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : main + 'か素材'}の★${d.star}と まぜる`;
+  if (d.fruit) return binNight() ? '場の大きなびんへ（3つでジャム）' : d.stage === RIPE ? '★2のケーキにはなすと★3' : 'まぜずに育てる（熟すと★2のケーキへ）';   // わかば（11/19）
+  const C = chefNow(), main = ['ame', 'candy', 'cake', 'jam'].includes(d.cat) ? CAT_NAME[d.cat] : candyNight() ? 'キャンディ' : binNight() ? 'ジャム' : C === CHEFS.minamo ? '飴細工' : C === CHEFS.wakaba ? 'ケーキ' : '生地';
+  return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : main + 'か素材'}の★${d.star}と まぜる${d.cat === 'cake' && d.star === 2 ? '・熟した実で★3' : ''}`;
 }
 /* p のカードを q へ落としたら何が起きるか（ドラッグの光と案内・指をはなしたとき）。kind：mix・buy・place・move・sell */
 function dropPlan(p, q) {
-  const a = p.where === 'field' ? (N.field ? { cid: 'b:' + N.field } : null) : cardAt(p);
+  const a = p.where === 'field' ? (N.field && !fixedField() ? { cid: 'b:' + N.field } : null) : cardAt(p);   // 大きなびんは うごかせない
   if (!a || !q || (q.where === p.where && q.i === p.i)) return null;
   const d = cardDef(a.cid);
   if (q.where === 'sell') return p.where === 'shop' ? null : { kind: 'sell', v: sellValue(d) };
   if (d.cat === 'field') return q.where === 'field' && p.where === 'shop' ? { kind: 'buy', ng: payNg(1, d.cost), cost: d.cost } : null;
-  if (q.where === 'field') return null;
+  if (q.where === 'field') return fixedField() && d.fruit && d.star === 1 ? binPlan(p, d) : null;   // わかば②：くだものを大きなびんへ
   const b = cardAt(q);
   if (b && canMix(a, b)) { const P = mixPlan(p, q), A = cardDef(a.cid), B = cardDef(b.cid); return { kind: 'mix', P, ng: mixNg(P), r: mixResult(a, b), kn: isKnead(A, B) ? kneadPlan(A, B) : null }; }
   if (q.where !== 'board') return null;
@@ -220,6 +256,7 @@ function dropCard(p, q, from) {
   else if (P.kind === 'buy') buy(p.i, q.where === 'board' ? q : null);
   else if (P.kind === 'move') moveTo(p.i, q.i);
   else if (P.kind === 'sell') sellAt(p);
+  else if (P.kind === 'bin') binIn(p);
   return true;
 }
 /* まぜる。2枚がシュッと飛び出してガキーン（mixFx）→ できたカードが調理台へ */
@@ -283,8 +320,8 @@ function growStep(c, t, spd = 0) {
 /* 1ラウンドの計算（画面より先に、ぜんぶ決める）。board と heat は finishRound で N に入れる */
 function resolveRound() {
   const F = N.field ? FIELDS[N.field] : null, ev = [];
-  const board = N.board.map(c => c && Object.assign({ cid: c.cid, cook: c.cook }, c.ice ? { ice: 1 } : {}));
-  let heat = N.heat, burnt = 0, call = false;
+  const board = N.board.map(c => c && Object.assign({ cid: c.cid, cook: c.cook }, c.ice ? { ice: 1 } : {}, c.plus ? { plus: c.plus } : {}));
+  let heat = N.heat, burnt = 0, call = false, fert = false, basket = 0;
   const stop = () => board.some(c => c && cardDef(c.cid).fx.stop);
   const burn = (i, r) => { if (r.burnt) { board[i] = { cid: r.cid }; burnt++; } };
   // 1. 焼き：バトルのはじめに、鉄板の生地がいっせいに焼ける
@@ -304,6 +341,11 @@ function resolveRound() {
     board.forEach((c, i) => { if (!c || !cardDef(c.cid).grow) return; const r = growStep(c, heat, cardDef(c.cid).fx.spd || 0); if (r) list.push({ i, ...r }); });
     if (list.length) ev.push({ type: 'grow', heat, list });
   }
+  // 1c. くだもの（わかば・11/19）：スタートのロール生地で、バトル開始時に くだものぜんぶ1段育つ
+  {
+    const f0 = board.findIndex(Boolean);
+    if (f0 >= 0 && cardDef(board[f0].cid).fx.rollGrow) { const list = fruitGrow(board, 1); if (list.length) ev.push({ type: 'fgrow', by: f0, list }); }
+  }
   // 2. 発動：左から順に
   const idx = board.map((c, i) => c ? i : -1).filter(i => i >= 0);
   const first = idx[0], last = idx[idx.length - 1];
@@ -312,15 +354,21 @@ function resolveRound() {
   let pend = 1, total = 0, rally = 0, pendEv = [], kone = N.kone || 0, panRally = 0;
   /* みなも②（11/19）：chain＝れんさ（キャンディが続けて発動した数・素材や道具が発動すると0）・candyMul＝いちばんドロップの「キャンディぜんぶ×」 */
   let chain = (F && F.chain0) || 0, candyMul = 1;
-  const petitN = (F && F.petit) || 0, isCandy = j => !!board[j] && cardDef(board[j].cid).candy;   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
+  const petitN = (F && F.petit) || 0, isCandy = j => !!board[j] && cardDef(board[j].cid).candy;
+  /* わかば（11/19）：くだものの効果は のびのび肥料×2・となりのかかし×1.5（fxAt）。jamMul＝いちばんジャムの「ジャムぜんぶ×」 */
+  let jamMul = 1;
+  const isJam = j => !!board[j] && cardDef(board[j].cid).cat === 'jam', isFruit = j => !!board[j] && cardDef(board[j].cid).fruit;
+  const scareOf = j => board[j] ? cardDef(board[j].cid).fx.scare || 1 : 1;
+  const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, ((F && F.fruitMul) || 1) * Math.max(scareOf(j - 1), scareOf(j + 1))) : d.fx; };   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
   /* ほかのカードにかかる効果は、バトルの画面でオーラを飛ばすので、どこからどこへかを残す（11/18 しょーくん）
      e.out＝このカードから飛ばす [{k, to, v}]（to はマスの番号の列・'heat'・'score'）。parts の4つめ＝かかった元のマス */
   const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
   for (const i of idx) {
     const cold = cardDef(board[i].cid).fx.coldAgain && heat <= 2 ? 1 : 0;   // ひえひえミント飴：ひんやり以下なら もう1回
-    const times = 1 + Math.min(3, extra[i]) + cold;
+    const fa = cardDef(board[i].cid).fx.fruitAgain && isFruit(i + 1) ? 1 : 0;   // はちみつロール：右どなりがくだものなら もう1回
+    const times = 1 + Math.min(3, extra[i]) + cold + fa;
     for (let t = 0; t < times; t++) {
-      const c = board[i], d = cardDef(c.cid), fx = d.fx, sm = STAR_MUL[d.star];
+      const c = board[i], d = cardDef(c.cid), fx = fxAt(i), sm = STAR_MUL[d.star];
       const e = { type: 'act', i, cid: c.cid, again: t > 0, dmg: 0, cook: c.cook, out: [] };
       if (d.candy) {   // れんさ+1（つなぎペロキャン：両どなりがキャンディなら さらに+）
         const lk = fx.link && isCandy(i - 1) && isCandy(i + 1) ? fx.link : 0;
@@ -330,6 +378,10 @@ function resolveRound() {
       if (i === first && t === 0 && fx.candyLead) {   // いちばんドロップ：このラウンドのキャンディぜんぶ×（自分も・ちいさなキャンディも）
         candyMul *= fx.candyLead; e.clead = fx.candyLead;
         e.out.push({ k: 'clead', to: idx.filter(j => j > i && isCandy(j)), v: fx.candyLead });
+      }
+      if (i === first && t === 0 && fx.jamLead) {   // いちばんジャム：このラウンドのジャムぜんぶ×（自分も）
+        jamMul *= fx.jamLead; e.clead = fx.jamLead;
+        e.out.push({ k: 'clead', to: idx.filter(j => j > i && isJam(j)), v: fx.jamLead });
       }
       if (i === first && t === 0 && fx.rally) {
         rally += fx.rally * sm; e.rally = true;
@@ -354,6 +406,10 @@ function resolveRound() {
         const o = board[i + 1], from = o.cook || 0; o.cook = Math.min(SIZE_MAX, from + fx.grow); delete o.ice;
         e.grow = { i: i + 1, cid: o.cid, from, to: o.cook }; e.out.push({ k: 'grow', to: [i + 1] });
       }
+      if (fx.water && isFruit(i + 1)) { const L = fruitGrow(board, fx.water, i + 1); if (L.length) { e.water = L[0]; e.out.push({ k: 'water', to: [i + 1] }); } }   // じょうろ
+      if (fx.fert) { fert = true; e.fert = true; }                       // ひりょう：このラウンドの終わりに もう1段
+      if (fx.basket) { basket += fx.basket; e.basket = fx.basket; }      // 収穫かご
+      if (fx.shine && isJam(i + 1)) e.out.push({ k: 'shine', to: [i + 1], v: fx.shine });   // きらきら水あめ
       let dmg = 0;
       if (fx.dmg) {
         /* 計算の中身を parts に残す（バトルの画面で、数字が1つずつかかっていくのを見せる） */
@@ -361,6 +417,9 @@ function resolveRound() {
         let base = fx.dmg * sm;
         if (fx.perKone && kone) { const v = fx.perKone * sm * kone; base += v; parts.push(['+', v, `こね${kone}回`]); }
         if (fx.perChain && chain) { const v = fx.perChain * sm * chain; base += v; parts.push(['+', v, `れんさ${chain}`]); }
+        if (c.plus) { base += c.plus; parts.push(['+', c.plus, '育った実']); }   // もりのシフォン
+        if (fx.binNow && N.bin.length) { const v = fx.binNow * sm * N.bin.length; base += v; parts.push(['+', v, `びんの実${N.bin.length}`]); }
+        if (fx.perJam && N.jamN) { const v = fx.perJam * sm * N.jamN; base += v; parts.push(['+', v, `ジャム${N.jamN}`]); }
         if (d.dough) {
           const cm = cookMul(c.cook || 0); base *= cm; if (cm !== 1) parts.push(['×', cm, '焼き加減']);
           if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
@@ -370,13 +429,25 @@ function resolveRound() {
           const cm = COLD_MUL[heat] || 1; if (cm !== 1) { base *= cm; parts.push(['×', cm, heatOf().names[heat]]); }
           if (candyMul !== 1) { base *= candyMul; parts.push(['×', candyMul, 'いちばん', [first]]); }
         }
+        if (d.cat === 'cake') {   // わかば①：タルト（となりが実）・デコレーション台（熟した実をのせた★3は×2）
+          if (fx.tartFruit && (isFruit(i - 1) || isFruit(i + 1))) { base *= fx.tartFruit; parts.push(['×', fx.tartFruit, 'となりの実']); }
+          if (F && F.cakeMul) { const m = fx.fruitCake ? F.fcMul : F.cakeMul; base *= m; parts.push(['×', m, 'デコ']); }
+        }
+        if (d.cat === 'jam') {   // わかば②：いちばんジャム・きらきら水あめ（左どなり）
+          if (jamMul !== 1) { base *= jamMul; parts.push(['×', jamMul, 'いちばん', [first]]); }
+          const sh = board[i - 1] && cardDef(board[i - 1].cid).fx.shine; if (sh) { base *= sh; parts.push(['×', sh, 'きらきら', [i - 1]]); }
+        }
         if (fx.lead && i === first) { base *= fx.lead; e.lead = true; parts.push(['×', fx.lead, 'スタート']); }
         if (fx.sai && i === last) {
           const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n);
           base *= v; e.sai = n; if (n) parts.push(['×', v, `サイコー${n}枚`, best.filter(j => j !== i)]);
         }
+        if (fx.ripeFin && i === last) {   // しめのデコ生地：熟した実1つにつき×
+          const rp = idx.filter(j => (isFruit(j) && cardDef(board[j].cid).stage === RIPE) || cardDef(board[j].cid).fx.fruitCake), n = rp.length, v = Math.pow(ripeFinOf(fx, d.star), n);   // ケーキにのせた実も数える
+          base *= v; if (n) parts.push(['×', v, `熟した実${n}`, rp]);
+        }
         let nb = 0; const nbs = [];
-        for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid); if (od.fx.nb) { nb += od.fx.nb * STAR_MUL[od.star]; nbs.push(j); } } }
+        for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid), ofx = fxAt(j); if (ofx.nb) { nb += ofx.nb * STAR_MUL[od.star]; nbs.push(j); } } }
         if (nb) { base += nb; parts.push(['+', nb, 'となり', nbs]); }
         if (rally) { base += rally; parts.push(['+', rally, 'スタート', [first]]); }
         if (panRally && d.pan) { base += panRally; parts.push(['+', panRally, 'スタート', i === first ? undefined : [first]]); }   // いちばんあんパン自身にも効く
@@ -397,7 +468,8 @@ function resolveRound() {
       }
       const fin = i === last ? (fx.fin || 1) * (fx.koneFin ? 1 + koneFinOf(fx, d.star) * kone : 1)   // しめのコロネ：×(1＋0.5×こねた回数)
         * (fx.doneFin ? 1 + doneFinOf(fx, d.star) * doneN() : 1)
-        * (fx.chainFin ? 1 + chainFinOf(fx, d.star) * chain : 1) : 1;                                  // キャンディのびん：×(1＋0.25×れんさ)（11/19）                               // しあげのつや：×(1＋0.5×完成した大作の数)（11/19）
+        * (fx.chainFin ? 1 + chainFinOf(fx, d.star) * chain : 1)
+        * (fx.jamFin ? 1 + jamFinOf(fx, d.star) * (N.jamN || 0) : 1) : 1;                             // しめのジャム：×(1＋0.5×この夜に作ったジャムの数)（11/19）                                  // キャンディのびん：×(1＋0.25×れんさ)（11/19）                               // しあげのつや：×(1＋0.5×完成した大作の数)（11/19）
       if (fin > 1) { const add = Math.min(DMG_CAP, Math.floor(total * (fin - 1))); dmg += add; total += add; e.fin = [Math.round(fin * 100) / 100, add]; e.out.push({ k: 'fin', to: 'score' }); }
       total = Math.min(DMG_CAP, total);
       if (fx.again && t === 0 && i + 1 < SLOTS) { extra[i + 1] += fx.again; if (board[i + 1]) e.out.push({ k: 'again', to: [i + 1] }); }
@@ -406,7 +478,7 @@ function resolveRound() {
       ev.push(e, ...pet);
     }
   }
-  return { ev, total, burnt, board, heat, call, kone };
+  return { ev, total, burnt, board, heat, call, kone, fert, basket };
 }
 /* おもてなし！（11/18 名前を bake から omotenashi に：朝の morning.js の bake と同じ名前で、あとに読まれる朝のほうが勝ち、おもてなし！が動かなかった）：ショップがあがる → ラウンドの帯 → 焼き → 左から1枚ずつ（計算を見せる）→ 結果。時間は T()（はやおくりで半分） */
 function omotenashi() {
@@ -433,6 +505,7 @@ function omotenashi() {
 function finishRound(res) {
   const q = quota(N.round, S.day), ok = res.total >= q;
   N.board = res.board; N.heat = res.heat; N.kone = res.kone; if (res.call) N.call = true;
+  if (res.fert) N.fert = true; if (res.basket) N.basket = (N.basket || 0) + res.basket;   // ひりょう・収穫かご（わかば）
   N.score += res.total; N.burnt += res.burnt;
   if (ok) N.met++;
   N.last = { round: N.round, total: res.total, q, ok };
@@ -444,10 +517,29 @@ function nextRound() {
   tipEv('next');
   if (N.round >= ROUNDS) return endNight();
   N.coins += INCOME + (N.last.ok ? QUOTA_BONUS : 0);
-  const cooled = coolDown();
+  const cooled = coolDown(), grown = fruitEnd();
   N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
   rollShop(); save(); renderNight();
   if (cooled) coolFx(cooled);
+  if (grown.length) fruitFx(grown);
+}
+/* わかばのくだもの（11/19 しょーくん）：ラウンドの終わりに1段育つ。すくすく肥料は2段（1ターンはやく熟す）・のびのび肥料は2ラウンドに1回・ひりょうで もう1段 */
+function fruitEnd() {
+  const F = (N.field && FIELDS[N.field]) || {}, n = (F.slowGrow && N.round % 2 === 1 ? 0 : 1 + (F.growAdd || 0)) + (N.fert ? 1 : 0);
+  N.fert = false;
+  return n ? fruitGrow(N.board, n) : [];
+}
+/* くだものを n 段育てる（熟した実はそのまま・only＝そのマスだけ）。育った段の数だけ、もりのシフォンの味パワーが この夜ずっと+（board の plus）。[{i, from, to, cid}] */
+function fruitGrow(board, n, only) {
+  const list = []; let steps = 0;
+  board.forEach((c, i) => {
+    if (!c || (only != null && i !== only)) return;
+    const d = cardDef(c.cid); if (!d.fruit || d.stage >= RIPE) return;
+    const to = Math.min(RIPE, d.stage + n); steps += to - d.stage;
+    c.cid = 'm:' + MATS[d.mats[0]].fruit + to; list.push({ i, from: d.stage, to, cid: c.cid });
+  });
+  if (steps) board.forEach(c => { if (c) { const d = cardDef(c.cid); if (d.fx.perGrow) c.plus = (c.plus || 0) + d.fx.perGrow * STAR_MUL[d.star] * steps; } });
+  return list;
 }
 /* みなもの飴は、ラウンドの終わりに1段冷める（11/19 しょーくん）。ガラスの工房は2ラウンドに1回。冷めたら [前, あと] */
 function coolDown() {

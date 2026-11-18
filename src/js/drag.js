@@ -93,6 +93,7 @@ function tipHTML(cid, P) {
   }
   const t = !P ? (d.cat === 'field' ? '左の「場」へ' : mixRule(d))
     : P.kind === 'buy' ? (P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと ${N.round === 1 ? 'えらぶ（無料）' : `買う（コイン${P.cost}）`}`)
+    : P.kind === 'bin' ? (P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと びんに入れる${P.n ? (N.round === 1 ? '（無料）' : `（コイン${P.cost}）`) : ''}${P.jam ? '・ジャムができる！' : ''}`)
     : P.kind === 'place' ? 'はなすと 置く'
     : P.kind === 'move' ? (P.swap ? 'はなすと 入れかえ' : 'はなすと うごかす')
     : P.v ? `はなすと うる（+${P.v}）` : 'はなすと もどす（無料の枠がもどる）';

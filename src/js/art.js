@@ -67,6 +67,7 @@ function specialCanvas(id) {
 /* ---------- ハイグラの絵：ART はビルドが assets/art/*.webp から作る（名前→dataURL）。まだない絵はドット絵の仮の絵 ---------- */
 const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンディ': 'candy', 'カステラ': 'castella', 'ブラウニー': 'brownie', 'ゼリー': 'jelly', 'シュークリーム': 'puff',
   'メロンパン': 'melonpan', 'クリームパン': 'creampan', 'ロール': 'roll', 'あんパン': 'anpan', 'コロネ': 'koronet', 'パン': 'pan' };   // パンは こね生地（11/18 夜）
+const JAM_ART = { apple: 'card-torojam', berry: 'card-torojam', grape: 'card-torojam', peach: 'card-shimejam', mikan: 'card-shimejam' };
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
   if (k === 'm' || k === 't') return ART['card-' + id] || (MATS[id] && ART[MATS[id].alt]) || null;   // alt＝絵が届くまでの仮の絵
@@ -78,10 +79,12 @@ function hiArt(cid) {
     const mid = r.mats.find(m => MATS[m].noun === r.noun), mm = MATS[mid];   // 菓子パンの★2は、主役の素材のカードの絵（なければ仮の絵 alt）
     return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || ART['card-' + mid] || (mm && ART[mm.alt]) || null;
   }
+  if (k === 'j') { const { top } = jamTop(id.split('+')); return ART['jam-' + top] || ART[JAM_ART[top]] || null; }   // わかば②のジャム（11/19）：絵が届くまでは実の色に近いジャムの絵
+  if (k === 'c') { const r = recipeOf(id.split('|')[0]), mid = r.mats.find(m => MATS[m].noun === r.noun) || r.mats[0]; return ART['special-' + mid] || ART['card-' + mid] || null; }   // くだものケーキ：主役のケーキの絵
   if (k === 's') {   // ★3：同じ形どうしは「特製○○タワー」の絵
     const [r1, r2] = id.split('|').map(recipeOf);
-    const ame = [...r1.mats, ...r2.mats].filter(m => MATS[m].cat === 'ame' || MATS[m].cat === 'candy').sort((a, b) => MATS[b].nr - MATS[a].nr)[0];
-    if (ame) return ART['special-' + ame] || ART['card-' + ame] || null;   // みなもの★3（11/19）：★3の絵が届くまでは、いちばん主役の飴細工のカードの絵
+    const ame = [...r1.mats, ...r2.mats].filter(m => ['ame', 'candy', 'cake', 'jam'].includes(MATS[m].cat)).sort((a, b) => MATS[b].nr - MATS[a].nr)[0];
+    if (ame) return ART['special-' + ame] || ART['card-' + ame] || ART[MATS[ame].alt] || null;   // みなもの★3（11/19）：★3の絵が届くまでは、いちばん主役の飴細工のカードの絵
     if (r1.noun === r2.noun) return ART[`special-${NOUN_ID[r1.noun]}-tower`] || null;
     return ART[`special-${NOUN_ID[r2.noun]}-tower`] || ART[`special-${NOUN_ID[r1.noun]}-tower`] || null;   // ちがう形どうしは、主役（うしろ）の形のタワーの絵
   }

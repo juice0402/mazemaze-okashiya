@@ -38,7 +38,7 @@
 | candy-sable・candy-castella・candy-brownie（★2 サブレ・カステラ・ショコラ） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards10.md`・もとの PNG `assets/art/raw/cards10.png` | ★2 のお菓子（形だけの絵。材料の絵がのった candy-形-材料 があればそちら） |
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
-- ストックの置き場（11/18 夜）：まだゲームで使っていない絵（11/19 にみなもの大作の分は assets/art へ。いまはキャンディの8まい・わかばの分・立ち絵のストック・背景2。これから届くわかばの分・立ち絵のストックも）は assets/art-stock/ に置く。ビルドは assets/art だけを埋めこむので、index.html が重くならない。使うときに assets/art へ git mv する
+- ストックの置き場（11/18 夜）：まだゲームで使っていない絵（11/19 にみなもの分も、わかばのカード・戦闘ポーズ・デフォルメも assets/art へ。いまは立ち絵のストック〔3人に9ずつ〕・背景2）は assets/art-stock/ に置く。ビルドは assets/art だけを埋めこむので、index.html が重くならない。使うときに assets/art へ git mv する
 ## 依頼中（11/18）
 - 依頼中：なし（11/19 1時30分。11/18〜19 の夜に書いた依頼書はぜんぶ済）
 - 11/18 17時10分 司令塔（art-irai PR #68・game-art-rule.md）：okashi の依頼中は4つまで・@codex は2本まで並べてよい（issue #3 にコメントを2つ別々に・それぞれ「@codex AGENTS.md の決まりで、次の依頼書だけ描いて、カギで送って PR を作って：requests/okashi/<名前1>.md・requests/okashi/<名前2>.md」・2つのコメントで同じ依頼書を書かない）。パスを書かないと依頼中をぜんぶ見る（多くて3つ）。GPT の利用上限が減ってきたら司令塔に教える（2つにもどす）
@@ -100,9 +100,9 @@
 | wakaba（わかばの立ち姿・栗色の三つ編み・庭師風） | A | Codex | 2026-11-18 | art-irai `requests/okashi/wakaba.md`（PR #99）・`one … 760 --strict`。もとの PNG は sources/okashi/wakaba.png | 会話（TALKERS.wakaba のふつう）・あとでタイトル・夜 |
 | wakaba-ara・-ufufu・-odoroki・-komari・-wakuwaku・-makasete・-shinmiri・-yorokobi・-naisho（わかばの立ち絵9） | A | Codex | 2026-11-19 | art-irai `requests/okashi/wakaba-poses.md`（PR #103）・gen/posebox.py で wakaba と同じ四角 | 会話（TALKERS.wakaba の faces：あらあら・うふふ・おどろき・こまり顔・わくわく・まかせて・しんみり・よろこび・ないしょ） |
 | title-wakaba（タイトルのわかば：くだもののかご） | A | Codex | 2026-11-19 | art-irai `requests/okashi/title-wakaba.md`（PR #104）・one … 760 --strict | タイトル（昼のチャットの LG_CAST） |
-| wakaba-battle・-charge・-atk・-special・-win・-support・wakaba-chibi-think・-cheer・-sit（わかばの戦闘ポーズ6・デフォルメ3・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/wakaba-battle.md`・`wakaba-chibi.md`（PR #101・#102） | assets/art-stock/（わかばのビルドを作るとき） |
+| wakaba-battle・-charge・-atk・-special・-win・-support・wakaba-chibi-think・-cheer・-sit（わかばの戦闘ポーズ6・デフォルメ3・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/wakaba-battle.md`・`wakaba-chibi.md`（PR #101・#102） | assets/art（11/19 わかばの夜：HEROES・POSE_WAKABA・デフォルメ） |
 | card-sponge・tart・roll・deco・chiffon・hachiroll・garabin・ookibin・ichijam・shimejam・torojam・kirakira・field-hatake・terrace・jamnabe・card-joro・hiryo・kakashi・card-apple-0〜2・card-berry-0〜2（わかばのカード24・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/cards-wakaba1.md`〜`cards-wakaba4.md`（PR #105〜#108）・gen/gridcut.py 3×2・--strict（空のびんは --despill）・上限300 | assets/art-stock/（わかばのビルドを作るとき） |
-| card-peach-0〜2・card-grape-0〜2・card-mikan-0〜2・card-kago・card-hatabell（わかばのくだもの3段の残りと道具2・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/cards-wakaba5.md`・`cards-wakaba6.md`（PR #109・#110）・gridcut 3×2・--strict・上限300 | assets/art-stock/ |
+| card-peach-0〜2・card-grape-0〜2・card-mikan-0〜2・card-kago・card-hatabell（わかばのくだもの3段の残りと道具2・ストック） | A | Codex | 2026-11-19 | art-irai `requests/okashi/cards-wakaba5.md`・`cards-wakaba6.md`（PR #109・#110）・gridcut 3×2・--strict・上限300 | assets/art（11/19 わかばのビルドで使う） |
 | honoka-peko・-tsumami・-nemui・-okori・-warai・-tefuri・-hashiru・-yubisashi・-nakiwarai（ほのかの立ち絵ストック9） | A | Codex | 2026-11-19 | art-irai `requests/okashi/honoka-poses2.md`（PR #111）・gen/posebox.py で立ち姿 honoka と同じ四角（162,4,824,1528・上限760） | assets/art-stock/（会話で使うときは assets/art へ・TALKERS.honoka の faces：おなかぺこぺこ・つまみ食い・ねむい・ぷんぷん・大わらい・手をふる・走る・びしっ・うれし泣き） |
 | minamo-hohoemi・-mutt・-sashidasu・-yomu・-akubi・-shiteki・-tobinoku・-udemakuri・-tefuri（みなもの立ち絵ストック9） | A | Codex | 2026-11-19 | art-irai `requests/okashi/minamo-poses2.md`（PR #112）・posebox で minamo と同じ四角 | assets/art-stock/（faces：ほほえみ・むっ・飴をどうぞ・レシピを読む・あくび・してき・とびのく・うでまくり・小さく手をふる） |
 | wakaba-nemui・-mazeru・-okoru・-ase・-tefuri・-mizuyari・-ajimi・-kangae・-tehe（わかばの立ち絵ストック9） | A | Codex | 2026-11-19 | art-irai `requests/okashi/wakaba-poses2.md`（PR #115）・posebox で wakaba と同じ四角 | assets/art-stock/（faces：ねむそう・まぜまぜ・にこにこ怒り・こまった汗・手をふる・水やり・味見・考えごと・てへっ） |

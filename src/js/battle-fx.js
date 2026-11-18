@@ -90,7 +90,7 @@ function takeBuff(i, from, kind) {
   b.classList.add('absorb'); setTimeout(() => b.remove(), T(420));
   return true;
 }
-const BUFF_TXT = { next: o => '×' + fmtMul(o.v), clead: o => '×' + fmtMul(o.v), rally: o => '+' + fmt(o.v), nb: o => '+' + fmt(o.v), again: () => 'もう1回' };
+const BUFF_TXT = { next: o => '×' + fmtMul(o.v), clead: o => '×' + fmtMul(o.v), shine: o => '×' + fmtMul(o.v), rally: o => '+' + fmt(o.v), nb: o => '+' + fmt(o.v), again: () => 'もう1回' };
 /* 計算の札の元のカード → このカードへ（札が残っていれば吸いこむ・なければ元のマスから飛んでくる） */
 function auraIn(e, srcs, kind) {
   for (const s of srcs) if (s !== e.i && !takeBuff(e.i, s, kind)) aura(s, e.i, kind);
@@ -111,6 +111,11 @@ function auraOut(e, o) {
       const c2 = updTile(e.grow.i, e.grow.cid, e.grow.to);
       if (c2) { replay(c2, 'sear'); sparkBurst(c2, 6, 'up', .6); }
       floatAt(c2 && c2.parentNode, e.grow.to >= SIZE_MAX ? '完成！' : `大きさ+${e.grow.to - e.grow.from}`, e.grow.to >= SIZE_MAX ? 'best' : 'cookup');
+    }
+    if (o.k === 'water' && e.water) {   // じょうろ：右どなりのくだものが育つ（わかば・11/19）
+      const c2 = updTile(e.water.i, e.water.cid);
+      if (c2) { replay(c2, 'sear'); sparkBurst(c2, 6, 'up', .6); }
+      floatAt(c2 && c2.parentNode, e.water.to >= RIPE ? '熟した！' : '育った', e.water.to >= RIPE ? 'best' : 'cookup');
     }
   }), T(n * 90)));
 }

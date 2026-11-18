@@ -2,14 +2,14 @@
    左上に炎のダメージの紋章・右上に★。生地は紙の左に焼き加減の炎（色と数字）。文字の大きさはカードの幅で決まる（style.css の cqw）
    cardMini：手札・ドラッグ・演出　cardTile：調理台（絵と数字・焼き加減の炎とメーター）　cardBig：タップで大きく見る ==== */
 /* いまのダメージ（生地は焼き加減の倍率こみ） */
-function cardDmg(d, cook) { return d.fx.dmg ? Math.floor(d.fx.dmg * STAR_MUL[d.star] * (d.dough ? cookMul(cook || 0) : d.grow ? sizeMul(cook || 0, d.fx) : 1) * 10) / 10 : 0; }
+function cardDmg(d, cook, plus = 0) { return d.fx.dmg ? Math.floor((d.fx.dmg * STAR_MUL[d.star] * (d.dough ? cookMul(cook || 0) : d.grow ? sizeMul(cook || 0, d.fx) : 1) + plus) * 10) / 10 : 0; }   // plus＝もりのシフォンの育った実の分（わかば）
 /* 効果のことば（短く） */
 function cardChips(d) { return d.cat === 'field' ? FIELDS[d.cid.slice(2)].chips.slice() : fxList(d.fx, d.star); }
 const artImg = cid => `<img${hiArt(cid) ? ' class="hi"' : ''} src="${cardIconURL(cid)}" alt="">`;
 const starGems = d => d.star > 1 ? `<span class="pc-star" aria-label="★${d.star}">${'<i></i>'.repeat(d.star)}</span>` : '';   // 星は描き下ろしの絵（ui-star）
 
 /* 属性の帯（ゼンゼロの形・11/18 しょーくん）：左が役目・右が種類。色で見分ける */
-const ATTR_C = { 主役: 'atk', 支援: 'sup', 火力: 'fire', 温度: 'temp', 仕入れ: 'buy', 生地: 'dough', 飴細工: 'ame', キャンディ: 'ame', 素材: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };
+const ATTR_C = { 主役: 'atk', 支援: 'sup', 火力: 'fire', 温度: 'temp', 仕入れ: 'buy', 生地: 'dough', 飴細工: 'ame', キャンディ: 'ame', ケーキ: 'dough', ジャム: 'ame', 素材: 'mat', くだもの: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };
 function attrBar(d) {
   const a = d.cat === 'field' ? ['フィールド'] : [d.role, CAT_NAME[d.cat]].filter(Boolean);
   return `<p class="pc-attr">${a.map(t => `<span class="at-${ATTR_C[t] || 'etc'}">${t}</span>`).join('')}</p>`;
@@ -18,7 +18,7 @@ function attrBar(d) {
 const plainLine = d => d.role === '主役' ? '味パワーを出す' : attrsOf(d).join('・');
 /* ことば（KW）を黄色に。tap なら、タップで説明が出る（大きく見る画面だけ） */
 const kwTag = (w, tap, show = w) => `<b class="kw"${tap ? ` data-act="kw" data-kw="${w}"` : ''}>${show}</b>`;
-const KW_SHORT = /スタート|アンカー|サイコー|火力|焦げ|パン種|こね|温度/g;   // カードの紙（パン種・こね は こね生地のビルド）
+const KW_SHORT = /スタート|アンカー|サイコー|火力|焦げ|パン種|こね|温度|熟した実/g;   // カードの紙（パン種・こね は こね生地のビルド）
 const kwShort = (t, tap) => esc(t).replace(KW_SHORT, w => kwTag(w, tap));
 const kwLong = (t, tap) => esc(t).replace(/\{([^}]+)\}/g, (s, w) => kwTag(w, tap));   // 効果の文の {ことば}
 /* ことばの説明の吹き出し（もう一度タップ・ほかの所をタップでとじる） */
@@ -72,7 +72,7 @@ function cardFace(cid, cls, opt = {}) {
 function cardMini(cid, opt = {}) { return cardFace(cid, 'mini', opt); }
 /* 調理台のタイル：同じふちと絵の窓。数字は右上の紋章、★は左上の下、生地は左下に焼き加減の炎と、となりにメーター（9段階。サイコーは金に光る） */
 function cardTile(cid, opt = {}) {
-  const d = cardDef(cid), cook = d.meter ? opt.cook || 0 : null, dmg = cardDmg(d, cook);
+  const d = cardDef(cid), cook = d.meter ? opt.cook || 0 : null, dmg = cardDmg(d, cook, opt.plus);
   return `<div class="pc tile k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${cook >= COOK_MAX ? ' best' : ''}${opt.ice ? ' ice' : ''}${cook != null ? ` ${d.grow ? 'ame' : 'dough'}" style="--ck:${cook}` : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
     ${starGems(d)}${dmg ? powBadge(dmg) : ''}
