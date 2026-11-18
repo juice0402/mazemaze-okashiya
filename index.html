@@ -1064,7 +1064,8 @@ for (const k of ['shelf', 'seenMon', 'regulars']) if (!Array.isArray(o[k])) o[k]
 for (const k of ['stock', 'goods', 'seen', 'hearts', 'recipes']) if (!o[k] || typeof o[k] !== 'object') o[k] = {};
 if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
 for (const k of ['money', 'rep', 'shelfMax']) if (!Number.isFinite(o[k])) o[k] = d[k];
-const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(m => MATS[m]);
+const okMat = m => MATS[m] || (typeof HIRU_MATS !== 'undefined' && HIRU_MATS[m]);   // 夜の素材と朝昼の素材（H-010）
+const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(okMat);
 for (const k in o.recipes) if (!okKey(k)) delete o.recipes[k];
 if (!Object.keys(o.recipes).length) o.recipes = { 'komugi+sato': 0 };
 o.shelf = o.shelf.filter(s => s && okKey(s.key));
@@ -1645,8 +1646,6 @@ return outline(c, '#2b1a12');
 }
 const HONOKA = { h: 19, chef: true, pony: true, skin: '#f6cfae', hair: '#e8502a', shirt: '#ffffff', arm: '#e6e1e8', pants: '#3b3b46', apron: '#e0402a' };
 const CHEF_SPR = [0, 1, 2].map(f => personSprite(HONOKA, f));
-const CUST_SPR = {};
-for (const c of CUSTOMERS) CUST_SPR[c.id] = [0, 1, 2].map(f => personSprite(c, f));
 const MON_MAPS = {
 slime: [['.......oooooo.......', '.....ooaaaaaaoo.....', '....oaawwaaaaaao....', '...oawwaaaaaaaaao...', '...oaaaaaaaaaaaao...', '..oaaaakaaaakaaaao..', '..oaaaakaaaakaaaao..', '.oaaaaaaaaaaaaaaaao.', '.oaaaapaaaaaapaaaao.', '.oaaaaaaakkaaaaaaao.', 'oaaaaaaaaaaaaaaaaaao', 'oaaaaaaaaaaaaaaaaaao', 'oAaaaaaaaaaaaaaaaaAo', 'oAAaaaaaaaaaaaaaaAAo', '.oAAAAAAAAAAAAAAAAo.', '..oooooooooooooooo..'],
 { o: '#2f6b78', a: '#7fd6e0', A: '#4fb0c0', w: '#e6fbff', k: '#1e3a40', p: '#f08aa0' }],
@@ -1722,28 +1721,6 @@ if (!rows.length) rows = [['発動時', d.role === '主役' ? 'モンスター�
 return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${rows.map(([t, x]) =>
 `<b class="tg${t === 'スタート' || t === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${t}">${t}</b><p>${kwLong(x, true)}</p>`).join('')}</div></div>`;
 }
-
-/* src/js/scene.js */
-
-const SW = 96, SH = 48, FLOOR = 41;
-const scn = { mode: 'day', cust: [], speed: 1, bg: {}, cv: null, raf: 0, last: 0 };
-const CANDY_CV = new Map();
-const candyCv = key => { if (!CANDY_CV.has(key)) CANDY_CV.set(key, candyCanvas(key)); return CANDY_CV.get(key); };
-function mountScene(mode) {
-scn.cv = $('scene'); scn.mode = mode;
-if (!scn.cv) return;
-scn.cv.width = SW; scn.cv.height = SH;
-if (!scn.raf) scn.raf = requestAnimationFrame(sceneLoop);
-}
-function sceneLoop(ts) {
-const cv = scn.cv;
-if (!cv || !cv.isConnected) { scn.raf = 0; scn.last = 0; return; }   // 場面の絵がない画面では止める（11/18 軽量化：前はずっと回っていた）。mountScene でまた動く
-scn.raf = requestAnimationFrame(sceneLoop);
-const dt = Math.min(0.1, (ts - (scn.last || ts)) / 1000); scn.last = ts;
-const g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
-drawDay(g, ts / 1000, dt);
-}
-function painter(g) { return (col, x, y, w = 1, h = 1) => { g.fillStyle = col; g.fillRect(x, y, w, h); }; }
 
 /* src/js/day-scene.js */
 

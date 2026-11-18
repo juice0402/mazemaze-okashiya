@@ -127,8 +127,6 @@ function personSprite(t, frame) {
 }
 const HONOKA = { h: 19, chef: true, pony: true, skin: '#f6cfae', hair: '#e8502a', shirt: '#ffffff', arm: '#e6e1e8', pants: '#3b3b46', apron: '#e0402a' };
 const CHEF_SPR = [0, 1, 2].map(f => personSprite(HONOKA, f));
-const CUST_SPR = {};
-for (const c of CUSTOMERS) CUST_SPR[c.id] = [0, 1, 2].map(f => personSprite(c, f));
 
 /* ---------- 食材モンスター（20×16・2倍で描く） ---------- */
 const MON_MAPS = {

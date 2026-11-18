@@ -109,7 +109,8 @@ function sanitize(o) {
   if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
   for (const k of ['money', 'rep', 'shelfMax']) if (!Number.isFinite(o[k])) o[k] = d[k];
   /* レシピと棚はいまの材料だけ。倉庫は数が正しい物だけ（基本素材の id は昼のチャットの hiru.js なので、名前ではけさない） */
-  const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(m => MATS[m]);
+  const okMat = m => MATS[m] || (typeof HIRU_MATS !== 'undefined' && HIRU_MATS[m]);   // 夜の素材と朝昼の素材（H-010）
+  const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(okMat);
   for (const k in o.recipes) if (!okKey(k)) delete o.recipes[k];
   if (!Object.keys(o.recipes).length) o.recipes = { 'komugi+sato': 0 };
   o.shelf = o.shelf.filter(s => s && okKey(s.key));

@@ -38,7 +38,7 @@
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
 ## 依頼中（11/18）
-- art-irai `requests/okashi/customers2.md`：お客さん4人の うれしい（すきな味があった）・ざんねん を、cust-* のもとの絵から編集で。名前は `cust-<人>-ureshii`・`cust-<人>-zannen`（`prep_art.py one … 480`）
+- art-irai `requests/okashi/customers2.md`：お客さん4人の うれしい（すきな味があった）・ざんねん を、cust-* のもとの絵から編集で。名前は `cust-<id>-happy`・`cust-<id>-sad`（id＝kodomo・gakusei・otona・obaachan・`prep_art.py one … 480`。昼の custHTML がそのまま出す）
 
 ## これから頼む絵
 - ★3：クッキー以外の形の「○○タワー」（サブレ・カステラ・ショコラ・ドロップ・ゼリー・シュー）と、ちがう形どうしの★3（いまはコードで描いた仮の絵）
