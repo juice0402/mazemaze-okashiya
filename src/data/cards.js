@@ -118,7 +118,7 @@ function recipeOf(key) {
     key, mats: [a, b],
     name: a === b ? A.twin || A.adj + nounName(A.noun) : other.adj + nounName(main.noun), noun: main.noun, nr: main.nr,
     tastes: [...new Set([A.taste, B.taste])],
-    price: A.value + B.value,
+    price: Math.round((A.value + B.value) * YEN_PER_VALUE / 10) * 10,   // 1この売値（円）。ふつう200〜300円・モンスター素材入り400〜600円
     needs: [a, b].filter(m => MATS[m].fushigi),
   };
 }
@@ -139,7 +139,7 @@ function mergeFx(a, b) {
    'm:食材'（生地・素材 ★1）・'t:道具'（★1）・'b:フィールド'・'k:★'（焦げ）
    'o:食材+食材'（生地・素材の★2）・'s:★2|★2'（★3）・'u:道具+道具'（道具の★2）・'w:★2|★2'（道具の★3） */
 const CAT_NAME = { dough: '生地', mat: '素材', tool: '道具', burnt: '焦げ', field: 'フィールド' };
-const ROLE = { dough: '攻撃', mat: '支援', burnt: '攻撃' };
+const ROLE = { dough: '主役', mat: '支援', burnt: '主役' };   // 11/18 しょーくん：攻撃→主役・ダメージ/スコア→味パワー
 const foodCat = mats => mats.some(m => MATS[m].cat === 'dough') ? 'dough' : 'mat';
 /* ★3：同じ形どうしは「○○タワー」、ちがう形どうしは2つの形をつなげる（主役の形をうしろに） */
 function specialName(r1, r2) {
@@ -194,8 +194,8 @@ function fxList(fx, star = 1) {
   if (fx.lead) p.push(`スタート：×${fx.lead}`);
   if (fx.sai) p.push(`アンカー：サイコー毎×${fx.sai + 0.5 * (star - 1)}`);
   if (fx.fin) p.push(`アンカー：合計×${fx.fin}`);
-  if (fx.rally) p.push(`スタート：全攻撃+${f(fx.rally)}`);
-  if (fx.next) p.push(`次の攻撃×${fx.next}`);
+  if (fx.rally) p.push(`スタート：主役ぜんぶ+${f(fx.rally)}`);
+  if (fx.next) p.push(`次の主役×${fx.next}`);
   if (fx.nb) p.push(`となり+${f(fx.nb)}`);
   if (fx.again) p.push(`右がもう${fx.again}回`);
   if (fx.stop) p.push('全生地：焦げ無効');
@@ -213,12 +213,12 @@ function fxText(fx, star = 1) { return fxList(fx, star).join('・'); }
    文の {ことば} は黄色で、タップすると KW の説明。状態（いまは焦げ）は「○○状態にならない」の形で、ほかの状態がふえても同じ書き方 */
 function fxLong(fx, star = 1) {
   const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-  if (fx.lead) p.push(['スタート', `このカードのダメージ×${fx.lead}`]);
-  if (fx.sai) p.push(['アンカー', `{焼き加減}が{サイコー}の生地1枚ごとに、このカードのダメージ×${fx.sai + 0.5 * (star - 1)}`]);
-  if (fx.fin) p.push(['アンカー', `このラウンドのダメージ合計×${fx.fin}`]);
-  if (fx.rally) p.push(['スタート', `このラウンドの攻撃カード全部のダメージ+${f(fx.rally)}`]);
-  if (fx.next) p.push(['発動時', `次の攻撃カードのダメージ×${fx.next}`]);
-  if (fx.nb) p.push(['常時', `両どなりのカードのダメージ+${f(fx.nb)}`]);
+  if (fx.lead) p.push(['スタート', `このカードの味パワー×${fx.lead}`]);
+  if (fx.sai) p.push(['アンカー', `{焼き加減}が{サイコー}の生地1枚ごとに、このカードの味パワー×${fx.sai + 0.5 * (star - 1)}`]);
+  if (fx.fin) p.push(['アンカー', `このラウンドの味パワー合計×${fx.fin}`]);
+  if (fx.rally) p.push(['スタート', `このラウンドの主役のカードぜんぶの味パワー+${f(fx.rally)}`]);
+  if (fx.next) p.push(['発動時', `次の主役のカードの味パワー×${fx.next}`]);
+  if (fx.nb) p.push(['常時', `両どなりのカードの味パワー+${f(fx.nb)}`]);
   if (fx.again) p.push(['発動時', `右どなりのカードを、もう${fx.again}回発動させる`]);
   if (fx.stop) p.push(['常時', 'ほかの生地も{焦げ}状態にならない（{サイコー}で止まる）']);
   if (fx.noburn) p.push(['常時', '{焦げ}状態にならない（{サイコー}で止まる）']);
@@ -239,9 +239,9 @@ const KW = {
   置いたとき: '「場」に置いたとき',
   焼かれるとき: 'この生地が、鉄板やカードで焼かれるとき',
   焦げたとき: 'この生地が、焦げ状態になったとき',
-  サイコー: '焼き加減9（いちばんおいしい）。生地のダメージ×5。このまま もう一度焼かれると焦げ状態になる',
-  焦げ: '状態のひとつ。焼き加減サイコーの生地が、もう一度焼かれるとなる。焦げクッキーに変わって、ダメージが下がる（焦げどうしは まぜられる）',
-  焼き加減: '生地の焼け具合（0〜9）。カードの左下の炎の色と数字でわかる。焼けるほどダメージが上がる：生×1・3で×2・6で×3・サイコー（9）で×5',
+  サイコー: '焼き加減9（いちばんおいしい）。生地の味パワー×5。このまま もう一度焼かれると焦げ状態になる',
+  焦げ: '状態のひとつ。焼き加減サイコーの生地が、もう一度焼かれるとなる。焦げクッキーに変わって、味パワーが下がる（焦げどうしは まぜられる）',
+  焼き加減: '生地の焼け具合（0〜9）。カードの左下の炎の色と数字でわかる。焼けるほど味パワーが上がる：生×1・3で×2・6で×3・サイコー（9）で×5',
   火力: '鉄板の強さ（弱火・中火・強火・火力マックス）。バトル開始時に、生地の焼き加減が +1・+2・+3・+4 進む',
   場: '調理台のいちばん左の、フィールドのカードを置く所。場にカードがあると、バトル開始時に生地が焼ける',
 };

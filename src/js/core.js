@@ -1,5 +1,5 @@
 /* ==== 土台：小さな道具・ドット絵・セーブ・お知らせ ==== */
-const KEY = 'mazemaze-okashiya', VER = 4;   // v:3 までは前の経営シミュレーション（読まずに新しく始める）
+const KEY = 'mazemaze-okashiya', VER = 5;   // v:3 までは前の経営シミュレーション（読まずに新しく始める）。v:4（夜→朝→昼）は sanitize で v:5 の朝にする
 const $ = id => document.getElementById(id);
 const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
 const rand = n => Math.floor(Math.random() * n);
@@ -72,34 +72,64 @@ function big(src, s) {
 let S = null;
 function newState() {
   return {
-    v: VER, day: 1, phase: 'title', money: 0, chef: 'honoka',
-    pool: [],                      // お菓子のカード（'o:材料+材料'）。夜の仕入れに出てくる
-    recipes: { 'komugi+sato': 0 }, // 知っているレシピ（値はひらめいた日。0 は最初から）
-    stock: {},                     // ふしぎな材料の数
-    shelf: [],                     // 棚のお菓子 [{ key, n }]
-    hearts: {}, regulars: [],      // お客さんのハートと常連さん
-    night: null, morning: null, dayRun: null, today: null,
+    v: VER, day: 1, phase: 'title', money: START_MONEY, chef: 'honoka',
+    recipes: { 'komugi+sato': 0 }, // 知っているレシピ（値は朝にひらめいた日。0 は最初から）
+    stock: {},                     // 倉庫：素材の id → 数（モンスター素材も、朝に仕入れた基本素材も。使うとへる）
+    shelf: [], shelfMax: 6,        // 棚のお菓子 [{ key, n }]・棚のマスの数（ショーケースでふえる）
+    goods: {},                     // お店のグッズの持ち物：グッズの id → 数（看板・ショーケース・かざり。中身は昼のチャットの hiru.js）
+    rep: 0,                        // お店の評判（昼のハートでたまる。まとめのハートのびん）
+    hearts: {}, regulars: [],      // お客さんのハートと常連さん（前の昼の形）
+    seenMon: [],                   // 来たことのあるモンスター（はじめて来た日は newMon）
+    seen: {},                      // 見た物語の場面（prologue など）
+    night: null, morning: null, dayRun: null,
+    today: null, yesterday: null,  // 1日の記録（newDay）と、きのうの記録
+  };
+}
+/* 1日の記録（H-008）：朝のはじめに作る。朝のひとり言（昼のチャット）とまとめの日記で使う */
+function newDay(day) {
+  return {
+    day,
+    visitors: 0, served: 0, sales: 0,       // 昼：来たお客さん・買った人・売上（円）
+    flashes: [], made: [],                  // 朝：ひらめいたレシピ・作ったお菓子（レシピの key）
+    kanban: null, kanbanSoldOut: false,     // 昼：看板のお菓子（レシピの key）・売り切れたか
+    hearts: 0, newRegulars: [],             // 昼：もらったハート
+    mon: null, newMon: false,               // 夜：来たモンスターの id・はじめて来たか
+    score: 0, belly: 0, mood: 0,            // 夜：味パワーの合計・おなかいっぱいの量・満足（0 まだ・1 ちょっと満足・2 満足・3 大満足）
+    gifts: {}, coins: 0,                    // 夜：もらった素材（id → 数）・お礼のコイン（円）
   };
 }
 function sanitize(o) {
-  if (!o || typeof o !== 'object' || o.v !== VER) return null;
+  if (!o || typeof o !== 'object') return null;
+  if (o.v === 4) o = fromV4(o);
+  if (o.v !== VER) return null;
   const d = newState();
   for (const k in d) if (o[k] === undefined) o[k] = d[k];
-  if (!Array.isArray(o.pool)) o.pool = [];
-  if (!Array.isArray(o.shelf)) o.shelf = [];
+  for (const k of ['shelf', 'seenMon', 'regulars']) if (!Array.isArray(o[k])) o[k] = [];
+  for (const k of ['stock', 'goods', 'seen', 'hearts', 'recipes']) if (!o[k] || typeof o[k] !== 'object') o[k] = {};
   if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
-  if (!Number.isFinite(o.money)) o.money = 0;
-  /* カードやレシピの形が変わっても読めるように、いまはないカード・材料を落とす（11/17 夕方 バトルの作りかえ） */
+  for (const k of ['money', 'rep', 'shelfMax']) if (!Number.isFinite(o[k])) o[k] = d[k];
+  /* レシピと棚はいまの材料だけ。倉庫は数が正しい物だけ（基本素材の id は昼のチャットの hiru.js なので、名前ではけさない） */
   const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(m => MATS[m]);
-  const okCard = c => { try { cardDef(c); return true; } catch (e) { return false; } };
-  o.pool = o.pool.filter(okCard);
   for (const k in o.recipes) if (!okKey(k)) delete o.recipes[k];
   if (!Object.keys(o.recipes).length) o.recipes = { 'komugi+sato': 0 };
   o.shelf = o.shelf.filter(s => s && okKey(s.key));
-  for (const m in o.stock) if (!MATS[m]) delete o.stock[m];
-  if (o.today) for (const k of ['flashes', 'made']) if (Array.isArray(o.today[k])) o.today[k] = o.today[k].filter(okKey);
+  for (const m in o.stock) if (!Number.isFinite(o.stock[m]) || o.stock[m] <= 0) delete o.stock[m];
+  for (const k of ['today', 'yesterday']) if (o[k]) {
+    o[k] = Object.assign(newDay(o[k].day || o.day), o[k]);
+    o[k].flashes = (o[k].flashes || []).filter(okKey); o[k].made = (o[k].made || []).filter(okKey);
+  }
+  if (o.phase !== 'title' && !o.today) o.today = newDay(o.day);
   if (o.morning && o.morning.cur && !okKey(o.morning.cur)) o.morning.cur = null;
   return o;
+}
+/* v:4（1日が 夜→朝→昼→まとめ）のセーブ：お金・レシピ・倉庫・棚・ハートはそのまま、その日の朝からはじめる */
+function fromV4(o) {
+  const n = Object.assign(newState(), {
+    day: o.day || 1, money: Number.isFinite(o.money) ? o.money : START_MONEY, recipes: o.recipes || {}, stock: o.stock || {},
+    shelf: o.shelf || [], hearts: o.hearts || {}, regulars: o.regulars || [], seen: { prologue: 1 },
+  });
+  n.phase = 'morning'; n.today = newDay(n.day);
+  return n;
 }
 function load() {
   try { const t = localStorage.getItem(KEY); return t ? sanitize(JSON.parse(t)) : null; } catch (e) { return null; }

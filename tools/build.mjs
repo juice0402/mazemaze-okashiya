@@ -8,10 +8,10 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rd = p => readFileSync(join(root, p), 'utf8');
 // 見た目：style.css（もとの皮）のあとに、バトルの演出と舞台の賑やかし（11/18）
-const STYLES = ['src/style.css', 'src/style-battle.css', 'src/style-hiru.css'];
+const STYLES = ['src/style.css', 'src/style-battle.css', 'src/style-talk.css', 'src/style-hiru.css'];
 const ORDER = [
-  'src/js/core.js', 'src/data/cards.js', 'src/data/world.js', 'src/data/hiru.js',
-  'src/js/art.js', 'src/js/cards-ui.js', 'src/js/scene.js', 'src/js/day-scene.js', 'src/js/night.js', 'src/js/night-ui.js', 'src/js/battle-fx.js', 'src/js/drag.js', 'src/js/morning.js', 'src/js/day.js', 'src/js/flow.js', 'src/js/main.js',
+  'src/js/core.js', 'src/data/cards.js', 'src/data/world.js', 'src/data/hiru.js', 'src/data/story.js',
+  'src/js/art.js', 'src/js/cards-ui.js', 'src/js/scene.js', 'src/js/day-scene.js', 'src/js/night.js', 'src/js/night-ui.js', 'src/js/battle-fx.js', 'src/js/drag.js', 'src/js/talk.js', 'src/js/morning.js', 'src/js/day.js', 'src/js/flow.js', 'src/js/main.js',
 ];
 // 絵：assets/art/*.webp（と png）を名前→dataURL にして埋めこむ（ソースには base64 を書かない）
 const artDir = join(root, 'assets/art');

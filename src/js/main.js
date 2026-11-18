@@ -1,5 +1,5 @@
 /* ==== はじまり：画面の切りかえ・タイトル・タップのうけつけ ==== */
-const PHASE_NAME = { night: '夜', morning: '朝', day: '昼', result: 'まとめ' };
+const PHASE_NAME = { prologue: '', morning: '朝', day: '昼', night: '夜', result: 'まとめ' };
 let resetArm = false;
 
 function renderTop() {
@@ -11,10 +11,10 @@ function renderTitle() {
   const chef = ART.honoka || big(CHEF_SPR[0], 5), mon = ART['mon-slime'] || big(MON_SPR.slime, 3);
   const bg = ART['bg-night'];
   $('screen').innerHTML = `<section class="title${bg ? ' hasbg' : ''}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-    <div class="t-logo"><small>夜のおかし屋カードバトル</small><h1>まぜまぜ<br>おかし屋</h1></div>
+    <div class="t-logo"><small>お菓子屋さんと おもてなしカード</small><h1>まぜまぜ<br>おかし屋</h1></div>
     <div class="hero"><img src="${chef}" alt="炎のシェフ ほのか"><img src="${mon}" alt="ぷるぷるスライム"></div>
-    <p class="t-lead">夜になると、食材モンスターがお店をおそいにくる！</p>
-    <ul class="t-steps"><li><b>夜</b>カードを並べて撃退。まぜて★2へ</li><li><b>朝</b>ひらめいたレシピでお菓子づくり</li><li><b>昼</b>棚に並べてお店で販売</li></ul>
+    <p class="t-lead">夜になると、あまい匂いにつられて食材モンスターがやってくる！</p>
+    <ul class="t-steps"><li><b>朝</b>材料をまぜてお菓子づくり</li><li><b>昼</b>棚に並べてお店で販売</li><li><b>夜</b>カードを並べておもてなし。まぜて★2へ</li></ul>
     ${saved && saved.phase !== 'title' ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button>
       <button class="sub" data-act="reset">${resetArm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>` : '<button class="big" data-act="start">はじめる</button>'}
   </section>`;
@@ -22,6 +22,7 @@ function renderTitle() {
 function render() {
   renderTop();
   if (S.phase === 'night') renderNight();
+  else if (S.phase === 'prologue') renderPrologue();
   else if (S.phase === 'morning') renderMorning();
   else if (S.phase === 'day') renderDay();
   else if (S.phase === 'result') renderResult();
@@ -30,9 +31,9 @@ function render() {
 }
 
 const ACTS = {
-  start: () => { S = newState(); startNight(); },
-  continue: () => { const s = load(); if (s) { S = s; if (S.phase === 'night' && S.night && S.night.stage === 'roundEnd') busy = false; render(); } },
-  reset: () => { if (!resetArm) { resetArm = true; return renderTitle(); } resetArm = false; S = newState(); startNight(); },
+  start: () => { S = newState(); goPrologue(); },
+  continue: () => { const s = load(); if (s) { S = s; resume(); render(); } },
+  reset: () => { if (!resetArm) { resetArm = true; return renderTitle(); } resetArm = false; S = newState(); goPrologue(); },
   card: el => tapCard(el.dataset.w, +el.dataset.i),
   close: () => closeView(),
   kw: el => showKw(el),
@@ -43,17 +44,24 @@ const ACTS = {
   reroll: () => reroll(),
   bake: () => bake(),
   next: () => nextRound(),
-  toMorning: () => goMorning(),
   openShop: () => goDay(),
-  toResult: () => goResult(),
+  toEvening: () => goEvening(),
+  toResult: () => (S.phase === 'day' ? goEvening() : goResult()),   // 昼の「閉店」（前の昼の画面のボタン名のまま）は夕方へ
   nextDay: () => nextDay(),
   ...MORNING_ACTS, ...DAY_ACTS,   // 朝と昼の画面のボタン（morning.js・day.js＝昼のチャット）
+  toCard: el => MORNING_ACTS.toShelf(el),   // 11/18 朝のお菓子はカードにしない（昼のチャットが朝の画面を作りなおすまで、棚に入れる）
 };
+/* 前のセーブのつづき：とちゅうの画面の用意がないときは作る */
+function resume() {
+  if (S.phase === 'night' && S.night && S.night.stage === 'roundEnd') busy = false;
+  if (S.phase === 'morning' && !S.morning) startMorning();
+  if (S.phase === 'day' && !S.dayRun) startDay();
+}
 function boot(data) {
   if (!boot.art) { boot.art = 1; return artBlobs(() => boot(data)); }   // 先に絵を blob URL に（core.js）
   const s = data && data.S ? sanitize(data.S) : null;
   S = s || newState();
-  if (!s) S.phase = 'title';
+  if (!s) S.phase = 'title'; else resume();
   $('screen').addEventListener('click', e => {
     if (Date.now() - dragEnd < 350) return;   // ドラッグのあとのクリックは無視
     const el = e.target.closest('[data-act]');

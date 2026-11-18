@@ -1,0 +1,81 @@
+/* ==== 会話の部品（talk.js）・プロローグ・おもてなしの結果・1日のまとめ（持ち主：リーダー【okashi】・11/18）
+   ずっと動くのは transform と opacity だけ（docs/PARTS.md の「軽く描く」） ==== */
+
+/* ---------- 会話の部品：ノベル型（立ち絵は窓の上に大きく・下に木の窓・名前の札・タップで次） ---------- */
+.talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
+.talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
+.talk.out{animation:tkout .22s ease-in forwards}
+@keyframes tkin{from{opacity:0}}
+@keyframes tkout{to{opacity:0}}
+.tk-stage{position:relative;flex:1;min-height:0;pointer-events:none;overflow:hidden;margin:0 -10px}
+/* 立ち絵：全身の絵を、ひざから上だけ見せる（箱の比は 1024:1080、絵は箱の幅いっぱい・上そろえ） */
+.tk-p{position:absolute;bottom:0;width:84%;aspect-ratio:1024/1080;max-height:100%;overflow:hidden;opacity:.5;transform:translateY(3%) scale(.95);transform-origin:50% 100%;transition:opacity .2s,transform .25s}
+.tk-p:empty{display:none}
+.tk-p.l{left:-6%}
+.tk-p.r{right:-6%}
+.tk-p img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 10px rgba(30,10,0,.5))}
+.tk-p.flip img{transform:scaleX(-1)}
+.tk-p.mon{width:62%;aspect-ratio:1;bottom:4%}
+.tk-p.mon img{height:100%;object-fit:contain;object-position:50% 100%}
+.tk-p.on{opacity:1;transform:none;z-index:2}
+.tk-p.pop{animation:tkpop .3s cubic-bezier(.2,1.4,.4,1)}
+.tk-p.hop{animation:tkhop .28s ease-out}
+@keyframes tkpop{from{opacity:0;transform:translateY(8%)}}
+@keyframes tkhop{40%{transform:translateY(-3%)}}
+.tk-skip{position:absolute;top:8px;right:10px;z-index:3;font-size:12px;padding:5px 12px}
+.tk-win{position:relative;z-index:3;flex:none;min-height:108px;margin-top:-6px;padding:20px 16px 16px;border-radius:14px;background:radial-gradient(90% 70% at 50% 0%,rgba(255,214,150,.2),transparent 70%),linear-gradient(#8d6142,#5e3c24);border:2px solid #24130a;box-shadow:inset 0 0 0 2px var(--brass),inset 0 0 0 4px rgba(40,18,6,.6),0 6px 0 rgba(0,0,0,.4);color:var(--milk);font-size:17px;line-height:1.6}
+.tk-name{position:absolute;left:14px;top:-15px;padding:3px 16px 4px;border-radius:9px;background:linear-gradient(#f07c8e,#c4415a);border:2px solid #5a1a24;color:#fff;font-family:var(--disp);font-weight:400;font-size:14px;letter-spacing:.06em;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.tk-win[data-who="mon"] .tk-name{background:linear-gradient(#f2b55a,#c47a28);border-color:#5a3410}
+.tk-win[data-who="minamo"] .tk-name{background:linear-gradient(#7fc8c0,#3d8f88);border-color:#1d4a46}
+.tk-win[data-who="wakaba"] .tk-name{background:linear-gradient(#a8d47a,#5f9a3a);border-color:#2f4d1c}
+.tk-text{margin:0;min-height:3.2em;white-space:pre-wrap;word-break:break-all;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.tk-win.nar .tk-text{color:var(--cream-2);font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center}
+.tk-next{position:absolute;right:14px;bottom:9px;width:0;height:0;border:7px solid transparent;border-top:10px solid var(--brass-hi);border-bottom:0;opacity:0}
+.tk-win.full .tk-next{opacity:1;animation:tknext .9s ease-in-out infinite}
+@keyframes tknext{50%{transform:translateY(4px);opacity:.45}}
+
+/* ---------- プロローグ：お店の外（絵 bg-shop-out が来るまでは、コードの仮の場面） ---------- */
+#screen>section.prologue{position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(#ffd9a8,#fbe8c8 38%,#cfe3a6 60%,#8fbf6a);box-shadow:inset 0 0 0 2px #3a2318}
+#screen>section.prologue.hasbg{background:var(--bgimg) center 40%/cover no-repeat}
+.pr-scene{position:absolute;inset:0}
+.pr-scene i{position:absolute;display:block}
+.pr-tree{bottom:34%;width:38%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#9ccf6e,#4f8a3a 70%);box-shadow:inset -10px -14px 0 rgba(30,60,20,.25)}
+.pr-tree.a{left:-12%}
+.pr-tree.b{right:-14%;width:46%;bottom:30%}
+.pr-shop{left:22%;right:22%;bottom:24%;height:30%;background:linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 22px),linear-gradient(#c58a55,#94603a);border:2px solid #4a2a14;border-radius:4px}
+.pr-awn{left:-8%;right:-8%;top:-18%;height:26%;background:repeating-linear-gradient(90deg,#e8607a 0 14px,#fbefd8 14px 28px);border-radius:0 0 12px 12px;border:2px solid #6a2030}
+.pr-door{left:40%;width:22%;bottom:0;height:62%;background:linear-gradient(#7a4a26,#5a3418);border:2px solid #3a1e0c;border-radius:10px 10px 0 0}
+.pr-win{left:9%;width:24%;top:32%;height:34%;background:linear-gradient(#fff4d6,#ffd98a);border:3px solid #5a3418;border-radius:4px}
+.pr-sign{position:absolute;left:50%;top:13%;transform:translateX(-50%) rotate(-3deg);margin:0;padding:8px 16px;border-radius:40%;background:linear-gradient(#c58a55,#8a5a34);border:3px solid #4a2a14;box-shadow:0 4px 0 rgba(0,0,0,.3);color:#fff3d6;font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.15;text-align:center;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill}
+.prologue.hasbg .pr-sign{display:none}
+
+/* ---------- おもてなしの結果（夜の画面の下） ---------- */
+.panel.end .end-mood{margin:2px 0 0;font-size:13px}
+.panel.end .end-mood b{color:var(--gold);font-family:var(--disp);font-weight:400;font-size:16px}
+.gotrow{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.got.coin span{padding:3px 12px;border-radius:999px;background:linear-gradient(#ffe08a,#e0a73a);border:2px solid #6a4210;color:#4a2a06;font-weight:700}
+
+/* ---------- 1日のまとめ：ほのかの日記（ノートの紙）・お金・評判のハートのびん ---------- */
+#screen>section.result{gap:8px}
+.diary{flex:1;min-height:0;position:relative;padding:14px 16px 12px 30px;border-radius:6px 14px 14px 6px;color:var(--ink);background:repeating-linear-gradient(transparent 0 31px,rgba(150,110,80,.28) 31px 32px) 0 46px/100% calc(100% - 46px) no-repeat,linear-gradient(90deg,transparent 18px,rgba(232,96,122,.45) 18px 20px,transparent 20px),linear-gradient(#fffaf0,#f6ead2);box-shadow:inset 0 0 0 1px rgba(120,80,40,.25),0 5px 0 rgba(0,0,0,.35);overflow:hidden}
+.diary h2{margin:0 0 6px;font-family:var(--disp);font-weight:400;font-size:17px;color:#a8433a}
+.diary p{margin:0;font-size:16px;line-height:32px;font-weight:700;animation:dwrite .5s ease-out backwards}
+.diary p+p{animation-delay:.35s}
+.d-stk{position:absolute;right:10px;bottom:8px;width:34%;max-width:130px;transform:rotate(6deg);opacity:.95;filter:drop-shadow(0 2px 2px rgba(80,40,10,.3))}
+@keyframes dwrite{from{opacity:0;transform:translateX(-6px)}}
+.sum{flex:none}
+.sum-row{display:flex;gap:10px;align-items:center}
+.sum dl{flex:1;margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:13px;align-items:center}
+.sum dt{color:var(--milk-soft)}
+.sum dd{margin:0;font-weight:700}
+.gift{display:inline-flex;align-items:center;gap:2px;margin-right:6px}
+.gift img{width:20px;height:20px;object-fit:contain}
+.sum-money{margin:2px 0 0;text-align:right;font-size:13px}
+.sum-money b{font-family:var(--disp);font-weight:400;font-size:20px;color:var(--gold)}
+/* 評判のハートのびん（数字なし）：--p＝たまり具合 0〜1。いっぱいになった回数は★ */
+.jar{position:relative;flex:none;width:58px;height:74px;border-radius:14px 14px 18px 18px;border:2.5px solid rgba(255,240,220,.85);border-top-width:6px;background:rgba(255,255,255,.12);overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.jar-fill{position:absolute;left:0;right:0;bottom:0;height:100%;background:linear-gradient(#ff9fb0,#e8506c);transform-origin:50% 100%;transform:scaleY(var(--p));animation:jarfill 1s .3s cubic-bezier(.2,.8,.3,1) backwards}
+@keyframes jarfill{from{transform:scaleY(0)}}
+.jar-gloss{position:absolute;left:8px;top:6px;width:8px;height:44px;border-radius:8px;background:rgba(255,255,255,.45)}
+.jar-h{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;color:#fff;text-shadow:0 2px 0 rgba(120,20,40,.5)}
+.jar em{position:absolute;left:0;right:0;bottom:2px;text-align:center;font-style:normal;font-size:9px;color:#fff3c0}

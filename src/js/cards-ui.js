@@ -9,13 +9,13 @@ const artImg = cid => `<img${hiArt(cid) ? ' class="hi"' : ''} src="${cardIconURL
 const starGems = d => d.star > 1 ? `<span class="pc-star">${'★'.repeat(d.star)}</span>` : '';
 
 /* 属性の帯（ゼンゼロの形・11/18 しょーくん）：左が役目・右が種類。色で見分ける */
-const ATTR_C = { 攻撃: 'atk', 支援: 'sup', 火力: 'fire', 仕入れ: 'buy', 生地: 'dough', 素材: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };
+const ATTR_C = { 主役: 'atk', 支援: 'sup', 火力: 'fire', 仕入れ: 'buy', 生地: 'dough', 素材: 'mat', 道具: 'tool', 焦げ: 'koge', フィールド: 'field' };
 function attrBar(d) {
   const a = d.cat === 'field' ? ['フィールド'] : [d.role, CAT_NAME[d.cat]].filter(Boolean);
   return `<p class="pc-attr">${a.map(t => `<span class="at-${ATTR_C[t] || 'etc'}">${t}</span>`).join('')}</p>`;
 }
 /* 効果のない★1の紙（役目だけ） */
-const plainLine = d => d.role === '攻撃' ? 'ダメージを出す' : attrsOf(d).join('・');
+const plainLine = d => d.role === '主役' ? '味パワーを出す' : attrsOf(d).join('・');
 /* ことば（KW）を黄色に。tap なら、タップで説明が出る（大きく見る画面だけ） */
 const kwTag = (w, tap, show = w) => `<b class="kw"${tap ? ` data-act="kw" data-kw="${w}"` : ''}>${show}</b>`;
 const KW_SHORT = /スタート|アンカー|サイコー|火力|焦げ/g;   // カードの紙
@@ -79,7 +79,7 @@ function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook, tap: true });
 function cardInfo(cid) {
   const d = cardDef(cid);
   let rows = d.cat === 'field' ? FIELDS[d.cid.slice(2)].long : fxLong(d.fx, d.star);
-  if (!rows.length) rows = [['発動時', d.role === '攻撃' ? 'モンスターにダメージを出す' : plainLine(d)]];
+  if (!rows.length) rows = [['発動時', d.role === '主役' ? 'モンスターに味パワーをとどける' : plainLine(d)]];
   return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${rows.map(([t, x]) =>
     `<b class="tg${t === 'スタート' || t === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${t}">${t}</b><p>${kwLong(x, true)}</p>`).join('')}</div></div>`;
 }

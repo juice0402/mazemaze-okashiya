@@ -37,6 +37,11 @@
 | candy-sable・candy-castella・candy-brownie（★2 サブレ・カステラ・ショコラ） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards10.md`・もとの PNG `assets/art/raw/cards10.png` | ★2 のお菓子（形だけの絵。材料の絵がのった candy-形-材料 があればそちら） |
 | candy-candy・candy-jelly・candy-puff（★2 ドロップ・ゼリー・シュー） | A | Codex | 2026-11-17 | art-irai `requests/okashi/cards11.md`・もとの PNG `assets/art/raw/cards11.png` | 同上 |
 
+## 依頼中（11/18）
+- art-irai `requests/okashi/honoka-poses.md`：ほのかの立ち絵9まい（編集・全身 1024×1536）→ honoka-yaruki・honoka-achaa・honoka-fuan・honoka-kuyashii・honoka-wakuwaku・honoka-uttori・honoka-kangaeru・honoka-kandou・honoka-doya（talk.js の TALKERS の名前）
+- art-irai `requests/okashi/bg2.md`：昼のお店の中（カウンターの奥から）・朝のキッチン・プロローグのお店の外 → bg-day・bg-morning・bg-shop-out（横960×540 の webp・緑は抜かない）
+- 次（同時に依頼中は2つまで）：お客さん4人（こども＝リボンの女の子・学生さん＝学生服の男の子・おとなの人＝お勤めの女の人・おばあちゃん＝白髪のおだんご）の正面・胸から上。まず ふつう を新しく描き、そこから うれしい・ざんねん を編集
+
 ## これから頼む絵
 - ★3：クッキー以外の形の「○○タワー」（サブレ・カステラ・ショコラ・ドロップ・ゼリー・シュー）と、ちがう形どうしの★3（いまはコードで描いた仮の絵）
 - 朝と昼の画面の背景（いまはドットの場面）

@@ -1,6 +1,6 @@
 """見た目の確かめ：index.html をスマホの大きさで開いて、えらんだ場面を撮り、横に並べた1まいにする（トークンの節約：撮るのは1まいだけ）
 使い方：python3 -I tools/shot.py <出す PNG> [場面…] [--h 高さ]
-  場面：title・shop・board・battle・panel・morning・day・result、または js:<ゲームの中で動かす JS>
+  場面：title・prologue・evening・shop・board・battle・panel・end・morning・day・result、または js:<ゲームの中で動かす JS>
   例：python3 -I tools/shot.py /tmp/a.png shop board panel --h 667
 ふつうは index.html を作りなおしてから（node tools/build.mjs）。Google Fonts は読まないので、文字は代わりの書体になる
 """
@@ -17,18 +17,21 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 BOARD = ("N.picks = 0; N.field = 'teppan'; N.heat = 3; N.board = [{ cid: 'm:ichiban', cook: 9 }, { cid: 'o:komugi+bata', cook: 5 }, "
          "{ cid: 's:komugi+komugi|komugi+komugi', cook: 0 }, { cid: 't:maki', cook: 0 }, { cid: 'm:tamago', cook: 0 }]; "
          "N.held = [{ cid: 'm:sato', cook: 0 }, { cid: 'o:komugi+sato', cook: 2 }]; renderNight()")
-PANEL = ("const e = { type: 'act', cid: 'm:shime', i: 4, cook: 9, dmg: 3030, base: 180, parts: [['×', 3, '焼き加減'], ['×', 2, '次の攻撃', [2]]], fin: [2.25], out: [{ k: 'fin', v: 2.25 }] }; "
+PANEL = ("const e = { type: 'act', cid: 'm:shime', i: 4, cook: 9, dmg: 3030, base: 180, parts: [['×', 3, '焼き加減'], ['×', 2, '次の主役', [2]]], fin: [2.25], out: [{ k: 'fin', v: 2.25 }] }; "
          "fighting = true; renderNight(); const co = $('callout'); co.innerHTML = actPanel(e, 2000); fitPanel(co); "
          "co.querySelectorAll('.f-chip').forEach(c => c.classList.add('in')); const n = co.querySelector('.bp-dmg'); n.classList.add('in', 'fin'); n.querySelector('b').textContent = fmt(e.dmg)")
 PRE = {
     'title': ("S = newState(); S.phase = 'title'; render()", 800),
-    'shop': ("localStorage.clear(); S = newState(); startNight()", 1500),
+    'prologue': ("localStorage.clear(); S = newState(); goPrologue()", 1600),
+    'evening': ("localStorage.clear(); S = newState(); S.today = newDay(1); startNight()", 2400),
+    'shop': ("talkClose(true); localStorage.clear(); S = newState(); S.day = 2; S.today = newDay(2); startNight()", 1800),
     'board': (BOARD, 1500),
     'battle': (BOARD + "; bake()", 5200),
     'panel': (PANEL, 900),
+    'end': ("talkClose(true); N.score = Math.round(nightHP(S.day) * 0.7); endNight()", 2200),
     'morning': ("goMorning(); render()", 1000),
     'day': ("goDay(); render()", 1500),
-    'result': ("goResult(); render()", 1000),
+    'result': ("talkClose(true); goResult()", 1400),
 }
 html = (ROOT / 'index.html').read_text()
 i = html.rfind('})();')

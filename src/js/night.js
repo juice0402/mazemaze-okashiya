@@ -1,4 +1,5 @@
-/* ==== 夜：食材モンスターの襲撃を9ラウンドで撃退する（ゼンゼロのオバケ屋敷の形が土台・仕様は claude/okashi-battle-spec.md） ====
+/* ==== 夜：来店した食材モンスターを9ラウンドでおもてなしする（ゼンゼロのオバケ屋敷の形が土台・仕様は claude/okashi-battle-spec.md） ====
+   流れ（11/18 H-001）：来店の会話（stage arrive）→ ラウンド1〜9 → お礼の会話（thanks）→ 結果（end）→ 1日のまとめ。味パワーの合計で満足が決まり、素材とコインをくれる
    1ラウンド：ショップ（舞台にかぶせる。毎回3枚・有料の入れかえ・コインで買う・うる）＋ 手札と調理台で並べる・まぜる → バトル（ショップがとじて舞台でバトル）
    買ったカードは手札へ（5まいまで）。お金とコインはショップの中だけに出す（11/17 しょーくん「ゼンゼロのようにショップを挟む」）
    バトル：はじめに「焼き」（フィールドがあれば、鉄板の生地がいっせいに火力のぶん焼ける）→ 左から順に発動
@@ -25,14 +26,22 @@ let fighting = false;  // バトルの間（ショップをとじて、舞台で
 
 function startNight() {
   S.phase = 'night';
-  S.today = { day: S.day, score: 0, beaten: false, drop: null, drops: 0, flashes: [], made: [], sales: 0, served: 0, visitors: 0, newRegulars: [] };
+  if (!S.today) S.today = newDay(S.day);
+  const mon = (S.day - 1) % MONSTERS.length, id = MONSTERS[mon].id;
+  Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id), belly: nightHP(S.day) });
   S.night = {
-    mon: (S.day - 1) % MONSTERS.length, field: null, heat: START_HEAT, call: false, stage: 'shop', round: 1, coins: 0, picks: ROUND1_PICKS,
+    mon, field: null, heat: START_HEAT, call: false, stage: 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
-    flashes: [], held: [], sel: null, view: false, last: null,
+    held: [], sel: null, view: false, last: null,
   };
   N = S.night; rollShop(); dealAnim = true;
   save(); render();
+}
+/* 来店とお礼の会話（会話の部品 talk.js・文は story.js）。会話がない日はすぐ次へ */
+function nightTalk() {
+  if (talking()) return;
+  if (N.stage === 'arrive') talk(STORY.evening(S.today), () => { N.stage = 'shop'; dealAnim = true; save(); renderNight(); });
+  else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); });
 }
 /* 前の形のセーブ（6マス・前のカード）は、その夜をはじめからにする */
 function nightOk(n) {
@@ -52,7 +61,6 @@ function poolList() {
   for (const cid of C.common) L.push([cid, 2]);
   for (const id of C.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
   if (N.round >= 3 || N.met > 0) L.push(['m:' + MONSTERS[N.mon].drop, 2]);
-  for (const cid of S.pool) L.push([cid, 2]);
   return L;
 }
 function draw1(L) {
@@ -69,8 +77,6 @@ function rollShop() {
     N.call = false;
   }
   if (N.round === 1) {
-    const ok = shuffle(S.pool.slice());
-    while (out.length < 1 && ok.length) out.push(ok.pop());
     while (out.filter(c => cardDef(c).dough).length < 2) out.push(pick(C.doughs));
   }
   while (out.length < (N.round === 1 ? ROUND1_SHOW : SHOP_N)) {
@@ -219,19 +225,14 @@ function doMix(p, q, from) {
     N.held[P.to.i] = r;
   }
   unsel();
-  let msg = '', isNew = false;   // できたカードの名前とひらめきは演出の札で見せる（演出なしのときだけ toast）
-  if (d.star === 2 && d.food) {
-    const key = r.cid.slice(2);
-    if (S.recipes[key] == null) { S.recipes[key] = S.day; N.flashes.push(key); isNew = true; msg = 'ひらめき！ ' + d.name; }
-    else msg = d.name + 'ができた';
-  } else if (d.star === 2) msg = d.name + 'ができた';
+  const msg = d.star === 2 ? d.name + 'ができた' : '';   // できたカードの名前は演出の札で見せる（演出なしのときだけ toast）。レシピのひらめきは朝に（11/18 H-001）
   save(); renderNight();
   busy = true;
   mixFx(from, a.cid, b.cid, r.cid, P.to, skip => {
     busy = false;
     if (msg && skip) toast(msg);
     if (d.star === 3) cutIn(r.cid, 'スペシャルができた！');
-  }, isNew);
+  });
 }
 /* 調理台のカードを、べつのマスへうごかす（カードがあれば入れかえ）。バトルを押すまで、いつでも */
 function moveTo(i, j) {
@@ -317,7 +318,7 @@ function resolveRound() {
         if (nb) { base += nb; parts.push(['+', nb, 'となり', nbs]); }
         if (rally) { base += rally; parts.push(['+', rally, 'スタート', [first]]); }
         if (pend !== 1) {
-          base *= pend; parts.push(['×', pend, '次の攻撃', [...new Set(pendEv.map(p => p.i))]]);
+          base *= pend; parts.push(['×', pend, '次の主役', [...new Set(pendEv.map(p => p.i))]]);
           for (const p of pendEv) p.out.push({ k: 'next', to: [i], v: p.next });
         }
         pend = 1; pendEv = [];
@@ -374,11 +375,13 @@ function nextRound() {
   N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
   rollShop(); save(); renderNight();
 }
+/* おもてなしの結果：満足（MOODS）で、モンスター素材（倉庫へ・次の朝から使える）とお礼のコイン（お店のお金）をくれる */
 function endNight() {
-  const hp = nightHP(S.day), beaten = N.score >= hp, drop = MONSTERS[N.mon].drop;
-  const drops = N.met + (beaten ? 2 : 0);
-  S.stock[drop] = (S.stock[drop] || 0) + drops;
-  Object.assign(S.today, { score: N.score, beaten, drop, drops, flashes: N.flashes.slice() });
-  N.stage = 'end';
+  const M = MONSTERS[N.mon], belly = nightHP(S.day), mood = moodOf(N.score, belly), R = MOODS[mood];
+  S.stock[M.drop] = (S.stock[M.drop] || 0) + R.mats;
+  S.money += R.coins;
+  if (!S.seenMon.includes(M.id)) S.seenMon.push(M.id);
+  Object.assign(S.today, { score: N.score, belly, mood, gifts: { [M.drop]: R.mats }, coins: R.coins });
+  N.stage = 'thanks';
   save(); renderNight();
 }

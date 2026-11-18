@@ -1,28 +1,49 @@
-/* ==== 1日の流れ（夜→朝→昼→まとめ）・1日のまとめの画面・朝から呼ぶデッキの入口（持ち主：リーダー【okashi】）
-   画面の切りかえの幕は main.js（S.phase が変わると wipe）。朝と昼の画面は morning.js・day.js（昼のチャット） ==== */
-function goMorning() { S.phase = 'morning'; startMorning(); save(); render(); }
+/* ==== 1日の流れ（持ち主：リーダー【okashi】・11/18 H-001）
+   はじめだけ プロローグ → 朝 → 昼 → 夕方〜夜（おもてなし）→ 1日のまとめ → 次の日の朝
+   画面の切りかえの幕は main.js（ボタンで S.phase が変わると wipe）と talk.js（会話のあとで変わったとき）
+   朝と昼の画面は morning.js・day.js（昼のチャット）。夜は night.js ==== */
+function goPrologue() { S.phase = 'prologue'; save(); render(); }
+/* 朝：きのうの記録を S.yesterday に残して、今日の記録 S.today を作る（H-008） */
+function goMorning() {
+  if (!S.today || S.today.day !== S.day) { S.yesterday = S.today; S.today = newDay(S.day); }
+  S.phase = 'morning'; startMorning(); save(); render();
+}
 function goDay() { S.phase = 'day'; startDay(); save(); render(); }
-function goResult() { stopDay(); S.phase = 'result'; save(); render(); }
-function nextDay() { S.day++; startNight(); }
-/* 朝に作ったお菓子をカードにする入口（デッキのしくみはリーダー）。いまは夜のショップに出てくるカードの山 S.pool に足すだけ */
-function deckAddCandy(key) { S.pool.push('o:' + key); }
+/* 昼をおえて夕方へ（昼の画面の「閉店」から）。夜の画面が来店の会話 → おもてなし → お礼の会話 → まとめへ */
+function goEvening() { stopDay(); startNight(); }
+function goResult() { S.phase = 'result'; save(); render(); }
+function nextDay() { S.day++; goMorning(); }
 
-/* ---------- 1日のまとめ ---------- */
+/* ---------- プロローグ（開業）：お店の外の場面に、会話の部品で ---------- */
+function renderPrologue() {
+  const bg = ART['bg-shop-out'];
+  $('screen').innerHTML = `<section class="prologue fit${bg ? ' hasbg' : ''}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
+    ${bg ? '' : '<div class="pr-scene" aria-hidden="true"><i class="pr-tree a"></i><i class="pr-tree b"></i><i class="pr-shop"><i class="pr-awn"></i><i class="pr-door"></i><i class="pr-win"></i></i></div>'}
+    <p class="pr-sign">まぜまぜ<br>おかし屋</p></section>`;
+  if (!talking()) talk(STORY.prologue, () => { S.seen.prologue = 1; goMorning(); }, { dim: false });
+}
+
+/* ---------- 1日のまとめ：ほのかの日記・お金・もらった素材・評判のハートのびん ---------- */
+const repFull = () => (typeof REP_JAR === 'number' ? REP_JAR : 10);   // びんがいっぱいになるハートの数（昼のチャットが hiru.js に REP_JAR を置くとそれを使う）
+function jarHTML() {
+  const full = repFull(), p = Math.max(0, Math.min(1, (S.rep % full) / full)), n = Math.floor(S.rep / full);
+  return `<div class="jar" style="--p:${p.toFixed(3)}" aria-label="お店の評判"><i class="jar-fill"></i><i class="jar-gloss"></i><span class="jar-h">${HEART}</span>${n ? `<em>${'★'.repeat(Math.min(5, n))}</em>` : ''}</div>`;
+}
 function renderResult() {
-  const T = S.today, mon = MONSTERS[(T.day - 1) % MONSTERS.length];
-  const hearts = CUSTOMERS.map(c => `<li><span>${c.name}</span><span class="hearts">${HEART.repeat(Math.min(HEARTS_REGULAR, S.hearts[c.id] || 0))}<i>${HEART.repeat(Math.max(0, HEARTS_REGULAR - (S.hearts[c.id] || 0)))}</i></span>${S.regulars.includes(c.id) ? '<em>常連さん</em>' : ''}</li>`).join('');
-  $('screen').innerHTML = `<section class="result">
-    <div class="panel"><h2>${T.day}日目のまとめ</h2>
-      <dl>
-        <dt>夜</dt><dd>${esc(mon.name)}　スコア ${fmt(T.score)}　${T.beaten ? '撃退！' : 'にげられた'}</dd>
-        <dt>材料</dt><dd>${T.drop ? `${MATS[T.drop].name} ×${T.drops}` : 'なし'}</dd>
-        <dt>ひらめき</dt><dd>${T.flashes.length ? T.flashes.map(k => esc(recipeOf(k).name)).join('、') : 'なし'}</dd>
-        <dt>仕込み</dt><dd>${T.made.length ? T.made.map(k => esc(recipeOf(k).name)).join('、') : 'なし'}</dd>
-        <dt>お昼</dt><dd>売上 ${fmt(T.sales)}円（${T.served}/${T.visitors}人が買った）</dd>
-        <dt>お金</dt><dd class="gold">${fmt(S.money)}円</dd>
-      </dl></div>
-    <div class="panel"><h2>お客さんのハート</h2><ul class="heartlist">${hearts}</ul>
-      <p class="muted">常連さんは、これから仲間になって夜にいっしょに戦えるようになる予定</p></div>
-    <button class="big" data-act="nextDay">${S.day + 1}日目の夜へ</button>
+  const T = S.today, mon = MONSTERS.find(m => m.id === T.mon), mood = MOODS[T.mood];
+  const diary = STORY.diary(T) || [];
+  const gifts = Object.entries(T.gifts || {}).map(([m, n]) => `<span class="gift"><img src="${matURL(m)}" alt="">${esc(MATS[m].short)}×${n}</span>`).join('');
+  $('screen').innerHTML = `<section class="result fit">
+    <div class="diary"><h2>${T.day}日目のにっき</h2>${diary.map(l => `<p>${esc(l)}</p>`).join('')}${ART['chibi-cheer'] ? `<img class="d-stk" src="${ART['chibi-cheer']}" alt="">` : ''}</div>
+    <div class="panel tight sum">
+      <div class="sum-row"><dl>
+        <dt>お昼の売上</dt><dd>${fmt(T.sales)}円</dd>
+        <dt>お礼のコイン</dt><dd>${fmt(T.coins)}円</dd>
+        <dt>おもてなし</dt><dd>${mon ? esc(mon.name) + (mood ? '　' + mood.name : '') : 'なし'}</dd>
+        <dt>もらった素材</dt><dd>${gifts || 'なし'}</dd>
+      </dl>${jarHTML()}</div>
+      <p class="sum-money">お財布 <b>${fmt(S.money)}</b>円</p>
+    </div>
+    <button class="big" data-act="nextDay">${S.day + 1}日目の朝へ</button>
   </section>`;
 }
