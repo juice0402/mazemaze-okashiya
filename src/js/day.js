@@ -60,11 +60,10 @@ function renderDay() {
   const tip = !pre ? '' : empty ? '棚がからっぽ……今日はお休みかな' : R.kanban ? `今日の看板は ${candyOf(R.kanban).name}` : '看板にするお菓子を、タップしてえらんでね';
   const rows = Math.ceil(Math.min(SHELF_MAX, S.shelfMax || 6) / SHELF_COLS);
   $('screen').innerHTML = `<section class="day fit">
-    <div class="dstage${pre ? ' pre' : ''}" id="dstage" style="--sp:${daySpeed}">
+    <div class="dstage${pre ? ' pre' : ''}" id="dstage" style="--sp:${daySpeed};--p:${R.done ? 1 : Math.min(1, (R.t || 0) / DAY_MS).toFixed(3)}">
       ${dayStageBg(sign)}
       <div class="d-cust" id="dCust"></div>
       ${dayStageFront()}
-      <div class="d-time"><i class="d-sun"></i><span class="d-track"><i id="dFill" style="transform:scaleX(${Math.min(1, (R.t || 0) / DAY_MS).toFixed(3)})"></i></span></div>
       <div class="d-jar" id="dJar">${jarHTML()}</div>
       ${tip ? `<p class="d-tip">${esc(tip)}</p>` : ''}
     </div>
@@ -108,7 +107,7 @@ function dayLoop() {
 }
 function dayStep(R, dt) {
   R.t += dt;
-  const f = $('dFill'); if (f) f.style.transform = `scaleX(${Math.min(1, R.t / DAY_MS).toFixed(3)})`;
+  const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / DAY_MS).toFixed(3));   // 外の明るさ（ゲージのかわり）
   if (R.cur) return visitStep(R, dt);
   if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
   if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }

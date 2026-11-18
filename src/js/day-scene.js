@@ -50,7 +50,9 @@ function candyIcon(key) {
 /* ---------- 昼の舞台：カウンターの奥から見たお店の中（絵 bg-day が来るまでは仮の形） ---------- */
 function dayStageBg(sign) {
   const bg = ART['bg-day'];
-  if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')"><span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
+  /* 時間は外の明るさで（11/18 しょーくん）：窓の外（ART['bg-day-mado'] の型）を夕焼けに・お店の中もだんだん夕方の色に。強さは .dstage の --p（0〜1・day.js） */
+  const mado = ART['bg-day-mado'], m = mado ? `<i class="ds-mado ds-m1" style="--mado:url('${mado}')"></i><i class="ds-mado ds-m2" style="--mado:url('${mado}')"></i>` : '';
+  if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')">${m}<i class="ds-dusk"></i><span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
   return `<div class="ds-bg" aria-hidden="true">
     <i class="ds-win"><i class="ds-tree a"></i><i class="ds-tree b"></i><i class="ds-pane"></i></i>
     <i class="ds-rack"><i class="ds-jar a"></i><i class="ds-jar b"></i><i class="ds-jar c"></i></i>

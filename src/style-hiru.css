@@ -130,15 +130,19 @@
 .ds-door{left:39%;top:11%;width:22%;height:80%;border:4px solid #5a3418;border-bottom:0;border-radius:12px 12px 0 0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.1) 0 2px,transparent 2px 25%),linear-gradient(#a86a3c,#8a5530)}
 .ds-dwin{left:18%;right:18%;top:8%;height:30%;border-radius:40px 40px 4px 4px;border:3px solid #5a3418;background:linear-gradient(#fff6dc,#ffe2a0)}
 .ds-knob{left:10%;top:55%;width:9%;aspect-ratio:1;border-radius:50%;background:var(--brass);border:1.5px solid var(--brass-lo)}
+/* 時間は外の明るさで（11/18 しょーくん「1日の進行度はゲージじゃなくて、外の明るさで・夕方に変色」）：--p（0〜1）で、窓の外が金色 → 夕焼け、お店の中もだんだん夕方の色に（opacity だけ。お客さんと吹き出しは染めない） */
+.dstage{--p:0}
+.ds-mado,.ds-dusk{position:absolute;inset:0;z-index:0;pointer-events:none}
+.ds-mado{-webkit-mask:var(--mado) 50% 100%/cover no-repeat;mask:var(--mado) 50% 100%/cover no-repeat}
+.ds-m1{background:linear-gradient(#ffe2a4,#ffb862);opacity:clamp(0,(var(--p) - .15) * 1.4,.62)}
+.ds-m2{background:linear-gradient(#8a6ab8 8%,#e8708a 26%,#ffa062 42%);mix-blend-mode:multiply;opacity:clamp(0,(var(--p) - .5) * 2,1)}
+.ds-dusk,.ds-front::after{background:radial-gradient(90% 75% at 50% 30%,#ffb478,#7e6096);mix-blend-mode:multiply;opacity:clamp(0,(var(--p) - .25) * 1,.72)}
+.ds-front::after{content:'';position:absolute;inset:0;pointer-events:none}
 .ds-sign{position:absolute;left:50%;top:46%;transform:translateX(-50%);z-index:1;white-space:nowrap;text-align:center;font-size:clamp(9px,4cqh,13px);font-weight:700;color:#3a1c08;background:linear-gradient(#fff6e0,#f6dcae);border:2px solid #5a3418;border-radius:6px;padding:2px 8px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 .ds-sign.on-art{top:38%}
 .ds-lamp{left:calc(50% - 7%);top:0;width:14%;height:12%;border-radius:0 0 50% 50% / 0 0 100% 100%;background:linear-gradient(#f4c24e,#d98a2a);border:2px solid #7a4a1c;border-top:0}
 .ds-counter{position:absolute;left:0;right:0;bottom:0;height:15%;z-index:3;background:linear-gradient(#d8a06a,#a8693a 35%,#7a4a26);border-top:4px solid var(--brass);box-shadow:0 -3px 8px rgba(60,30,10,.35)}
 /* 時間（開店から閉店まで）と評判のびん（flow.js の jarHTML をそのまま小さく） */
-.d-time{position:absolute;left:10px;top:9px;z-index:4;width:40%;height:15px;display:flex;align-items:center}
-.d-track{flex:1;height:10px;border-radius:999px;background:rgba(36,19,10,.55);border:1.5px solid var(--brass);overflow:hidden}
-.d-track i{display:block;height:100%;transform-origin:0 50%;background:linear-gradient(90deg,#ffd27a,#ff9a4a);transition:transform .12s linear}
-.d-sun{width:16px;height:16px;margin-right:-5px;position:relative;z-index:1;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff3b0,#ffc23a 60%,#e8902a);border:1.5px solid #a0581a;flex:none}
 .d-jar{position:absolute;right:8px;top:6px;z-index:4;transform:scale(.72);transform-origin:100% 0}
 .d-jar .jar-fill{transition:transform .5s cubic-bezier(.2,.8,.3,1)}
 .d-jar.bump{animation:jbump .4s ease-out}
