@@ -39,7 +39,7 @@
 /* 額縁と段のぶん、ほのか・モンスター・火力のメーターを少し上へ */
 /* 大きいほのか（11/18 しょーくん「いつまで見てても飽きない戦闘シーン」・えらぶ質問）：舞台の左に大きく。ちびほのかはショップのときだけ */
 .night .stage .chef{left:0;bottom:max(10px,5cqh);width:56%;height:auto;max-height:62%;max-width:none;transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
-.deco.battle .dc-chibi{display:none}
+.deco.battle .dc-chibi,.deco.win .dc-chibi,.stage:not(:has(.shopov)) .deco.shop .dc-chibi{display:none}   /* ちびほのかはショップのときだけ（来店の会話・お礼・結果は大きいほのか） */
 .night .stage .mon{bottom:22%}
 .night .stage .mon.hi{width:36%;max-height:44%}   /* 大きいほのかとつりあう大きさ（11/18） */
 .night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}

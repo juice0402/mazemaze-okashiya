@@ -654,7 +654,7 @@ filter:drop-shadow(0 3px 3px rgba(0,0,0,.5));animation:dchop 1.7s ease-in-out in
 @keyframes dcjump2{0%{transform:scale(1.1,.85)}35%{transform:translateY(-45%) scale(.92,1.1) rotate(-6deg)}60%{transform:translateY(-38%) rotate(6deg)}82%{transform:scale(1.1,.88)}100%{transform:none}}
 @keyframes dcscare{0%,100%{transform:none}20%,60%{transform:translateX(-5%) scale(1.04,.94)}40%,80%{transform:translateX(5%) scale(1.04,.94)}}
 .night .stage .chef{left:0;bottom:max(10px,5cqh);width:56%;height:auto;max-height:62%;max-width:none;transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
-.deco.battle .dc-chibi{display:none}
+.deco.battle .dc-chibi,.deco.win .dc-chibi,.stage:not(:has(.shopov)) .deco.shop .dc-chibi{display:none}
 .night .stage .mon{bottom:22%}
 .night .stage .mon.hi{width:36%;max-height:44%}
 .night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}
@@ -1783,8 +1783,67 @@ if (rec.mon === 'mintousagi' && rec.newMon) return [
 'ミントうさぎ：ぴょこ……（すんすん）',
 'ほのか【わくわく】：かわいい〜！おもてなしするよ！',
 ];
+const mi = STORY.mate('minamo');
+if (rec.mon === 'hitsuji' && rec.newMon) return [
+'（夕方。カラン。もこもこの白いものが入ってくる）',
+'ほのか【考える】：……雲？お店の中に、雲？',
+'くもひつじ：めぇ〜……（もふもふ）',
+'ほのか【びっくり】：ひつじさんだ！毛が、ホイップみたい……！',
+'ほのか【考える】：きのうはスライム、今日はひつじさん……',
+'ほのか【うれしい】：このお店、モンスターに人気なのかも！？',
+'ほのか【やる気】：よーし、今夜もおもてなしだ！',
+];
+if (rec.mon === 'kurage' && rec.newMon) return [
+'（夕方。ドアがすこし開いて、ひんやりした夜風）',
+'ほのか【考える】：あれ？急に、すずしく……',
+'（しずくでできた小さなクラゲが、ふよふよ入ってくる）',
+'ほのか【びっくり】：わぁ、クラゲさん！？森から飛んできたの？',
+'しずくクラゲ：ちゃぷ……（ふよふよ）',
+'ほのか【不安】：クッキー、焼きたてで熱いけど……だいじょうぶ？',
+'しずくクラゲ：ちゃぷ！（こくこく）',
+'ほのか【やる気】：よーし、それなら、おもてなしだ！',
+];
+if (rec.mon === 'tokage' && rec.newMon) return [
+'（夕方。からころ、と小さな音）',
+'ほのか【考える】：あれ？床に、きらきらの粒が……',
+'ほのか【びっくり】：これ、金平糖！？どこから……',
+'（粒をたどると、しっぽが金平糖のトカゲ）',
+'こんぺいトカゲ：きゅっ！（ぺろっ）',
+...(mi ? ['みなも：……しっぽから、こぼれてる'] : []),
+'ほのか【うっとり】：歩くたびに、星くずみたい……',
+...(mi ? ['みなも：……掃除、たいへん', 'ほのか【うれしい】：あとで、いっしょにやろ！'] : []),
+'ほのか【やる気】：よーし、おもてなしだ！',
+];
+if (rec.mon === 'hiyoko' && rec.newMon) return [
+'（夕方。ぽかぽか、あたたかい風）',
+'ほのか【考える】：あれ？オーブン、まだつけてないのに……',
+'（ちいさな炎をまとった、まんまるのひよこ）',
+'ひよこ：ぴよっ！（ぽわっ）',
+'ほのか【感動】：ほのお鳥のひよこ！？わたしと同じ、炎だ！',
+...(mi ? ['みなも：……飴が、とける。近づかないで', 'ほのか【びっくり】：えーっ、こんなにかわいいのに！'] : []),
+'ほのか【やる気】：炎どうし、とびっきりのおもてなしだ！',
+];
 return [];
 },
+voice: {
+slime: ['スライム', 'ぷる……', 'ぷるる♪', 'ぷるん♪'],
+hitsuji: ['くもひつじ', 'めぇ……', 'めぇ〜♪', 'めぇぇ〜♪'],
+kurage: ['しずくクラゲ', 'ちゃぷ……', 'ちゃぷ♪', 'ちゃぷちゃぷ♪'],
+tokage: ['こんぺいトカゲ', 'きゅ……', 'きゅっ♪', 'きゅるる♪'],
+hiyoko: ['ひよこ', 'ぴよ……', 'ぴよっ♪', 'ぴよぴよ♪'],
+nijikurage: ['にじいろクラゲ', 'ふわ……', 'ふわ♪', 'ふわわ♪'],
+mintousagi: ['ミントうさぎ', 'ぴょこ……', 'ぴょこ♪', 'ぴょこぴょこ♪'],
+},
+nightSay: [null,
+['ほのか【くやしい】：うーん、おなかいっぱいには、できなかったかぁ', 'ほのか【くやしい】：つぎは、おなかいっぱいにするからね！', 'ほのか【考える】：もうちょっと、だったのになぁ……'],
+['ほのか【うれしい】：よかったぁ、よろこんでくれたみたい', 'ほのか【うれしい】：えへへ、また来てね！', 'ほのか【わくわく】：まんぞくしてくれた！明日もがんばろ！'],
+['ほのか【うれしい】：やったー！おなかいっぱいにできた！', 'ほのか【ドヤ】：おなかいっぱい！今日のは自信作！', 'ほのか【感動】：大満足だって！うれしいなぁ'],
+],
+nightMate: {
+minamo: [null, 'みなも：……次は、もっと焼ける', 'みなも：……悪くない', 'みなも：……いい、おもてなしだった'],
+wakaba: [null, 'わかば：あらあら、次はきっと大丈夫よぉ', 'わかば：うふふ、よろこんでたわねぇ', 'わかば：あらあら、おなかぽんぽんねぇ'],
+},
+mate: id => !!(S.seen && S.seen['mate:' + id]),
 tips: {
 shop1: ['カードを、下の調理台へドラッグ！', '1ラウンド目は、3まいタダだよ！'],
 field: ['これ、フィールドだ！{場}に置こう', '{場}があると、生地が焼けるんだよ'],
@@ -1821,7 +1880,34 @@ if (rec.mon === 'mintousagi' && rec.newMon) return [
 'ほのか【わくわく】：きらきらのミント……！',
 'みなも：……めずらしい。ふつうは、人になつかない',
 ];
-return [];
+const mon = MONSTERS.find(x => x.id === rec.mon), vc = STORY.voice[rec.mon];
+if (!mon || !vc) return [];
+const m = Math.min(3, Math.max(1, rec.mood || 1)), nm = vc[0], g = MATS[mon.drop] ? MATS[mon.drop].short : '素材';
+const give = m === 1 ? '（' + g + 'ひとつと、コインを少し置いていく）' : '（' + g + 'とコインを置いていく）';
+const mi = STORY.mate('minamo');
+if (rec.newMon) {
+const head = [(m >= 3 ? '（おなかいっぱいの' : m === 2 ? '（まんぞくそうな' : '（もうちょっと食べたそうな') + nm + '）',
+nm + '：' + vc[m], give, STORY.nightSay[m][0]];
+if (rec.mon === 'hitsuji') return [...head,
+'ほのか【うっとり】：ひつじホイップ……ふわっふわ！',
+'ほのか【わくわく】：明日は、これでなに作ろうかな！'];
+if (rec.mon === 'kurage') return [...head,
+'ほのか【うっとり】：しずく寒天……ひんやりして、きれい',
+'（帰りぎわ、しずくクラゲが一瞬、にじいろに光った）',
+'ほのか【びっくり】：いま、にじいろに……？気のせい、かな'];
+if (rec.mon === 'tokage') return [...head,
+'ほのか【感動】：ほしくずシュガー……夜空をとじこめたみたい！',
+...(mi ? ['みなも：……飴に、まぜたい', 'ほのか【わくわく】：みなもちゃん、目がきらきらしてる！', 'みなも：……してない']
+: ['ほのか【考える】：……床の星くずも、あとで掃除しなきゃ'])];
+if (rec.mon === 'hiyoko') return [...head,
+'ほのか【うっとり】：ほのおカラメル……こんがり、いい匂い',
+'ほのか【びっくり】：焦がしてるのに、焦げてない……！？',
+...(mi ? ['みなも：……あなたより、火加減が上手', 'ほのか【くやしい】：うっ……ひよこに、負けた……']
+: ['ほのか【くやしい】：うう、ひよこに火加減で負けた……！'])];
+}
+const say = [...STORY.nightSay[m]];
+for (const id of ['minamo', 'wakaba']) if (STORY.mate(id)) say.push(STORY.nightMate[id][m]);
+return [nm + '：' + vc[m], give, pick(say)];
 },
 morning(rec, yest) {
 if (rec.day === 1) return [
@@ -3468,8 +3554,11 @@ slime: { name: 'スライム', side: 'r', mon: 'slime' },
 hitsuji: { name: 'くもひつじ', side: 'r', mon: 'hitsuji' },
 nijikurage: { name: 'にじいろクラゲ', side: 'r', mon: 'nijikurage' },
 mintousagi: { name: 'ミントうさぎ', side: 'r', mon: 'mintousagi' },
+kurage: { name: 'しずくクラゲ', side: 'r', mon: 'kurage' },   // H-022
+tokage: { name: 'こんぺいトカゲ', side: 'r', mon: 'tokage' },
+hiyoko: { name: 'ほのお鳥のひよこ', side: 'r', mon: 'hiyoko' },
 };
-const TALKER_ID = Object.assign({ ぷるぷるスライム: 'slime', ひつじ: 'hitsuji' },
+const TALKER_ID = Object.assign({ ぷるぷるスライム: 'slime', ひつじ: 'hitsuji', クラゲ: 'kurage', トカゲ: 'tokage', ひよこ: 'hiyoko' },
 ...Object.entries(TALKERS).map(([id, t]) => ({ [t.name]: id })));
 const TK_SPEED = 38;   // 1文字の ms
 function talkParse(s) {
