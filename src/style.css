@@ -762,3 +762,27 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* ヒントの指（ui-finger・160×176）：指先は左上のすみ（tips.js の at が指先を目あての所に） */
 .tipf{width:44px;height:48px;transform-origin:2px 2px;background:var(--ui-finger) center/contain no-repeat}
 .tipf-ring{left:2px;top:2px}
+/* ==== UI の絵 その5（11/18 art-irai ui-chips・ui-day）==== */
+/* 計算の札（ui-chip-*・240×84〔こげ茶は 240×64〕）：左右の丸いはしを9分割の角に・まんなかが横にのびる。字はコード。style-battle.css より強く */
+.fchip.fchip{background:none;box-shadow:none;border-radius:0;border:1px solid transparent;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill / 19px 20px stretch;padding:3px 14px 4px;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
+.fchip.c-ember{border-image-source:var(--ui-chip-ember)}
+.fchip.c-pink{border-image-source:var(--ui-chip-pink)}
+.fchip.c-mint{border-image-source:var(--ui-chip-mint)}
+.fchip.c-koge{border-image-source:var(--ui-chip-koge);border-image-slice:49% 13% 49% 13% fill}
+/* 発動のメダル（ui-medal-ring・160×152・穴は横34〜129）：.fh-ico（54px）の丸に輪を重ねる */
+.fh-ico.fh-ico{position:relative;overflow:visible;box-shadow:0 0 18px 4px rgba(255,200,90,.65)}
+.fh-ico.fh-ico::after{content:"";position:absolute;left:-18px;top:-15px;width:88px;height:83px;background:var(--ui-medal-ring) center/100% 100% no-repeat;pointer-events:none}
+/* 陳列棚：外わく ui-cabinet（486×364・木のはば約41・四すみにお菓子）は .dcase::after に9分割で重ねる。
+   棚板 ui-shelf-board（500×120・左右60がはし）は段のいちばん左のマスの ::before が段のはばいっぱいに（z-index:-1＝マスのうしろ）。
+   カゴ ui-basket はマスの ::after（看板のマスは ui-kanban を背景に）。昼のチャットの .dcase・.dslot の中身はそのまま */
+.dcase.dcase{position:relative;isolation:isolate;border:20px solid transparent;border-radius:0;padding:4px;gap:6px;box-shadow:none;flex-basis:calc(var(--rows) * 78px + 48px);min-height:calc(var(--rows) * 52px + 48px);
+  background:linear-gradient(rgba(255,236,200,.55),rgba(255,236,200,0) 35%) padding-box,linear-gradient(#e6c592,#c9955c) padding-box}
+.dcase.dcase::after{content:"";position:absolute;inset:-20px;z-index:3;pointer-events:none;border:34px solid transparent;border-image:var(--ui-cabinet) 90 round}
+.dcase.dcase .dslot{overflow:visible;border:0;border-radius:0;background:none;box-shadow:none}
+.dcase.dcase>.dslot:nth-child(3n+1)::before{content:"";position:absolute;z-index:-1;left:-10px;bottom:-12px;width:calc(300% + 32px);height:30px;border:solid transparent;border-width:0 15px;border-image:var(--ui-shelf-board) 0 60 fill / 0 15px round;pointer-events:none}
+.dcase.dcase .dslot:not(.kan)::after{content:"";position:absolute;z-index:-1;left:4%;right:4%;top:10%;bottom:9px;background:var(--ui-basket) center bottom/contain no-repeat;pointer-events:none}
+.dcase.dcase .dslot.kan{background:var(--ui-kanban) center bottom 6px/contain no-repeat}
+.dcase.dcase .d-nm{position:relative;max-width:96%;padding:0 4px;border-radius:6px;background:rgba(255,248,236,.92);box-shadow:0 1px 0 rgba(90,52,24,.35)}
+/* 商品を並べる画面（段が高い）：お菓子と名前を下へよせてカゴの中に・看板の札はお菓子の上に */
+.md-case.md-case .dslot{justify-content:flex-end;padding-bottom:12px}
+.md-case.md-case .dslot.kan .d-kl{position:static;transform:none;order:-1;margin-bottom:2px;border-top:1px solid var(--brass-lo);border-radius:6px}
