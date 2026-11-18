@@ -1,86 +1,220 @@
-/* ==== 昼：棚1つでお菓子を売る（持ち主：昼のチャット【okashi-hiru】。昼に来るのは flow.js の goDay → startDay・まとめへは goResult。数字は src/data/hiru.js） ====
-   お客さんはすきな味が2つ。棚にすきな味のお菓子があれば2倍の値段で買ってハート（3つで常連さん）
-   なければ6わりの人がほかのお菓子を買う */
-let dayTimer = 0;
+/* ==== 昼：カウンター越しのお店（持ち主：昼のチャット【okashi-hiru】・11/18 作りなおし）
+   流れ：開店前（棚のまんなかの看板の枠に、今日の看板のお菓子を1つ）→ 開店（約40秒。お客さんが正面のカウンターに来て、頭の上の吹き出しにすきな素材）→ 閉店 → 夕方へ
+   すきな素材が入ったお菓子が棚にあれば1こ買ってハート（評判）。なければ半分くらいの人がほかのお菓子を1こ買う。1マスの3こが売れたら売り切れ
+   昼はお金を見せない（まとめで初めてわかる）。見せるのは「売れた！」とハートだけ
+   つなぎ目（リーダー）：flow.js の goDay → startDay()・閉店のボタン data-act="toEvening" → goEvening → stopDay()・画面は render() → renderDay()・ボタンは DAY_ACTS
+   数字は src/data/hiru.js・絵は day-scene.js・セリフは story.js ==== */
 
-/* 昼のはじめ（flow.js の goDay から呼ぶ）：S.dayRun を用意する */
+let dayTick = 0, dayPrev = 0, daySpeed = 1;
+/* お客さん1人の流れ（ms・ふつうの速さ）：入ってくる → 吹き出しにすきな素材 → 買う（ハート）か帰る → 出ていく */
+const V_ARRIVE = 900, V_ASK = 2200, V_LEAVE = 3500, V_END = 4200;
+
+/* 昼のはじめ（flow.js の goDay から呼ぶ） */
 function startDay() {
-  S.dayRun = { i: 0, total: CUST_BASE + Math.min(4, S.day - 1), log: [], done: false };
-  scn.cust = []; scn.speed = 1;
+  S.dayRun = { open: false, done: false, kanban: null, t: 0, plan: [], i: 0, cur: null };
 }
-/* 昼をおえる（flow.js の goResult から呼ぶ） */
-function stopDay() { clearTimeout(dayTimer); }
-function addLog(text, cls = '') {
-  S.dayRun.log.push([text, cls]);
-  const ol = $('dayLog');
-  if (ol) { const li = document.createElement('li'); li.className = cls; li.textContent = text; ol.prepend(li); }
+/* 昼をおえる（flow.js の goEvening から呼ぶ）：売り切れのマスを棚からはずす（売れのこりは次の日も棚に） */
+function stopDay() {
+  clearTimeout(dayTick); dayTick = 0;
+  S.shelf = S.shelf.filter(s => s.n > 0);
 }
-function serve(c) {
-  const items = S.shelf.filter(s => s.n > 0), T = S.today;
-  T.visitors++;
-  if (!items.length) { addLog(`${c.name}：売り切れで帰っちゃった`, 'no'); return 'none'; }
-  const liked = items.filter(s => recipeOf(s.key).tastes.some(t => likesOf(c).includes(t)));
-  let s = null, p = 0, love = false;
-  if (liked.length) { s = liked.sort((a, b) => recipeOf(b.key).price - recipeOf(a.key).price)[0]; p = recipeOf(s.key).price * LIKE_MUL; love = true; }
-  else if (Math.random() < OTHER_BUY) { s = pick(items); p = recipeOf(s.key).price; }
-  if (!s) { addLog(`${c.name}：すきな味（${likesOf(c).join('・')}）がなかった`, 'no'); return 'none'; }
-  s.n--; S.shelf = S.shelf.filter(x => x.n > 0);
-  S.money += p; T.sales += p; T.served++;
-  const name = recipeOf(s.key).name;
-  if (love) {
-    S.hearts[c.id] = (S.hearts[c.id] || 0) + 1;
-    addLog(`${c.name}が${name}を気に入って買った ${p}円 ${HEART}`, 'love');
-    if (S.hearts[c.id] === HEARTS_REGULAR && !S.regulars.includes(c.id)) {
-      S.regulars.push(c.id); T.newRegulars.push(c.id);
-      setTimeout(() => toast(`${c.name}が常連さんになった！`), 300);
-    }
-  } else addLog(`${c.name}が${name}を買った ${p}円`);
-  return love ? 'heart' : s.key;
+
+/* ---------- 棚：3列・看板の枠はまんなか（hiru.js の kanbanSlot） ---------- */
+function shelfSlots() {
+  const n = Math.max(1, Math.min(SHELF_MAX, S.shelfMax || 6)), ks = kanbanSlot(n), R = S.dayRun;
+  const slots = Array(n).fill(null), items = S.shelf.map((s, i) => ({ s, i }));
+  const k = R && R.kanban ? items.findIndex(o => o.s.key === R.kanban) : -1;
+  if (k >= 0) slots[ks] = items.splice(k, 1)[0];
+  let j = 0;
+  for (const o of items) {
+    while (j < n && (slots[j] || j === ks)) j++;
+    if (j >= n) break;
+    slots[j++] = o;
+  }
+  return { slots, ks };
 }
-function runCustomers() {
-  clearTimeout(dayTimer);
-  const R = S.dayRun; if (!R || R.done || S.phase !== 'day') return;
-  if (R.i >= R.total) { R.done = true; save(); return renderDay(); }
-  const c = pick(CUSTOMERS), sp = () => scn.speed;
-  const who = { id: c.id, x: 100, tx: 72 - rand(10), bub: null };
-  scn.cust.push(who);
-  dayTimer = setTimeout(() => {
-    const res = serve(c);
-    who.bub = res;
-    R.i++; save(); updateDayInfo();
-    dayTimer = setTimeout(() => {
-      who.bub = null; who.tx = 104; who.gone = true;
-      dayTimer = setTimeout(runCustomers, 350 / sp());
-    }, 900 / sp());
-  }, 1100 / sp());
+function slotHTML(o, idx, ks, pre) {
+  const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
+  if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
+  const c = candyOf(o.s.key), out = o.s.n <= 0, tag = pre ? 'button' : 'div';
+  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}</${tag}>`;
 }
-function updateDayInfo() {
-  const R = S.dayRun, el = $('dayInfo'); if (!el) return;
-  el.innerHTML = `お客さん <b>${R.i}</b>/${R.total}　売上 <b>${fmt(S.today.sales)}</b>円`;
-  const sh = $('shelfList');
-  if (sh) sh.innerHTML = shelfHTML();
-  const m = $('money'); if (m) m.textContent = fmt(S.money) + '円';
+function caseHTML(pre) {
+  const { slots, ks } = shelfSlots();
+  return slots.map((o, i) => slotHTML(o, i, ks, pre)).join('');
 }
-function shelfHTML() {
-  return S.shelf.length ? S.shelf.map(s => `<span class="item"><img src="${candyURL(s.key)}" alt="">${esc(recipeOf(s.key).name)} ×${s.n}</span>`).join('') : '<span class="muted">棚はからっぽ</span>';
-}
-function toggleFast() {
-  scn.speed = scn.speed === 1 ? 3 : 1;
-  const b = document.querySelector('[data-act="fast"]'); if (b) b.textContent = scn.speed === 1 ? 'はやおくり' : 'ふつうの速さ';
-}
+
+/* ---------- 画面 ---------- */
 function renderDay() {
-  const R = S.dayRun;
+  if (!S.dayRun) startDay();
+  const R = S.dayRun, pre = !R.open && !R.done, empty = !S.shelf.some(s => s.n > 0);
+  const sign = pre ? 'じゅんび中' : R.done ? 'へいてん' : 'えいぎょう中';
+  let bar;
+  if (pre && empty) bar = '<button class="big" data-act="toEvening">今日はお休みして夕方へ</button>';
+  else if (pre) bar = '<button class="big" data-act="d-open">お店をあける</button>';
+  else if (R.done) bar = '<button class="big" data-act="toEvening">閉店して夕方へ</button>';
+  else bar = `<div class="d-bar"><span class="d-lbl">えいぎょう中</span><button class="sub" data-act="d-fast">${daySpeed > 1 ? 'ふつうの速さ' : 'はやおくり'}</button></div>`;
+  const tip = !pre ? '' : empty ? '棚がからっぽ……今日はお休みかな' : R.kanban ? `今日の看板は ${candyOf(R.kanban).name}` : '看板にするお菓子を、タップしてえらんでね';
+  const rows = Math.ceil(Math.min(SHELF_MAX, S.shelfMax || 6) / SHELF_COLS);
   $('screen').innerHTML = `<section class="day fit">
-    <div class="scene-wrap"><canvas id="scene" width="${SW}" height="${SH}"></canvas></div>
-    <div class="panel tight"><h2>お昼の販売</h2><p id="dayInfo"></p></div>
-    <div class="shelf"><span class="lbl">棚</span><div id="shelfList"></div></div>
-    <ol class="log" id="dayLog">${R.log.slice().reverse().map(([t, c]) => `<li class="${c}">${esc(t)}</li>`).join('')}</ol>
-    ${R.done ? '<button class="big" data-act="toResult">1日のまとめへ</button>' : `<div class="row"><button class="sub" data-act="fast">${scn.speed === 1 ? 'はやおくり' : 'ふつうの速さ'}</button></div>`}
+    <div class="dstage${pre ? ' pre' : ''}" id="dstage" style="--sp:${daySpeed}">
+      ${dayStageBg(sign)}
+      <div class="d-cust" id="dCust"></div>
+      ${dayStageFront()}
+      <div class="d-time"><i class="d-sun"></i><span class="d-track"><i id="dFill" style="transform:scaleX(${Math.min(1, (R.t || 0) / DAY_MS).toFixed(3)})"></i></span></div>
+      <div class="d-jar" id="dJar">${jarHTML()}</div>
+      ${tip ? `<p class="d-tip">${esc(tip)}</p>` : ''}
+    </div>
+    <div class="dcase${pre ? ' pre' : ''}" id="dCase" style="--rows:${rows}">${caseHTML(pre)}</div>
+    ${bar}
   </section>`;
-  mountScene('day'); updateDayInfo();
-  if (!R.done && !scn.cust.length) runCustomers();
+  if (R.cur) showCust(R.cur, true);
+  if (pre && !empty && S.day === 1 && !S.seen.dayPre && !talking()) talk(STORY.dayPre, () => { S.seen.dayPre = 1; save(); }, { dim: false });
+  if (R.open && !R.done) { dayPrev = 0; dayLoop(); }
 }
+
+/* 開店前：棚のお菓子をタップすると看板の枠へ（もう一度で外す） */
+function pickKanban(i) {
+  const R = S.dayRun, s = S.shelf[+i];
+  if (!R || R.open || !s) return;
+  R.kanban = R.kanban === s.key ? null : s.key;
+  save(); renderDay();
+}
+function openDay() {
+  const R = S.dayRun; if (!R || R.open || R.done) return;
+  if (!R.kanban) return toast('看板にするお菓子を、えらんでね');
+  const go = () => {
+    R.open = true; R.t = 0; R.i = 0; R.cur = null;
+    R.plan = custPlan(custCount(), R.kanban);
+    S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
+    save(); renderDay();
+  };
+  if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go, { dim: false }); }
+  else go();
+}
+
+/* ---------- 営業：100ms ごとに進める（会話のあいだは止まる・昼の画面でないときは止まる） ---------- */
+function dayLoop() {
+  clearTimeout(dayTick); dayTick = 0;
+  const R = S.dayRun;
+  if (S.phase !== 'day' || !R || !R.open || R.done || !$('dstage')) return;
+  const now = performance.now(), dt = dayPrev ? Math.min(250, now - dayPrev) : 0;
+  dayPrev = now;
+  if (!talking()) dayStep(R, dt * daySpeed);
+  if (!R.done) dayTick = setTimeout(dayLoop, 100);
+}
+function dayStep(R, dt) {
+  R.t += dt;
+  const f = $('dFill'); if (f) f.style.transform = `scaleX(${Math.min(1, R.t / DAY_MS).toFixed(3)})`;
+  if (R.cur) return visitStep(R, dt);
+  if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
+  if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }
+  else if (R.t >= DAY_MS) closeDay();
+}
+function startVisit(R) {
+  const p = R.plan[R.i++];
+  R.cur = { c: p.c, like: p.like, t: 0, step: 0, res: null };
+  S.today.visitors++; save();
+  showCust(R.cur, false);
+}
+function visitStep(R, dt) {
+  const v = R.cur; v.t += dt;
+  if (v.step === 0 && v.t >= V_ARRIVE) {
+    v.step = 1; showBubble(v);
+    if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}, { dim: false }); }
+  } else if (v.step === 1 && v.t >= V_ASK) {
+    v.step = 2; v.res = serve(v); save(); showResult(v, false);
+  } else if (v.step === 2 && v.t >= V_LEAVE) {
+    v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
+  } else if (v.step === 3 && v.t >= V_END) {
+    R.cur = null; const el = custEl(); if (el) el.remove(); save();
+  }
+}
+/* 買う：すきな素材が入ったお菓子（看板が先・なければ高いほう）→ ハート。なければ OTHER_BUY の人がほかのを1こ */
+function serve(v) {
+  const T = S.today, R = S.dayRun, items = S.shelf.filter(s => s.n > 0);
+  const liked = items.filter(s => candyHas(s.key, v.like));
+  let s = null, love = false;
+  if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
+  else if (items.length && Math.random() < OTHER_BUY) s = pick(items);
+  if (!s) return { kind: 'none', say: pick(STORY.cust.none) };
+  const price = candyOf(s.key).price;
+  s.n--; S.money += price; T.sales += price; T.served++;
+  if (s.n <= 0 && s.key === T.kanban) T.kanbanSoldOut = true;
+  if (love) { S.rep++; T.hearts++; }
+  return { kind: love ? 'love' : 'other', key: s.key, say: pick(STORY.cust[love ? 'love' : 'other']) };
+}
+function closeDay(msg) {
+  const R = S.dayRun; R.done = true; R.cur = null;
+  clearTimeout(dayTick); dayTick = 0;
+  save(); if (msg) toast(msg);
+  renderDay();
+  if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk(STORY.dayClose(S.today), () => {}, { dim: false }); }
+}
+
+/* ---------- お客さんの見た目（絵は day-scene.js の custHTML） ---------- */
+const custEl = () => document.querySelector('#dCust .cu');
+const faceOf = v => (v.step >= 2 && v.res ? (v.res.kind === 'love' ? 'happy' : v.res.kind === 'none' ? 'sad' : '') : '');
+function showCust(v, now) {
+  const box = $('dCust'); if (!box) return;
+  const face = faceOf(v);
+  box.innerHTML = `<div class="cu cu-${v.c}${face ? ' ' + face : ''}${now ? ' at still' : ''}${v.step >= 3 ? ' leave' : ''}">${custHTML(v.c, face)}<div class="cu-bub" id="dBub"></div></div>`;
+  if (!now) { const el = custEl(); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('at'))); }
+  if (v.step === 1) showBubble(v);
+  if (v.step === 2) showResult(v, true);
+}
+function showBubble(v) {
+  const b = $('dBub'); if (!b) return;
+  b.className = 'cu-bub show ask';
+  b.innerHTML = `${matIcon(v.like)}<span>${esc(matShort(v.like))}</span>`;
+}
+function showResult(v, now) {
+  const b = $('dBub'), el = custEl(), r = v.res; if (!b || !el || !r) return;
+  const face = faceOf(v);
+  el.classList.remove('happy', 'sad'); if (face) el.classList.add(face);
+  const fig = el.querySelector('.cu-fig'); if (fig && fig.classList.contains('art')) fig.outerHTML = custHTML(v.c, face);
+  b.className = 'cu-bub show res ' + r.kind;
+  b.innerHTML = r.kind === 'love' ? `<b class="bh">${HEART}</b><span>${esc(r.say)}</span>`
+    : r.kind === 'other' ? `${candyIcon(r.key)}<span>${esc(r.say)}</span>` : `<span>${esc(r.say)}</span>`;
+  if (now) return;
+  if (r.key) soldFx(r.key);
+  if (r.kind === 'love') heartFx(b);
+}
+/* 売れた：棚を描きなおして、そのマスに「売れた！」 */
+function soldFx(key) {
+  const cs = $('dCase'); if (!cs) return;
+  cs.innerHTML = caseHTML(false);
+  const sl = cs.querySelector(`.dslot[data-key="${CSS.escape(key)}"]`); if (!sl) return;
+  sl.classList.add('pop');
+  sl.insertAdjacentHTML('beforeend', '<span class="d-sold">売れた！</span>');
+}
+/* ハート：吹き出しから評判のびんへ飛んで、びんがたまる */
+function heartFx(from) {
+  const st = $('dstage'), jar = document.querySelector('#dJar .jar'); if (!st || !jar) return;
+  const a = from.getBoundingClientRect(), b = jar.getBoundingClientRect(), o = st.getBoundingClientRect();
+  const h = document.createElement('i');
+  h.className = 'd-fly'; h.textContent = HEART;
+  h.style.left = (a.left + a.width / 2 - o.left) + 'px'; h.style.top = (a.top - o.top) + 'px';
+  h.style.setProperty('--dx', (b.left + b.width / 2 - a.left - a.width / 2) + 'px');
+  h.style.setProperty('--dy', (b.top + b.height / 2 - a.top) + 'px');
+  st.appendChild(h);
+  setTimeout(() => {
+    h.remove();
+    const jb = $('dJar'); if (!jb) return;
+    if (S.rep % REP_JAR === 0) jb.innerHTML = jarHTML();   // いっぱいになった：びんを新しく（★がふえる）
+    else { const j = jb.querySelector('.jar'); if (j) j.style.setProperty('--p', ((S.rep % REP_JAR) / REP_JAR).toFixed(3)); }
+    jb.classList.remove('bump'); void jb.offsetWidth; jb.classList.add('bump');
+  }, 750 / daySpeed);
+}
+function toggleDayFast(el) {
+  daySpeed = daySpeed > 1 ? 1 : DAY_FAST;
+  const st = $('dstage'); if (st) st.style.setProperty('--sp', daySpeed);
+  if (el) el.textContent = daySpeed > 1 ? 'ふつうの速さ' : 'はやおくり';
+}
+
 /* 昼の画面のボタン（data-act）。main.js の ACTS に入る */
 const DAY_ACTS = {
-  fast: () => toggleFast(),
+  'd-pick': el => pickKanban(el.dataset.i),
+  'd-open': () => openDay(),
+  'd-fast': el => toggleDayFast(el),
 };

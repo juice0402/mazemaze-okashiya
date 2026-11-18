@@ -67,14 +67,41 @@ const STORY = {
     return [];
   },
   morning(rec, yest) { return []; },
+  /* ---------- 昼の画面（昼のチャットが呼ぶ）：1日目だけ、シナリオ②のおわりと③ ---------- */
+  dayPre: [
+    'ほのか：いちばん自信のあるのは、まんなかの看板に！',
+    '→ 看板の枠へ',
+  ],
+  dayOpen: [
+    'ほのか【やる気】：準備かんりょう！お店、あけまーす！',
+    'ほのか【うれしい】：いらっしゃいませー！',
+  ],
+  dayBubble: [
+    'ほのか【びっくり】：あっ、吹き出しに、すきな味が出てる！',
+    'ほのか【わくわく】：棚にあれば、よろこんで買ってくれるはず……！',
+  ],
+  dayClose(rec) {
+    return [
+      'ほのか【考える】：今日のお客さん、' + rec.visitors + '人かぁ……',
+      'ほのか【しょんぼり】：森のはずれだもんね。しかたないよね',
+      'ほのか【不安】：……本当に、やっていけるかな',
+      'ほのか【やる気】：ううん！明日はもっとおいしいの、作るんだから！',
+    ];
+  },
+  /* お客さんの吹き出し（昼の画面）：すきな味があった・ほかのを買った・なにも買わなかった */
+  cust: {
+    love: ['これ、だいすき！', 'わあ、これください！', 'これこれ！', 'いいにおい！'],
+    other: ['じゃあ、これにしよ', 'これもおいしそう', 'ひとつください'],
+    none: ['うーん、また来るね', 'きょうはいいかな', 'ざんねん……'],
+  },
   diary(rec) {
     if (rec.day === 1) return ['お店をひらいた日。お客さんは' + rec.visitors + '人。', '夜にスライムが来た。ゼリー、何に使おうかな？'];
     const L1 = '今日のお客さんは' + rec.visitors + '人。';   // 多い・少ないの目安は昼の数字が決まってから
     const mon = rec.mon ? MONSTERS.find(m => m.id === rec.mon) : null, gift = Object.keys(rec.gifts || {})[0];
     let L2;
     if (mon && rec.newMon) L2 = '夜に' + mon.name + 'が来た。' + (gift ? MATS[gift].short + 'をくれた！' : '');
-    else if (rec.flashes.length) L2 = recipeOf(rec.flashes[0]).name + 'をひらめいた！';
-    else if (rec.kanbanSoldOut && rec.kanban) L2 = '看板の' + recipeOf(rec.kanban).name + '、売り切れ！';
+    else if (rec.flashes.length) L2 = candyOf(rec.flashes[0]).name + 'をひらめいた！';
+    else if (rec.kanbanSoldOut && rec.kanban) L2 = '看板の' + candyOf(rec.kanban).name + '、売り切れ！';
     else if (mon && rec.mood >= 3) L2 = mon.name + '、おなかいっぱいで帰っていった。';
     else L2 = pick(['今日もオーブンはごきげんだった。', '焦がしたのは2回だけ。えらい！']);
     return [L1, L2];

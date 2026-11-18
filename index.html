@@ -857,20 +857,101 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .made{flex:none;flex-direction:row;align-items:flex-start;gap:10px;border-color:var(--gold);padding:8px 10px}
 .made .candy{width:54px;height:54px}
 .made .tag{color:var(--gold)}
-.scene-wrap{position:relative;flex:1 1 0;min-height:72px;max-height:calc((min(100vw, 460px) - 32px) / 2);border:3px solid #3a2318;border-radius:12px;overflow:hidden;background:#fbe3d4}
-.scene-wrap canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
-.shelf{flex:none;display:flex;gap:10px;align-items:flex-start;font-size:12px}
-.shelf .lbl{color:var(--milk-soft);flex:none}
-#shelfList{display:flex;gap:4px 12px;flex-wrap:wrap}
-#shelfList .item{display:flex;align-items:center;gap:4px}
-#shelfList img{width:24px;height:24px;object-fit:contain;image-rendering:pixelated}
-.log{flex:1;min-height:48px;list-style:none;margin:0;padding:6px 10px;background:rgba(42,23,12,.45);border:2px solid #3a2318;border-radius:10px;display:flex;flex-direction:column;gap:3px;font-size:12px;overflow-y:auto}
-.log li{flex:none}
-.log li.love{color:var(--gold)}
-.log li.no{color:var(--milk-soft)}
 .recipe{background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;box-shadow:inset 0 0 0 1px rgba(217,168,90,.7),0 3px 0 #3a1c08}
-.scene-wrap{border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4)}
-.log{background:rgba(30,14,6,.55);border:2px solid #24130a;box-shadow:inset 0 0 0 1px rgba(255,214,140,.3)}</style>
+.hico{display:block;width:32px;height:32px;object-fit:contain;flex:none}
+.dstage{position:relative;flex:1 1 0;min-height:150px;border-radius:14px;overflow:hidden;container-type:size;border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4);background:#f6e2c4}
+.ds-bg{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 8%,rgba(255,240,200,.85),transparent 70%),repeating-linear-gradient(90deg,#f7e4c6 0 16px,#f1d9b6 16px 32px)}
+.ds-bg.art{background:var(--bgimg) 50% 100%/cover no-repeat}
+.ds-front{position:absolute;inset:0;z-index:3;background:var(--bgimg) 50% 100%/cover no-repeat;clip-path:inset(calc(100cqh - .148 * max(100cqh, 56.25cqw)) 0 0 0);pointer-events:none}
+.dstage.pre .ds-bg{filter:brightness(.9) saturate(.9)}
+.ds-bg i{position:absolute;display:block}
+.ds-wains{left:0;right:0;bottom:0;height:38%;background:repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 40px),linear-gradient(#b07648,#8a5530);border-top:3px solid #5a3418}
+.ds-win{left:5%;top:13%;width:30%;height:40%;border:5px solid #7a4a26;border-radius:10px 10px 4px 4px;background:linear-gradient(#fff6dc,#ffe7b0 70%,#f6d690);overflow:hidden;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+.ds-win .ds-pane{inset:0;background:linear-gradient(90deg,transparent calc(50% - 2px),#7a4a26 calc(50% - 2px) calc(50% + 2px),transparent calc(50% + 2px)),linear-gradient(transparent calc(50% - 2px),#7a4a26 calc(50% - 2px) calc(50% + 2px),transparent calc(50% + 2px))}
+.ds-tree{bottom:-18%;width:60%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#9cd17a,#5f9a48 70%)}
+.ds-tree.a{left:-15%}.ds-tree.b{right:-20%;bottom:-28%;background:radial-gradient(circle at 40% 35%,#b5dc86,#6fa852 70%)}
+.ds-rack{left:70%;top:20%;width:22%;height:20%;border-bottom:6px solid #7a4a26;border-radius:0 0 3px 3px}
+.ds-jar{bottom:0;width:26%;height:72%;border-radius:6px 6px 4px 4px;border:2px solid rgba(90,48,16,.6)}
+.ds-jar.a{left:4%;background:linear-gradient(#ffe2a6 30%,#f2a93b 30%)}.ds-jar.b{left:37%;height:90%;background:linear-gradient(#fff 25%,#f6b0c0 25%)}.ds-jar.c{left:70%;height:60%;background:linear-gradient(#fff 30%,#b5dc86 30%)}
+.ds-door{left:39%;top:11%;width:22%;height:80%;border:4px solid #5a3418;border-bottom:0;border-radius:12px 12px 0 0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.1) 0 2px,transparent 2px 25%),linear-gradient(#a86a3c,#8a5530)}
+.ds-dwin{left:18%;right:18%;top:8%;height:30%;border-radius:40px 40px 4px 4px;border:3px solid #5a3418;background:linear-gradient(#fff6dc,#ffe2a0)}
+.ds-knob{left:10%;top:55%;width:9%;aspect-ratio:1;border-radius:50%;background:var(--brass);border:1.5px solid var(--brass-lo)}
+.ds-sign{position:absolute;left:50%;top:46%;transform:translateX(-50%);z-index:1;white-space:nowrap;text-align:center;font-size:clamp(9px,4cqh,13px);font-weight:700;color:#3a1c08;background:linear-gradient(#fff6e0,#f6dcae);border:2px solid #5a3418;border-radius:6px;padding:2px 8px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ds-sign.on-art{top:38%}
+.ds-lamp{left:calc(50% - 7%);top:0;width:14%;height:12%;border-radius:0 0 50% 50% / 0 0 100% 100%;background:linear-gradient(#f4c24e,#d98a2a);border:2px solid #7a4a1c;border-top:0}
+.ds-counter{position:absolute;left:0;right:0;bottom:0;height:15%;z-index:3;background:linear-gradient(#d8a06a,#a8693a 35%,#7a4a26);border-top:4px solid var(--brass);box-shadow:0 -3px 8px rgba(60,30,10,.35)}
+.d-time{position:absolute;left:10px;top:9px;z-index:4;width:40%;height:15px;display:flex;align-items:center}
+.d-track{flex:1;height:10px;border-radius:999px;background:rgba(36,19,10,.55);border:1.5px solid var(--brass);overflow:hidden}
+.d-track i{display:block;height:100%;transform-origin:0 50%;background:linear-gradient(90deg,#ffd27a,#ff9a4a);transition:transform .12s linear}
+.d-sun{width:16px;height:16px;margin-right:-5px;position:relative;z-index:1;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff3b0,#ffc23a 60%,#e8902a);border:1.5px solid #a0581a;flex:none}
+.d-jar{position:absolute;right:8px;top:6px;z-index:4;transform:scale(.72);transform-origin:100% 0}
+.d-jar .jar-fill{transition:transform .5s cubic-bezier(.2,.8,.3,1)}
+.d-jar.bump{animation:jbump .4s ease-out}
+@keyframes jbump{40%{transform:scale(.84)}100%{transform:scale(.72)}}
+.d-tip{position:absolute;left:50%;bottom:20%;z-index:5;margin:0;white-space:nowrap;font-size:13px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.85);border:1.5px solid var(--brass);border-radius:999px;padding:6px 14px;animation:tipbob 1.6s ease-in-out infinite}
+@keyframes tipbob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
+.d-cust{position:absolute;inset:0;z-index:2}
+.cu{position:absolute;left:50%;bottom:6cqh;width:44cqh;height:66cqh;margin-left:-22cqh;transform-origin:50% 100%;transform:translate(0,-24cqh) scale(.42);opacity:0;transition:transform calc(.8s / var(--sp,1)) cubic-bezier(.3,.8,.4,1),opacity calc(.45s / var(--sp,1))}
+.cu.at{transform:none;opacity:1}
+.cu.at.leave{transform:translate(0,-24cqh) scale(.42);opacity:0;transition-duration:calc(.7s / var(--sp,1))}
+.cu.still{transition:none}
+.cu.cu-kodomo{width:38cqh;height:56cqh;margin-left:-19cqh}
+.cu-fig{position:absolute;inset:0;transform-origin:50% 100%}
+.cu.at .cu-fig{animation:cubob 2.4s ease-in-out infinite}
+.cu.happy .cu-fig{animation:cuhop .5s ease-out 2,cubob 2.4s 1s ease-in-out infinite}
+@keyframes cubob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5%)}}
+@keyframes cuhop{0%,100%{transform:translateY(0)}40%{transform:translateY(-7%)}}
+.cu-fig.art img{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%)}
+.cu-fig i{position:absolute;display:block}
+.cu-torso{left:8%;right:8%;bottom:0;height:40%;border-radius:48% 48% 0 0 / 70% 70% 0 0;background:var(--shirt);border:2px solid rgba(40,20,10,.55);border-bottom:0}
+.cu-collar{left:34%;right:34%;top:-2%;height:36%;background:#fff;clip-path:polygon(0 0,100% 0,50% 100%)}
+.cu-head{left:18%;right:18%;top:8%;height:54%;border-radius:50% 50% 48% 48%;background:var(--skin);border:2px solid rgba(60,30,15,.55)}
+.cu-hair{left:-7%;right:-7%;top:-8%;height:50%;border-radius:50% 50% 30% 30% / 80% 80% 20% 20%;background:var(--hair)}
+.cu-bun{left:32%;width:36%;top:-24%;height:30%;border-radius:50%;background:var(--hair)}
+.cu-ribbon{right:4%;top:-12%;width:34%;height:22%;z-index:1;border-radius:40% 40% 40% 40%;background:var(--acc);clip-path:polygon(0 0,50% 40%,100% 0,100% 100%,50% 60%,0 100%)}
+.cu-cap{left:-8%;right:-8%;top:-14%;height:30%;z-index:1;border-radius:50% 50% 8% 8% / 90% 90% 10% 10%;background:#3a3a48}
+.cu-eye{top:52%;width:10%;height:13%;border-radius:50%;background:#3a2318}
+.cu-eye.l{left:28%}.cu-eye.r{right:28%}
+.cu-cheek{top:66%;width:13%;height:7%;border-radius:50%;background:#ff9aa8;opacity:.45}
+.cu-cheek.l{left:15%}.cu-cheek.r{right:15%}
+.cu-mouth{left:43%;width:14%;top:72%;height:6%;border-bottom:3px solid #a84040;border-radius:0 0 50% 50%}
+.cu.happy .cu-eye{height:7%;top:55%;background:none;border-top:3px solid #3a2318;border-radius:50% 50% 0 0}
+.cu.happy .cu-mouth{left:40%;width:20%;height:11%;background:#c84a50;border:0;border-radius:0 0 60% 60%}
+.cu.happy .cu-cheek{opacity:.95}
+.cu.sad .cu-eye{height:9%;top:55%}
+.cu.sad .cu-mouth{top:76%;border-bottom:0;border-top:3px solid #a84040;border-radius:50% 50% 0 0}
+.cu-bub{position:absolute;left:52%;bottom:88%;z-index:2;display:flex;align-items:center;gap:4px;width:max-content;max-width:42cqw;line-height:1.25;font-size:12px;font-weight:700;color:var(--ink);background:#fff;border:2px solid #3a2318;border-radius:14px;padding:3px 10px 3px 5px;box-shadow:0 2px 0 rgba(0,0,0,.25);transform-origin:0 100%;transform:scale(.3);opacity:0;transition:transform .22s cubic-bezier(.3,1.6,.5,1),opacity .15s}
+.cu-bub::after{content:'';position:absolute;left:8px;bottom:-7px;width:10px;height:10px;background:#fff;border:2px solid #3a2318;border-top:0;border-left:0;transform:rotate(45deg)}
+.cu-bub.show{transform:none;opacity:1}
+.cu-bub .hico{width:28px;height:28px}
+.cu-bub.res.none{color:var(--ink-soft)}
+.cu-bub .bh{font-size:22px;line-height:1;color:#e8506c;animation:bhpop .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes bhpop{0%{transform:scale(.2)}100%{transform:none}}
+.d-fly{position:absolute;z-index:6;font-style:normal;font-size:26px;line-height:1;color:#e8506c;text-shadow:0 0 4px #fff,0 2px 0 rgba(120,20,40,.4);pointer-events:none;animation:dfly calc(.75s / var(--sp,1)) cubic-bezier(.5,0,.8,.6) forwards}
+@keyframes dfly{0%{transform:translate(-50%,0) scale(1.2)}100%{transform:translate(calc(var(--dx) - 50%),var(--dy)) scale(.5);opacity:.7}}
+.dcase{flex:0 1 calc(var(--rows) * 78px + 18px);min-height:calc(var(--rows) * 52px + 18px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px;padding:8px;border-radius:12px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0) 40%),linear-gradient(#fff8ec,#f2dcb8);border:3px solid #5a3418;box-shadow:inset 0 0 0 2px var(--brass),0 4px 0 rgba(0,0,0,.4)}
+.day .dslot{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px 3px;margin:0;border-radius:10px;background:rgba(255,255,255,.6);border:1.5px solid rgba(122,82,54,.35);box-shadow:none;color:var(--ink);font:inherit;overflow:hidden}
+.day button.dslot:active{transform:scale(.96);box-shadow:none}
+.dslot .hico{width:auto;height:min(40px,56%);aspect-ratio:1}
+.d-nm{max-width:100%;font-size:10.5px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden}
+.d-dots{display:flex;gap:3px;height:6px}
+.d-dots i{width:6px;height:6px;border-radius:50%;background:#c97a2e;box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
+.day .dslot.empty{border-style:dashed;background:rgba(255,255,255,.22)}
+.day .dslot.kan{border:2px solid var(--brass);background:radial-gradient(circle at 50% 40%,#fffbe8,#ffe9b0);box-shadow:0 0 0 2px rgba(244,194,78,.35)}
+.d-kl{position:absolute;left:50%;top:0;transform:translateX(-50%);font-family:var(--disp);font-size:9px;line-height:1.5;color:#3a1c08;background:linear-gradient(var(--brass-hi),var(--brass));border:1px solid var(--brass-lo);border-top:0;border-radius:0 0 6px 6px;padding:0 7px}
+.dcase.pre .dslot.kan.empty::after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid var(--gold);animation:kpulse 1.1s ease-in-out infinite}
+@keyframes kpulse{0%,100%{opacity:.2}50%{opacity:1}}
+.dslot.out .hico{opacity:.3}
+.dslot.out .d-nm{opacity:.5}
+.d-out{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) rotate(-12deg);font-family:var(--disp);font-size:12px;color:var(--strawberry);border:2px solid var(--strawberry);border-radius:6px;padding:0 5px;background:rgba(255,255,255,.7)}
+.dslot.pop{animation:spop .35s ease-out}
+@keyframes spop{40%{transform:scale(1.08)}}
+.d-sold{position:absolute;left:50%;top:26%;z-index:1;font-size:11px;font-weight:700;color:#fff;background:var(--strawberry);border-radius:999px;padding:1px 8px;white-space:nowrap;pointer-events:none;animation:dsold 1s ease-out forwards}
+@keyframes dsold{0%{transform:translate(-50%,6px);opacity:0}20%{transform:translate(-50%,0);opacity:1}75%{opacity:1}100%{transform:translate(-50%,-14px);opacity:0}}
+.d-bar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 8px}
+.d-lbl{font-family:var(--disp);font-size:15px;color:var(--milk)}
+.d-bar .sub{padding:8px 16px}
+@media (prefers-reduced-motion:reduce){.cu.at .cu-fig,.d-tip,.dcase.pre .dslot.kan.empty::after{animation:none}}</style>
 </head>
 <body>
 <div id="app">
@@ -1254,15 +1335,99 @@ const HEARTS_REGULAR = 3;
 
 /* src/data/hiru.js */
 
-const OVENS = 3, BATCH = 3;                        // 朝に焼けるのは3回。1回で3こ（売るとき）
-const CUST_BASE = 6, LIKE_MUL = 2, OTHER_BUY = 0.6; // 1日のお客さんの数のもと・すきな味は2倍の値段・すきな味がないとき買う人の割合
-const CUST_LIKES = {
-kodomo: ['あまい', 'ぷるぷる'],
-gakusei: ['さくさく', 'とろーり'],
-otona: ['こくまろ', 'こんがり'],
-obaachan: ['ふわふわ', 'こくまろ'],
+const HIRU_MATS = {
+mugi:       { name: 'こもれび小麦',   short: '小麦',     price: 80,  form: 'クッキー', col: '#e9c27a', col2: '#b8863c' },
+hachimitsu: { name: '森のはちみつ',   short: 'はちみつ', price: 120, form: 'ケーキ',   col: '#f2a93b', col2: '#b86a14' },
+milk:       { name: 'まきばミルク',   short: 'ミルク',   price: 100, form: 'アイス',   col: '#fffaf0', col2: '#d9c9b0' },
+egg:        { name: 'こもれびたまご', short: 'たまご',   price: 100, form: 'プリン',   col: '#ffe08a', col2: '#e8a93a' },
+ichigo:     { name: '野いちご',       short: '野いちご', price: 140, form: 'タルト',   col: '#e8475f', col2: '#9e2238' },
+mizuame:    { name: '水あめ',         short: '水あめ',   price: 160, form: 'あめ',     col: '#ffd9a0', col2: '#e0a050', who: 'minamo' },
+herb:       { name: 'ハーブ',         short: 'ハーブ',   price: 160, form: 'ゼリー',   col: '#7cc576', col2: '#3f8a45', who: 'wakaba' },
 };
-const likesOf = c => CUST_LIKES[c.id] || [];
+const BASE_IDS = ['mugi', 'hachimitsu', 'milk', 'egg', 'ichigo'];
+const MON_PRICE = 400;   // モンスター素材は1こ400円として数える（売値の計算だけ。仕入れはできない）
+const HIRU_RECIPES = {};
+[
+['mugi', 'mugi', 'かりかりラスク'], ['mugi', 'hachimitsu', 'はちみつクッキー'], ['mugi', 'milk', 'ミルクスコーン'], ['mugi', 'egg', 'マドレーヌ'], ['mugi', 'ichigo', 'いちごタルト'],
+['hachimitsu', 'hachimitsu', 'はちみつ飴'], ['hachimitsu', 'milk', 'ミルクキャラメル'], ['hachimitsu', 'egg', 'はちみつカステラ'], ['hachimitsu', 'ichigo', '野いちごジャム'],
+['milk', 'milk', 'ミルクアイス'], ['milk', 'egg', 'カスタードプリン'], ['milk', 'ichigo', 'いちごババロア'],
+['egg', 'egg', 'たまごボーロ'], ['egg', 'ichigo', 'いちごスフレ'], ['ichigo', 'ichigo', 'いちごソルベ'],
+['mizuame', 'mugi', 'ステンドクッキー'], ['mizuame', 'hachimitsu', 'こはく糖'], ['mizuame', 'milk', 'ミルク飴'], ['mizuame', 'egg', 'マシュマロ'], ['mizuame', 'ichigo', 'いちごドロップ'], ['mizuame', 'mizuame', 'しずくキャンディ'],
+['herb', 'mugi', 'ハーブサブレ'], ['herb', 'hachimitsu', 'ハーブのど飴'], ['herb', 'milk', 'ハーブムース'], ['herb', 'egg', 'ハーブシフォン'], ['herb', 'ichigo', 'ハーブゼリー'], ['herb', 'herb', 'ハーブティー'], ['herb', 'mizuame', 'ハーブキャンディ'],
+].forEach(([a, b, name]) => { HIRU_RECIPES[recipeKey(a, b)] = name; });
+const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじいろ', minto: 'ミント' };
+const isHiruMat = m => !!HIRU_MATS[m];
+const isMonMat = m => !!(MATS[m] && MATS[m].fushigi);
+const matShort = m => HIRU_MATS[m] ? HIRU_MATS[m].short : MATS[m] ? MATS[m].short : m;
+const matName = m => HIRU_MATS[m] ? HIRU_MATS[m].name : MATS[m] ? MATS[m].name : m;
+const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? MON_PRICE : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
+function candyOf(key) {
+const mats = String(key).split('+'), [a, b] = mats;
+if (!(isHiruMat(a) || isHiruMat(b))) {
+if (isMonMat(a) && isMonMat(b)) return { key, mats, name: 'まぜまぜパフェ', price: matPrice(a) + matPrice(b), mon: mats };
+const r = recipeOf(key); return { key, mats, name: r.name, price: r.price, mon: r.needs, old: true };
+}
+const mon = mats.filter(isMonMat);
+let name = HIRU_RECIPES[recipeKey(a, b)];
+if (!name) { const m = mon[0], other = mats.find(x => isHiruMat(x)); name = (MON_WORD[m] || (MATS[m] && MATS[m].adj) || '') + HIRU_MATS[other].form; }
+return { key, mats, name, price: matPrice(a) + matPrice(b), mon };
+}
+const candyHas = (key, m) => String(key).split('+').includes(m);
+const BATCH = 3;          // 1回焼くと同じお菓子3こ＝棚の1マス
+const OVENS = 3;          // 前の朝の画面の数（朝の画面を作りなおすまで）
+const SHELF_COLS = 3;     // 棚は3列。看板の枠は、まんなかの列の上から（行の数のまんなか）
+const kanbanSlot = n => SHELF_COLS * Math.floor((Math.ceil(n / SHELF_COLS) - 1) / 2) + 1;
+const DAY_MS = 40000;     // 営業は約40秒（はやおくりで約20秒）
+const DAY_FAST = 2;       // はやおくりの速さ
+const CUST_DAY1 = 3;      // 1日目は3人（シナリオ③）
+const CUST_BASE = 4;      // 2日目から：4人＋評判のびんの数＋立て看板
+const REP_JAR = 10;       // ハート10こで評判のびん1つ → 次の日からお客さん+1人（まとめのびんは flow.js の jarHTML がこれを使う）
+const LIKE_W = 3;         // お客さんごとの出やすい味（下）は3倍出やすい
+const KANBAN_W = 2;       // 看板のお菓子の素材がすきなお客さんは2倍来やすい
+const OTHER_BUY = 0.5;    // すきな味のお菓子がないとき、ほかのお菓子を1こ買う人の割合（ハートなし）
+const CUST_LIKES = {
+kodomo: ['ichigo', 'hachimitsu', 'zeri'],
+gakusei: ['milk', 'ichigo', 'minto'],
+otona: ['mugi', 'egg', 'herb'],
+obaachan: ['hachimitsu', 'egg', 'mizuame'],
+};
+function custCount() {
+if (S.day <= 1) return CUST_DAY1;
+return CUST_BASE + Math.floor(S.rep / REP_JAR) + (S.goods.tatekanban || 0);
+}
+function seenMats() {
+const set = new Set(Object.keys(S.stock));
+for (const k of Object.keys(S.recipes)) k.split('+').forEach(m => set.add(m));
+for (const s of S.shelf) s.key.split('+').forEach(m => set.add(m));
+const out = [...set].filter(m => HIRU_MATS[m] || MATS[m]);
+return out.length ? out : BASE_IDS.slice();
+}
+function wpick(items, w) {
+let sum = 0; for (const x of items) sum += w(x);
+let r = Math.random() * sum;
+for (const x of items) { r -= w(x); if (r < 0) return x; }
+return items[items.length - 1];
+}
+function custPlan(n, kanbanKey) {
+const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [];
+return Array.from({ length: n }, () => {
+const c = pick(CUSTOMERS).id, pref = CUST_LIKES[c] || [];
+const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1));
+return { c, like };
+});
+}
+const GOODS = {
+tatekanban: { name: '立て看板', text: 'お客さんがふえる', price: [1600, 4000, 9000] },        // 1つ目から順に お客さん+1・+2・+3
+showcase:   { name: 'ショーケース', text: '棚のマスが3つふえる', price: [3000, 8000], add: 3 }, // いちばん多くて12マス
+kazari: [   // 見た目だけ
+{ id: 'hana', name: 'お花', price: 600 },
+{ id: 'cushion', name: 'クッション', price: 900 },
+{ id: 'lamp', name: 'ランプ', price: 1200 },
+{ id: 'garland', name: 'ガーランド', price: 1500 },
+{ id: 'plant', name: '観葉植物', price: 2000 },
+],
+};
+const SHELF_MAX = 12;
 
 /* src/data/story.js */
 
@@ -1324,14 +1489,39 @@ if (rec.mon === 'mintousagi' && rec.newMon) return [
 return [];
 },
 morning(rec, yest) { return []; },
+dayPre: [
+'ほのか：いちばん自信のあるのは、まんなかの看板に！',
+'→ 看板の枠へ',
+],
+dayOpen: [
+'ほのか【やる気】：準備かんりょう！お店、あけまーす！',
+'ほのか【うれしい】：いらっしゃいませー！',
+],
+dayBubble: [
+'ほのか【びっくり】：あっ、吹き出しに、すきな味が出てる！',
+'ほのか【わくわく】：棚にあれば、よろこんで買ってくれるはず……！',
+],
+dayClose(rec) {
+return [
+'ほのか【考える】：今日のお客さん、' + rec.visitors + '人かぁ……',
+'ほのか【しょんぼり】：森のはずれだもんね。しかたないよね',
+'ほのか【不安】：……本当に、やっていけるかな',
+'ほのか【やる気】：ううん！明日はもっとおいしいの、作るんだから！',
+];
+},
+cust: {
+love: ['これ、だいすき！', 'わあ、これください！', 'これこれ！', 'いいにおい！'],
+other: ['じゃあ、これにしよ', 'これもおいしそう', 'ひとつください'],
+none: ['うーん、また来るね', 'きょうはいいかな', 'ざんねん……'],
+},
 diary(rec) {
 if (rec.day === 1) return ['お店をひらいた日。お客さんは' + rec.visitors + '人。', '夜にスライムが来た。ゼリー、何に使おうかな？'];
 const L1 = '今日のお客さんは' + rec.visitors + '人。';   // 多い・少ないの目安は昼の数字が決まってから
 const mon = rec.mon ? MONSTERS.find(m => m.id === rec.mon) : null, gift = Object.keys(rec.gifts || {})[0];
 let L2;
 if (mon && rec.newMon) L2 = '夜に' + mon.name + 'が来た。' + (gift ? MATS[gift].short + 'をくれた！' : '');
-else if (rec.flashes.length) L2 = recipeOf(rec.flashes[0]).name + 'をひらめいた！';
-else if (rec.kanbanSoldOut && rec.kanban) L2 = '看板の' + recipeOf(rec.kanban).name + '、売り切れ！';
+else if (rec.flashes.length) L2 = candyOf(rec.flashes[0]).name + 'をひらめいた！';
+else if (rec.kanbanSoldOut && rec.kanban) L2 = '看板の' + candyOf(rec.kanban).name + '、売り切れ！';
 else if (mon && rec.mood >= 3) L2 = mon.name + '、おなかいっぱいで帰っていった。';
 else L2 = pick(['今日もオーブンはごきげんだった。', '焦がしたのは2回だけ。えらい！']);
 return [L1, L2];
@@ -1557,40 +1747,71 @@ function painter(g) { return (col, x, y, w = 1, h = 1) => { g.fillStyle = col; g
 
 /* src/js/day-scene.js */
 
-function dayBg() {
-if (scn.bg.day) return scn.bg.day;
-const c = mk(SW, SH), r = painter(c.getContext('2d'));
-r('#fbe3d4', 0, 0, SW, SH);
-for (let y = 3; y < FLOOR; y += 6) r('#f6d3c4', 0, y, SW, 1);
-r('#d9a07a', 3, 4, 26, 18); r('#9fd4f0', 5, 6, 22, 14); r('#d9a07a', 15, 6, 2, 14);
-r('#ffe27a', 7, 8, 4, 4); r('#ffffff', 19, 9, 6, 2); r('#ffffff', 20, 8, 3, 1);
-r('#c98a4b', 34, 10, 34, 24); r('#8a5a3b', 33, 21, 36, 2); r('#8a5a3b', 33, 32, 36, 2); r('#a8703e', 35, 11, 32, 1);
-r('#8a5a3b', 78, 8, 16, FLOOR - 8); r('#bfe3f0', 81, 11, 10, 8); r('#ffd75e', 89, 24, 2, 2);
-r('#d9b48a', 0, FLOOR, SW, SH - FLOOR); r('#c49a6c', 0, FLOOR, SW, 1);
-for (let x = 6; x < SW; x += 10) r('#c49a6c', x, FLOOR + 3, 1, SH - FLOOR - 3);
-return (scn.bg.day = c);
+const HIRU_SVG = {
+mugi: '<path d="M16 30V9" stroke="#8a5a20" stroke-width="2.2" stroke-linecap="round" fill="none"/><g fill="#e9c27a" stroke="#8a5a20" stroke-width="1.3"><ellipse cx="16" cy="6.5" rx="3" ry="4.6"/><ellipse cx="11.6" cy="12.5" rx="3" ry="4.6" transform="rotate(-32 11.6 12.5)"/><ellipse cx="20.4" cy="12.5" rx="3" ry="4.6" transform="rotate(32 20.4 12.5)"/><ellipse cx="11.6" cy="19.5" rx="3" ry="4.6" transform="rotate(-32 11.6 19.5)"/><ellipse cx="20.4" cy="19.5" rx="3" ry="4.6" transform="rotate(32 20.4 19.5)"/></g>',
+hachimitsu: '<path d="M7.5 12.5h17l-1.3 13.2a3.2 3.2 0 0 1-3.2 2.8h-8a3.2 3.2 0 0 1-3.2-2.8z" fill="#d08a3c" stroke="#5a3010" stroke-width="1.4"/><rect x="6.5" y="9" width="19" height="4.5" rx="2" fill="#a8622a" stroke="#5a3010" stroke-width="1.4"/><path d="M10 13.5v3.2a1.8 1.8 0 0 0 3.6 0v-1.4a1.6 1.6 0 0 1 3.2 0v4a1.8 1.8 0 0 0 3.6 0v-5.8" fill="#f6b440" stroke="none"/><rect x="11.5" y="19.5" width="9" height="5" rx="1.5" fill="#fff3d0" stroke="#5a3010" stroke-width="1"/>',
+milk: '<path d="M12 6.5h8V10l3.2 4.2v12.6a2.2 2.2 0 0 1-2.2 2.2H11a2.2 2.2 0 0 1-2.2-2.2V14.2L12 10z" fill="#fffaf0" stroke="#6a4a30" stroke-width="1.4"/><rect x="11.2" y="3.5" width="9.6" height="4" rx="1.2" fill="#e8607a" stroke="#6a4a30" stroke-width="1.2"/><rect x="8.8" y="17" width="14.4" height="6.5" fill="#f4c24e" stroke="#6a4a30" stroke-width="1"/>',
+egg: '<ellipse cx="16" cy="17.5" rx="8.6" ry="11" fill="#fff3d6" stroke="#8a6a40" stroke-width="1.5"/><ellipse cx="12.8" cy="13" rx="2" ry="3.2" fill="#fff" opacity=".9"/>',
+ichigo: '<path d="M16 28.5c-6-3.2-9.8-8.6-9.8-13.2 0-3.6 2.8-5.6 5.4-5.6 1.9 0 3.4.9 4.4 2 1-1.1 2.5-2 4.4-2 2.6 0 5.4 2 5.4 5.6 0 4.6-3.8 10-9.8 13.2z" fill="#e8475f" stroke="#7a1a2a" stroke-width="1.4"/><path d="M16 11.5l-4.4-4.6 3.2.6L16 4l1.2 3.5 3.2-.6z" fill="#5fb05a" stroke="#2f6a2a" stroke-width="1.1" stroke-linejoin="round"/><g fill="#ffe4a0"><circle cx="12" cy="16" r=".9"/><circle cx="16" cy="18.5" r=".9"/><circle cx="20" cy="16" r=".9"/><circle cx="14" cy="22.5" r=".9"/><circle cx="18" cy="22.5" r=".9"/></g>',
+mizuame: '<path d="M16 3.5S7 14.6 7 20.6a9 9 0 0 0 18 0C25 14.6 16 3.5 16 3.5z" fill="#ffd9a0" stroke="#a0642a" stroke-width="1.4"/><path d="M12 19.5a4.5 4.5 0 0 0 3 5" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none" opacity=".85"/>',
+herb: '<path d="M16 29V12" stroke="#2f6a2a" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M16 17C9 17 6 12 6.5 7.5 11 7.5 16 10 16 17zM16 13c0-5.5 3.8-9 9.5-9.2C25.8 9 22 13 16 13zM16 23c5.5 0 9.4-3.2 9.6-7.8-4.6-.4-9.6 2.4-9.6 7.8z" fill="#7cc576" stroke="#2f6a2a" stroke-width="1.2"/>',
+};
+const ICON_CACHE = new Map();
+function matIcon(m) {
+if (HIRU_SVG[m]) return `<svg class="hico" viewBox="0 0 32 32" aria-hidden="true">${HIRU_SVG[m]}</svg>`;
+return MATS[m] ? `<img class="hico" src="${matURL(m)}" alt="">` : '';
 }
-function drawDay(g, t, dt) {
-const r = painter(g);
-g.drawImage(dayBg(), 0, 0);
-const items = S.shelf.filter(s => s.n > 0).slice(0, 6);
-items.forEach((s, i) => g.drawImage(candyCv(s.key), 36 + (i % 3) * 11, i < 3 ? 11 : 22));
-g.drawImage(CHEF_SPR[0], 8, FLOOR - CHEF_SPR[0].height + 1);
-for (const c of scn.cust) {
-const sp = 34 * scn.speed;
-if (c.x !== c.tx) { const d = c.tx - c.x; c.x += Math.sign(d) * Math.min(Math.abs(d), sp * dt); }
-const walking = c.x !== c.tx, spr = CUST_SPR[c.id][walking ? 1 + (Math.floor(t * 6) % 2) : 0];
-const x = Math.round(c.x), y = FLOOR - spr.height + 1;
-g.drawImage(spr, x, y);
-if (c.bub) {
-r('#ffffff', x - 1, y - 14, 14, 12); r('#3a2318', x - 1, y - 14, 14, 1); r('#3a2318', x - 1, y - 3, 14, 1);
-r('#3a2318', x - 2, y - 13, 1, 10); r('#3a2318', x + 13, y - 13, 1, 10); r('#ffffff', x + 4, y - 2, 3, 1);
-if (c.bub === 'heart') { for (const [dx, dy, w] of [[2, 2, 3], [7, 2, 3], [1, 3, 10], [2, 6, 8], [3, 7, 6], [4, 8, 4], [5, 9, 2]]) r('#e0507a', x - 1 + dx, y - 14 + dy - 0, w, dy === 3 ? 3 : 1); }
-else if (c.bub === 'none') { r('#7a5a4a', x + 2, y - 9, 8, 2); }
-else g.drawImage(candyCv(c.bub), x + 1, y - 13);
+const CANDY_SHAPES = [
+['parfait', /パフェ/], ['tea', /ティー/], ['tart', /タルト/], ['ice', /アイス|ソルベ/], ['pudding', /プリン|ババロア|ムース/],
+['jelly', /ゼリー|ジャム/], ['candy', /飴|あめ|キャンディ|ドロップ|キャラメル|こはく糖|マシュマロ/], ['cake', /ケーキ|カステラ|シフォン|スフレ/],
+];
+const matCol = (m, k = 'col') => (HIRU_MATS[m] && HIRU_MATS[m][k]) || (MATS[m] && MATS[m].col) || '#e9c27a';
+function candySVG(key) {
+const c = candyOf(key), [a, b] = c.mats, ha = isHiruMat(a);
+const c1 = matCol(ha ? a : b), c2 = matCol(ha ? b : a), dk = '#5a3010';
+const shape = (CANDY_SHAPES.find(([, re]) => re.test(c.name)) || ['cookie'])[0];
+const S_ = {
+cookie: `<circle cx="16" cy="17" r="11" fill="${c1}" stroke="${dk}" stroke-width="1.5"/><g fill="${c2}" stroke="${dk}" stroke-width=".8"><circle cx="12" cy="14" r="2"/><circle cx="19.5" cy="13" r="1.7"/><circle cx="17" cy="20.5" r="2"/><circle cx="11" cy="21" r="1.4"/></g>`,
+cake: `<path d="M5 15l20-6v15H5z" fill="${c1}" stroke="${dk}" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 15l20-6v4L5 19z" fill="${c2}" stroke="${dk}" stroke-width="1.2" stroke-linejoin="round"/><circle cx="20" cy="8" r="2.4" fill="#e8475f" stroke="${dk}" stroke-width="1"/>`,
+pudding: `<ellipse cx="16" cy="26.5" rx="12" ry="2.6" fill="#fff6e8" stroke="${dk}" stroke-width="1.2"/><path d="M8.5 25l2.5-14h10l2.5 14z" fill="${c1}" stroke="${dk}" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 11h10l.6 3.4H10.4z" fill="${c2}" stroke="${dk}" stroke-width="1.1"/>`,
+ice: `<path d="M10.5 15l5.5 14 5.5-14z" fill="#e0a85a" stroke="${dk}" stroke-width="1.4" stroke-linejoin="round"/><circle cx="16" cy="11.5" r="7" fill="${c1}" stroke="${dk}" stroke-width="1.5"/><path d="M10 13c2 2 3-1 5 1s4-1 7 0" stroke="${c2}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+tart: `<path d="M4 18h24l-2.5 7H6.5z" fill="#d89a4a" stroke="${dk}" stroke-width="1.5" stroke-linejoin="round"/><ellipse cx="16" cy="18" rx="12" ry="3.5" fill="${c1}" stroke="${dk}" stroke-width="1.3"/><g fill="${c2}" stroke="${dk}" stroke-width="1"><circle cx="11" cy="15.5" r="2.6"/><circle cx="16.5" cy="14" r="2.6"/><circle cx="21.5" cy="16" r="2.4"/></g>`,
+candy: `<path d="M9 16L3.5 11v10zM23 16l5.5-5v10z" fill="${c2}" stroke="${dk}" stroke-width="1.2" stroke-linejoin="round"/><circle cx="16" cy="16" r="7.5" fill="${c1}" stroke="${dk}" stroke-width="1.5"/><path d="M12.5 13a4.5 4.5 0 0 1 3.5-2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".85"/>`,
+jelly: `<ellipse cx="16" cy="26.5" rx="12" ry="2.6" fill="#fff6e8" stroke="${dk}" stroke-width="1.2"/><path d="M6 25c0-9 4.5-15 10-15s10 6 10 15z" fill="${c1}" stroke="${dk}" stroke-width="1.5" opacity=".95"/><circle cx="16" cy="18" r="3.4" fill="${c2}" stroke="${dk}" stroke-width="1"/><path d="M10 19c0-3 1.2-5 3-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".7"/>`,
+parfait: `<path d="M9 5h14l-3 16h-8z" fill="#fff6e8" stroke="${dk}" stroke-width="1.4" stroke-linejoin="round"/><path d="M9.6 8h12.8l-1 5H10.6z" fill="${c1}"/><path d="M10.8 14h10.4l-.9 4.6h-8.6z" fill="${c2}"/><path d="M16 21v6M11 28h10" stroke="${dk}" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="4.5" r="2.4" fill="#e8475f" stroke="${dk}" stroke-width="1"/>`,
+tea: `<path d="M6 12h17v7a7 7 0 0 1-7 7h-3a7 7 0 0 1-7-7z" fill="#fff6e8" stroke="${dk}" stroke-width="1.5"/><path d="M23 14h2.5a3 3 0 0 1 0 6H22" stroke="${dk}" stroke-width="1.5" fill="none"/><path d="M7.5 14h14v4a5.5 5.5 0 0 1-5.5 5.5h-3A5.5 5.5 0 0 1 7.5 18z" fill="${c1}"/><path d="M12 9c-1-2 1-3 0-5M17 9c-1-2 1-3 0-5" stroke="${c2}" stroke-width="1.5" stroke-linecap="round" fill="none"/>`,
+};
+return `<svg class="hico" viewBox="0 0 32 32" aria-hidden="true">${S_[shape]}</svg>`;
 }
+function candyIcon(key) {
+if (ICON_CACHE.has(key)) return ICON_CACHE.get(key);
+const c = candyOf(key);
+const h = c.old || (!c.mats.some(isHiruMat) && c.name !== 'まぜまぜパフェ') ? `<img class="hico" src="${candyURL(key)}" alt="">` : candySVG(key);
+ICON_CACHE.set(key, h); return h;
 }
-scn.cust = scn.cust.filter(c => !(c.gone && c.x === c.tx));
+function dayStageBg(sign) {
+const bg = ART['bg-day'];
+if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')"><span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
+return `<div class="ds-bg" aria-hidden="true">
+<i class="ds-win"><i class="ds-tree a"></i><i class="ds-tree b"></i><i class="ds-pane"></i></i>
+<i class="ds-rack"><i class="ds-jar a"></i><i class="ds-jar b"></i><i class="ds-jar c"></i></i>
+<i class="ds-door"><i class="ds-dwin"></i><i class="ds-knob"></i></i>
+<span class="ds-sign">${sign}</span>
+<i class="ds-lamp"></i><i class="ds-wains"></i>
+</div>`;
+}
+function dayStageFront() {
+const bg = ART['bg-day'];
+return bg ? `<i class="ds-front" style="--bgimg:url('${bg}')"></i>` : '<i class="ds-counter"></i>';
+}
+function custHTML(id, face = '') {
+const c = CUST[id] || CUSTOMERS[0], img = ART['cust-' + id + (face ? '-' + face : '')] || ART['cust-' + id];
+if (img) return `<div class="cu-fig art"><img src="${img}" alt=""></div>`;
+const acc = id === 'kodomo' ? '<i class="cu-ribbon"></i>' : id === 'obaachan' ? '<i class="cu-bun"></i>' : id === 'gakusei' ? '<i class="cu-cap"></i>' : '';
+return `<div class="cu-fig" style="--skin:${c.skin};--hair:${c.hair};--shirt:${c.shirt};--arm:${c.arm};--acc:${c.hat || c.collar || c.pants}">
+<i class="cu-torso">${id === 'gakusei' ? '<i class="cu-collar"></i>' : ''}</i>
+<i class="cu-head">${acc}<i class="cu-hair"></i><i class="cu-eye l"></i><i class="cu-eye r"></i><i class="cu-cheek l"></i><i class="cu-cheek r"></i><i class="cu-mouth"></i></i>
+</div>`;
 }
 
 /* src/js/night.js */
@@ -2838,84 +3059,199 @@ toShelf: () => toShelf(),
 
 /* src/js/day.js */
 
-let dayTimer = 0;
+let dayTick = 0, dayPrev = 0, daySpeed = 1;
+const V_ARRIVE = 900, V_ASK = 2200, V_LEAVE = 3500, V_END = 4200;
 function startDay() {
-S.dayRun = { i: 0, total: CUST_BASE + Math.min(4, S.day - 1), log: [], done: false };
-scn.cust = []; scn.speed = 1;
+S.dayRun = { open: false, done: false, kanban: null, t: 0, plan: [], i: 0, cur: null };
 }
-function stopDay() { clearTimeout(dayTimer); }
-function addLog(text, cls = '') {
-S.dayRun.log.push([text, cls]);
-const ol = $('dayLog');
-if (ol) { const li = document.createElement('li'); li.className = cls; li.textContent = text; ol.prepend(li); }
+function stopDay() {
+clearTimeout(dayTick); dayTick = 0;
+S.shelf = S.shelf.filter(s => s.n > 0);
 }
-function serve(c) {
-const items = S.shelf.filter(s => s.n > 0), T = S.today;
-T.visitors++;
-if (!items.length) { addLog(`${c.name}：売り切れで帰っちゃった`, 'no'); return 'none'; }
-const liked = items.filter(s => recipeOf(s.key).tastes.some(t => likesOf(c).includes(t)));
-let s = null, p = 0, love = false;
-if (liked.length) { s = liked.sort((a, b) => recipeOf(b.key).price - recipeOf(a.key).price)[0]; p = recipeOf(s.key).price * LIKE_MUL; love = true; }
-else if (Math.random() < OTHER_BUY) { s = pick(items); p = recipeOf(s.key).price; }
-if (!s) { addLog(`${c.name}：すきな味（${likesOf(c).join('・')}）がなかった`, 'no'); return 'none'; }
-s.n--; S.shelf = S.shelf.filter(x => x.n > 0);
-S.money += p; T.sales += p; T.served++;
-const name = recipeOf(s.key).name;
-if (love) {
-S.hearts[c.id] = (S.hearts[c.id] || 0) + 1;
-addLog(`${c.name}が${name}を気に入って買った ${p}円 ${HEART}`, 'love');
-if (S.hearts[c.id] === HEARTS_REGULAR && !S.regulars.includes(c.id)) {
-S.regulars.push(c.id); T.newRegulars.push(c.id);
-setTimeout(() => toast(`${c.name}が常連さんになった！`), 300);
+function shelfSlots() {
+const n = Math.max(1, Math.min(SHELF_MAX, S.shelfMax || 6)), ks = kanbanSlot(n), R = S.dayRun;
+const slots = Array(n).fill(null), items = S.shelf.map((s, i) => ({ s, i }));
+const k = R && R.kanban ? items.findIndex(o => o.s.key === R.kanban) : -1;
+if (k >= 0) slots[ks] = items.splice(k, 1)[0];
+let j = 0;
+for (const o of items) {
+while (j < n && (slots[j] || j === ks)) j++;
+if (j >= n) break;
+slots[j++] = o;
 }
-} else addLog(`${c.name}が${name}を買った ${p}円`);
-return love ? 'heart' : s.key;
+return { slots, ks };
 }
-function runCustomers() {
-clearTimeout(dayTimer);
-const R = S.dayRun; if (!R || R.done || S.phase !== 'day') return;
-if (R.i >= R.total) { R.done = true; save(); return renderDay(); }
-const c = pick(CUSTOMERS), sp = () => scn.speed;
-const who = { id: c.id, x: 100, tx: 72 - rand(10), bub: null };
-scn.cust.push(who);
-dayTimer = setTimeout(() => {
-const res = serve(c);
-who.bub = res;
-R.i++; save(); updateDayInfo();
-dayTimer = setTimeout(() => {
-who.bub = null; who.tx = 104; who.gone = true;
-dayTimer = setTimeout(runCustomers, 350 / sp());
-}, 900 / sp());
-}, 1100 / sp());
+function slotHTML(o, idx, ks, pre) {
+const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
+if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
+const c = candyOf(o.s.key), out = o.s.n <= 0, tag = pre ? 'button' : 'div';
+return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}</${tag}>`;
 }
-function updateDayInfo() {
-const R = S.dayRun, el = $('dayInfo'); if (!el) return;
-el.innerHTML = `お客さん <b>${R.i}</b>/${R.total}　売上 <b>${fmt(S.today.sales)}</b>円`;
-const sh = $('shelfList');
-if (sh) sh.innerHTML = shelfHTML();
-const m = $('money'); if (m) m.textContent = fmt(S.money) + '円';
-}
-function shelfHTML() {
-return S.shelf.length ? S.shelf.map(s => `<span class="item"><img src="${candyURL(s.key)}" alt="">${esc(recipeOf(s.key).name)} ×${s.n}</span>`).join('') : '<span class="muted">棚はからっぽ</span>';
-}
-function toggleFast() {
-scn.speed = scn.speed === 1 ? 3 : 1;
-const b = document.querySelector('[data-act="fast"]'); if (b) b.textContent = scn.speed === 1 ? 'はやおくり' : 'ふつうの速さ';
+function caseHTML(pre) {
+const { slots, ks } = shelfSlots();
+return slots.map((o, i) => slotHTML(o, i, ks, pre)).join('');
 }
 function renderDay() {
-const R = S.dayRun;
+if (!S.dayRun) startDay();
+const R = S.dayRun, pre = !R.open && !R.done, empty = !S.shelf.some(s => s.n > 0);
+const sign = pre ? 'じゅんび中' : R.done ? 'へいてん' : 'えいぎょう中';
+let bar;
+if (pre && empty) bar = '<button class="big" data-act="toEvening">今日はお休みして夕方へ</button>';
+else if (pre) bar = '<button class="big" data-act="d-open">お店をあける</button>';
+else if (R.done) bar = '<button class="big" data-act="toEvening">閉店して夕方へ</button>';
+else bar = `<div class="d-bar"><span class="d-lbl">えいぎょう中</span><button class="sub" data-act="d-fast">${daySpeed > 1 ? 'ふつうの速さ' : 'はやおくり'}</button></div>`;
+const tip = !pre ? '' : empty ? '棚がからっぽ……今日はお休みかな' : R.kanban ? `今日の看板は ${candyOf(R.kanban).name}` : '看板にするお菓子を、タップしてえらんでね';
+const rows = Math.ceil(Math.min(SHELF_MAX, S.shelfMax || 6) / SHELF_COLS);
 $('screen').innerHTML = `<section class="day fit">
-<div class="scene-wrap"><canvas id="scene" width="${SW}" height="${SH}"></canvas></div>
-<div class="panel tight"><h2>お昼の販売</h2><p id="dayInfo"></p></div>
-<div class="shelf"><span class="lbl">棚</span><div id="shelfList"></div></div>
-<ol class="log" id="dayLog">${R.log.slice().reverse().map(([t, c]) => `<li class="${c}">${esc(t)}</li>`).join('')}</ol>
-${R.done ? '<button class="big" data-act="toResult">1日のまとめへ</button>' : `<div class="row"><button class="sub" data-act="fast">${scn.speed === 1 ? 'はやおくり' : 'ふつうの速さ'}</button></div>`}
+<div class="dstage${pre ? ' pre' : ''}" id="dstage" style="--sp:${daySpeed}">
+${dayStageBg(sign)}
+<div class="d-cust" id="dCust"></div>
+${dayStageFront()}
+<div class="d-time"><i class="d-sun"></i><span class="d-track"><i id="dFill" style="transform:scaleX(${Math.min(1, (R.t || 0) / DAY_MS).toFixed(3)})"></i></span></div>
+<div class="d-jar" id="dJar">${jarHTML()}</div>
+${tip ? `<p class="d-tip">${esc(tip)}</p>` : ''}
+</div>
+<div class="dcase${pre ? ' pre' : ''}" id="dCase" style="--rows:${rows}">${caseHTML(pre)}</div>
+${bar}
 </section>`;
-mountScene('day'); updateDayInfo();
-if (!R.done && !scn.cust.length) runCustomers();
+if (R.cur) showCust(R.cur, true);
+if (pre && !empty && S.day === 1 && !S.seen.dayPre && !talking()) talk(STORY.dayPre, () => { S.seen.dayPre = 1; save(); }, { dim: false });
+if (R.open && !R.done) { dayPrev = 0; dayLoop(); }
+}
+function pickKanban(i) {
+const R = S.dayRun, s = S.shelf[+i];
+if (!R || R.open || !s) return;
+R.kanban = R.kanban === s.key ? null : s.key;
+save(); renderDay();
+}
+function openDay() {
+const R = S.dayRun; if (!R || R.open || R.done) return;
+if (!R.kanban) return toast('看板にするお菓子を、えらんでね');
+const go = () => {
+R.open = true; R.t = 0; R.i = 0; R.cur = null;
+R.plan = custPlan(custCount(), R.kanban);
+S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
+save(); renderDay();
+};
+if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go, { dim: false }); }
+else go();
+}
+function dayLoop() {
+clearTimeout(dayTick); dayTick = 0;
+const R = S.dayRun;
+if (S.phase !== 'day' || !R || !R.open || R.done || !$('dstage')) return;
+const now = performance.now(), dt = dayPrev ? Math.min(250, now - dayPrev) : 0;
+dayPrev = now;
+if (!talking()) dayStep(R, dt * daySpeed);
+if (!R.done) dayTick = setTimeout(dayLoop, 100);
+}
+function dayStep(R, dt) {
+R.t += dt;
+const f = $('dFill'); if (f) f.style.transform = `scaleX(${Math.min(1, R.t / DAY_MS).toFixed(3)})`;
+if (R.cur) return visitStep(R, dt);
+if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
+if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }
+else if (R.t >= DAY_MS) closeDay();
+}
+function startVisit(R) {
+const p = R.plan[R.i++];
+R.cur = { c: p.c, like: p.like, t: 0, step: 0, res: null };
+S.today.visitors++; save();
+showCust(R.cur, false);
+}
+function visitStep(R, dt) {
+const v = R.cur; v.t += dt;
+if (v.step === 0 && v.t >= V_ARRIVE) {
+v.step = 1; showBubble(v);
+if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}, { dim: false }); }
+} else if (v.step === 1 && v.t >= V_ASK) {
+v.step = 2; v.res = serve(v); save(); showResult(v, false);
+} else if (v.step === 2 && v.t >= V_LEAVE) {
+v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
+} else if (v.step === 3 && v.t >= V_END) {
+R.cur = null; const el = custEl(); if (el) el.remove(); save();
+}
+}
+function serve(v) {
+const T = S.today, R = S.dayRun, items = S.shelf.filter(s => s.n > 0);
+const liked = items.filter(s => candyHas(s.key, v.like));
+let s = null, love = false;
+if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
+else if (items.length && Math.random() < OTHER_BUY) s = pick(items);
+if (!s) return { kind: 'none', say: pick(STORY.cust.none) };
+const price = candyOf(s.key).price;
+s.n--; S.money += price; T.sales += price; T.served++;
+if (s.n <= 0 && s.key === T.kanban) T.kanbanSoldOut = true;
+if (love) { S.rep++; T.hearts++; }
+return { kind: love ? 'love' : 'other', key: s.key, say: pick(STORY.cust[love ? 'love' : 'other']) };
+}
+function closeDay(msg) {
+const R = S.dayRun; R.done = true; R.cur = null;
+clearTimeout(dayTick); dayTick = 0;
+save(); if (msg) toast(msg);
+renderDay();
+if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk(STORY.dayClose(S.today), () => {}, { dim: false }); }
+}
+const custEl = () => document.querySelector('#dCust .cu');
+const faceOf = v => (v.step >= 2 && v.res ? (v.res.kind === 'love' ? 'happy' : v.res.kind === 'none' ? 'sad' : '') : '');
+function showCust(v, now) {
+const box = $('dCust'); if (!box) return;
+const face = faceOf(v);
+box.innerHTML = `<div class="cu cu-${v.c}${face ? ' ' + face : ''}${now ? ' at still' : ''}${v.step >= 3 ? ' leave' : ''}">${custHTML(v.c, face)}<div class="cu-bub" id="dBub"></div></div>`;
+if (!now) { const el = custEl(); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('at'))); }
+if (v.step === 1) showBubble(v);
+if (v.step === 2) showResult(v, true);
+}
+function showBubble(v) {
+const b = $('dBub'); if (!b) return;
+b.className = 'cu-bub show ask';
+b.innerHTML = `${matIcon(v.like)}<span>${esc(matShort(v.like))}</span>`;
+}
+function showResult(v, now) {
+const b = $('dBub'), el = custEl(), r = v.res; if (!b || !el || !r) return;
+const face = faceOf(v);
+el.classList.remove('happy', 'sad'); if (face) el.classList.add(face);
+const fig = el.querySelector('.cu-fig'); if (fig && fig.classList.contains('art')) fig.outerHTML = custHTML(v.c, face);
+b.className = 'cu-bub show res ' + r.kind;
+b.innerHTML = r.kind === 'love' ? `<b class="bh">${HEART}</b><span>${esc(r.say)}</span>`
+: r.kind === 'other' ? `${candyIcon(r.key)}<span>${esc(r.say)}</span>` : `<span>${esc(r.say)}</span>`;
+if (now) return;
+if (r.key) soldFx(r.key);
+if (r.kind === 'love') heartFx(b);
+}
+function soldFx(key) {
+const cs = $('dCase'); if (!cs) return;
+cs.innerHTML = caseHTML(false);
+const sl = cs.querySelector(`.dslot[data-key="${CSS.escape(key)}"]`); if (!sl) return;
+sl.classList.add('pop');
+sl.insertAdjacentHTML('beforeend', '<span class="d-sold">売れた！</span>');
+}
+function heartFx(from) {
+const st = $('dstage'), jar = document.querySelector('#dJar .jar'); if (!st || !jar) return;
+const a = from.getBoundingClientRect(), b = jar.getBoundingClientRect(), o = st.getBoundingClientRect();
+const h = document.createElement('i');
+h.className = 'd-fly'; h.textContent = HEART;
+h.style.left = (a.left + a.width / 2 - o.left) + 'px'; h.style.top = (a.top - o.top) + 'px';
+h.style.setProperty('--dx', (b.left + b.width / 2 - a.left - a.width / 2) + 'px');
+h.style.setProperty('--dy', (b.top + b.height / 2 - a.top) + 'px');
+st.appendChild(h);
+setTimeout(() => {
+h.remove();
+const jb = $('dJar'); if (!jb) return;
+if (S.rep % REP_JAR === 0) jb.innerHTML = jarHTML();   // いっぱいになった：びんを新しく（★がふえる）
+else { const j = jb.querySelector('.jar'); if (j) j.style.setProperty('--p', ((S.rep % REP_JAR) / REP_JAR).toFixed(3)); }
+jb.classList.remove('bump'); void jb.offsetWidth; jb.classList.add('bump');
+}, 750 / daySpeed);
+}
+function toggleDayFast(el) {
+daySpeed = daySpeed > 1 ? 1 : DAY_FAST;
+const st = $('dstage'); if (st) st.style.setProperty('--sp', daySpeed);
+if (el) el.textContent = daySpeed > 1 ? 'ふつうの速さ' : 'はやおくり';
 }
 const DAY_ACTS = {
-fast: () => toggleFast(),
+'d-pick': el => pickKanban(el.dataset.i),
+'d-open': () => openDay(),
+'d-fast': el => toggleDayFast(el),
 };
 
 /* src/js/flow.js */
