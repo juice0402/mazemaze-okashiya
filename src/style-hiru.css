@@ -138,6 +138,12 @@
 .ds-m2{background:linear-gradient(#8a6ab8 8%,#e8708a 26%,#ffa062 42%);mix-blend-mode:multiply;opacity:clamp(0,(var(--p) - .5) * 2,1)}
 .ds-dusk,.ds-front::after{background:radial-gradient(90% 75% at 50% 30%,#ffb478,#7e6096);mix-blend-mode:multiply;opacity:clamp(0,(var(--p) - .25) * 1,.72)}
 .ds-front::after{content:'';position:absolute;inset:0;pointer-events:none}
+/* 窓のまわりにじむ光（窓の型をぼかした bg-day-mado-glow）：昼はうっすら・夕方ほど強く。窓の型のきわもなじむ */
+.ds-glow{background:linear-gradient(#ffd89a,#ff9a5c);mix-blend-mode:screen;opacity:calc(.08 + var(--p) * .3)}
+/* 宙のキラキラ：ふわっと出て、ゆっくりのぼって消える（transform と opacity だけ） */
+.ds-mote{position:absolute;left:var(--x);top:var(--y);z-index:0;width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:radial-gradient(circle,#fffbe8 0 30%,rgba(255,226,150,.55) 55%,transparent 72%);opacity:0;pointer-events:none;animation:dsmote var(--d) ease-in-out var(--dl) infinite}
+@keyframes dsmote{0%{opacity:0;transform:translate(0,0)}20%{opacity:.9}50%{transform:translate(10px,-16px)}80%{opacity:.6}100%{opacity:0;transform:translate(-6px,-34px)}}
+@media (prefers-reduced-motion:reduce){.ds-mote{animation:none;opacity:.45}}
 .ds-sign{position:absolute;left:50%;top:46%;transform:translateX(-50%);z-index:1;white-space:nowrap;text-align:center;font-size:clamp(9px,4cqh,13px);font-weight:700;color:#3a1c08;background:linear-gradient(#fff6e0,#f6dcae);border:2px solid #5a3418;border-radius:6px;padding:2px 8px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 .ds-sign.on-art{top:38%}
 .ds-lamp{left:calc(50% - 7%);top:0;width:14%;height:12%;border-radius:0 0 50% 50% / 0 0 100% 100%;background:linear-gradient(#f4c24e,#d98a2a);border:2px solid #7a4a1c;border-top:0}
