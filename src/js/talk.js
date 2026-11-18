@@ -19,7 +19,10 @@ const TALKERS = {
     ふつう: 'minamo', すまし: 'minamo-sumashi', ジト目: 'minamo-jito', ためいき: 'minamo-tameiki', 照れ: 'minamo-tere', 真剣: 'minamo-shinken',
     びっくり: 'minamo-bikkuri', そっぽ: 'minamo-soppo', 考える: 'minamo-kangae', しょんぼり: 'minamo-shonbori',
   } },
-  wakaba: { name: 'わかば', side: 'r', faces: { ふつう: 'wakaba' } },   // 表情は wakaba-poses が届いたら足す
+  wakaba: { name: 'わかば', side: 'r', faces: {
+    ふつう: 'wakaba', あらあら: 'wakaba-ara', うふふ: 'wakaba-ufufu', おどろき: 'wakaba-odoroki', こまり顔: 'wakaba-komari', わくわく: 'wakaba-wakuwaku',
+    まかせて: 'wakaba-makasete', しんみり: 'wakaba-shinmiri', よろこび: 'wakaba-yorokobi', ないしょ: 'wakaba-naisho',
+  } },
   kodomo: { name: '妖精の子', side: 'r', faces: {} },
   slime: { name: 'スライム', side: 'r', mon: 'slime' },
   hitsuji: { name: 'くもひつじ', side: 'r', mon: 'hitsuji' },
