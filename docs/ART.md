@@ -40,7 +40,7 @@
 
 - ストックの置き場（11/18 夜）：まだゲームで使っていない絵（11/19 にみなもの分も、わかばのカード・戦闘ポーズ・デフォルメも assets/art へ。いまは立ち絵のストック〔3人に9ずつ〕・背景2）は assets/art-stock/ に置く。ビルドは assets/art だけを埋めこむので、index.html が重くならない。使うときに assets/art へ git mv する
 ## 依頼中（11/18）
-- 依頼中（11/19 昼）：hiru-goods1・hiru-goods2（雑貨屋）・hiru-ui1（レシピ帳の本・まだのふた・売れた！の札・小鳥・ちょうちょ）・hiru-garland（お祭りの旗）＝H-033
+- 依頼中（11/19 12時）：minamo-fx（みなもの夜の空気：雪の結晶・飴の泡・氷のかけら・霜のすみ）。雑貨屋と H-033 の絵は入った
 - 11/18 17時10分 司令塔（art-irai PR #68・game-art-rule.md）：okashi の依頼中は4つまで・@codex は2本まで並べてよい（issue #3 にコメントを2つ別々に・それぞれ「@codex AGENTS.md の決まりで、次の依頼書だけ描いて、カギで送って PR を作って：requests/okashi/<名前1>.md・requests/okashi/<名前2>.md」・2つのコメントで同じ依頼書を書かない）。パスを書かないと依頼中をぜんぶ見る（多くて3つ）。GPT の利用上限が減ってきたら司令塔に教える（2つにもどす）
 - 依頼中の取りこみ：なし
 - 待ち：なし（11/19 1時。次に頼む絵は、遊んでからの感想と、4人目・5人目の設定が来てから）
@@ -137,3 +137,6 @@
 | sweet-<モンスター素材>-<形の素材>（朝のお菓子：スライムゼリー・ひつじホイップ・にじいろ水あめ×7つずつ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-mon-zeri.md`・`-hoippu`・`-niji`（PR #140〜#142）・`prep_art.py parts … 192` | 昼の candyIcon（H-027） |
 | キャラが大きく出る絵 honoka*・minamo*・wakaba*（立ち絵・表情・戦闘ポーズ 58まい＋ストック 27まい・chibi と -clean はのぞく）を作りなおし | A | Codex | 2026-11-19 | H-032：上の行と同じもとの PNG（art-raw・art-irai の art/okashi-<名前> の枝）・同じ四角・同じ抜き方で、上限1520（＝もとの大きさ・box は大きくしない）・quality 88・アルファ85（slim_art.py の big_chara）。はみ出しをぼかすのは honoka の charge・atk2・atk3・special・win・heatup・field・burnt と minamo-tobinoku だけ（いまの絵とくらべて合わせた） | 会話の立ち絵がぼやけないように（11/19 しょーくん「圧縮しすぎて画質荒く」）。-clean の6まいは昼のチャットの絵なので、まだ760 |
 | sweet-<モンスター素材>-<形の素材>（朝のお菓子：ミント・ほしぞら・こんがり・ひんやり×7つずつ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-mon-minto.md`・`-hoshi`・`-karamel`・`-kanten`（PR #144〜#147）・`prep_art.py parts … 192`（ミントは --strict） | 昼の candyIcon（H-027 の残り。これで朝昼のお菓子はぜんぶ描き下ろし） |
+| good-tatekanban・showcase・hana・cushion・lamp・garland・plant／tool-oven・sand・doll・bell（雑貨屋のグッズ7・べんり道具4） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-goods1.md`・`hiru-goods2.md`（PR #149・#152）・`prep_art.py parts … 128 --strict` | 雑貨屋の一覧の左 40px（mGoodIco・H-027 の残り） |
+| ui-book・ui-mada・ui-sold・fx-bird・fx-butterfly（レシピ帳の本・まだのお菓子のふた・売れた！の札・窓の外の小鳥とちょうちょ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-ui1.md`（PR #150）・`parts … 240` | H-033 の入口（昼のチャットのコード）。字はコード |
+| ui-garland（お祭りの日の旗・横にくりかえす） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-garland.md`（PR #151）・`parts … 640`（ひもは左右のはしの同じ高さ＝つながる） | H-033：お祭りの日の舞台の上（.dstage.ev-matsuri.has-garland） |
