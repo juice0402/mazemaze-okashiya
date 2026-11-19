@@ -387,6 +387,14 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .d-say[data-who="minamo"] b{background:#3d8f88}
 .d-say[data-who="wakaba"] b{background:#5f9a3a}
 .d-say span{min-width:0}
+/* デフォルメのキャラが舞台の左下のふちに立って、右の吹き出しでしゃべる（11/19 しょーくん）：.d-say.chibi は昼の画面の section の中（舞台の外）。
+   top は day.js の dSayPlace（舞台の下のふち）・translate で上へ。吹き出しの皮はリーダーの ui-bubble／ui-bubble-tail（夜のヒント #tipb と同じ形） */
+.d-say.chibi{left:2px;bottom:auto;translate:0 -100%;align-items:flex-end;gap:0;max-width:calc(100% - 8px);padding:0;border:0;border-radius:0;background:none;box-shadow:none;z-index:7}
+.d-say.chibi .ds-chibi{flex:none;height:min(112px,32vh);width:auto;max-width:none;margin:0 -4px -8px 0;filter:drop-shadow(0 3px 2px rgba(42,20,8,.45))}
+.d-say.chibi .ds-bub{position:relative;display:flex;align-items:center;gap:6px;min-width:0;margin:0 0 38px 10px;padding:7px 12px 8px 10px;border:solid transparent;border-width:3px;border-image:var(--ui-bubble) 34 fill/15px stretch;filter:drop-shadow(0 3px 2px rgba(42,20,8,.4))}
+.d-say.chibi .ds-bub::before{content:"";position:absolute;left:-14px;bottom:11px;width:18px;height:13.5px;background:var(--ui-bubble-tail) center/100% 100% no-repeat;transform:rotate(90deg)}
+.d-say.chibi.show{transform:none}
+.d-say.chibi:not(.show){transform:translateY(10px)}
 @media (prefers-reduced-motion:reduce){.d-say{transition:none}}
 
 /* ==== 11/19 朝昼の作りこみ：レシピ帳・べんり道具・昼のできごと・窓の外の生きもの ====

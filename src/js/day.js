@@ -304,19 +304,35 @@ function dSayRun(lines) {
     if (i >= lines.length) { el.classList.remove('show'); return; }
     const m = lines[i++].match(/^([^【：]+)(?:【([^】]+)】)?：(.*)$/); if (!m) return step();
     const who = Object.keys(TALKERS).find(k => TALKERS[k].name === m[1]) || 'honoka', T = TALKERS[who];
-    const img = ART[(T.faces && (T.faces[m[2]] || T.faces['ふつう'])) || who] || '';
+    const img = ART[(T.faces && (T.faces[m[2]] || T.faces['ふつう'])) || who] || '', ch = dChibi(who, m[2] || '', m[3]);
     el.dataset.who = who;
-    el.innerHTML = `<i class="ds-av"${img ? ` style="--av:url('${img}')"` : ''}></i><b>${esc(m[1])}</b><span>${esc(m[3])}</span>`;
+    el.classList.toggle('chibi', !!ch);
+    el.innerHTML = ch ? `<img class="ds-chibi" src="${ch}" alt=""><span class="ds-bub"><b>${esc(m[1])}</b><span>${esc(m[3])}</span></span>`
+      : `<i class="ds-av"${img ? ` style="--av:url('${img}')"` : ''}></i><b>${esc(m[1])}</b><span>${esc(m[3])}</span>`;
+    dSayPlace(el);
     el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
     dSayT = setTimeout(step, 2600 / Math.sqrt(daySpeed));
   };
   step();
 }
+/* 舞台の外（昼の画面の section）に置いて、舞台の左下のふちに立たせる（11/19 しょーくん「ほのかの顔が潰れちゃってるくらい小さい」
+   「戦闘のフレームにいるチビほのかとか、そのまま使えない？枠から飛び出してもいい」「右向きでキャラを設置して、それが喋ってるみたいな」） */
 function dSayEl() {
   const st = $('dstage'); if (!st) return null;
   let el = $('dSay');
-  if (!el) { el = document.createElement('p'); el.id = 'dSay'; el.className = 'd-say'; el.setAttribute('role', 'status'); st.appendChild(el); }
+  if (el && el.parentElement !== st.parentElement) { el.remove(); el = null; }
+  if (!el) { el = document.createElement('p'); el.id = 'dSay'; el.className = 'd-say'; el.setAttribute('role', 'status'); st.parentElement.appendChild(el); }
   return el;
+}
+function dSayPlace(el) {
+  const st = $('dstage'); if (st) el.style.top = (st.offsetTop + st.offsetHeight) + 'px';
+}
+/* しゃべる人のデフォルメ（夜の舞台と同じ chibi-*・minamo-chibi-*・wakaba-chibi-*）：考える・すわって にこにこ・応援（！）を、表情と文で */
+function dChibi(who, face, text) {
+  const pose = /考|かんがえ|こまり|ふあん|不安|しょんぼり|ジト|じと|ため息|あちゃ|なやみ/.test(face) || /[？?]|……$/.test(text) ? 'think'
+    : /！|!/.test(text) || /うれし|わくわく|やるき|ドヤ|どや|びっくり|よろこ|感動/.test(face) ? 'cheer' : 'sit';
+  const pre = who === 'honoka' ? '' : who + '-';
+  return ART[pre + 'chibi-' + pose] || ART[pre + 'chibi-cheer'] || '';
 }
 
 /* ---------- ふり返り（11/19 しょーくん）：その日のお客さんの すきな味 と 買えたか から、いちばん言いたいことを1つ
