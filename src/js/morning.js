@@ -356,7 +356,7 @@ function kitchenHTML(M) {
 function mSlotHTML(o, idx, ks, rib = '') {
   const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
   if (!o) return `<div class="dslot empty${kan}" data-mdrop="ds:${idx}">${kl}</div>`;
-  return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${rib}</div>`;
+  return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">${kl}${candyIcon(o.s.key)}<span class="d-nm${dNmLong(candyOf(o.s.key).name)}">${esc(candyOf(o.s.key).name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${rib}</div>`;
 }
 function displayHTML(M) {
   const bg = ART['bg-day'], { slots, ks } = dSlots();

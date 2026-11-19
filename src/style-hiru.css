@@ -11,12 +11,16 @@
 .mo-slots{display:flex;align-items:center;gap:4px}
 /* オーブンの上の札（つぎにすること） */
 .mo-hint{white-space:nowrap;font-size:12px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.82);border:1.5px solid var(--brass);border-radius:999px;padding:3px 11px;box-shadow:0 2px 0 rgba(0,0,0,.3)}
-.mo-slot{position:relative;width:clamp(46px,16cqh,64px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:rgba(36,19,10,.45);border:2.5px dashed rgba(255,240,215,.85);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.mo-slot{position:relative;flex:none;width:clamp(46px,16cqh,64px);height:clamp(46px,16cqh,64px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:rgba(36,19,10,.45);border:2.5px dashed rgba(255,240,215,.85);box-shadow:0 2px 0 rgba(0,0,0,.3)}
 /* 入れられるあいだ、空いた丸がふわっと光る（opacity と transform だけ） */
 .m-oven.wait .mo-slot:not(.full)::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:3px solid #ffe08a;box-shadow:0 0 12px rgba(255,214,110,.8);animation:mopulse 1.6s ease-in-out infinite;pointer-events:none}
 @keyframes mopulse{0%,100%{opacity:.15;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
-.mo-slot.full{background:#fffaf0;border:2.5px solid var(--brass);touch-action:none;cursor:grab}
-.mo-slot .hico{width:72%;height:72%}
+/* 入ったときも、丸はリーダーの描き下ろし（ui-ovenslot）のまま（11/19 しょーくん「材料の背景は書き下ろしてる？」→ 前はここだけコードの白い丸だった）。素材がしずまないよう、うしろに小さな光 */
+.mo-slot.full{touch-action:none;cursor:grab}
+.mo-slot.full::before{content:'';position:absolute;inset:16%;border-radius:50%;background:radial-gradient(circle,rgba(255,236,200,.75),rgba(255,214,150,0) 72%);pointer-events:none}
+.mo-slot.full .hico{position:relative}
+/* 高さを決めておかないと、描き下ろしの素材の絵（縦長の牛乳びんなど）で丸が縦にのびる（11/19 しょーくん「ミルクをかまどに持っていったら、かまどの円と全然違う図形」） */
+.mo-slot .hico{width:72%;height:72%;min-width:0;min-height:0;max-width:none}
 .mo-plus{font-style:normal;font-family:var(--disp);font-size:18px;color:#fff6e0;text-shadow:0 2px 0 rgba(60,20,0,.6)}
 .mstage.baking .mo-glow{animation:moglow 1.5s ease-in-out}
 .mstage.baking .mo-steam{animation:mosteam 1.5s ease-out}
@@ -99,9 +103,12 @@
 .md-case .dslot.empty{cursor:default}
 .md-case .dslot .hico{height:min(64px,52%)}
 .md-case .d-nm{font-size:10.5px}   /* 11/19 12px だと8文字の名前が切れていた（昼のショーケースと同じ大きさ） */
+.d-nm.lg{letter-spacing:-.05em}
+.md-case .d-nm.lg{font-size:9.5px;letter-spacing:-.07em}
 .mw{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
-.mw .hico{width:40px;height:40px}
-.mw-nm{max-width:100%;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 天板のお菓子の名前は2行まで（11/19：「ミルクキ…」「ぷるぷる…」と短く切れて、どれかわかりにくかった） */
+.mw .hico{width:36px;height:36px}
+.mw-nm{max-width:100%;min-height:2.2em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:9.5px;font-weight:700;line-height:1.1;letter-spacing:-.03em;text-align:center;color:var(--ink);word-break:break-all}
 .mw-empty{flex:1;align-self:center;text-align:center;margin:0;font-size:12px;color:var(--milk-soft)}
 /* つかんで動かす */
 .mghost{position:fixed;z-index:50;margin:0;pointer-events:none;box-shadow:0 10px 18px rgba(0,0,0,.4);transition:none;animation:none}
@@ -359,10 +366,11 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .title.tt{align-items:center;text-align:center;position:relative;border-radius:16px;box-shadow:inset 0 0 0 2px rgba(255,214,140,.4),0 10px 24px rgba(0,0,0,.45)}
 
 /* ==== おそろいの段のリボン（11/19 しょーくん「おそろいの列」・day.js の dSoroiRibs）：段のいちばん左のマスの中に置いて、段のまんなかの棚板の上へ
-   絵がまだないので仮の CSS（木造のお菓子屋さんの色・描き下ろしは ui-soroi をリーダーにお願い）。棚の絵（.dcase・.dslot）の見た目はさわらない ==== */
-.d-soroi{position:absolute;z-index:2;left:calc(150% + 6px);bottom:-10px;translate:-50% 0;display:flex;align-items:center;gap:1px;padding:1px 7px 1px 3px;border-radius:999px;background:linear-gradient(#fff6de,#f3cf8c);border:1.5px solid #8a5a2b;box-shadow:0 2px 0 rgba(70,36,12,.35);font-size:10px;line-height:1.2;color:#7a3e10;white-space:nowrap;pointer-events:none}
-.d-soroi .hico{width:16px;height:16px}
-.d-soroi b{font-weight:800;letter-spacing:.04em}
+   皮（背景・ふち・字の色・すき間）はリーダーの ui-soroi（style.css）→ ここでは並べ方だけ。棚の絵（.dcase・.dslot）の見た目はさわらない
+   はばは width:max-content（11/19 しょーくん「おそろいの棚の文字が枠からはみ出てた」：左のマスより外に置くので、はばが字より小さく決まっていた） ==== */
+.d-soroi{position:absolute;z-index:2;left:calc(150% + 6px);bottom:-11px;translate:-50% 0;width:max-content;display:flex;align-items:center;gap:2px;font-size:10px;line-height:1.2;white-space:nowrap;pointer-events:none}
+.d-soroi .hico{width:16px;height:16px;flex:none}
+.d-soroi b{flex:none;font-weight:700;letter-spacing:.02em;color:inherit}
 .d-soroi.out{opacity:.45}
 .d-soroi.pop{animation:dSoroiPop .5s cubic-bezier(.3,1.6,.5,1) both}
 @keyframes dSoroiPop{0%{transform:scale(.3);opacity:0}100%{transform:none;opacity:1}}
