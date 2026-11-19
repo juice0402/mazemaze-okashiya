@@ -70,6 +70,22 @@ function dayStageBg(sign) {
     <i class="ds-lamp"></i><i class="ds-wains"></i>
   </div>`;
 }
+/* 次の画面の絵を、ひまなときに先に読んで、ほどいておく（11/19 しょーくん「描写までの表示を爆速に」）
+   前は画面が変わってから絵を読みはじめるので、お客さんの顔や朝の背景が一瞬おくれて出ることがあった。読んだ絵は覚えておく（2回読まない） */
+const D_PRE = new Map();
+function dPreload(names) {
+  const go = () => {
+    for (const n of names) {
+      const u = n && ART[n]; if (!u || D_PRE.has(u)) continue;
+      const im = new Image(); im.decoding = 'async'; im.src = u; D_PRE.set(u, im);
+      if (im.decode) im.decode().catch(() => {});
+    }
+  };
+  if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 2000 }); else setTimeout(go, 300);
+}
+/* 昼の舞台の絵（朝のあいだに）・あしたの朝の絵（夜のあいだに） */
+const D_PRE_DAY = () => ['bg-day', 'bg-day-mado', 'bg-day-mado-glow', 'ui-sign', 'ui-think', 'ui-think-tail', 'ui-bubble', 'ui-bubble-tail', 'ui-jar', ...CUSTOMERS.map(c => 'cust-' + c.id)];
+const D_PRE_MORNING = () => ['bg-morning', 'bg-zakka', 'ui-ovenslot', 'ui-tile', ...Object.keys(HIRU_MATS).map(m => 'mat-' + m)];
 /* 手前のカウンター（お客さんの胸から下をかくす）：絵があるときは、同じ絵のカウンターの所だけを上に重ねる */
 function dayStageFront() {
   const bg = ART['bg-day'];

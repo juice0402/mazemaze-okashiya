@@ -89,7 +89,8 @@ function renderDay() {
     ${bar}
   </section>`;
   if (R.cur) showCust(R.cur, true);
-  if (pre && !empty && S.day === 1 && !S.seen.dayPre && !talking()) talk(STORY.dayPre, () => { S.seen.dayPre = 1; save(); }, { dim: false });
+  dLight(R);
+  if (pre && !empty && S.day === 1 && !S.seen.dayPre && !talking()) talk(STORY.dayPre, () => { S.seen.dayPre = 1; save(); });
   if (R.open && !R.done) { dayPrev = 0; dayLoop(); dAmbT = setTimeout(dAmbient, 1500); }
 }
 
@@ -110,13 +111,55 @@ function openDay() {
     const E = dEv(R);
     R.plan = custPlan(Math.max(2, custCount() + ((E && E.add) || 0)), R.kanban, R.soroi, (E && E.first) || []);
     R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
+    dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad']; }));   // 今日のお客さんの顔を先に読む
     R.lk = {}; R.got = {}; R.miss = {};
     S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
     save(); renderDay();
     setTimeout(() => { const E = dEv(R); E ? dSayRun(STORY.pickE(STORY.ev[E.id].open)) : dSay('open'); }, 700);
   };
-  if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go, { dim: false }); }
+  if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go); }
   else go();
+}
+
+/* ---------- 外の明るさ（11/19 しょーくん「フレームレート向上・描写を爆速に」）
+   前は 0.1秒ごとに .dstage の --p を変えていた → 1秒に約25回、舞台ぜんぶの計算と窓の4まい（型ぬき・重ね方つき）の描きなおし。
+   いまは窓・夕方の色・夕日の opacity を、営業の長さの動き（Web Animations）にして、GPU にまかせる。数字の形は style-hiru.css の --p の式と同じ。
+   会話のあいだは止める・はやおくりは playbackRate・ずれたときだけ合わせる（dLightSync） ---------- */
+const D_LIGHT = [
+  ['.ds-m1', '', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .15 }, { opacity: .62, offset: .593 }, { opacity: .62, offset: 1 }]],
+  ['.ds-m2', '', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .5 }, { opacity: 1, offset: 1 }]],
+  ['.ds-dusk', '', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .25 }, { opacity: .72, offset: .97 }, { opacity: .72, offset: 1 }]],
+  ['.ds-front', '::after', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .25 }, { opacity: .72, offset: .97 }, { opacity: .72, offset: 1 }]],
+  ['.ds-glow', '', [{ opacity: .08 }, { opacity: .38 }]],
+];
+let dLightA = [];
+const dLightT = R => R.done ? dLen(R) : R.open ? Math.min(dLen(R), R.t || 0) : 0;
+function dLight(R) {
+  for (const a of dLightA) a.cancel();
+  dLightA = [];
+  dLightLast = { run: null, sp: 0, at: 0 };
+  const st = $('dstage'); if (!st || !st.animate) return;
+  const len = dLen(R), t = dLightT(R);
+  try {
+    for (const [sel, pe, kf] of D_LIGHT) for (const el of st.querySelectorAll(sel)) {
+      const a = el.animate(kf, pe ? { duration: len, fill: 'both', pseudoElement: pe } : { duration: len, fill: 'both' });
+      a.pause(); a.currentTime = t; a.playbackRate = daySpeed; dLightA.push(a);
+    }
+  } catch (e) { for (const a of dLightA) a.cancel(); dLightA = []; }   // 動かせないブラウザは前のやり方（--p）
+}
+let dLightLast = { run: null, sp: 0, at: 0 };
+function dLightSync(R, run) {
+  if (!dLightA.length) return;
+  const now = performance.now();   // 動いているあいだは、止める・速さ・2秒ごとのずれ合わせのときだけ（毎回さわると計算がふえる）
+  if (run === dLightLast.run && daySpeed === dLightLast.sp && now - dLightLast.at < 2000) return;
+  dLightLast = { run, sp: daySpeed, at: now };
+  const t = dLightT(R);
+  for (const a of dLightA) {
+    if (a.playbackRate !== daySpeed) a.playbackRate = daySpeed;
+    if (Math.abs((a.currentTime || 0) - t) > 400) a.currentTime = t;
+    if (run && a.playState !== 'running' && t < dLen(R)) a.play();
+    else if (!run && a.playState === 'running') a.pause();
+  }
 }
 
 /* ---------- 営業：100ms ごとに進める（会話のあいだは止まる・昼の画面でないときは止まる） ---------- */
@@ -126,12 +169,13 @@ function dayLoop() {
   if (S.phase !== 'day' || !R || !R.open || R.done || !$('dstage')) return;
   const now = performance.now(), dt = dayPrev ? Math.min(250, now - dayPrev) : 0;
   dayPrev = now;
-  if (!talking()) dayStep(R, dt * daySpeed);
-  if (!R.done) dayTick = setTimeout(dayLoop, 100);
+  const run = !talking();
+  if (run) dayStep(R, dt * daySpeed);
+  if (!R.done) { dLightSync(R, run); dayTick = setTimeout(dayLoop, 100); }
 }
 function dayStep(R, dt) {
   R.t += dt;
-  const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / dLen(R)).toFixed(3));   // 外の明るさ（ゲージのかわり）
+  if (!dLightA.length) { const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / dLen(R)).toFixed(3)); }   // 外の明るさ：ふだんは dLight の動きにおまかせ（動かせないブラウザだけ、ここで --p）
   if (R.cur) return visitStep(R, dt);
   if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
   if (R.i >= 1 && !R.mated) { const m = dMateDue(); if (m) return dMateVisit(R, m); }
@@ -155,7 +199,7 @@ function visitStep(R, dt) {
   const v = R.cur; v.t += dt;
   if (v.step === 0 && v.t >= V_ARRIVE) {
     v.step = 1; showBubble(v);
-    if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}, { dim: false }); }
+    if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}); }
   } else if (v.step === 1 && v.t >= V_ASK) {
     v.step = 2; v.res = serve(v); save(); showResult(v, false);
     const r = v.res, out = r.key && dLeft(r.key) <= 0, nm = r.key ? candyOf(r.key).name : '';   // 同じお菓子が2マスあるときは、ぜんぶ売れてから「売り切れ」（11/19）
@@ -190,7 +234,7 @@ function dMateVisit(R, m) {
   it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
   if (it.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   S.seen['mate:' + m.id] = S.day; save();
-  const cs = $('dCase'); if (cs) cs.innerHTML = caseHTML(false);
+  dCaseUpdate();
   talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); });
 }
 /* そのお菓子が棚にあと何こ（同じお菓子が2マス以上あってもぜんぶ数える） */
@@ -226,12 +270,13 @@ function closeDay(msg) {
   const loss = S.shelf.some(s => s.n > 0) && !S.seen.loss ? (S.seen.loss = S.day, STORY.lossFirst) : [];   // 売れのこりは今日でおしまい（はじめての日だけ ほのかが言う）
   save(); if (msg) toast(msg);
   renderDay();
+  setTimeout(() => dPreload(D_PRE_MORNING()), 4000);   // 夜のあいだに、あしたの朝の絵を先に読んでおく（夜の絵が読みおわってから）
   setTimeout(() => {
     const sd = dSum(R), E = dEv(R);
     const lines = [...loss, ...(E ? STORY.pickE(STORY.ev[E.id].close) : []), ...(sd ? STORY.fill(STORY.pickE(STORY.sum[sd.k]), sd) : [])];
     lines.length ? dSayRun(lines.slice(0, 3)) : dSay('close', '', true);
   }, 500);
-  if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk([...STORY.dayClose(S.today), ...loss], () => {}, { dim: false }); }
+  if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk([...STORY.dayClose(S.today), ...loss], () => {}); }
 }
 
 /* ---------- 昼のお店のひとこと（11/19）：文は STORY.daySay。舞台の下に小さく出して消える（会話の窓にしない＝営業は止めない）
@@ -363,10 +408,18 @@ function showMore(v, m, now) {
   void b.offsetWidth; b.classList.add('show');
   soldFx(m.key);
 }
+/* 棚を描きなおす：変わったマスだけ入れかえる（11/19：前は売れるたびに棚ぜんぶを作りなおしていた） */
+function dCaseUpdate() {
+  const cs = $('dCase'); if (!cs) return null;
+  const tmp = document.createElement('div'); tmp.innerHTML = caseHTML(false);
+  const olds = [...cs.children], news = [...tmp.children];
+  if (olds.length !== news.length) cs.replaceChildren(...news);
+  else news.forEach((n, i) => { if (n.outerHTML !== olds[i].outerHTML) olds[i].replaceWith(n); });
+  return cs;
+}
 /* 売れた：棚を描きなおして、そのマスに「売れた！」 */
 function soldFx(key) {
-  const cs = $('dCase'); if (!cs) return;
-  cs.innerHTML = caseHTML(false);
+  const cs = dCaseUpdate(); if (!cs) return;
   const sl = cs.querySelector(`.dslot[data-key="${CSS.escape(key)}"]`); if (!sl) return;
   sl.classList.add('pop');
   sl.insertAdjacentHTML('beforeend', '<span class="d-sold">売れた！</span>');
@@ -396,6 +449,7 @@ function toggleDayFast(el) {
   daySpeed = dSpeedNext();
   const st = $('dstage'); if (st) st.style.setProperty('--sp', daySpeed);
   if (el) el.textContent = dSpeedLbl();
+  const R = S.dayRun; if (R) dLightSync(R, R.open && !R.done && !talking());
 }
 
 /* 昼の画面のボタン（data-act）。main.js の ACTS に入る */

@@ -101,10 +101,10 @@ function bake() {
       if (fresh) { S.recipes[key] = S.day; S.today.flashes.push(key); }
       S.today.made.push(key); M.baked.push({ key, n: BATCH }); save();
       renderMorning(); const t = mFly(key, fresh);
-      if (S.day === 1 && !S.seen.mBaked) { S.seen.mBaked = 1; save(); setTimeout(() => talk([...STORY.mTut.baked, ...STORY.mTut.shelf], () => {}, { dim: false }), t); }
+      if (S.day === 1 && !S.seen.mBaked) { S.seen.mBaked = 1; save(); setTimeout(() => talk([...STORY.mTut.baked, ...STORY.mTut.shelf], () => {}), t); }
     }, REDUCED ? 300 : BAKE_MS);
   };
-  if (S.day === 1 && !S.seen.mBake) { S.seen.mBake = 1; save(); talk(STORY.mTut.bake, run, { dim: false }); }
+  if (S.day === 1 && !S.seen.mBake) { S.seen.mBake = 1; save(); talk(STORY.mTut.bake, run); }
   else run();
 }
 /* できたお菓子の札が、オーブンの上にぽんと出て、天板の最後のお菓子へ飛ぶ（transform と opacity だけ）。かかる時間を返す */
@@ -403,15 +403,16 @@ function renderMorning() {
     const tut = S.day === 1 && !S.seen.mOven ? (S.seen.mOven = 1, STORY.mTut.oven) : [];
     const lines = [...STORY.morning(S.today, S.yesterday), ...tut];
     save();
-    if (lines.length) talk(lines, () => {}, { dim: false });
+    if (lines.length) talk(lines, () => {});
   }
-  if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}, { dim: false }); }
+  if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}); }
   /* はじめて おそろいの段ができたとき1回だけ、ほのかのひとこと（11/19） */
   if (v === 'display' && !S.seen.soroi && !talking()) {
     const so = soroiRows(dSlots().slots);
-    if (so.length) { S.seen.soroi = S.day; save(); talk(STORY.soroiFirst(so[0].mats[0]), () => {}, { dim: false }); }
+    if (so.length) { S.seen.soroi = S.day; save(); talk(STORY.soroiFirst(so[0].mats[0]), () => {}); }
   }
   if (v === 'kitchen' && M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
+  dPreload(v === 'display' ? D_PRE_DAY() : D_PRE_MORNING());   // つぎの画面の絵を先に読む（11/19・2回は読まない）
 }
 function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 
