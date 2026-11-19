@@ -295,6 +295,14 @@ function monReact(cls) {
   const m = $('mon'); if (!m) return;
   m.classList.remove('hit', 'hitbig', 'roar'); void m.offsetWidth; m.classList.add(cls);
   clearTimeout(m._rt); m._rt = setTimeout(() => m.classList.remove(cls), 800);
+  if (cls !== 'roar') monFace(m, 'eat', 650);   // 味パワーを受けると、ぱくっと食べる顔（絵があるときだけ）
+}
+/* モンスターの顔の絵（mon-<id>-eat・-happy）に一時だけ入れかえる。絵がなければ何もしない */
+function monFace(m, face, ms) {
+  const u = m.dataset.mid && ART[`mon-${m.dataset.mid}-${face}`]; if (!u) return;
+  if (!m._base) m._base = m.getAttribute('src');
+  if (m.getAttribute('src') !== u) m.src = u;
+  clearTimeout(m._ft); m._ft = setTimeout(() => { if (m.isConnected) m.src = m._base; }, ms);
 }
 /* ダメージの数字：額縁の外へはみ出してよい（画面の中には収める） */
 function dmgNum(dmg, size, p) {

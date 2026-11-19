@@ -79,7 +79,7 @@ function hiArt(cid) {
     const mid = r.mats.find(m => MATS[m].noun === r.noun), mm = MATS[mid];   // 菓子パンの★2は、主役の素材のカードの絵（なければ仮の絵 alt）
     return ART[`candy-${nid}-${other}`] || ART['candy-' + nid] || ART['card-' + mid] || (mm && ART[mm.alt]) || null;
   }
-  if (k === 'j') { const { top } = jamTop(id.split('+')); return ART['jam-' + top] || ART[JAM_ART[top]] || null; }   // わかば②のジャム（11/19）：絵が届くまでは実の色に近いジャムの絵
+  if (k === 'j') { const fr = id.split('+'), { top, n } = jamTop(fr); return (n < 2 && fr.length > 1 && ART['jam-mix']) || ART['jam-' + top] || ART[JAM_ART[top]] || null; }   // わかば②のジャム（11/19）：ぜんぶちがう実はミックスジャムの絵
   if (k === 'c') { const r = recipeOf(id.split('|')[0]), mid = r.mats.find(m => MATS[m].noun === r.noun) || r.mats[0]; return ART['special-' + mid] || ART['card-' + mid] || null; }   // くだものケーキ：主役のケーキの絵
   if (k === 's') {   // ★3：同じ形どうしは「特製○○タワー」の絵
     const [r1, r2] = id.split('|').map(recipeOf);
