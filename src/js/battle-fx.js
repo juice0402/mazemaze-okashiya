@@ -545,3 +545,43 @@ function petitFx(e, run, q) {
   arcFly(el, { x: side * .3, y: -a.h * .2 }, { x: b.x - a.x, y: b.y - a.y }, ms, 70 + e.k * 12, .5, .9, () => { el.remove(); land(); });
   return 370 + (e.k === e.n - 1 ? 520 : 0);   // 次の飴は とちゅうで追いかける・さいごの1こは当たるまで待つ
 }
+
+/* ---------- 8. 夜の絵と音を先に読んでおく（11/20 しょーくん「ゲームスタートしてから裏で読んで、夜パート中ストックしとくみたいなの」） ----------
+   前は、まぜる・攻撃・★3 のときに はじめて その絵を読んで（ネットから＋絵をほどく）、1回目だけ カクッとなることがあった（ボタンの皮の ui-* だけは起動のあと読んでいた）。
+   いまは：タイトルのあと ひまなとき（今のセーブのビルド）・夕方（startNight）・ビルドをえらんだとき（pickBuild）に、その夜に使う絵を
+   少しずつ（ひまなときに4まいずつ）読んで ほどいて（decode）、夜のあいだ NWARM に持っておく。音（効果音・掛け声・ジングル）も seLoad で先に読む（はじめのタップのあと） */
+const NWARM = new Map();
+const nwIdle = f => window.requestIdleCallback ? requestIdleCallback(f, { timeout: 900 }) : setTimeout(() => f(null), 120);
+function nwArt(urls) {
+  const list = [...new Set(urls)].filter(u => u && typeof u === 'string' && !u.startsWith('data:') && !NWARM.has(u));
+  let i = 0;
+  const step = dl => {
+    for (let n = 0; i < list.length && n < 4 && (!dl || dl.didTimeout || dl.timeRemaining() > 5); n++) {
+      const u = list[i++];
+      try { const im = new Image(); im.decoding = 'async'; im.src = u; NWARM.set(u, im); if (im.decode) im.decode().catch(() => {}); } catch (e) { /* 読めなくてもよい */ }
+    }
+    if (i < list.length) nwIdle(step);
+  };
+  if (list.length) nwIdle(step);
+}
+function nightWarm(build) {
+  try {
+    const B = BUILDS[build] || BUILDS.cookie, C = CHEFS[B.chef] || {}, chef = (C.art || B.chef || 'honoka');
+    const P = chef === 'minamo' ? POSE_MINAMO : chef === 'wakaba' ? POSE_WAKABA : POSE;
+    const keys = Object.values(P).map(v => Array.isArray(v) ? v[0] : v);   // シェフの戦闘ポーズ（いちばん大きい絵）
+    for (const k of Object.keys(ART)) {
+      if (/^fx-(burst|slash|cutin)-/.test(k)) { if (k.endsWith('-' + chef)) keys.push(k); }   // 一撃の衝撃・斬撃・カットインの帯は そのシェフの分
+      else if (/^fx-/.test(k)) keys.push(k);
+      else if (/^(candy|special|jam|burnt)-/.test(k)) keys.push(k);   // まぜてできる★2・★3の絵
+    }
+    const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
+    if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy');
+    const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
+    nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
+    if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
+      ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
+      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || [])].forEach(n => seLoad('koe', n).catch(() => {}));
+      seLoad('bgm', 'jg-manzoku').catch(() => {});
+    }
+  } catch (e) { /* 先読みは できなくても遊べる */ }
+}

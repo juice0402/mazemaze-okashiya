@@ -307,7 +307,7 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 
 @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
-/* まぜる演出：まわりが暗くなる → 2枚がシュッと飛び出して、まんなか（--cy）で止まって（ヒットストップ）ガキーン → 火花・光の輪・光の線 → できたカードがくるっと出て、名前の札 → マスへ。.r2/.r3 で★の色 */
+/* まぜる演出：まわりが暗くなる → 2枚がシュッと飛び出して、まんなか（--cy）で止まって（ヒットストップ）ぶつかる（字は出さない・11/20）→ 火花・光の輪・光の線 → できたカードがくるっと出て、名前の札 → マスへ。.r2/.r3 で★の色 */
 .mixfx{position:fixed;inset:0;z-index:38;pointer-events:none;overflow:hidden;--glow:255,236,190;--ray:255,240,205}
 .mixfx.r3{--glow:255,200,80;--ray:255,214,110}
 .mf-dim{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% var(--cy),rgba(60,24,6,.3) 0,rgba(22,9,3,.78) 72%);animation:mfin .22s ease-out forwards}
@@ -333,7 +333,7 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 @keyframes mfshine{to{transform:translateX(120%)}}
 .mf-flash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% var(--cy),#fff 0,#fff 14%,rgba(255,244,210,.9) 30%,rgba(255,200,120,.35) 55%,rgba(255,200,120,0) 85%)}
 .mixfx.hit .mf-flash{animation:mfflash .55s ease-out}
-.mixfx.hit{animation:quake2 .42s linear}   /* ガキーンのゆれは演出の板だけ（夜の画面はゆらさない・11/19 軽く） */
+.mixfx.hit{animation:quake2 .42s linear}   /* ぶつかったときのゆれは演出の板だけ（夜の画面はゆらさない・11/19 軽く） */
 @keyframes mfflash{0%,12%{opacity:1}100%{opacity:0}}
 .mf-ring{position:absolute;left:50%;top:var(--cy);width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:7px solid #fff6d0;opacity:0}
 .mf-ring.b{border-color:rgb(var(--ray));animation-delay:.1s!important}
@@ -349,10 +349,6 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .mf-tw{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;opacity:0;background:#fffbe8;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);filter:drop-shadow(0 0 6px #ffe7a0)}
 .mixfx.hit .mf-tw{animation:mftw .6s ease-in-out infinite alternate}
 @keyframes mftw{from{opacity:.15;transform:scale(.4) rotate(0)}to{opacity:1;transform:scale(1.15) rotate(45deg)}}
-.mf-sfx{position:absolute;left:50%;top:calc(var(--cy) - var(--rh) / 2 - 62px);z-index:2;font-size:46px;font-weight:900;font-style:italic;letter-spacing:1px;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:7px #5a2a04;paint-order:stroke fill;text-shadow:0 4px 0 #5a2a04,0 0 18px rgba(255,200,90,.9);opacity:0}
-.mixfx.r3 .mf-sfx{color:#ffe08a}
-.mixfx.hit .mf-sfx{animation:mfsfx 1s cubic-bezier(.2,1.6,.4,1) forwards}
-@keyframes mfsfx{0%{opacity:0;transform:translateX(-50%) scale(3) rotate(-8deg)}18%{opacity:1;transform:translateX(-50%) scale(1) rotate(-8deg)}24%{transform:translateX(calc(-50% - 5px)) scale(1.06) rotate(-6deg)}30%{transform:translateX(calc(-50% + 4px)) scale(1) rotate(-9deg)}36%,82%{opacity:1;transform:translateX(-50%) scale(1.04) rotate(-8deg)}100%{opacity:0;transform:translateX(-50%) translateY(-14px) scale(1.04) rotate(-8deg)}}
 .mf-name{position:absolute;left:50%;top:calc(var(--cy) + var(--rh) / 2 + 16px);z-index:2;margin:0;display:flex;flex-direction:column;align-items:center;gap:2px;white-space:nowrap;transform:translateX(-50%);opacity:0}
 .mixfx.hit .mf-name{animation:mfname .4s .28s cubic-bezier(.2,1.5,.4,1) forwards}
 .mf-name small{font-size:15px;line-height:1;letter-spacing:2px;color:var(--gold);-webkit-text-stroke:3px #4a2206;paint-order:stroke fill}
@@ -493,7 +489,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .cinfo{background:linear-gradient(#fffaf0,#f6e4c8);box-shadow:inset 0 0 0 1.5px rgba(217,168,90,.8),0 3px 0 rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.35)}
 .vbox.result{background:radial-gradient(90% 60% at 50% 0%,rgba(255,214,150,.25),transparent 70%),linear-gradient(#8a5a38,#5a3824);box-shadow:inset 0 0 0 2px var(--brass),0 6px 0 rgba(0,0,0,.4),0 14px 30px rgba(0,0,0,.5)}
 .r-num{color:#ffe08a}
-.mf-sfx,.mf-name span,.ci-title span{font-family:var(--disp);font-weight:400}
+.mf-name span,.ci-title span{font-family:var(--disp);font-weight:400}
 #floats{z-index:6}
 
 /* カードの質感（コードで描く C）：金属のふちに細かいつぶつぶ・彫った二重の線、効果の紙に紙のすじ */
@@ -885,3 +881,31 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* 見開きの「ほかの効果」（カードの紙に入らない3つめからの文）：ことばの説明より上に・少し大きく */
 .cinfo .ci-fx p.wide.more{font-size:14px;color:#4a2414}
 .cinfo .ci-fx p.wide.more .cw{display:inline-block}
+
+/* まぜる演出を豪華に（11/20 しょーくん「ガキーンの字は消して、文字のかわりに演出を豪華に」）：ぜんぶ transform と opacity だけ */
+.mf-gather{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;opacity:0;background:radial-gradient(circle,#fff,rgba(var(--glow),.95) 45%,rgba(var(--glow),0) 70%);animation:mfgather .46s cubic-bezier(.5,0,.9,.6) forwards}
+@keyframes mfgather{0%{opacity:0;transform:scale(1.4)}30%{opacity:1}100%{opacity:.3;transform:translate(var(--gx),var(--gy)) scale(.4)}}
+.mf-core{position:absolute;left:50%;top:var(--cy);width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;opacity:0;background:radial-gradient(circle,#fff 0,rgba(255,250,225,.9) 30%,rgba(var(--glow),.5) 55%,rgba(var(--glow),0) 72%);animation:mfcore .5s ease-in forwards}
+@keyframes mfcore{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1.1)}}
+.mixfx.hit .mf-core{animation:mfcorehit .5s ease-out forwards}
+@keyframes mfcorehit{0%{opacity:1;transform:scale(1.1)}35%{opacity:1;transform:scale(2.6)}100%{opacity:0;transform:scale(3.4)}}
+.mf-wave{position:absolute;left:50%;top:var(--cy);width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;opacity:0;border:8px solid rgba(255,255,255,.95);box-shadow:0 0 22px 8px rgba(var(--glow),.9),inset 0 0 22px 8px rgba(var(--glow),.7)}
+.mf-wave.b{border-width:4px}
+.mixfx.hit .mf-wave{animation:mfwave .75s cubic-bezier(.15,.7,.3,1) forwards}
+.mixfx.hit .mf-wave.b{animation-delay:.14s}
+@keyframes mfwave{0%{opacity:1;transform:scale(.25)}100%{opacity:0;transform:scale(9)}}
+.mf-art{position:absolute;left:50%;top:var(--cy);width:min(92vw,420px);height:auto;translate:-50% -50%;opacity:0;pointer-events:none}
+.mixfx.hit .mf-art{animation:mfart .7s ease-out forwards}
+.mixfx.r3 .mf-art{width:min(120vw,560px)}
+@keyframes mfart{0%{opacity:1;transform:scale(.3) rotate(-10deg)}55%{opacity:1}100%{opacity:0;transform:scale(1.3) rotate(8deg)}}
+.mf-pillar{position:absolute;left:50%;top:0;bottom:0;width:min(46vw,200px);margin-left:max(-23vw,-100px);opacity:0;background:linear-gradient(90deg,rgba(255,220,120,0),rgba(255,248,215,.85) 40%,#fff 50%,rgba(255,248,215,.85) 60%,rgba(255,220,120,0));transform-origin:50% 100%}
+.mixfx.hit .mf-pillar{animation:mfpillar 1.1s ease-out forwards}
+@keyframes mfpillar{0%{opacity:0;transform:scaleX(.1) scaleY(.2)}15%{opacity:1;transform:scaleX(1) scaleY(1)}100%{opacity:0;transform:scaleX(1.6) scaleY(1)}}
+.mf-star{position:absolute;top:-30px;width:var(--sz);height:var(--sz);opacity:0;background:#fff2b8;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);filter:drop-shadow(0 0 6px #ffd45a)}
+.mixfx.hit .mf-star{animation:mfstar 1.2s ease-in forwards}
+@keyframes mfstar{0%{opacity:0;transform:translateY(0) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translateY(85vh) rotate(260deg)}}
+.mf-orbits{position:absolute;left:50%;width:0;height:0;z-index:2}
+.mf-orbit{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;opacity:0;background:#fffbe8;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);filter:drop-shadow(0 0 6px rgb(var(--glow)))}
+.mixfx.hit .mf-orbit{animation:mforbit 1.1s .2s linear forwards}
+@keyframes mforbit{0%{opacity:0;transform:rotate(var(--oa)) translateX(var(--or)) scale(.4)}20%{opacity:1;transform:rotate(calc(var(--oa) + 60deg)) translateX(var(--or)) scale(1)}100%{opacity:0;transform:rotate(calc(var(--oa) + 300deg)) translateX(calc(var(--or) * 1.1)) scale(.6)}}
+.mixfx.hit.land .mf-orbits,.mixfx.hit.land .mf-star{animation:mfout .2s ease-in forwards}

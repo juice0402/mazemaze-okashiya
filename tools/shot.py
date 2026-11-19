@@ -12,6 +12,8 @@ args = sys.argv[1:]
 out = args.pop(0)
 H = int(args[args.index('--h') + 1]) if '--h' in args else 844
 if '--h' in args: k = args.index('--h'); del args[k:k + 2]
+WD = int(args[args.index('--w') + 1]) if '--w' in args else 390   # 幅（11/20 Android の 360 など）
+if '--w' in args: k = args.index('--w'); del args[k:k + 2]
 steps = args or ['shop']
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 BOARD = ("N.picks = 0; N.field = 'teppan'; N.heat = 3; N.board = [{ cid: 'm:ichiban', cook: 9 }, { cid: 'o:komugi+bata', cook: 5 }, "
@@ -40,7 +42,7 @@ tmp.write_text(html[:i] + "window.__ev = s => eval(s);\n" + html[i:])
 shots, errs = [], []
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
-    page = b.new_context(viewport={'width': 390, 'height': H}, device_scale_factor=2, is_mobile=True, has_touch=True).new_page()
+    page = b.new_context(viewport={'width': WD, 'height': H}, device_scale_factor=2, is_mobile=True, has_touch=True).new_page()
     page.route(re.compile(r'https?://.*'), lambda r: r.abort())
     page.on('pageerror', lambda e: errs.append(str(e)[:200]))
     page.goto('file://' + str(tmp), wait_until='domcontentloaded')

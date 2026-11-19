@@ -26,7 +26,7 @@ function artBlobs(done) {
     return;
   }
   let fin = false, left = 0; const later = [];
-  const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); };
+  const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); setTimeout(() => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); }, 3000); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
   try {
     for (const k of Object.keys(ART)) {
       if (ART_FIRST.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }

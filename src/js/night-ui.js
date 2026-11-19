@@ -319,8 +319,14 @@ function mixFx(from, ca, cb, cr, to, done) {
   ov.className = 'mixfx r' + star; ov.style.setProperty('--cy', cy + 'px'); ov.style.setProperty('--rh', RW * 1.4 + 'px');
   const tw = [[-.62, -.5], [.6, -.36], [-.58, .42], [.64, .5]].map(([a, b], i) =>
     `<i class="mf-tw" style="left:${cx + a * RW}px;top:${cy + b * RW * 1.4}px;animation-delay:${.25 + i * .12}s"></i>`).join('');
-  ov.innerHTML = `<i class="mf-dim"></i><i class="mf-lines"></i><i class="mf-burst"></i><i class="mf-flash"></i><i class="mf-ring"></i><i class="mf-ring b"></i>${tw}
-    <b class="mf-sfx">ガキーン！</b><p class="mf-name"><small>${'★'.repeat(star)}</small><span>${esc(d.short)}</span></p>`;
+  /* 字の「ガキーン」はやめて、絵と光で豪華に（11/20 しょーくん「文字を入れないかわりに演出を豪華に」）：
+     集まる光（mf-gather）→ ぶつかる瞬間にシェフの衝撃の絵（fx-burst）・画面の外まで広がる衝撃波（mf-wave）・画面のふちの光・★3は光の柱と星のシャワー・できたカードのまわりを回る光 */
+  const chef = chefArt(), burst = ART['fx-burst-' + chef];
+  const gather = Array.from({ length: 12 }, (_, i) => { const a = Math.PI * 2 * i / 12, r = S * (1.5 + (i % 3) * .3); return `<i class="mf-gather" style="left:${cx + Math.cos(a) * r}px;top:${cy + Math.sin(a) * r}px;--gx:${-Math.cos(a) * r}px;--gy:${-Math.sin(a) * r}px;animation-delay:${(i % 4) * 40}ms"></i>`; }).join('');
+  const orbit = Array.from({ length: star === 3 ? 6 : 4 }, (_, i) => `<i class="mf-orbit" style="--oa:${i * (360 / (star === 3 ? 6 : 4))}deg;--or:${RW * .78}px"></i>`).join('');
+  const rain = star === 3 ? Array.from({ length: 16 }, (_, i) => `<i class="mf-star" style="left:${(i * 61 % 100)}%;animation-delay:${.15 + (i * 37 % 60) / 100}s;--sz:${10 + i * 7 % 12}px"></i>`).join('') : '';
+  ov.innerHTML = `<i class="mf-dim"></i><i class="mf-lines"></i>${gather}<i class="mf-core"></i><i class="mf-burst"></i>${star === 3 ? '<i class="mf-pillar"></i>' : ''}<i class="mf-flash"></i><i class="mf-ring"></i><i class="mf-ring b"></i><i class="mf-wave"></i><i class="mf-wave b"></i>${tw}${rain}
+    ${burst ? `<img class="mf-art" src="${burst}" alt="">` : ''}<div class="mf-orbits" style="top:${cy}px">${orbit}</div><p class="mf-name"><small>${'★'.repeat(star)}</small><span>${esc(d.short)}</span></p>`;
   document.body.appendChild(ov);
   const card = (cid, f, w, cls = '') => {
     const c = document.createElement('div');
@@ -361,6 +367,8 @@ function mixFx(from, ca, cb, cr, to, done) {
   let R;
   setTimeout(() => {
     ov.classList.add('hit'); sePlay('star');   // ★アップ（11/19 H-034）
+    if (typeof edgeGlow === 'function') edgeGlow(star === 3 ? 'big' : 'pulse');   // 画面のふちも光る（11/20・白い光は演出の板の mf-flash だけ）
+    if (star === 3) setTimeout(() => sePlay('fire', { vol: .6 }), 60);
     // ゆれは演出の板（.mixfx.hit）で：夜の画面ぜんぶをゆらすと、ショップのカードが毎こま描きなおされて重かった（11/19 しょーくん「まぜまぜの瞬間が激重」）
     heroFor('joy', HOLD + LAND + 300);
     moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }));

@@ -529,7 +529,7 @@ body[data-chef="wakaba"] .fspark.w{background:#fffbe0;box-shadow:0 0 8px 3px rgb
 .tkws{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0 6px;height:34px;margin:3px 0 -2px;padding:0 9px;pointer-events:none}
 .tkw{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;font-style:normal}
 /* ショップのカードを大きく（11/19 しょーくん「ゼンゼロはショップのカードが大きい」）：舞台の額縁の上までショップを広げて、3まいを横いっぱいに */
-.night .shopov{inset:0;padding-left:3px;padding-right:3px}
+.night .shopov{inset:0;padding-left:13px;padding-right:13px}   /* 左右は額縁の木のふち（約12px）の内がわ（11/20 しょーくん「ショップの左右でカードがはみ出してた」） */
 .night .sh-cards{gap:12px 6px}
 .night .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 44px) * .714),150px)}
 .night .shopov.many .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 30px) / 2 * .714),150px)}
