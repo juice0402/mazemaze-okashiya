@@ -445,15 +445,9 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 
 /* ==== みなもの夜の空気（11/19 しょーくん「ほのかの火の粉みたいに、もう画面全体で雰囲気を味わえる演出」）：舞台の .aqua（battle-fx.js の aquaHTML・#stage の data-t＝温度）
    子の順：1 光のゆらめき・2 霜・3 はちみつ色・4〜21 つぶ（雪／泡）・22〜25 湯気。ずっと動く物は transform と opacity だけ ==== */
-.aqua{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size;--aql:rgba(220,250,255,.85)}
-.stage[data-t="4"] .aqua{--aql:rgba(255,226,160,.8)}
-.aq-light,.aq-frost,.aq-warm{position:absolute;inset:0}
-.aq-light{top:36%;overflow:hidden;opacity:.85;-webkit-mask-image:linear-gradient(transparent,#000 45%);mask-image:linear-gradient(transparent,#000 45%)}
-.aq-light::before,.aq-light::after{content:'';position:absolute;inset:-200px;background-repeat:repeat}
-.aq-light::before{background-image:radial-gradient(ellipse 30px 8px at 50% 50%,var(--aql),transparent 70%),radial-gradient(ellipse 18px 6px at 15% 85%,var(--aql),transparent 70%);background-size:120px 56px;animation:aqflow1 7s linear infinite}
-.aq-light::after{background-image:radial-gradient(ellipse 40px 9px at 40% 30%,var(--aql),transparent 70%),radial-gradient(ellipse 22px 6px at 85% 75%,var(--aql),transparent 70%);background-size:170px 84px;animation:aqflow2 11s linear infinite}
-@keyframes aqflow1{from{transform:translate(0,0)}to{transform:translate(120px,56px)}}
-@keyframes aqflow2{from{transform:rotate(-6deg) translate(0,0)}to{transform:rotate(-6deg) translate(-170px,84px)}}
+.aqua{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size}
+/* 床の水面の光のゆらめき（.aq-light・水色の横だ円）は 11/19 にやめた（しょーくん「横楕円の水色の丸はなんかちょっと違う」） */
+.aq-frost,.aq-warm{position:absolute;inset:0}
 .aq-frost{opacity:0;transition:opacity .8s;background:radial-gradient(ellipse 76% 70% at 50% 46%,transparent 48%,rgba(200,238,255,.5) 76%,rgba(242,252,255,.95)),linear-gradient(rgba(170,225,255,.16),rgba(170,225,255,.16));box-shadow:inset 0 0 26px 8px rgba(232,250,255,.8)}
 .aq-warm{opacity:0;transition:opacity .8s;background:radial-gradient(120% 62% at 50% 106%,rgba(255,186,90,.5),rgba(255,150,60,.18) 45%,transparent 72%)}
 .stage[data-t="1"] .aq-frost{opacity:.95}.stage[data-t="2"] .aq-frost{opacity:.35}
@@ -488,7 +482,7 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .night[data-chef="minamo"] .stage[data-t="3"] .glow{opacity:.28;filter:none}
 .night[data-chef="minamo"] .stage[data-t="4"] .glow{opacity:.6;filter:none;background:radial-gradient(ellipse 60% 55% at 42% 100%,#ffd080,rgba(255,170,80,.35) 45%,transparent 72%)}
 .stage:has(.shopov:not(.out)) .aqua,.stage:has(.pickov) .aqua{display:none}
-@media (prefers-reduced-motion:reduce){.aq-p,.aq-st{display:none}.aq-light::before,.aq-light::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.aq-p,.aq-st{display:none}}
 /* 火花の色もシェフごと（みなも＝しずく・わかば＝若葉の光） */
 body[data-chef="minamo"] .fspark{background:#eafbff;box-shadow:0 0 6px 2px rgba(110,200,255,.85)}
 body[data-chef="minamo"] .fspark.w{background:#fff;box-shadow:0 0 8px 3px rgba(160,225,255,.95);border-radius:2px;rotate:45deg}

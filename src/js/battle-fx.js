@@ -250,7 +250,7 @@ function aquaHTML() {
   const r = prng(41); let e = '';
   for (let k = 0; k < 18; k++) e += `<i class="aq-p${k % 3 ? '' : ' c'}" style="--x:${(2 + r() * 96).toFixed(1)}%;--d:${(3.4 + r() * 2.8).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 60).toFixed(0)}px;--s:${(.6 + r() * .9).toFixed(2)}"></i>`;
   for (let k = 0; k < 4; k++) e += `<i class="aq-st" style="--x:${(6 + k * 25 + r() * 8).toFixed(1)}%;--d:${(3.8 + r() * 1.8).toFixed(2)}s;--k:${r().toFixed(2)}"></i>`;
-  return (aquaCache = `<span class="aqua" aria-hidden="true"><i class="aq-light"></i><i class="aq-frost"></i><i class="aq-warm"></i>${e}</span>`);
+  return (aquaCache = `<span class="aqua" aria-hidden="true"><i class="aq-frost"></i><i class="aq-warm"></i>${e}</span>`);
 }
 /* 温度が変わったとき、舞台ぜんたいで：冷えた＝霜がぱっと広がって氷のかけら（ひえひえになったら ピキーン！）・温まった＝はちみつ色の光と湯気・泡がふわっ */
 function aquaTempFx(h, was) {

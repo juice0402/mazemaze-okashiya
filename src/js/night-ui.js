@@ -478,7 +478,7 @@ function renderNight() {
   if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
   N = S.night;
   document.body.dataset.chef = chefArt();   // シェフごとの見た目（紋章・一撃の色）。fx の層は body の下なので body につける（11/19）
-  const mon = MONSTERS[N.mon], F = N.field ? FIELDS[N.field] : null;
+  const mon = MONSTERS[N.mon];   // 上の札はラウンドだけ（場の名前は 11/19 にやめた・しょーくん「ビルド表記もいらない。ウェーブだけでOK」）
   let body = '';
   const rec = S.today, after = N.stage === 'end' || N.stage === 'thanks', happy = after && rec.mood >= 2;
   if (N.stage === 'end') {
@@ -503,7 +503,7 @@ function renderNight() {
       <i class="chef-sh"></i>${heroImg(hk)}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
-      <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span></div>
+      <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
     <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>

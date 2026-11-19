@@ -1054,15 +1054,8 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .quota.half .qmk.m1{animation:qmkpop .6s cubic-bezier(.3,1.6,.5,1)}
 @keyframes qmkpop{40%{transform:scale(1.7)}}
 .result.half .r-msg{color:#ffd27a}
-.aqua{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size;--aql:rgba(220,250,255,.85)}
-.stage[data-t="4"] .aqua{--aql:rgba(255,226,160,.8)}
-.aq-light,.aq-frost,.aq-warm{position:absolute;inset:0}
-.aq-light{top:36%;overflow:hidden;opacity:.85;-webkit-mask-image:linear-gradient(transparent,#000 45%);mask-image:linear-gradient(transparent,#000 45%)}
-.aq-light::before,.aq-light::after{content:'';position:absolute;inset:-200px;background-repeat:repeat}
-.aq-light::before{background-image:radial-gradient(ellipse 30px 8px at 50% 50%,var(--aql),transparent 70%),radial-gradient(ellipse 18px 6px at 15% 85%,var(--aql),transparent 70%);background-size:120px 56px;animation:aqflow1 7s linear infinite}
-.aq-light::after{background-image:radial-gradient(ellipse 40px 9px at 40% 30%,var(--aql),transparent 70%),radial-gradient(ellipse 22px 6px at 85% 75%,var(--aql),transparent 70%);background-size:170px 84px;animation:aqflow2 11s linear infinite}
-@keyframes aqflow1{from{transform:translate(0,0)}to{transform:translate(120px,56px)}}
-@keyframes aqflow2{from{transform:rotate(-6deg) translate(0,0)}to{transform:rotate(-6deg) translate(-170px,84px)}}
+.aqua{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size}
+.aq-frost,.aq-warm{position:absolute;inset:0}
 .aq-frost{opacity:0;transition:opacity .8s;background:radial-gradient(ellipse 76% 70% at 50% 46%,transparent 48%,rgba(200,238,255,.5) 76%,rgba(242,252,255,.95)),linear-gradient(rgba(170,225,255,.16),rgba(170,225,255,.16));box-shadow:inset 0 0 26px 8px rgba(232,250,255,.8)}
 .aq-warm{opacity:0;transition:opacity .8s;background:radial-gradient(120% 62% at 50% 106%,rgba(255,186,90,.5),rgba(255,150,60,.18) 45%,transparent 72%)}
 .stage[data-t="1"] .aq-frost{opacity:.95}.stage[data-t="2"] .aq-frost{opacity:.35}
@@ -1094,7 +1087,7 @@ animation:aqsteam var(--d) ease-out infinite;animation-delay:calc(var(--k) * var
 .night[data-chef="minamo"] .stage[data-t="3"] .glow{opacity:.28;filter:none}
 .night[data-chef="minamo"] .stage[data-t="4"] .glow{opacity:.6;filter:none;background:radial-gradient(ellipse 60% 55% at 42% 100%,#ffd080,rgba(255,170,80,.35) 45%,transparent 72%)}
 .stage:has(.shopov:not(.out)) .aqua,.stage:has(.pickov) .aqua{display:none}
-@media (prefers-reduced-motion:reduce){.aq-p,.aq-st{display:none}.aq-light::before,.aq-light::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.aq-p,.aq-st{display:none}}
 body[data-chef="minamo"] .fspark{background:#eafbff;box-shadow:0 0 6px 2px rgba(110,200,255,.85)}
 body[data-chef="minamo"] .fspark.w{background:#fff;box-shadow:0 0 8px 3px rgba(160,225,255,.95);border-radius:2px;rotate:45deg}
 body[data-chef="wakaba"] .fspark{background:#efffbe;box-shadow:0 0 6px 2px rgba(150,220,80,.85)}
@@ -4288,7 +4281,7 @@ function renderNight() {
 if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
 N = S.night;
 document.body.dataset.chef = chefArt();   // シェフごとの見た目（紋章・一撃の色）。fx の層は body の下なので body につける（11/19）
-const mon = MONSTERS[N.mon], F = N.field ? FIELDS[N.field] : null;
+const mon = MONSTERS[N.mon];   // 上の札はラウンドだけ（場の名前は 11/19 にやめた・しょーくん「ビルド表記もいらない。ウェーブだけでOK」）
 let body = '';
 const rec = S.today, after = N.stage === 'end' || N.stage === 'thanks', happy = after && rec.mood >= 2;
 if (N.stage === 'end') {
@@ -4313,7 +4306,7 @@ $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-c
 <i class="chef-sh"></i>${heroImg(hk)}
 <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
 ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
-<div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span></div>
+<div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
 <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
 ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
 <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
@@ -4540,7 +4533,7 @@ if (aquaCache) return aquaCache;
 const r = prng(41); let e = '';
 for (let k = 0; k < 18; k++) e += `<i class="aq-p${k % 3 ? '' : ' c'}" style="--x:${(2 + r() * 96).toFixed(1)}%;--d:${(3.4 + r() * 2.8).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 60).toFixed(0)}px;--s:${(.6 + r() * .9).toFixed(2)}"></i>`;
 for (let k = 0; k < 4; k++) e += `<i class="aq-st" style="--x:${(6 + k * 25 + r() * 8).toFixed(1)}%;--d:${(3.8 + r() * 1.8).toFixed(2)}s;--k:${r().toFixed(2)}"></i>`;
-return (aquaCache = `<span class="aqua" aria-hidden="true"><i class="aq-light"></i><i class="aq-frost"></i><i class="aq-warm"></i>${e}</span>`);
+return (aquaCache = `<span class="aqua" aria-hidden="true"><i class="aq-frost"></i><i class="aq-warm"></i>${e}</span>`);
 }
 function aquaTempFx(h, was) {
 const st = $('stage'); if (!st || REDUCED) return;
