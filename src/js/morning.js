@@ -12,6 +12,11 @@
 
 let mBusy = false, MD = null, mSpent = 0;
 const BAKE_MS = 1500;   // 焼くのは演出だけ（約1.5秒）
+/* 音（11/19・se.js）：効果音 mSe・掛け声 mKoe・ジングル mJg。se.js がビルドに入っていないときは鳴らさない（day.js も使う） */
+const mSe = (n, o) => { if (typeof sePlay === 'function') sePlay(n, o); };
+const mKoe = id => { if (typeof koePlay === 'function') koePlay(id); };
+const mJg = n => { if (typeof jgPlay === 'function') jgPlay(n); };
+const mSoroiN = () => soroiRows(dSlots().slots).length;
 
 /* ほっぺのすす（11/18 しょーくん）：はじめて焼く（1日目の「ちょっと焦げた」＝S.seen.mBaked）までは、
    すすなしの立ち絵（ART の <名前>-clean・いまは最初に出る6まい）を会話に出す。ない表情は今までどおり */
@@ -71,8 +76,9 @@ function bakeNg() {
 function toOven(m) {
   const M = mState(), ng = bakeNg();
   if (ng) return ng !== 'busy' && toast(ng);
+  const m0 = S.money;
   if (M.oven.length >= 2 || !mUse([m])) return;
-  M.oven.push(m); save();
+  M.oven.push(m); save(); mSe('drop'); if (S.money < m0) mSe('buy', { vol: 0.7 });
   if (M.oven.length === 2) return bake();
   renderMorning();
 }
@@ -86,8 +92,9 @@ function mixTwo(a, b) {
   const M = mState(), ng = bakeNg();
   if (ng) return ng !== 'busy' && toast(ng);
   for (const m of M.oven.splice(0)) S.stock[m] = (S.stock[m] || 0) + 1;
+  const m0 = S.money;
   if (!mUse([a, b])) { save(); return renderMorning(); }
-  M.oven = [a, b]; save();
+  M.oven = [a, b]; save(); mSe('drop'); if (S.money < m0) mSe('buy', { vol: 0.7 });
   bake();
 }
 /* 焼けたら、作業台の天板へ（オーブンの上にぽん → 天板へ飛ぶ） */
@@ -95,12 +102,13 @@ function bake() {
   const M = mState(); if (mBusy || M.oven.length < 2) return;
   const key = recipeKey(M.oven[0], M.oven[1]), fresh = isNewRecipe(key);
   const run = () => {
-    mBusy = true; renderMorning();
+    mBusy = true; renderMorning(); mSe('bake'); mKoe(Math.random() < 0.5 ? 'hono-ei' : 'hono-sore');
     setTimeout(() => {
       mBusy = false; M.oven = [];
       if (fresh) { S.recipes[key] = S.day; S.today.flashes.push(key); }
       S.today.made.push(key); M.baked.push({ key, n: BATCH }); save();
       renderMorning(); const t = mFly(key, fresh);
+      mSe('done'); if (fresh) { mJg('jg-hirameki'); setTimeout(() => mKoe('hono-yatta'), 250); }
       if (S.day === 1 && !S.seen.mBaked) { S.seen.mBaked = 1; save(); setTimeout(() => talk([...STORY.mTut.baked, ...STORY.mTut.shelf], () => {}), t); }
     }, REDUCED ? 300 : BAKE_MS);
   };
@@ -153,27 +161,30 @@ function dPut(wi, idx) {
     if (idx < 0) idx = slots[ks] ? -1 : ks;
     if (idx < 0) return toast('棚がいっぱい！');
   }
-  const o = slots[idx];
+  const o = slots[idx], so0 = mSoroiN();
   M.baked.splice(wi, 1);
   if (o) M.baked.push(S.shelf.splice(o.i, 1, b)[0]);
   else S.shelf.push(b);
   if (idx === ks) { M.kanban = b.key; dFront(b); }
   dFixKan(); save(); renderMorning(); dPop(b);
+  mSe(mSoroiN() > so0 ? 'soroi' : idx === ks ? 'kanban' : 'place');
 }
 /* 棚の si 番目を、棚の idx のマスへ（看板の枠へ・入れかえ・空いたマスへ） */
 function dMove(si, idx) {
   const M = mState(), s = S.shelf[si]; if (!s) return;
   const { slots, ks } = dSlots(), o = slots[idx], fromKan = !!slots[ks] && slots[ks].i === si;
   if (o && o.i === si) return;
+  const so0 = mSoroiN();
   if (idx === ks) { M.kanban = s.key; dFront(s); }
   else if (fromKan) M.kanban = o ? S.shelf[o.i].key : null;
   else if (o) { S.shelf[si] = S.shelf[o.i]; S.shelf[o.i] = s; }
   else { S.shelf.splice(si, 1); S.shelf.push(s); }
   save(); renderMorning(); dPop(s);
+  mSe(mSoroiN() > so0 ? 'soroi' : idx === ks ? 'kanban' : 'place');
 }
 function dOff(si) {
   const M = mState(), s = S.shelf.splice(si, 1)[0]; if (!s) return;
-  M.baked.push(s); dFixKan(); save(); renderMorning();
+  M.baked.push(s); dFixKan(); save(); renderMorning(); mSe('place', { rate: 0.9 });
 }
 /* 棚のお菓子をタップ：看板にする（看板ならはずす） */
 function dKan(si) {
@@ -181,7 +192,7 @@ function dKan(si) {
   const { slots, ks } = dSlots();
   M.kanban = slots[ks] && slots[ks].i === si ? null : s.key;
   if (M.kanban) dFront(s);
-  save(); renderMorning(); dPop(s);
+  save(); renderMorning(); dPop(s); mSe(M.kanban ? 'kanban' : 'place');
 }
 /* お店を開ける：並べていないお菓子は空いたマスへ → 昼へ（すぐ営業） */
 function mOpen() {
@@ -189,6 +200,7 @@ function mOpen() {
   if (placedN() + M.baked.length > 0 && !M.kanban) return toast('看板にするお菓子を、まんなかに置いてね');
   while (M.baked.length) S.shelf.push(M.baked.shift());
   S.seen.dayPre = 1; save();
+  mSe('door'); mKoe('hono-yoshi');
   goDay();
   if (S.dayRun && S.dayRun.kanban) openDay();
 }
@@ -208,7 +220,7 @@ function buyGood(id) {
   else if (id === 'tatekanban') { S.goods.tatekanban = (S.goods.tatekanban || 0) + 1; toast('立て看板を置いた！お客さんがふえるよ'); }
   else if (id.startsWith('t-')) { S.goods[id] = 1; toast((M_TOOLS.find(x => 't-' + x.id === id) || {}).name + 'が、お店にきた！'); }
   else { S.goods[id] = 1; toast('お店にかざった！'); }
-  save(); renderMorning();
+  save(); renderMorning(); mSe('buy');
 }
 
 /* ---------- つかんで動かす（夜の drag.js と同じ考え方：はなした所で決まる・行き先が光る・札） ----------
@@ -250,7 +262,7 @@ function mDown(e) {
   window.addEventListener('pointercancel', mEnd);
 }
 function mGrab() {
-  MD.moved = true; MD.can = mCan(MD.src);
+  MD.moved = true; MD.can = mCan(MD.src); mSe('pick');
   const r = MD.el.getBoundingClientRect(), g = MD.el.cloneNode(true);
   g.removeAttribute('data-mdrag'); g.removeAttribute('data-mdrop'); g.removeAttribute('id');
   g.className += ' mghost';

@@ -193,7 +193,7 @@ function startVisit(R) {
   const p = R.plan[R.i++];
   R.cur = { c: p.c, vr: p.vr || 1, like: p.like, t: 0, step: 0, res: null };
   S.today.visitors++; save();
-  showCust(R.cur, false);
+  showCust(R.cur, false); mSe('door', { vol: 0.45 });
 }
 function visitStep(R, dt) {
   const v = R.cur; v.t += dt;
@@ -202,14 +202,15 @@ function visitStep(R, dt) {
     if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}); }
   } else if (v.step === 1 && v.t >= V_ASK) {
     v.step = 2; v.res = serve(v); save(); showResult(v, false);
+    if (v.res.kind !== 'none') mSe(v.res.kind === 'love' ? 'heart' : 'sale');   // 音（11/19・se.js）
     const r = v.res, out = r.key && dLeft(r.key) <= 0, nm = r.key ? candyOf(r.key).name : '';   // 同じお菓子が2マスあるときは、ぜんぶ売れてから「売り切れ」（11/19）
     if (R.lk && v.like) { R.lk[v.like] = (R.lk[v.like] || 0) + 1; const b = r.kind === 'love' ? R.got : R.miss; b[v.like] = (b[v.like] || 0) + 1; }   // ふり返り（dSum）
-    setTimeout(() => out ? dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true) : dSay(r.kind), 700);
+    setTimeout(() => { if (out) { mSe('soldout'); dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true); } else dSay(r.kind); }, 700);
   } else if (v.step === 2 && (v.mk || 0) < (v.res.more || 0) && v.t >= V_ASK + V_MORE * ((v.mk || 0) + 1)) {
     const m = dServeMore(v);   // 「これもおいしそう！」もう1こ（11/19）
     if (!m) { v.res.more = v.mk || 0; return; }
-    v.mk = (v.mk || 0) + 1; v.last = m; save(); showMore(v, m, false);
-    if (dLeft(m.key) <= 0) setTimeout(() => dSay(m.key === S.today.kanban ? 'kanban' : 'sold', candyOf(m.key).name, true), 700);
+    v.mk = (v.mk || 0) + 1; v.last = m; save(); showMore(v, m, false); mSe('sale', { rate: 1.06 });
+    if (dLeft(m.key) <= 0) setTimeout(() => { mSe('soldout'); dSay(m.key === S.today.kanban ? 'kanban' : 'sold', candyOf(m.key).name, true); }, 700);
   } else if (v.step === 2 && v.t >= V_LEAVE + V_MORE * (v.mk || 0)) {
     v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
   } else if (v.step === 3 && v.t >= V_END) {
@@ -234,8 +235,8 @@ function dMateVisit(R, m) {
   it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
   if (it.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   S.seen['mate:' + m.id] = S.day; save();
-  dCaseUpdate();
-  talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); });
+  dCaseUpdate(); mSe('door');
+  talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); mJg('jg-nakama'); });   // 仲間になったジングル（11/19）
 }
 /* そのお菓子が棚にあと何こ（同じお菓子が2マス以上あってもぜんぶ数える） */
 const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
@@ -269,7 +270,7 @@ function closeDay(msg) {
   clearTimeout(dayTick); dayTick = 0;
   const loss = S.shelf.some(s => s.n > 0) && !S.seen.loss ? (S.seen.loss = S.day, STORY.lossFirst) : [];   // 売れのこりは今日でおしまい（はじめての日だけ ほのかが言う）
   save(); if (msg) toast(msg);
-  renderDay();
+  renderDay(); mSe('close');
   setTimeout(() => dPreload(D_PRE_MORNING()), 4000);   // 夜のあいだに、あしたの朝の絵を先に読んでおく（夜の絵が読みおわってから）
   setTimeout(() => {
     const sd = dSum(R), E = dEv(R);
