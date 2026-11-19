@@ -345,7 +345,7 @@ function kitchenHTML(M) {
   return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
     <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
       <span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
-      <div class="m-tools">${mAutoBakeOk() ? `<button class="pill sub" data-act="m-auto"${mBusy ? ' disabled' : ''}>きのうと同じに焼く</button>` : ''}<button class="round m-bookb" data-act="m-book" aria-label="レシピ帳">${M_BOOK_SVG}</button></div>
+      <div class="m-tools">${mAutoBakeOk() ? `<button class="pill sub" data-act="m-auto"${mBusy ? ' disabled' : ''}>きのうと同じに焼く</button>` : ''}<button class="round m-bookb" data-act="m-book" aria-label="レシピ帳">${ART['ui-book'] ? `<img class="m-bookimg" src="${ART['ui-book']}" alt="">` : M_BOOK_SVG}</button></div>
       <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
       <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
     </div>
@@ -476,6 +476,7 @@ function mAutoArrange() {
 }
 
 /* ---------- レシピ帳（11/19 しょーくん「作り込みとほのかの一言をクスッとくるように」）：ひらめいたお菓子と、ほのかのひとこと（STORY.note） ---------- */
+/* レシピ帳の本（ui-book）・まだのお菓子のふた（ui-mada）は描き下ろしが届いたら自動で出る（11/19 しょーくん「レシピ帳のアイコンが描き下ろされてなかった」→ H-033） */
 const M_BOOK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c2.6-1 5.2-1 8 .6 2.8-1.6 5.4-1.6 8-.6v13c-2.6-1-5.2-1-8 .6-2.8-1.6-5.4-1.6-8-.6z" fill="#fff4e4" stroke="#5a3418" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.1v13" stroke="#5a3418" stroke-width="1.4"/><path d="M6.5 9h3.5M6.5 12h3.5M14 9h3.5M14 12h3.5" stroke="#e8607a" stroke-width="1.2" stroke-linecap="round"/></svg>';
 const M_FORMS = ['mugi', 'hachimitsu', 'milk', 'egg', 'ichigo', 'mizuame', 'herb'];
 function mBookSecs() {
@@ -503,7 +504,7 @@ function bookHTML() {
       return `<div class="ms-good bk-rec"><span class="bk-ico">${candyIcon(k)}</span><span class="bk-body"><span class="bk-nm">${esc(c.name)}<em>${c.mats.map(matShort).join('＋')}</em></span><span class="bk-note">${esc(note(k, x))}</span></span></div>`;
     }
     const hint = x.par ? '？＋？' : (x.mon ? matShort(x.mon) : matShort(k.split('+')[0])) + '＋？';
-    return `<div class="ms-good bk-rec un"><span class="bk-ico">？</span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(hint)}</em></span><span class="bk-note">まだ、ひらめいていない</span></span></div>`;
+    return `<div class="ms-good bk-rec un"><span class="bk-ico${ART['ui-mada'] ? ' art' : ''}">${ART['ui-mada'] ? `<img src="${ART['ui-mada']}" alt="">` : ''}<b>？</b></span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(hint)}</em></span><span class="bk-note">まだ、ひらめいていない</span></span></div>`;
   };
   const body = secs.filter(x => x.show !== false).map(x => `<p class="ms-sec">${esc(x.ttl)}<em>${x.known.length}/${x.keys.length}</em></p>${x.keys.map(k => row(k, x)).join('')}`).join('');
   const sbg = ART['bg-zakka'];

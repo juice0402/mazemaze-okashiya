@@ -233,9 +233,12 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .dslot.out .hico{opacity:.3}
 .dslot.out .d-nm{opacity:.5}
 .d-out{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) rotate(-12deg);font-family:var(--disp);font-size:12px;color:var(--strawberry);border:2px solid var(--strawberry);border-radius:6px;padding:0 5px;background:rgba(255,255,255,.7)}
+/* うりきれのハンコ（11/19・H-033）：夜の「まんぞく！」と同じ花のハンコ ui-stamp を使いまわす（リーダーの描き下ろし・字はコード） */
+.dslot .d-out{display:grid;place-items:center;width:min(62px,74%);aspect-ratio:240/225;height:auto;padding:0;border:0;border-radius:0;background:var(--ui-stamp) center/contain no-repeat;color:#c4302a;font-size:12.5px;font-weight:400;line-height:1.02;letter-spacing:-.5px;text-align:center;-webkit-text-stroke:3px #fff8ee;paint-order:stroke fill;z-index:2}
 .dslot.pop{animation:spop .35s ease-out}
 @keyframes spop{40%{transform:scale(1.08)}}
 .d-sold{position:absolute;left:50%;top:26%;z-index:1;font-size:11px;font-weight:700;color:#fff;background:var(--strawberry);border-radius:999px;padding:1px 8px;white-space:nowrap;pointer-events:none;animation:dsold 1s ease-out forwards}
+.d-sold.art{padding:3px 14px 5px;border-radius:0;background:var(--ui-sold) center/100% 100% no-repeat;color:#fff;text-shadow:0 1px 0 rgba(120,20,40,.6)}   /* 札の絵 ui-sold（H-033・字はコード） */
 @keyframes dsold{0%{transform:translate(-50%,6px);opacity:0}20%{transform:translate(-50%,0);opacity:1}75%{opacity:1}100%{transform:translate(-50%,-14px);opacity:0}}
 .d-bar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 8px}
 .d-lbl{font-family:var(--disp);font-size:15px;color:var(--milk)}
@@ -391,12 +394,17 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .m-tools{position:absolute;right:8px;top:8px;z-index:5;display:flex;align-items:center;gap:8px}
 .m-tools .pill{height:44px;padding:0 14px;font-size:13px}
 .m-bookb svg{width:24px;height:24px;display:block}
+.m-bookb .m-bookimg{width:30px;height:30px;max-width:none;object-fit:contain;display:block}
 .md-autob{position:absolute;right:8px;top:8px;z-index:5;height:34px;padding:0 12px;font-size:12px}
 .ms-sec{margin:6px 2px 2px;font-size:12px;font-weight:800;color:#fff2d8;text-shadow:0 1px 0 rgba(42,20,8,.8)}
 .ms-sec em{margin-left:6px;font-style:normal;font-size:11px;color:var(--gold)}
 .bk-cnt{margin-left:auto;font-size:13px;font-weight:800;color:var(--gold);text-shadow:0 1px 0 rgba(42,20,8,.8)}
 .ms-good.bk-rec{display:flex;align-items:center;gap:8px;text-align:left}
 .bk-ico{flex:none;width:40px;height:40px;display:grid;place-items:center;font-size:20px;font-weight:900;color:#b89a7a}
+.bk-ico>b{font:inherit;color:inherit}
+.bk-ico.art{position:relative}
+.bk-ico.art img{position:absolute;inset:0;max-width:none;object-fit:contain}
+.bk-ico.art>b{position:relative;margin-top:14%;font-size:15px;color:#fff6e0;-webkit-text-stroke:3px #6a4426;paint-order:stroke fill}   /* ふたの絵の上に「？」（字は絵に焼きこまない） */
 .bk-ico .hico,.bk-ico img,.bk-ico svg{width:40px;height:40px}
 .bk-body{min-width:0;display:flex;flex-direction:column;gap:1px}
 .bk-nm{font-size:13px;font-weight:800;color:var(--ink)}
@@ -411,6 +419,11 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .amb.rev{animation-name:ambXr}
 .amb.rev>i svg{transform:scaleX(-1)}
 .amb.bird>i svg{width:20px;height:10px;animation:ambFlap .32s ease-in-out infinite alternate}
+.amb .amb-art{display:block;max-width:none;object-fit:contain}
+.amb.bird .amb-art{width:24px;height:16px;animation:ambFlap .32s ease-in-out infinite alternate}
+.amb.leaf .amb-art{width:14px;height:14px;animation:ambSpin 1.6s linear infinite}
+.amb.fly .amb-art{width:16px;height:13px;animation:ambFlap .2s ease-in-out infinite alternate}
+.amb.rev .amb-art{scale:-1 1}
 .amb.leaf{animation-timing-function:ease-in-out}
 .amb.leaf>i svg{width:12px;height:12px;animation:ambSpin 1.6s linear infinite}
 .amb.leaf>i{animation:ambFall var(--d) ease-in var(--dl) both}
@@ -429,6 +442,8 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @keyframes dsRain{to{transform:translateY(50%)}}
 .ev-matsuri .ds-mote,.ev-ensoku .ds-mote{opacity:1}
 .ev-ensoku .ds-mote{filter:none;background:radial-gradient(circle,#fffbe8 0 30%,rgba(255,220,120,.9) 45%,rgba(255,200,90,0) 72%)}
+/* お祭りの旗：描き下ろしの ui-garland が届いたら（H-033）それを横にくりかえす */
+.dstage.ev-matsuri.has-garland::before{height:30px;background:var(--ui-garland) 0 0/auto 100% repeat-x}
 .dstage.ev-matsuri::before{content:"";position:absolute;left:0;right:0;top:0;height:22px;z-index:3;pointer-events:none;
   background:conic-gradient(from 135deg at 50% 0,#e8607a 0 90deg,transparent 0) 0 0/28px 18px repeat-x,conic-gradient(from 135deg at 50% 0,#f4c24e 0 90deg,transparent 0) 14px 2px/28px 18px repeat-x}
 @media (prefers-reduced-motion:reduce){.amb,.ev-rain .ds-rain{animation:none}}

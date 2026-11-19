@@ -58,7 +58,7 @@ function slotHTML(o, idx, ks, pre, rib = '') {
   const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
   if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
   const c = candyOf(o.s.key), out = o.s.n <= 0, tag = pre ? 'button' : 'div';
-  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm${dNmLong(c.name)}">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}${rib}</${tag}>`;
+  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm${dNmLong(c.name)}">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うり<br>きれ</span>' : ''}${rib}</${tag}>`;
 }
 function caseHTML(pre) {
   const { slots, ks } = shelfSlots(), rib = dSoroiRibs(slots);
@@ -78,7 +78,7 @@ function renderDay() {
   const tip = !pre ? '' : empty ? '棚がからっぽ……今日はお休みかな' : R.kanban ? `今日の看板は ${candyOf(R.kanban).name}` : '看板にするお菓子を、タップしてえらんでね';
   const rows = Math.ceil(Math.min(SHELF_MAX, S.shelfMax || 6) / SHELF_COLS);
   $('screen').innerHTML = `<section class="day fit">
-    <div class="dstage${pre ? ' pre' : ''}${(dEv(R) || {}).cls ? ' ' + dEv(R).cls : ''}" id="dstage" style="--sp:${daySpeed};--p:${R.done ? 1 : Math.min(1, (R.t || 0) / dLen(R)).toFixed(3)}">
+    <div class="dstage${pre ? ' pre' : ''}${(dEv(R) || {}).cls ? ' ' + dEv(R).cls : ''}${ART['ui-garland'] ? ' has-garland' : ''}" id="dstage" style="--sp:${daySpeed};--p:${R.done ? 1 : Math.min(1, (R.t || 0) / dLen(R)).toFixed(3)}">
       ${dayStageBg(sign)}
       <div class="d-cust" id="dCust"></div>
       ${dayStageFront()}
@@ -350,6 +350,12 @@ let dAmbT = 0;
 const D_BIRD = '<svg viewBox="0 0 20 10"><path d="M1 6 Q5 1 10 6 Q15 1 19 6" fill="none" stroke="#3a2a22" stroke-width="2.2" stroke-linecap="round"/></svg>';
 const D_LEAF = c => `<svg viewBox="0 0 12 12"><path d="M2 10 C2 4 6 1 11 1 C11 6 8 10 2 10Z" fill="${c}"/><path d="M2 10 L9 3" stroke="rgba(60,30,10,.5)" stroke-width=".8"/></svg>`;
 const D_BUTTERFLY = '<svg viewBox="0 0 16 12"><ellipse cx="5" cy="5" rx="4" ry="4" fill="#ffd9a0"/><ellipse cx="11" cy="5" rx="4" ry="4" fill="#ffd9a0"/><ellipse cx="5.5" cy="9.5" rx="2.6" ry="2" fill="#f6b8c8"/><ellipse cx="10.5" cy="9.5" rx="2.6" ry="2" fill="#f6b8c8"/><rect x="7.4" y="3" width="1.2" height="8" rx=".6" fill="#5a3418"/></svg>';
+/* 生きものの絵（11/19 しょーくん「描き下ろしじゃない所も一緒に制作」→ H-033）：葉っぱは夜の fx-leaf・fx-petal を使いまわす。
+   鳥 fx-bird・ちょうちょ fx-butterfly は届いたら自動で出る（ないときは今のコードの絵） */
+function dAmbArt(kind) {
+  const n = kind === 'bird' ? 'fx-bird' : kind === 'fly' ? 'fx-butterfly' : pick(['fx-leaf', 'fx-leaf', 'fx-petal']);
+  return ART[n] ? `<img class="amb-art" src="${ART[n]}" alt="">` : '';
+}
 function dAmbient() {
   clearTimeout(dAmbT);
   const R = S.dayRun, lay = document.querySelector('#dstage .ds-out');
@@ -361,7 +367,7 @@ function dAmbient() {
       const el = document.createElement('i');
       el.className = 'amb ' + kind + (dir < 0 ? ' rev' : '');
       el.style.cssText = `--y:${(kind === 'leaf' ? 8 : 14) + Math.random() * 30}%;--d:${(kind === 'bird' ? 6 : 9) + Math.random() * 4}s;--dl:${i * .35}s;--s:${.8 + Math.random() * .5}`;
-      el.innerHTML = `<i>${kind === 'bird' ? D_BIRD : kind === 'leaf' ? D_LEAF(pick(['#e8a040', '#d9733a', '#9fbf5a'])) : D_BUTTERFLY}</i>`;
+      el.innerHTML = `<i>${dAmbArt(kind) || (kind === 'bird' ? D_BIRD : kind === 'leaf' ? D_LEAF(pick(['#e8a040', '#d9733a', '#9fbf5a'])) : D_BUTTERFLY)}</i>`;
       el.addEventListener('animationend', e => { if (e.target === el) el.remove(); });
       lay.appendChild(el);
     }
@@ -422,7 +428,7 @@ function soldFx(key) {
   const cs = dCaseUpdate(); if (!cs) return;
   const sl = cs.querySelector(`.dslot[data-key="${CSS.escape(key)}"]`); if (!sl) return;
   sl.classList.add('pop');
-  sl.insertAdjacentHTML('beforeend', '<span class="d-sold">売れた！</span>');
+  sl.insertAdjacentHTML('beforeend', `<span class="d-sold${ART['ui-sold'] ? ' art' : ''}">売れた！</span>`);   // 札の絵 ui-sold は届いたら（H-033）
 }
 /* ハート：吹き出しから評判のびんへ飛んで、びんがたまる */
 function heartFx(from) {
