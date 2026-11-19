@@ -135,6 +135,11 @@ function mFly(key, fresh) {
 /* ---------- 商品を並べる（陳列）：天板のお菓子 → 棚のマスへ。まんなかは看板の枠 ---------- */
 const dSlots = () => shelfSlots(mState().kanban);
 function dFixKan() { const M = mState(); if (M.kanban && !S.shelf.some(s => s.key === M.kanban && s.n > 0)) M.kanban = null; }
+/* 同じお菓子が2マスあるとき、看板にしたほうを先に（shelfSlots は同じお菓子の1つ目を看板の枠に入れる・11/19） */
+function dFront(s) {
+  const i = S.shelf.indexOf(s), j = S.shelf.findIndex(x => x.key === s.key);
+  if (j >= 0 && i > j) { S.shelf[i] = S.shelf[j]; S.shelf[j] = s; }
+}
 function dPop(item) {
   const i = S.shelf.indexOf(item), el = i >= 0 && document.querySelector(`.md-case [data-mdrag="ds:${i}"]`);
   if (el) el.classList.add('pop');
@@ -152,7 +157,7 @@ function dPut(wi, idx) {
   M.baked.splice(wi, 1);
   if (o) M.baked.push(S.shelf.splice(o.i, 1, b)[0]);
   else S.shelf.push(b);
-  if (idx === ks) M.kanban = b.key;
+  if (idx === ks) { M.kanban = b.key; dFront(b); }
   dFixKan(); save(); renderMorning(); dPop(b);
 }
 /* 棚の si 番目を、棚の idx のマスへ（看板の枠へ・入れかえ・空いたマスへ） */
@@ -160,7 +165,7 @@ function dMove(si, idx) {
   const M = mState(), s = S.shelf[si]; if (!s) return;
   const { slots, ks } = dSlots(), o = slots[idx], fromKan = !!slots[ks] && slots[ks].i === si;
   if (o && o.i === si) return;
-  if (idx === ks) M.kanban = s.key;
+  if (idx === ks) { M.kanban = s.key; dFront(s); }
   else if (fromKan) M.kanban = o ? S.shelf[o.i].key : null;
   else if (o) { S.shelf[si] = S.shelf[o.i]; S.shelf[o.i] = s; }
   else { S.shelf.splice(si, 1); S.shelf.push(s); }
@@ -175,6 +180,7 @@ function dKan(si) {
   const M = mState(), s = S.shelf[si]; if (!s) return;
   const { slots, ks } = dSlots();
   M.kanban = slots[ks] && slots[ks].i === si ? null : s.key;
+  if (M.kanban) dFront(s);
   save(); renderMorning(); dPop(s);
 }
 /* お店を開ける：並べていないお菓子は空いたマスへ → 昼へ（すぐ営業） */
