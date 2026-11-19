@@ -114,3 +114,7 @@
 | jam-apple・-berry・-peach・-mikan・-grape・-mix（飴ジャムで生まれる★3のジャム） | A | Codex | 2026-11-19 | art-irai `requests/okashi/jams.md`（PR #119）・`prep_art.py parts … 300` | art.js の 'j:'（ぜんぶちがう実は jam-mix） |
 | special-sponge・-tart・-roll・-deco・-chiffon・-hachiroll（★3のくだものケーキ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/special-cake.md`（PR #117・cards-wakaba1 を編集）・`prep_art.py parts … 300 --strict` | art.js の 'c:' と ★3 |
 | special-amedai・-hakucho・-oshiro・-hanakago・-tsuya・-nobashi（★3の大作の飴細工） | A | Codex | 2026-11-19 | art-irai `requests/okashi/special-taisaku.md`（PR #120・cards-minamo1 を編集）・`prep_art.py parts … 300 --strict` | art.js の ★3 |
+| mat-mugi・-hachimitsu・-milk・-egg・-ichigo・-mizuame・-herb・sweet-parfait（朝の素材7とまぜまぜパフェ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-mats.md`（PR #123）・`prep_art.py parts … 192 --strict` | 昼の matIcon・candyIcon（H-027） |
+| sweet-<素材>-<素材>（朝のお菓子・id を abc 順。基本どうし1の8つ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-sweets1.md`（PR #125）・`prep_art.py parts … 192` | 昼の candyIcon（H-027）。hiru-sweets2〜4・hiru-mon-* も同じ形 |
+| special-korodrop・-hajike・-peroc・-ichidrop・-candybin・-mintame（★3のちいさなキャンディ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/special-candy.md`（PR #124・cards-minamo2 を編集）・`prep_art.py parts … 300 --strict` | art.js の ★3 |
+| special-garabin・-jamnabe・-ichijam・-shimejam・-torojam・-kirakira（★3の飴ジャムのカード） | A | Codex | 2026-11-19 | art-irai `requests/okashi/special-jam.md`（PR #126・cards-wakaba2 を編集）・`prep_art.py parts … 300 --strict` | art.js の ★3 |
