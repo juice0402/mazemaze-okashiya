@@ -532,7 +532,7 @@ mix-blend-mode:screen;transform-origin:50% 100%}
 .sh-roll{padding:5px 12px}
 .sh-roll small{display:inline-flex;align-items:center;gap:3px;margin-left:2px}
 .sh-roll .cn{flex:none;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 1px #5a2a04}
-.sh-price{top:calc(100% + 6px);bottom:auto}
+.sh-price{top:auto;bottom:calc(100% + 11px)}
 .gingham{position:relative;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
 .gingham::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}
 button.big,button.bake,button.go2,button.sub,button.pill,button.tab,button.round{background:none!important;box-shadow:none!important;border:2px solid transparent;border-radius:999px;border-image-repeat:stretch;border-image-width:auto}
@@ -680,6 +680,23 @@ background:linear-gradient(rgba(255,236,200,.55),rgba(255,236,200,0) 35%) paddin
 .dt-card .pc-ck{display:none}
 .mixmark{right:auto;left:50%;translate:-50% 0;top:-7px}
 .d-soroi{background:var(--ui-soroi) center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none;padding:2px 13px 4px 11px;color:#5a2410}
+.tk{display:block;max-width:100%;border:solid transparent;border-width:2px 5px 3px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/7px 8px stretch;padding:0 1px;font-style:normal;font-size:min(10px,2.5vw);font-weight:900;line-height:1.25;white-space:nowrap;letter-spacing:-.04em;color:#3a1c08}
+.tk.c-koge{border-image-source:var(--ui-chip-koge);border-image-slice:49% 13% 49% 13% fill;color:#fff1d8}
+.tk.c-ember{border-image-source:var(--ui-chip-ember);color:#3a1204}
+.tk.c-pink{border-image-source:var(--ui-chip-pink);color:#5a1028}
+.tk.c-mint{border-image-source:var(--ui-chip-mint);color:#103a2c}
+.tk.off{opacity:.42;filter:saturate(.25)}
+.ci-fx .tg{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-koge) 49% 13% 49% 13% fill/11px 12px stretch;padding:0 2px;color:#fff1d8}
+.ci-fx .tg.pos{background:none;box-shadow:none;border-image-source:var(--ui-chip-gold);border-image-slice:49% 18% 49% 18% fill;color:#3a1c08}
+.kone-n.kone-n{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;padding:2px 12px;color:var(--milk)}
+.kone-n.kone-n small{color:var(--milk-soft)}
+.kone-n.kone-n b{color:var(--gold);text-shadow:0 1px 0 #2a170c}
+.buff.buff{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 7px 4px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/9px 10px stretch;padding:0 1px;color:#3a1c08;filter:drop-shadow(0 0 4px var(--bc))}
+.buff.b-next,.buff.b-clead{border-image-source:var(--ui-chip-pink);color:#5a1028}
+.buff.b-again{border-image-source:var(--ui-chip-ember);color:#3a1204}
+.pk-on.pk-on{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-pink) 49% 18% 49% 18% fill/10px 11px stretch;padding:0 2px;color:#5a1028}
+.mx-dot.mx-dot{background:var(--ui-chip-mint) center/100% 100% no-repeat;box-shadow:none;border-radius:50%}
+.tip-x.tip-x{background:var(--ui-round) center/100% 100% no-repeat;color:#5a3418;font-weight:900}
 .deco{position:absolute;inset:0;z-index:8;pointer-events:none;container-type:size;border-radius:inherit}
 .dc-frame{position:absolute;inset:0;border:10px solid transparent;border-image:var(--ui-stage-frame) 74/20px round;box-shadow:inset 0 0 14px 4px rgba(20,8,2,.45)}
 .dc-medal{position:absolute;left:50%;top:-1px;width:36px;aspect-ratio:150/157;translate:-50% 0;background:var(--ui-stage-medal) center/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
@@ -1126,6 +1143,8 @@ background:linear-gradient(135deg,#fff,#c6edff 50%,#6cc4f0);animation:awice .75s
 @keyframes awice{0%{transform:scale(0);opacity:0}30%{transform:scale(1.25);opacity:1}100%{transform:scale(.8) translateY(30px);opacity:0}}
 .fwall.leaf .fw-flash{background:radial-gradient(130% 95% at 50% 100%,rgba(250,255,212,.8),rgba(160,225,90,.5) 45%,rgba(60,120,20,.22) 75%,transparent 95%)}
 .fwall.leaf .fw-t{width:16%;border-radius:50% 50% 12% 12% / 90% 90% 10% 10%;background:radial-gradient(46% 14% at 50% 7%,#e2f8a8,transparent 72%),linear-gradient(90deg,transparent 30%,rgba(130,190,60,.92) 42%,rgba(196,238,118,.96) 50%,rgba(112,172,52,.92) 58%,transparent 70%)}
+.tkws{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0 6px;height:34px;margin:3px 0 -2px;padding:0 9px;pointer-events:none}
+.tkw{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;font-style:normal}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -1174,7 +1193,8 @@ background:linear-gradient(135deg,#fff,#c6edff 50%,#6cc4f0);animation:awice .75s
 .panel.end .end-mood{margin:2px 0 0;font-size:13px}
 .panel.end .end-mood b{color:var(--gold);font-family:var(--disp);font-weight:400;font-size:16px}
 .gotrow{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
-.got.coin span{padding:3px 12px;border-radius:999px;background:linear-gradient(#ffe08a,#e0a73a);border:2px solid #6a4210;color:#4a2a06;font-weight:700}
+.got.coin span{display:inline-flex;align-items:center;gap:5px;border:solid transparent;border-width:4px 16px 5px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/14px 16px stretch;padding:0 2px;color:#4a2a06;font-weight:700;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.got.coin .cn{flex:none;width:18px;height:18px;background:var(--ui-coin) center/contain no-repeat}
 #screen>section.result{gap:8px}
 .diary{flex:1;min-height:0;position:relative;padding:14px 16px 12px 30px;border-radius:6px 14px 14px 6px;color:var(--ink);background:repeating-linear-gradient(transparent 0 31px,rgba(150,110,80,.28) 31px 32px) 0 46px/100% calc(100% - 46px) no-repeat,linear-gradient(90deg,transparent 18px,rgba(232,96,122,.45) 18px 20px,transparent 20px),linear-gradient(#fffaf0,#f6ead2);box-shadow:inset 0 0 0 1px rgba(120,80,40,.25),0 5px 0 rgba(0,0,0,.35);overflow:hidden}
 .diary h2{margin:0 0 6px;font-family:var(--disp);font-weight:400;font-size:17px;color:#a8433a}
@@ -1209,7 +1229,9 @@ background:linear-gradient(135deg,#fff,#c6edff 50%,#6cc4f0);animation:awice .75s
 .tk-win[data-who="wakaba"] .tk-name{filter:hue-rotate(95deg) saturate(.8)}
 .diary{border:22px solid transparent;border-width:22px 8px 9px 20px;border-radius:0;border-image:var(--ui-diary) 52 19 22 48/22px 8px 9px 20px round;background:repeating-linear-gradient(transparent 0 31px,rgba(150,110,80,.3) 31px 32px) 0 46px/100% calc(100% - 46px) no-repeat,linear-gradient(#fdebcb,#fae4c2);background-clip:padding-box;box-shadow:none;filter:drop-shadow(0 4px 0 rgba(0,0,0,.3));overflow:visible;padding:14px 12px 4px 10px}
 .diary::before{content:"";position:absolute;left:-8px;top:-21px;width:57px;aspect-ratio:134/75;background:var(--ui-diary-tape) left top/contain no-repeat;pointer-events:none;z-index:1}
-.sum-om{white-space:nowrap;font-size:min(13px,3.4vw);letter-spacing:-.02em}
+.sum-om{display:flex;flex-wrap:wrap;column-gap:1em;font-size:min(13px,3.4vw);letter-spacing:-.02em}
+.sum-om span{white-space:nowrap}
+.sum dd{min-width:0}
 .mstage{position:relative;flex:1 1 0;min-height:150px;border-radius:14px;overflow:hidden;container-type:size;border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4);background:var(--bgimg) 50% 50%/cover no-repeat,#e8c49a;--iw:max(100cqw,177.78cqh);--ih:max(100cqh,56.25cqw)}
 .mstage.noart{background:radial-gradient(40% 35% at 58% 38%,#ffb35a,transparent 70%),linear-gradient(#f3d6ae,#d9a878)}
 .m-oven{position:absolute;left:calc(50% + .08 * var(--iw));top:calc(50% - .08 * var(--ih));width:calc(.3 * var(--iw));height:calc(.4 * var(--ih));transform:translate(-50%,-50%);border-radius:50% 50% 14px 14px / 60% 60% 14px 14px;z-index:1}
@@ -1948,7 +1970,7 @@ chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki',
 bal: [0.34, 1.268], doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
 },
 taisaku: {
-chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたたかいうちに大作をまぜて育て、ひえひえで固めると本気。★3を完成させて固めたら最強',
+chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて まぜて育て、ひえひえで固める。★3を固めたら最強',
 bal: [2.97, 1.123], doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
@@ -3950,6 +3972,21 @@ const t = tslot(x.i), c = t && t.querySelector('.pc'); if (c) replay(c, 'kon'); 
 floatAt(t, x.to >= RIPE ? '熟した！' : '育った', x.to >= RIPE ? 'best' : 'cookup');
 }, n * 160)), 650);
 }
+const TRAIT_C = { スタート: 'gold', アンカー: 'gold', 焦げ: 'koge', 焦げ無効: 'koge', 火力: 'ember', サイコー: 'ember', 温度: 'mint', 熟した実: 'pink', こね: 'pink', パン種: 'pink' };
+function cardTraits(cid) {
+const d = cardDef(cid), out = d.cat === 'burnt' ? ['焦げ'] : [];
+for (const t of cardChips(d)) {
+const m = /^(スタート|アンカー)/.exec(t), w = m ? m[1] : /焦げ無効/.test(t) ? '焦げ無効' : (t.match(KW_SHORT) || [])[0];
+if (w && !out.includes(w)) out.push(w);
+}
+return out.slice(0, 2);
+}
+function traitRowHTML() {
+if (N.stage === 'pick') return '';   // シェフえらびの2×2 は舞台を大きいまま使う
+const idx = N.board.map((c, i) => c ? i : -1).filter(i => i >= 0), first = idx[0], last = idx[idx.length - 1];
+const cell = (c, i) => c ? cardTraits(c.cid).map(w => `<b class="tk c-${TRAIT_C[w] || 'pink'}${(w === 'スタート' && i !== first) || (w === 'アンカー' && i !== last) ? ' off' : ''}">${w}</b>`).join('') : '';
+return `<div class="tkws" aria-hidden="true"><i class="tkw"></i>${N.board.map((c, i) => `<i class="tkw">${cell(c, i)}</i>`).join('')}</div>`;
+}
 function binHTML() {
 if (!fixedField()) return '';
 const left = Math.max(0, BIN_MAX - binCount()), dots = N.bin.map(m => `<img src="${cardIconURL('m:' + m)}" alt="">`).join('') + '<i></i>'.repeat(left);
@@ -4333,13 +4370,13 @@ const R = MOODS[rec.mood] || MOODS[1];
 body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood >= 3 ? 'おなかいっぱい！' : R.name + '！'}</h2>
 <p class="bignum">${fmt(rec.score)}</p><p>${esc(mon.name)}が おなかいっぱいになるのは ${fmt(rec.belly)}</p>
 <p class="end-mood"><b>${R.name}</b>のお礼</p>
-<div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div><div class="got coin"><span>コイン ${fmt(R.coins)}円</span></div></div>
+<div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div><div class="got coin"><span><i class="cn"></i>コイン ${fmt(R.coins)}円</span></div></div>
 </div><button class="big" data-act="toResult">1日のまとめへ</button>`;
 } else {
 const shop = N.stage === 'shop';
 const H = heatOf();
 body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.field ? N.heat : 0}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
-`<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
+`<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
 <div class="bar">${barHTML()}</div>
 ${viewerHTML()}`;
 }
@@ -4697,6 +4734,10 @@ setTimeout(() => e.remove(), 1100);
 }
 const hubPoint = () => { const st = $('stage'); if (!st) return null; const r = st.getBoundingClientRect(); return { x: r.left + r.width * .5, y: r.top + r.height * .34 }; };
 const chipHTML = c => `<b>${esc(c.b)}</b><small>${esc(c.s)}</small>`;
+function chipInside(el) {
+const W = fxLayer().clientWidth, w = el.offsetWidth, x = parseFloat(el.style.left);
+if (w && W) el.style.left = Math.max(w / 2 + 4, Math.min(W - w / 2 - 4, x)) + 'px';
+}
 function fxEl(cls, p, html) {
 const el = document.createElement('div'); el.className = cls; el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; el.innerHTML = html;
 fxLayer().appendChild(el); return el;
@@ -4741,6 +4782,7 @@ ringAt(n, 'r-gold');
 function chipPop(at, c) {
 const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a) return;
 const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c));
+chipInside(ch);
 ch.style.setProperty('--pd', T(1000) + 'ms');
 setTimeout(() => ch.remove(), T(1020));
 }
@@ -4989,10 +5031,16 @@ function tipEv(kind) {
 if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
 }
 function tipClose() { TIP = null; tipClear(); }
-function tipClear() { for (const id of ['tipb', 'tipf', 'tipd']) { const el = $(id); if (el) el.remove(); } }
+function tipClear() { for (const id of ['tipb', 'tipf', 'tipd']) { const el = $(id); if (el) el.remove(); } const sc = document.querySelector('.shopov .sh-cards'); if (sc) sc.style.paddingBottom = ''; }
 function tipDim(scr, before) {
 const d = document.createElement('div'); d.id = 'tipd'; d.className = 'tipd';
 scr.insertBefore(d, before);
+}
+function tipRoom(b) {
+const sc = document.querySelector('.shopov .sh-cards'); if (!sc) return;
+sc.style.paddingBottom = '';
+const br = b.getBoundingClientRect(), cr = sc.getBoundingClientRect();   // カードは配るアニメのとちゅうなので、列の箱で見る（カードはまんなかにそろうので、下があけばよける）
+if (br.top < cr.bottom - 2 && br.right > cr.left && br.left < cr.right) sc.style.paddingBottom = Math.round(cr.bottom - br.top + 14) + 'px';
 }
 const tipKw = s => s.replace(/\{([^}]+)\}/g, '<b class="kw">$1</b>');
 const tipMid = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
@@ -5019,6 +5067,7 @@ b.classList.add('down'); b.style.maxWidth = Math.round(W.width - 16) + 'px';
 b.style.left = Math.round(Math.max(W.left + 8, Math.min(W.right - 8 - b.offsetWidth, r.left + r.width / 2 - b.offsetWidth / 2))) + 'px';
 b.style.top = Math.round(Math.max(6, r.top - b.offsetHeight - 14)) + 'px';
 }
+else tipRoom(b);
 TIP.fresh = false;
 const h = TIP.t.hand();
 tipDim(scr, b);
@@ -6112,7 +6161,7 @@ $('screen').innerHTML = `<section class="result fit">
 <div class="sum-row"><dl>
 <dt>お昼の売上</dt><dd>${fmt(T.sales)}円</dd>
 <dt>お礼のコイン</dt><dd>${fmt(T.coins)}円</dd>
-<dt>おもてなし</dt><dd class="sum-om">${mon ? esc(mon.name) + (mood ? '　' + mood.name : '') : 'なし'}</dd>
+<dt>おもてなし</dt><dd class="sum-om">${mon ? `<span>${esc(mon.name)}</span>${mood ? `<span>${mood.name}</span>` : ''}` : 'なし'}</dd>
 <dt>もらった素材</dt><dd>${gifts || 'なし'}</dd>
 </dl>${jarHTML()}</div>
 <p class="sum-money">お財布 <b>${fmt(S.money)}</b>円</p>

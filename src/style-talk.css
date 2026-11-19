@@ -55,7 +55,9 @@
 .panel.end .end-mood{margin:2px 0 0;font-size:13px}
 .panel.end .end-mood b{color:var(--gold);font-family:var(--disp);font-weight:400;font-size:16px}
 .gotrow{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
-.got.coin span{padding:3px 12px;border-radius:999px;background:linear-gradient(#ffe08a,#e0a73a);border:2px solid #6a4210;color:#4a2a06;font-weight:700}
+/* お礼のコインの札：描き下ろしの金の札（ui-chip-gold）＋コイン（ui-coin）（11/19 しょーくん「ほんとに描き下ろし？」→ CSS だったので絵に） */
+.got.coin span{display:inline-flex;align-items:center;gap:5px;border:solid transparent;border-width:4px 16px 5px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/14px 16px stretch;padding:0 2px;color:#4a2a06;font-weight:700;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.got.coin .cn{flex:none;width:18px;height:18px;background:var(--ui-coin) center/contain no-repeat}
 
 /* ---------- 1日のまとめ：ほのかの日記（ノートの紙）・お金・評判のハートのびん ---------- */
 #screen>section.result{gap:8px}
@@ -98,4 +100,7 @@
 .diary{border:22px solid transparent;border-width:22px 8px 9px 20px;border-radius:0;border-image:var(--ui-diary) 52 19 22 48/22px 8px 9px 20px round;background:repeating-linear-gradient(transparent 0 31px,rgba(150,110,80,.3) 31px 32px) 0 46px/100% calc(100% - 46px) no-repeat,linear-gradient(#fdebcb,#fae4c2);background-clip:padding-box;box-shadow:none;filter:drop-shadow(0 4px 0 rgba(0,0,0,.3));overflow:visible;padding:14px 12px 4px 10px}
 .diary::before{content:"";position:absolute;left:-8px;top:-21px;width:57px;aspect-ratio:134/75;background:var(--ui-diary-tape) left top/contain no-repeat;pointer-events:none;z-index:1}
 /* 1日のまとめの「おもてなし」の行：モンスターの名前と満足を1行に（11/19 H-029 の5） */
-.sum-om{white-space:nowrap;font-size:min(13px,3.4vw);letter-spacing:-.02em}
+/* 名前と満足は、それぞれ切らずに・入らないときは満足を次の行へ（11/19 しょーくん「日記がびんとかぶってる」） */
+.sum-om{display:flex;flex-wrap:wrap;column-gap:1em;font-size:min(13px,3.4vw);letter-spacing:-.02em}
+.sum-om span{white-space:nowrap}
+.sum dd{min-width:0}

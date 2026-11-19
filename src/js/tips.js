@@ -91,13 +91,20 @@ function tipEv(kind) {
   if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
 }
 function tipClose() { TIP = null; tipClear(); }
-function tipClear() { for (const id of ['tipb', 'tipf', 'tipd']) { const el = $(id); if (el) el.remove(); } }
+function tipClear() { for (const id of ['tipb', 'tipf', 'tipd']) { const el = $(id); if (el) el.remove(); } const sc = document.querySelector('.shopov .sh-cards'); if (sc) sc.style.paddingBottom = ''; }
 /* うしろを少し暗く（11/19 しょーくん・えらぶ質問「暗くする」＝朝昼の会話とそろえる）。指がさす調理台が見えるよう、朝昼より少しうすく。さわれるように pointer-events なし */
 function tipDim(scr, before) {
   const d = document.createElement('div'); d.id = 'tipd'; d.className = 'tipd';
   scr.insertBefore(d, before);
 }
 
+/* 低い画面（iPad の横ならびなど）で吹き出しがショップのカードの字にかぶるときは、カードの列の下をあけて小さくする（11/19 点検・高さ600で2段目にかぶっていた） */
+function tipRoom(b) {
+  const sc = document.querySelector('.shopov .sh-cards'); if (!sc) return;
+  sc.style.paddingBottom = '';
+  const br = b.getBoundingClientRect(), cr = sc.getBoundingClientRect();   // カードは配るアニメのとちゅうなので、列の箱で見る（カードはまんなかにそろうので、下があけばよける）
+  if (br.top < cr.bottom - 2 && br.right > cr.left && br.left < cr.right) sc.style.paddingBottom = Math.round(cr.bottom - br.top + 14) + 'px';
+}
 /* ---------- 描く：吹き出しはほのかの右上・指は fixed で、さす所の上へ ---------- */
 const tipKw = s => s.replace(/\{([^}]+)\}/g, '<b class="kw">$1</b>');
 const tipMid = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
@@ -126,6 +133,7 @@ function tipDraw() {
     b.style.left = Math.round(Math.max(W.left + 8, Math.min(W.right - 8 - b.offsetWidth, r.left + r.width / 2 - b.offsetWidth / 2))) + 'px';
     b.style.top = Math.round(Math.max(6, r.top - b.offsetHeight - 14)) + 'px';
   }
+  else tipRoom(b);
   TIP.fresh = false;
   const h = TIP.t.hand();
   tipDim(scr, b);

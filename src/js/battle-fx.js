@@ -386,6 +386,11 @@ function dmgNum(dmg, size, p) {
    動かすのは transform と opacity だけ（Web Animations）。ぜんぶ #fxl に出して消す ---------- */
 const hubPoint = () => { const st = $('stage'); if (!st) return null; const r = st.getBoundingClientRect(); return { x: r.left + r.width * .5, y: r.top + r.height * .34 }; };
 const chipHTML = c => `<b>${esc(c.b)}</b><small>${esc(c.s)}</small>`;
+/* 札が画面のはしで切れないように、横を内がわへ寄せる（11/19 点検：右はしのマスの「となりへ」が21px 切れていた）。出すときに1回だけはかる */
+function chipInside(el) {
+  const W = fxLayer().clientWidth, w = el.offsetWidth, x = parseFloat(el.style.left);
+  if (w && W) el.style.left = Math.max(w / 2 + 4, Math.min(W - w / 2 - 4, x)) + 'px';
+}
 function fxEl(cls, p, html) {
   const el = document.createElement('div'); el.className = cls; el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; el.innerHTML = html;
   fxLayer().appendChild(el); return el;
@@ -435,6 +440,7 @@ function hubFin(H, dmg) {
 function chipPop(at, c) {
   const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a) return;
   const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c));
+  chipInside(ch);
   ch.style.setProperty('--pd', T(1000) + 'ms');
   setTimeout(() => ch.remove(), T(1020));
 }

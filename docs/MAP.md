@@ -38,6 +38,7 @@
 | tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
 | tools/play.py | 夜の自動プレイ点検（11/19）：本物のドラッグとタップで、えらんだビルドの夜を9ラウンド通しで遊び（買う・まぜる・うる・入れかえ・会話・はやおくり連打・バトル中の読みなおし→つづきから）、JS のエラー・止まり・字の undefined／NaN・部品のたまりを集める。`python3 -I tools/play.py . <フォルダ> cookie,kone,taisaku,candy,fruitcake,jam [日] [たね] [はやさ]`（1ビルド2分ほど） | |
+| tools/audit_ui.py | 見た目の総点検（11/19）：`python3 -I tools/audit_ui.py <フォルダ> 844 600 --fonts <@fontsource の node_modules>`。26の場面で、絵を使わずに CSS でぬった面（css）・字の切れ（clip 横／たて・ellipsis）・字の上のかぶり（cover）を report.json に。フォントは本番と同じ Dela Gothic One・Zen Maru Gothic を npm の @fontsource で読む（ないと字の幅がちがう）。会話・ヒントの暗い幕や演出のかぶりはわざとなので、目で見てはずす |
 | tools/mado.py | 昼のお店の窓の型を作る道具（11/18 昼のチャット・H-021）：bg-day から3つの窓のガラスだけの型 bg-day-mado と、それをぼかした光 bg-day-mado-glow を作る（Python・PIL） |
 | .ignore | 検索（ripgrep）から index.html・assets/ を外す（1行が大きすぎるため） | |
 | src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
@@ -74,6 +75,7 @@
 ## わかば（11/19・くだものケーキと飴ジャム）
 - cards.js：FRUITS（5つの実・段ごとの効果 st）→ MATS の `<実><段>`（cat fruit・stage 0 花・1 青い実・2 熟した実・RIPE・絵は alt の card-<実>-<段>）・scaleFx（のびのび×2・かかし×1.5）／MATS の cat cake（sponge〜hachiroll：tartFruit・rollGrow・ripeFin・perGrow・fruitAgain）と cat jam（garabin〜jamnabe：binNow・jamLead・jamFin・toro・shine・perJam）／TOOLS の joro〜hatabell（water・fert・scare・basket・call）／FIELDS の nobi（slowGrow・fruitMul）・suku（growAdd）・decodai（cakeMul・fcMul）・oobin（fixed＝場がいつも大きなびん）／CHEFS.wakaba（heat.none＝メーターなし）／BUILDS.fruitcake・jam（bin）／binNight()・カード 'c:★2のケーキ|熟した実'（★3のくだものケーキ・fruitCake・fruitCakeName）・'j:実+実+実'（★3のジャム・JAM_DMG・jamTop・jamName）／ripeFinOf・jamFinOf・KW の くだもの〜大きなびん
 - night.js：nightPrep（夜のはじめ：場・bin・jamN）・大きなびん BIN_MAX・fixedField・binWeight（とろとろで熟した実は2つ分）・binCount・binPlan・binIn（3つで 'j:' が調理台へ）・dropPlan の kind bin・fruitEnd（ラウンドの終わりに育つ：nextRound）・fruitGrow（育つ・もりのシフォンの plus）・resolveRound の fxAt（くだものの効果の倍）・1c の fgrow（ロール生地）・water・fert・basket・jamMul・shine・cake の×・ripeFin（ケーキにのせた実も数える）・jamFin
+- 場のカードの特色（11/19 しょーくん）：night-ui.js の traitRowHTML・cardTraits・TRAIT_C（調理台の下の .tkws／札 .tk・ui-chip-*・スタート／アンカーは その場所にいないと .off）。CSS は style-battle.css のいちばん下と style.css の「UI の絵 その10」。シェフえらびのあいだは出さない
 - night-ui.js：jamBadge・binFx・fruitFx・binHTML（場のびんの中の実）・showEvent の fgrow・actChips の water／shine／fert／basket・HEROES.wakaba・POSE_WAKABA（POSE_SIX）。battle-fx.js の auraOut の water。cards-ui.js の cardDmg の plus。見た目は style-battle.css のいちばん下「わかばの夜」
 
 ## データの形（S・セーブは localStorage `mazemaze-okashiya` の v:5）

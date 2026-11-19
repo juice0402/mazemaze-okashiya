@@ -57,6 +57,23 @@ function fruitFx(list) {
   }, n * 160)), 650);
 }
 /* 大きなびん（場）の中の実：入っている実の絵と、あといくつ（3つでジャム） */
+/* 場のカードの特色（11/19 しょーくん「戦闘画面はこんなに大きくなくていい・カードの直下に スタート・アンカー・焦げ などの特色だけでも」）：
+   調理台のすぐ下に、マスごとに効果のことばを2つまで（描き下ろしの札 ui-chip-*）。スタート・アンカーは、いま その場所（いちばん左・いちばん右のカード）にいるときだけ光る */
+const TRAIT_C = { スタート: 'gold', アンカー: 'gold', 焦げ: 'koge', 焦げ無効: 'koge', 火力: 'ember', サイコー: 'ember', 温度: 'mint', 熟した実: 'pink', こね: 'pink', パン種: 'pink' };
+function cardTraits(cid) {
+  const d = cardDef(cid), out = d.cat === 'burnt' ? ['焦げ'] : [];
+  for (const t of cardChips(d)) {
+    const m = /^(スタート|アンカー)/.exec(t), w = m ? m[1] : /焦げ無効/.test(t) ? '焦げ無効' : (t.match(KW_SHORT) || [])[0];
+    if (w && !out.includes(w)) out.push(w);
+  }
+  return out.slice(0, 2);
+}
+function traitRowHTML() {
+  if (N.stage === 'pick') return '';   // シェフえらびの2×2 は舞台を大きいまま使う
+  const idx = N.board.map((c, i) => c ? i : -1).filter(i => i >= 0), first = idx[0], last = idx[idx.length - 1];
+  const cell = (c, i) => c ? cardTraits(c.cid).map(w => `<b class="tk c-${TRAIT_C[w] || 'pink'}${(w === 'スタート' && i !== first) || (w === 'アンカー' && i !== last) ? ' off' : ''}">${w}</b>`).join('') : '';
+  return `<div class="tkws" aria-hidden="true"><i class="tkw"></i>${N.board.map((c, i) => `<i class="tkw">${cell(c, i)}</i>`).join('')}</div>`;
+}
 function binHTML() {
   if (!fixedField()) return '';
   const left = Math.max(0, BIN_MAX - binCount()), dots = N.bin.map(m => `<img src="${cardIconURL('m:' + m)}" alt="">`).join('') + '<i></i>'.repeat(left);
@@ -488,13 +505,13 @@ function renderNight() {
     body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood >= 3 ? 'おなかいっぱい！' : R.name + '！'}</h2>
         <p class="bignum">${fmt(rec.score)}</p><p>${esc(mon.name)}が おなかいっぱいになるのは ${fmt(rec.belly)}</p>
         <p class="end-mood"><b>${R.name}</b>のお礼</p>
-        <div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div><div class="got coin"><span>コイン ${fmt(R.coins)}円</span></div></div>
+        <div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div><div class="got coin"><span><i class="cn"></i>コイン ${fmt(R.coins)}円</span></div></div>
       </div><button class="big" data-act="toResult">1日のまとめへ</button>`;
   } else {
     const shop = N.stage === 'shop';
     const H = heatOf();
     body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.field ? N.heat : 0}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
-        `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
+        `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
   }

@@ -249,7 +249,7 @@ const BUILDS = {
   },
   /* みなも①（11/19）：mate＝その仲間が来てから（昼の⑧で S.seen['mate:minamo']） */
   taisaku: {
-    chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたたかいうちに大作をまぜて育て、ひえひえで固めると本気。★3を完成させて固めたら最強',
+    chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて まぜて育て、ひえひえで固める。★3を固めたら最強',
     bal: [2.97, 1.123], doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
   },
   /* みなも②（11/19）：キャンディどうしの れんさ。冷えるほど強い（自然に冷めるのが味方） */

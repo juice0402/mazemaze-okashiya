@@ -628,7 +628,8 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .sh-roll{padding:5px 12px}
 .sh-roll small{display:inline-flex;align-items:center;gap:3px;margin-left:2px}
 .sh-roll .cn{flex:none;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 1px #5a2a04}
-.sh-price{top:calc(100% + 6px);bottom:auto}
+/* 値札はカードの上（11/19 しょーくん「持っているコインも上にあるので」）。まぜの札（カードの上のふち）の上にすき間をあける */
+.sh-price{top:auto;bottom:calc(100% + 11px)}
 
 /* 共通の部品：ギンガムの布（11/18 H-010 の7。前の夜の手札の布。朝の倉庫などで class="gingham" をつけて使う） */
 .gingham{position:relative;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
@@ -843,3 +844,27 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .mixmark{right:auto;left:50%;translate:-50% 0;top:-7px}
 /* 昼のおそろいのリボン（ui-soroi・11/19 H-025 の5）：絵の皮だけ。中のアイコンと字は昼のチャットの並べ方のまま */
 .d-soroi{background:var(--ui-soroi) center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none;padding:2px 13px 4px 11px;color:#5a2410}
+/* ==== UI の絵 その10（11/19 夕方 点検・しょーくん「全ての枠・ボタン・背景が描き下ろしか確認して」）：CSS でぬっていた札を、描き下ろしの札の皮に ==== */
+/* 場のカードの特色の札（.tk）：計算の札と同じ ui-chip-*。字はコードで重ねる */
+.tk{display:block;max-width:100%;border:solid transparent;border-width:2px 5px 3px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/7px 8px stretch;padding:0 1px;font-style:normal;font-size:min(10px,2.5vw);font-weight:900;line-height:1.25;white-space:nowrap;letter-spacing:-.04em;color:#3a1c08}
+.tk.c-koge{border-image-source:var(--ui-chip-koge);border-image-slice:49% 13% 49% 13% fill;color:#fff1d8}
+.tk.c-ember{border-image-source:var(--ui-chip-ember);color:#3a1204}
+.tk.c-pink{border-image-source:var(--ui-chip-pink);color:#5a1028}
+.tk.c-mint{border-image-source:var(--ui-chip-mint);color:#103a2c}
+.tk.off{opacity:.42;filter:saturate(.25)}
+/* 大きく見る画面の いつの札（.tg）：こげ茶の札・場所の札（スタート・アンカー）は金の札 */
+.ci-fx .tg{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-koge) 49% 13% 49% 13% fill/11px 12px stretch;padding:0 2px;color:#fff1d8}
+.ci-fx .tg.pos{background:none;box-shadow:none;border-image-source:var(--ui-chip-gold);border-image-slice:49% 18% 49% 18% fill;color:#3a1c08}
+/* こねの数・びんの数（ショップの上）：コインと同じ木の札（ui-label）。字は明るく */
+.kone-n.kone-n{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;padding:2px 12px;color:var(--milk)}
+.kone-n.kone-n small{color:var(--milk-soft)}
+.kone-n.kone-n b{color:var(--gold);text-shadow:0 1px 0 #2a170c}
+/* カードにかかる効果の札（+45 など）：計算の札と同じ色の ui-chip-*（光りは drop-shadow） */
+.buff.buff{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 7px 4px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/9px 10px stretch;padding:0 1px;color:#3a1c08;filter:drop-shadow(0 0 4px var(--bc))}
+.buff.b-next,.buff.b-clead{border-image-source:var(--ui-chip-pink);color:#5a1028}
+.buff.b-again{border-image-source:var(--ui-chip-ember);color:#3a1204}
+/* 「えらんでいる」の札：ピンクの札 */
+.pk-on.pk-on{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-pink) 49% 18% 49% 18% fill/10px 11px stretch;padding:0 2px;color:#5a1028}
+/* まぜられるしるし（＋）・ヒントのとじる（×）：丸いボタンの皮 */
+.mx-dot.mx-dot{background:var(--ui-chip-mint) center/100% 100% no-repeat;box-shadow:none;border-radius:50%}
+.tip-x.tip-x{background:var(--ui-round) center/100% 100% no-repeat;color:#5a3418;font-weight:900}
