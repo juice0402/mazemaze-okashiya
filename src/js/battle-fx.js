@@ -115,6 +115,7 @@ function auraOut(e, o) {
     if (o.k === 'water' && e.water) {   // じょうろ：右どなりのくだものが育つ（わかば・11/19）
       const c2 = updTile(e.water.i, e.water.cid);
       if (c2) { replay(c2, 'sear'); sparkBurst(c2, 6, 'up', .6); }
+      sproutFx(c2 && c2.parentNode, e.water.to >= RIPE);
       floatAt(c2 && c2.parentNode, e.water.to >= RIPE ? '熟した！' : '育った', e.water.to >= RIPE ? 'best' : 'cookup');
     }
   }), T(n * 90)));
@@ -194,6 +195,26 @@ function boardFireHTML() {
   }
   for (let k = 0; k < 8; k++) s += `<i class="tsp" style="--x:${(5 + r() * 90).toFixed(1)}%;--d:${(1.3 + r() * 1.1).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 44).toFixed(0)}px"></i>`;
   return (fireCache = `<i class="tglow" aria-hidden="true"></i><span class="tfire" aria-hidden="true">${f}</span><span class="tsparks" aria-hidden="true">${s}</span>`);
+}
+/* わかばの調理台（11/19 しょーくん「ほのかは場に炎。わかばは植物が下からニョキニョキ」）：マスの下のふちに若葉（fx-leafband・ゆっくりそよぐ）。
+   くだものが育つと sproutFx：マスの下からつると葉がのびて（fx-sprout・熟したら花つきの fx-sprout-bloom）、葉と花びら（fx-leaf・fx-petal）が舞う。絵が届くまではコードの葉 */
+let vineCache = '';
+function vineHTML() {
+  if (vineCache || !ART['fx-leafband']) return vineCache;
+  let v = ''; for (let k = 0; k < 6; k++) v += `<i class="tvn" style="--x:${((k + .5) / 6 * 100).toFixed(1)}%;--k:${(k * .37 % 1).toFixed(2)};background-image:url('${ART['fx-leafband']}')"></i>`;
+  return (vineCache = `<span class="tvine" aria-hidden="true">${v}</span>`);
+}
+function sproutFx(t, ripe) {
+  if (!t) return;
+  const u = ART[ripe ? 'fx-sprout-bloom' : 'fx-sprout'] || ART['fx-sprout'], e = document.createElement('i');
+  e.className = 'fx-sprout' + (u ? '' : ' code'); e.innerHTML = u ? `<img src="${u}" alt="">` : '<b></b><b></b><b></b><b></b>';
+  t.appendChild(e); setTimeout(() => e.remove(), 1500);
+  const pu = ART[ripe ? 'fx-petal' : 'fx-leaf'];
+  for (let k = 0; k < 6; k++) {
+    const p = document.createElement('i'); p.className = 'fx-leafp' + (pu ? '' : ripe ? ' code ripe' : ' code');
+    p.style.cssText = `--x:${(15 + k * 14).toFixed(0)}%;--dx:${((k - 2.5) * 9).toFixed(0)}px;--dy:${-(46 + (k * 17) % 30)}px;--r:${(k % 2 ? 1 : -1) * (90 + k * 40)}deg;--dl:${280 + k * 50}ms` + (pu ? `;background-image:url('${pu}')` : '');
+    t.appendChild(p); setTimeout(() => p.remove(), 1800);
+  }
 }
 /* 舞台の火の粉：下から舞い上がる（数は火力で CSS が決める・ショップのあいだは止める） */
 function embersHTML() {

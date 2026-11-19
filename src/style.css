@@ -842,3 +842,5 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .dt-card .pc-ck{display:none}
 /* まぜの札（11/19）：右上は焼き加減・大きさのアイコンになったので、上のまんなかへ */
 .mixmark{right:auto;left:50%;translate:-50% 0;top:-7px}
+/* 昼のおそろいのリボン（ui-soroi・11/19 H-025 の5）：絵の皮だけ。中のアイコンと字は昼のチャットの並べ方のまま */
+.d-soroi{background:var(--ui-soroi) center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none;padding:2px 13px 4px 11px;color:#5a2410}

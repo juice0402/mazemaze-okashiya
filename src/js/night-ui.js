@@ -52,7 +52,7 @@ function binFx(made) {
 }
 function fruitFx(list) {
   setTimeout(() => list.forEach((x, n) => setTimeout(() => {
-    const t = tslot(x.i), c = t && t.querySelector('.pc'); if (c) replay(c, 'kon');
+    const t = tslot(x.i), c = t && t.querySelector('.pc'); if (c) replay(c, 'kon'); sproutFx(t, x.to >= RIPE);
     floatAt(t, x.to >= RIPE ? '熟した！' : '育った', x.to >= RIPE ? 'best' : 'cookup');
   }, n * 160)), 650);
 }
@@ -162,7 +162,7 @@ function showEvent(e, run, q) {
     chipPop(tslot(e.by), { b: '育つ', s: 'くだものぜんぶ', c: 'mint' }); heroPose('support', 1000);
     const t0 = 420, gap = 240;
     e.list.forEach((x, n) => setTimeout(() => {
-      const card = updTile(x.i, x.cid); if (card) { replay(card, 'sear'); sparkBurst(card, 6, 'up', .6); }
+      const card = updTile(x.i, x.cid); if (card) { replay(card, 'sear'); sproutFx(card.parentNode, x.to >= RIPE); }
       floatAt(card && card.parentNode, x.to >= RIPE ? '熟した！' : '育った', x.to >= RIPE ? 'best' : 'cookup');
     }, T(t0 + n * gap)));
     return t0 + e.list.length * gap + 500;
@@ -481,7 +481,7 @@ function renderNight() {
   } else {
     const shop = N.stage === 'shop';
     const H = heatOf();
-    body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.field ? N.heat : 0}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? '' : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+    body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.field ? N.heat : 0}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
         `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;

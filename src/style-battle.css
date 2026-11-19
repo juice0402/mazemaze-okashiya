@@ -370,11 +370,14 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .pc-pow.pc-pow.pw-minamo.pw-code::before{background:radial-gradient(circle at 36% 30%,#ffffff 0,#d8f6ff 18%,#7fd4ee 48%,#3a9cc8 78%,#1f6a96)}
 .pc-pow.pc-pow.pw-wakaba.pw-code::before{background:radial-gradient(circle at 36% 30%,#fbffe6 0,#d6f08a 20%,#8cc84e 52%,#4f8e2a 80%,#2f5e18)}
 .pc-pow.pw-code{padding-top:4%}
-/* 大作の大きさ：炎の絵（ui-cook）は使わない。しずくの絵 ui-drop0〜3・ui-drop-ice、届くまではコードの丸 */
-.ck.am.ck::before{left:calc(var(--u) * 1.4);top:calc(var(--u) * 3.6);width:calc(var(--u) * 11.2);height:calc(var(--u) * 11.2);border-radius:50%;background:var(--ckb);box-shadow:0 0 0 calc(var(--u) * .7) #1f4a66}
+.pc-pow.pw-minamo:not(.pw-code){padding-top:0}.pc-pow.pw-wakaba:not(.pw-code){padding-top:0;padding-bottom:6%}
+.pc:not(.tile) .pc-pow.pw-minamo:not(.pw-code){width:34cqw;right:-5cqw}.pc.tile .pc-pow.pw-minamo:not(.pw-code){width:50cqw;right:-6cqw}
+/* 大作の大きさ：炎の絵（ui-cook）は使わない。しずくの絵 ui-drop0〜3・ui-drop-ice（数字はしずくのまんなか） */
+.ck.am{padding:calc(var(--u) * 2.4) 0 0}
+.ck.am.ck::before{display:none}
 .ck.am.ck::after{background:var(--ckd, none) center/contain no-repeat}
 .ck.am.c0{--ckd:var(--ui-drop0)}.ck.am.c1{--ckd:var(--ui-drop1)}.ck.am.c2{--ckd:var(--ui-drop2)}.ck.am.c3{--ckd:var(--ui-drop3)}.ck.am.ice{--ckd:var(--ui-drop-ice)}
-.ck.am.c3::before{animation:none;opacity:1}
+.ck.am.ice b{color:#e8f6ff}
 /* 舞台のメダル・光・一撃：みなも＝水色の飴・わかば＝若葉と実（炎の色はほのかだけ） */
 .night[data-chef="minamo"] .dc-medal{background-image:var(--ui-medal-minamo, var(--ui-stage-medal))}
 .night[data-chef="wakaba"] .dc-medal{background-image:var(--ui-medal-wakaba, var(--ui-stage-medal))}
@@ -390,3 +393,20 @@ body[data-chef="wakaba"] .fx-ball::after{background:linear-gradient(90deg,transp
 body[data-chef="wakaba"] .fx-hit{background:radial-gradient(circle,#fff 0,rgba(250,255,220,.95) 14%,rgba(170,225,100,.7) 34%,rgba(110,180,60,0) 62%)}
 body[data-chef="wakaba"] .fx-hit::before{background:repeating-conic-gradient(rgba(255,236,170,.9) 0 4deg,transparent 4deg 20deg)}
 body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
+
+/* わかばの調理台：マスの下の若葉と、育つときのニョキニョキ（11/19・battle-fx.js の vineHTML・sproutFx。ずっと動くのは transform だけ） */
+.tvine{position:absolute;inset:auto 0 0;height:24%;z-index:3;pointer-events:none}
+.tvn{position:absolute;bottom:-4px;left:var(--x);width:calc(100% / 6 + 6px);height:100%;translate:-50% 0;background:center bottom/contain no-repeat;transform-origin:50% 100%;animation:tvsway 3.2s ease-in-out calc(var(--k) * -3.2s) infinite}
+@keyframes tvsway{50%{transform:rotate(1.6deg) scaleY(1.05)}}
+.tslot .fx-sprout{position:absolute;left:-10%;right:-10%;bottom:-7%;height:88%;z-index:5;pointer-events:none;transform-origin:50% 100%;animation:sprout 1.45s cubic-bezier(.2,1.25,.4,1) forwards}
+.fx-sprout img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 2px 2px rgba(30,50,10,.45))}
+@keyframes sprout{0%{transform:scale(.55,0);opacity:1}38%{transform:scale(1,1.1)}58%{transform:scale(1,.97)}72%{transform:scale(1,1);opacity:1}100%{transform:scale(1,1);opacity:0}}
+.fx-sprout.code b{position:absolute;bottom:0;left:calc(18% + var(--i, 0) * 20%);width:18%;height:70%;border-radius:0 90% 0 90%;background:linear-gradient(#c8ec7a,#6fae38);transform-origin:50% 100%;transform:rotate(-14deg)}
+.fx-sprout.code b:nth-child(2){--i:1;height:90%;transform:rotate(8deg)}.fx-sprout.code b:nth-child(3){--i:2;height:62%;transform:rotate(-6deg)}.fx-sprout.code b:nth-child(4){--i:3;height:80%;transform:rotate(16deg)}
+.fx-leafp{position:absolute;left:var(--x);bottom:24%;z-index:6;width:14px;height:14px;pointer-events:none;background:center/contain no-repeat;opacity:0;animation:leafp 1.15s ease-out var(--dl) forwards}
+.fx-leafp.code{background:#a8dc5e;border-radius:0 80% 0 80%}.fx-leafp.code.ripe{background:#ffb8c8;border-radius:60% 60% 60% 0}
+@keyframes leafp{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.5)}18%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(1)}}
+/* みなもの飴の台の霜と湯気（ui-frost・ui-steam・11/19 描き下ろし）：ひえひえは台の下のふちに霜、とろとろは湯気の絵が立ちのぼる */
+.tcold::after{content:"";position:absolute;inset:auto 0 -3px;height:30%;background:var(--ui-frost) center bottom/auto 100% repeat-x;opacity:0;transition:opacity .5s}
+.tiles[data-t="1"] .tcold::after{opacity:1}.tiles[data-t="2"] .tcold::after{opacity:.45}
+.tiles[data-t="4"] .tst,.tiles[data-t="3"] .tst:nth-child(-n+4){width:30px;height:20px;border-radius:0;background:var(--ui-steam) center/contain no-repeat}
