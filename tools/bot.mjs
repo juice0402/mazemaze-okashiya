@@ -34,7 +34,20 @@ const DRIVER = String.raw`
 var HEARTS_ = 0;
 const RIPE_ = typeof RIPE !== 'undefined' ? RIPE : 2;
 const snap = () => JSON.stringify(N), back = t => { N = JSON.parse(t); S.night = N; };
-function evalTotal() { const t = snap(); let v = 0; try { v = resolveRound().total; } catch (e) { v = 0; } back(t); return v; }
+/* 大作の夜（11/19 現実の飴細工に合わせた）：その場の味パワーだけでは「温めて育てて、あとで冷やして固める」が選べないので、作戦を足す。
+   TK ラウンドめまで＝あたたかく保って まぜて育てる（大作の育ちぐあいを高く見る・バトルのあと とろとろ になる手を少し高く）・TK から＝温める道具を売って冷やす（バトルのあと ひんやり以下になる手を高く） */
+var TK_ = 6;
+const taiNight = () => N.build === 'taisaku';
+function taiQuality() { let q = 0; N.board.forEach(c => { if (!c) return; const d = cardDef(c.cid); if (d.grow) q += d.fx.dmg * STAR_MUL[d.star] * sizeMul(c.cook || 0, d.fx); }); return q; }
+function taiValue() {
+  const t = snap(); let v = 0, h = N.heat; try { const r = resolveRound(); v = r.total; h = r.heat; } catch (e) { v = 0; } back(t);
+  const q = taiQuality();
+  return N.round >= TK_ ? v + (h <= 2 ? v * 0.3 + q * 0.5 : 0) : v + q * 2 + (h >= 4 ? q * 0.5 : 0);
+}
+function taiSell() {   // 作戦に合わない温度の道具を売る（前半は冷やす道具・後半は温める道具）
+  N.board.forEach((c, i) => { if (!c) return; const d = cardDef(c.cid), h = d.fx.heat || 0; if ((N.round >= TK_ && h > 0) || (N.round < TK_ && h < 0)) sellAt({ where: 'board', i }); });
+}
+function evalTotal() { if (taiNight()) return taiValue(); const t = snap(); let v = 0; try { v = resolveRound().total; } catch (e) { v = 0; } back(t); return v; }
 // 並び：となりどうしを入れかえて上がるかぎり続ける（山のぼり）
 function arrange() {
   let best = evalTotal(), better = true, n = 0;
@@ -61,6 +74,7 @@ function actions() {
 function act(a) { return dropCard(a[0], a[1]); }
 function smartShop() {
   let rolls = 0;
+  if (taiNight()) taiSell();
   for (let step = 0; step < 40; step++) {
     const base = arrange(), list = actions(); let best = null, bv = -1;
     for (const a of list) {
@@ -100,6 +114,7 @@ function sim(build, day, smart) {
 `;
 vm.runInContext(DRIVER, ctx, { filename: 'driver.js' });
 vm.runInContext(`HEARTS_ = ${HEARTS};`, ctx);
+if (process.env.TK) vm.runInContext(`TK_ = ${+process.env.TK};`, ctx);
 // BAL=kone:0.7:1.1,cookie:1:1.05 … で、ビルドの強さの曲線（BUILDS の bal）をためしに変える
 if (process.env.BAL) for (const t of process.env.BAL.split(',')) { const [b, a, g] = t.split(':'); vm.runInContext(`BUILDS[${JSON.stringify(b)}].bal = [${+a}, ${+g}];`, ctx); }
 const builds = ONLY || ['cookie', 'kone', 'taisaku', 'candy', 'fruitcake', 'jam'];

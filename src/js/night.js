@@ -211,9 +211,9 @@ function cardAt(p) {
 /* まぜてできるカード。焼き加減は、低いほうを引きつぐ */
 function mixResult(a, b) {
   const cid = mixCid(a.cid, b.cid), cooks = [a, b].filter(x => x.cook != null).map(x => x.cook), D = cardDef(cid);
-  if (D.grow) {   // みなもの大作：大きいほうの大きさを引きつぐ（完成は完成のまま・11/19 しょーくん）。固まっているかも、そのカードから
+  if (D.grow) {   // みなもの大作：大きいほうの大きさを引きつぐ（完成は完成のまま・11/19 しょーくん）
     const s = [a, b].filter(x => x.cook != null && cardDef(x.cid).grow).sort((x, y) => y.cook - x.cook)[0];
-    return s ? Object.assign({ cid, cook: s.cook }, s.ice ? { ice: 1 } : {}) : { cid, cook: 0 };
+    return s ? { cid, cook: s.cook } : { cid, cook: 0 };   // まぜられるのは あたたか以上のときだけ＝とけている（11/19）
   }
   const plus = (a.plus || 0) + (b.plus || 0);   // もりのシフォン：育った実でふえた味パワーは、まぜても引きつぐ（11/19）
   return D.dough ? { cid, cook: cooks.length ? Math.min(...cooks) : 0 } : plus && D.fx.perGrow ? { cid, plus } : { cid };
@@ -223,15 +223,19 @@ function mixPlan(p, q) {
   const shop = [p, q].filter(x => x.where === 'shop'), cost = shop.reduce((t, x) => t + cardDef(N.shop[x.i]).cost, 0);
   const bd = [q, p].find(x => x.where === 'board');
   const to = { where: 'board', i: bd ? bd.i : freeSlot() };
-  return { n: shop.length, cost, to };
+  const a = cardAt(p), b = cardAt(q), cold = !!a && !!b && (cardDef(a.cid).grow || cardDef(b.cid).grow) && N.heat < AME_SOFT;
+  return { n: shop.length, cost, to, cold };
 }
-function mixNg(P) { return P.to.i < 0 ? BOARD_FULL : payNg(P.n, P.cost); }
+/* 大作は、飴の温度が あたたか以上のときだけ まぜられる（11/19 しょーくん「現実の飴の加工に合わせる」：やわらかいうちに形をつくる） */
+const AME_SOFT = 3, AME_COLD = '飴が冷えて かたい。あたたか以上で まぜられる';
+function mixNg(P) { return P.to.i < 0 ? BOARD_FULL : P.cold ? AME_COLD : payNg(P.n, P.cost); }
 /* 調理台のほかのカードとまぜられるか（ショップとタイルの「まぜ」の目じるし） */
-const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)));
+const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)) && !((cardDef(cid).grow || cardDef(x.cid).grow) && N.heat < AME_SOFT));   // 冷えているときの大作は「まぜ」を出さない（11/19）
 /* まぜられる相手の決まり（ドラッグの案内・大きく見る画面） */
 function mixRule(d) {
   if (d.cat === 'field') return fixedField() && d.cid === 'b:' + N.field ? 'くだものを入れて、3つでジャム' : 'フィールドは まぜられない';
   if (d.star >= 3) return '★3は完成。もう まぜられない';
+  if (d.grow && N.heat < AME_SOFT) return AME_COLD;
   if (d.fruit) return binNight() ? '場の大きなびんへ（3つでジャム）' : d.stage === RIPE ? '★2のケーキにはなすと★3' : 'まぜずに育てる（熟すと★2のケーキへ）';   // わかば（11/19）
   const C = chefNow(), main = ['ame', 'candy', 'cake', 'jam'].includes(d.cat) ? CAT_NAME[d.cat] : candyNight() ? 'キャンディ' : binNight() ? 'ジャム' : C === CHEFS.minamo ? '飴細工' : C === CHEFS.wakaba ? 'ケーキ' : '生地';
   return `${d.cat === 'tool' ? '道具' : d.cat === 'burnt' ? '焦げ' : main + 'か素材'}の★${d.star}と まぜる${d.cat === 'cake' && d.star === 2 ? '・熟した実で★3' : ''}`;
@@ -310,15 +314,15 @@ function cookStep(c, add, safe) {
   c.cook = Math.min(COOK_MAX, from + Math.max(1, add));
   return { from, to: c.cook, burnt: false, cid: c.cid };
 }
-/* みなもの大作を、飴の温度 t で育てる（11/19）。完成（9）はもう変わらない。ひえひえで固まり（c.ice）、ひんやりでは固まったまま、あたたか以上でとけて育つ
+/* みなもの大作を、飴の温度 t で育てる（11/19）。完成（9）は大きさはもう変わらない（固まる・とけるだけ）。ひえひえで固まり（c.ice）、ひんやりでは固まったまま、あたたか以上でとけて育つ
    育つ数は GROW[t]＋育つはやさ（1より少なくはならない）。変わらないときは null */
 function growStep(c, t, spd = 0) {
-  const from = c.cook || 0;
-  if (from >= SIZE_MAX) return null;
-  if (t <= 1 || (t === 2 && c.ice)) { const was = !!c.ice; c.ice = 1; return { from, to: from, ice: was ? 'stay' : 'on', cid: c.cid }; }
-  const melt = !!c.ice; delete c.ice;
+  const from = c.cook || 0, was = !!c.ice;
+  if (t <= 1 || (t === 2 && was)) { c.ice = 1; return { from, to: from, ice: was ? 'stay' : 'on', cid: c.cid }; }   // ひえひえで固まる・ひんやりは固まったまま
+  if (from >= SIZE_MAX) { if (!was) return null; delete c.ice; return { from, to: from, melt: true, cid: c.cid }; }   // 完成は育たない（あたたか以上で とけるだけ・11/19）
+  delete c.ice;
   c.cook = Math.min(SIZE_MAX, from + Math.max(1, GROW[t] + spd));
-  return { from, to: c.cook, melt, cid: c.cid };
+  return { from, to: c.cook, melt: was, cid: c.cid };
 }
 /* 1ラウンドの計算（画面より先に、ぜんぶ決める）。board と heat は finishRound で N に入れる */
 /* 昼のハート（11/19 H-029 しょーくん「昼パートをしっかりやらないと夜の火力が伸びない連動」・えらぶ質問で「ハート1こにつき+5%」）：その日の昼のハート（仲間の来店の1こもふくむ）で、夜の味パワーが上がる */
@@ -356,7 +360,7 @@ function resolveRound() {
   // 2. 発動：左から順に
   const idx = board.map((c, i) => c ? i : -1).filter(i => i >= 0);
   const first = idx[0], last = idx[idx.length - 1];
-  const doneN = () => idx.filter(j => board[j] && cardDef(board[j].cid).grow && board[j].cook >= SIZE_MAX).length;   // 完成した大作の数（そのときの）
+  const doneN = () => idx.filter(j => board[j] && cardDef(board[j].cid).grow && board[j].cook >= SIZE_MAX && board[j].ice).length;   // 完成して固まった大作の数（そのときの・11/19 現実の飴細工に合わせた）
   const extra = Array(SLOTS).fill(0);
   let pend = 1, total = 0, rally = 0, pendEv = [], kone = N.kone || 0, panRally = 0;
   const HM = heartMul();   // 昼のハートで味パワーアップ（11/19 H-029）
@@ -433,7 +437,10 @@ function resolveRound() {
           const cm = cookMul(c.cook || 0); base *= cm; if (cm !== 1) parts.push(['×', cm, '焼き加減']);
           if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
         }
-        if (d.grow) { const gm = sizeMul(c.cook || 0, fx); base *= gm; if (gm !== 1) parts.push(['×', gm, c.cook >= SIZE_MAX ? '完成' : '大きさ']); }
+        if (d.grow) {
+          const gm = sizeMul(c.cook || 0, fx); base *= gm; if (gm !== 1) parts.push(['×', gm, c.cook >= SIZE_MAX ? '完成' : '大きさ']);
+          if (!c.ice) { base *= SOFT_MUL; parts.push(['×', SOFT_MUL, 'やわらかい']); }   // 固まる前は3割（11/19 しょーくん「凍らせないと効果を発揮できない」・えらぶ質問で3割）
+        }
         if (d.candy) {   // キャンディは冷えるほど強い・いちばんドロップ
           const cm = COLD_MUL[heat] || 1; if (cm !== 1) { base *= cm; parts.push(['×', cm, heatOf().names[heat]]); }
           if (candyMul !== 1) { base *= candyMul; parts.push(['×', candyMul, 'いちばん', [first]]); }

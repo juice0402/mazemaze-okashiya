@@ -321,7 +321,9 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 .mixfx.hit .mf-lines{animation:mfout .18s ease-out forwards}
 .mf-card{position:fixed;aspect-ratio:5/7;border-radius:12px;will-change:transform;filter:drop-shadow(0 8px 12px rgba(0,0,0,.55))}
 .mf-card .pc{width:100%;height:100%}
-.mf-card.ghost{filter:blur(1.5px) brightness(1.6)}
+.mf-card.ghost{filter:brightness(1.6)}   /* 残像のぼかしは重いのでやめた（11/19） */
+.mf-gh{width:100%;height:100%;border-radius:12px;overflow:hidden;background:linear-gradient(#ffe9c0,#e0a868)}
+.mf-gh img{width:100%;height:100%;object-fit:contain;display:block}
 .mf-card.g1{opacity:.45}
 .mf-card.g2{opacity:.22}
 .mixfx.touch .mf-card:not(.ghost):not(.mf-res){filter:brightness(1.7) drop-shadow(0 0 14px rgba(255,244,200,.95))}
@@ -331,6 +333,7 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 @keyframes mfshine{to{transform:translateX(120%)}}
 .mf-flash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% var(--cy),#fff 0,#fff 14%,rgba(255,244,210,.9) 30%,rgba(255,200,120,.35) 55%,rgba(255,200,120,0) 85%)}
 .mixfx.hit .mf-flash{animation:mfflash .55s ease-out}
+.mixfx.hit{animation:quake2 .42s linear}   /* ガキーンのゆれは演出の板だけ（夜の画面はゆらさない・11/19 軽く） */
 @keyframes mfflash{0%,12%{opacity:1}100%{opacity:0}}
 .mf-ring{position:absolute;left:50%;top:var(--cy);width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:7px solid #fff6d0;opacity:0}
 .mf-ring.b{border-color:rgb(var(--ray));animation-delay:.1s!important}

@@ -44,7 +44,7 @@ const cookIcon = cook => `<i class="ck c${cookStage(cook)}" title="焼き加減 
 const sizeIcon = (size, ice) => `<i class="ck am c${cookStage(size)}${ice ? ' ice' : ''}" title="大きさ ${size}"><b>${size}</b></i>`;
 const meterIcon = (d, c, ice) => d.grow ? sizeIcon(c || 0, ice) : cookIcon(c || 0);
 /* 紙の字の大きさ：1行に収まるように（数字や記号は細いので少なく数える） */
-const textW = t => [...t].reduce((a, c) => a + (/[0-9.+\-]/.test(c) ? .6 : /[×−]/.test(c) ? .8 : 1), 0);
+const textW = t => [...t].reduce((a, c) => a + (/[0-9.]/.test(c) ? .62 : /[+\-]/.test(c) ? .7 : /[×−]/.test(c) ? .85 : 1), 0);
 const fitFs = (t, w) => Math.min(9, Math.floor(w / textW(t) * 10) / 10);
 /* 名前の字の大きさ（11/19 しょーくん「名前を中央に」）：8文字でもリボンからはみ出さないように（…で切らない） */
 const nameFs = t => Math.min(9.4, Math.floor(66 / textW(t) * 10) / 10);
@@ -62,8 +62,8 @@ function powBadge(dmg) {
 /* カードの形（mini と huge は同じ形で大きさだけちがう）。紙は1つの効果を1行で、上から大事な2つまで */
 function cardFace(cid, cls, opt = {}) {
   const d = cardDef(cid), dmg = cardDmg(d, opt.cook), lines = cardChips(d).slice(0, 2);
-  const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = 70;   // 紙の字の幅（cqw・ふちの絵の紙の内側）。焼き加減・大きさは右上へ（11/19 しょーくん「文字が見えない」）
-  const txt = lines.length ? lines.map(t => `<span class="ln" style="font-size:${fitFs(t, w - 2 * (t.match(KW_SHORT) || []).length)}cqw">${kwShort(t, opt.tap)}</span>`).join('')   // 黄色いことばは ふちの分だけ広いので、その分つめる（11/19「×2」が切れていた）
+  const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = 64;   // 紙の字の幅（cqw・ふちの絵の紙の内側）。11/19 しょーくん「カードが切れてる」：実機の字はテストより太いので70→64・黄色いことばは1つ4つめる。焼き加減・大きさは右上へ（11/19 しょーくん「文字が見えない」）
+  const txt = lines.length ? lines.map(t => `<span class="ln" style="font-size:${fitFs(t, w - 4 * (t.match(KW_SHORT) || []).length)}cqw">${kwShort(t, opt.tap)}</span>`).join('')   // 黄色いことばは ふちの分だけ広いので、その分つめる（11/19「×2」が切れていた）
     : `<span class="ln plain">${esc(plainLine(d))}</span>`;
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">

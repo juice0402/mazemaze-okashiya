@@ -155,7 +155,7 @@ function showEvent(e, run, q) {
     e.list.forEach((x, n) => setTimeout(() => {
       const card = updTile(x.i, x.cid, x.to, !!x.ice), slot = card && card.parentNode;
       if (card) { replay(card, x.ice ? 'freeze' : 'sear'); if (!x.ice) sparkBurst(card, 6, 'up', .6); }
-      floatAt(slot, x.ice ? (x.ice === 'on' ? '固まった' : '固まったまま') : x.to >= SIZE_MAX ? '完成！' : `${x.melt ? 'とけた・' : ''}大きさ+${x.to - x.from}`, x.ice ? 'ice' : x.to >= SIZE_MAX ? 'best' : 'cookup');
+      floatAt(slot, x.ice ? (x.ice === 'on' ? '固まった' : '固まったまま') : x.melt && x.to === x.from ? 'とけた' : x.to >= SIZE_MAX ? '完成！' : `${x.melt ? 'とけた・' : ''}大きさ+${x.to - x.from}`, x.ice ? 'ice' : x.to >= SIZE_MAX ? 'best' : 'cookup');
     }, T(t0 + n * gap)));
     let t = t0 + e.list.length * gap + 400;
     if (done.length) { setTimeout(() => cutIn(done[0].cid, '大作 完成！'), T(t)); t += 1500; }
@@ -290,7 +290,7 @@ function mixFx(from, ca, cb, cr, to, done) {
   document.body.appendChild(ov);
   const card = (cid, f, w, cls = '') => {
     const c = document.createElement('div');
-    c.className = 'mf-card ' + cls; c.innerHTML = cardMini(cid);
+    c.className = 'mf-card ' + cls; c.innerHTML = cls.includes('ghost') ? `<div class="mf-gh">${artImg(cid)}</div>` : cardMini(cid);   // 残像は絵だけの軽いカード（11/19 軽く）
     Object.assign(c.style, { width: w + 'px', left: f.x - w / 2 + 'px', top: f.y - w * 0.7 + 'px' });
     ov.appendChild(c); return c;
   };
@@ -327,7 +327,7 @@ function mixFx(from, ca, cb, cr, to, done) {
   let R;
   setTimeout(() => {
     ov.classList.add('hit');
-    replay(document.querySelector('.night'), 'quake2');
+    // ゆれは演出の板（.mixfx.hit）で：夜の画面ぜんぶをゆらすと、ショップのカードが毎こま描きなおされて重かった（11/19 しょーくん「まぜまぜの瞬間が激重」）
     heroFor('joy', HOLD + LAND + 300);
     moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }));
     sparks(cx, cy, star === 3 ? 28 : 20, S * 1.7);

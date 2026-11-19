@@ -186,6 +186,7 @@ const cookMul = c => c >= COOK_MAX ? 5 : 1 + c / 3;
 const TEMP = ['', 'ひえひえ', 'ひんやり', 'あたたか', 'とろとろ'];
 const GROW = [0, 0, 1, 2, 3];
 const SIZE_MAX = 9;
+const SOFT_MUL = 0.3;   // 固まる前（あたたか・とろとろ）の大作は味パワー3割（11/19 しょーくん：ひえひえで固めると本気）
 const sizeMul = (c, fx) => c >= SIZE_MAX ? fx.done || 5 : 1 + c / 3;   // 完成は ほのかのサイコーと同じ×5（11/19 ボットで火力クッキーに近づけた・仮）
 /* キャンディは冷えるほど強い（11/19 しょーくん：ひえひえ×2・ひんやり×1.5 → 11/19 ボットで ×1.5・×1.25 に）。ちいさなキャンディは1こ味パワー10 */
 const COLD_MUL = [1, 1.5, 1.25, 1, 1];
@@ -248,8 +249,8 @@ const BUILDS = {
   },
   /* みなも①（11/19）：mate＝その仲間が来てから（昼の⑧で S.seen['mate:minamo']） */
   taisaku: {
-    chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: '飴の温度で大作を育てる。大きさ9で完成、焦げずに ずっと強い',
-    bal: [0.74, 1.139], doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
+    chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたたかいうちに大作をまぜて育て、ひえひえで固めると本気。★3を完成させて固めたら最強',
+    bal: [2.97, 1.123], doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
   },
   /* みなも②（11/19）：キャンディどうしの れんさ。冷えるほど強い（自然に冷めるのが味方） */
   candy: {
@@ -407,7 +408,7 @@ function mixCid(a, b) {
 /* カードの紙：1つの効果を1行で短く（「スタート：×3」の形）。大事な順で、紙には上の2つまで。焦げない★3には「焦げると」は出さない */
 function fxList(fx, star = 1) {
   const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-  if (fx.taisaku) p.push(`大作：完成×${fx.done}`);
+  if (fx.taisaku) p.push(`固めて完成×${fx.done}`);
   if (fx.lead) p.push(`スタート：×${fx.lead}`);
   if (fx.candyLead) p.push(`スタート：キャンディ×${fx.candyLead}`);
   if (fx.sai) p.push(`アンカー：サイコー毎×${fx.sai + 0.5 * (star - 1)}`);
@@ -427,7 +428,7 @@ function fxList(fx, star = 1) {
   if (fx.shine) p.push(`右のジャム×${fx.shine}`);
   if (fx.toro) p.push('熟した実は2つ分');
   if (fx.rally) p.push(`スタート：主役ぜんぶ+${f(fx.rally)}`);
-  if (fx.doneRally) p.push(`スタート：完成で+${f(fx.doneRally)}`);
+  if (fx.doneRally) p.push(`スタート：主役+${f(fx.doneRally)}`);
   if (fx.koneRally) p.push(`スタート：パン+${f(fx.koneRally)}×こね`);
   if (fx.perKone) p.push(`こね毎に+${f(fx.perKone)}`);
   if (fx.perChain) p.push(`れんさ毎に+${f(fx.perChain)}`);
@@ -473,7 +474,9 @@ function fxLong(fx, star = 1) {
   const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
   if (fx.taisaku) {
     p.push(['バトル開始時', `飴の{温度}で{大きさ}が育つ（とろとろ+3・あたたか+2・ひんやり+1）。ひえひえで{固まる}`]);
+    p.push(['常時', `{固まる}と本気。{固まる}前は味パワー×${SOFT_MUL}`]);
     p.push(['常時', `{大きさ}で味パワー×（1＋大きさ÷3）。{大きさ}9で{完成}：味パワー×${fx.done}`]);
+    p.push(['まぜるとき', `飴の{温度}が あたたか以上のときだけ まぜられる`]);
   }
   if (fx.candy) p.push(['発動時', `{れんさ}+1。飴の{温度}が ひえひえなら味パワー×${COLD_MUL[1]}・ひんやりなら×${COLD_MUL[2]}`]);
   if (fx.lead) p.push(['スタート', `このカードの味パワー×${fx.lead}`]);
@@ -481,7 +484,7 @@ function fxLong(fx, star = 1) {
   if (fx.sai) p.push(['アンカー', `{焼き加減}が{サイコー}の生地1枚ごとに、このカードの味パワー×${fx.sai + 0.5 * (star - 1)}`]);
   if (fx.fin) p.push(['アンカー', `このラウンドの味パワー合計×${fx.fin}`]);
   if (fx.chainFin) p.push(['アンカー', `このラウンドの味パワー合計×（1＋${chainFinOf(fx, star)}×{れんさ}の数）`]);
-  if (fx.doneFin) p.push(['アンカー', `このラウンドの味パワー合計×（1＋${doneFinOf(fx, star)}×{完成}した大作の数）`]);
+  if (fx.doneFin) p.push(['アンカー', `このラウンドの味パワー合計×（1＋${doneFinOf(fx, star)}×{完成}して固まった大作の数）`]);
   if (fx.koneFin) p.push(['アンカー', `このラウンドの味パワー合計×（1＋${koneFinOf(fx, star)}×{こね}た回数）`]);
   if (fx.ripeFin) p.push(['アンカー', `調理台の{熟した実}（★3のケーキにのせた実も）1つごとに、このカードの味パワー×${ripeFinOf(fx, star)}`]);
   if (fx.jamFin) p.push(['アンカー', `このラウンドの味パワー合計×（1＋${jamFinOf(fx, star)}×この夜に作った{ジャム}の数）`]);
@@ -497,7 +500,7 @@ function fxLong(fx, star = 1) {
   if (fx.madeJam) p.push(['常時', '{大きなびん}で作ったジャム。入れた実の効果がのっている（熟した実ほど味パワーが大きい）']);
   if (fx.fruitCake) p.push(['常時', '{熟した実}をのせた★3のケーキ。実の効果がのっている']);
   if (fx.rally) p.push(['スタート', `このラウンドの主役のカードぜんぶの味パワー+${f(fx.rally)}`]);
-  if (fx.doneRally) p.push(['スタート', `{完成}した大作があれば、このラウンドの主役のカードぜんぶの味パワー+${f(fx.doneRally)}`]);
+  if (fx.doneRally) p.push(['スタート', `{完成}して固まった大作があれば、このラウンドの主役のカードぜんぶの味パワー+${f(fx.doneRally)}`]);
   if (fx.koneRally) p.push(['スタート', `このラウンドのパン生地ぜんぶの味パワー+${f(fx.koneRally)}×{こね}た回数`]);
   if (fx.perKone) p.push(['常時', `{こね}た回数1回ごとに、このカードの味パワー+${f(fx.perKone)}`]);
   if (fx.perChain) p.push(['発動時', `{れんさ}1につき、このカードの味パワー+${f(fx.perChain)}`]);
@@ -546,10 +549,10 @@ const KW = {
   場: '調理台のいちばん左の、フィールドのカードを置く所。場にカードがあると、バトル開始時に生地が焼ける',
   /* みなも（11/19） */
   温度: '飴の温度（ひえひえ・ひんやり・あたたか・とろとろ）。夜のはじめは あたたか。ラウンドの終わりに1段さがる（飴は冷める）。フィールドや道具で上げ下げ',
-  大作: 'バトル開始時に、飴の温度で大きさが育つ飴細工。大きさ9で完成',
+  大作: 'あたたかいうちに まぜて育て、ひえひえで固めると本気を出す飴細工（固まる前は味パワー×0.3）。バトル開始時に飴の温度で大きさが育つ。大きさ9で完成。まぜられるのは飴の温度が あたたか以上のときだけ',
   大きさ: '大作の育ちぐあい（0〜9）。カードの左下のしずくの数字でわかる。大きいほど味パワーが上がる：3で×2・6で×3・9で完成',
-  完成: '大きさ9になった大作。味パワー×5（あめのお城は×7.5）。もう温度で変わらず、焦げることもない',
-  固まる: '温度が ひえひえ のとき、大作が固まって育たなくなる。あたたか以上になると とけて、また育つ',
+  完成: '大きさ9になった大作。味パワー×5（あめのお城は×7.5）。もう大きさは変わらず、焦げることもない。固めると本気（★3を完成させて固めたら最強）',
+  固まる: '温度が ひえひえ のとき、大作が固まって本気を出す（固まる前は味パワー×0.3）。固まっているあいだは育たない。ひんやりでは固まったまま、あたたか以上になると とけて、また育つ・まぜられる',
   /* みなも②（11/19） */
   れんさ: 'キャンディが続けて発動した数（ちいさなキャンディも数える）。素材や道具が発動すると0にもどる（飴ばさみは切れない）。ラウンドごとに0から',
   ちいさなキャンディ: 'はじけキャンディが飛ばす小さな飴（1こ味パワー10）。キャンディとして れんさ に数え、冷えるほど強い',
