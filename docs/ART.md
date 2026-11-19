@@ -52,6 +52,14 @@
 - キャラ：あとで水の飴細工職人と草のパティシエ・ほかの食材モンスター
 
 ## 音
+| 名前 | 分類 | 道具 | 作った日 | 出どころ | 使う所 |
+| --- | --- | --- | --- | --- | --- |
+| assets/bgm/hiru.mp3（昼のお店・38.4秒・1ループ） | C・コードで作った曲 | tools/bgm/make_bgm.py（FluidSynth）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 司令塔（枝 shireitou/bgm・作り方は tools/bgm/README.md） | タイトル・プロローグ・朝・昼・まとめ（src/js/sound.js） |
+| assets/bgm/yoru.mp3（夜のバトル・25.6秒・1ループ） | C・コードで作った曲 | tools/bgm/make_bgm.py（FluidSynth）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 司令塔（枝 shireitou/bgm） | 夜（夕方の会話・ショップ・バトル） |
+
+### クレジット（クレジットの画面・ストアの説明に入れる）
+- 楽器の音：FluidR3_GM（Frank Wen・MIT ライセンス）
+
 - 掛け声（「えいっ」「はっ」など）は、あとで声の依頼箱 juice0402/koe-irai（VOICEVOX）で作る。クレジット画面に「音声合成：VOICEVOX:…」の1行
 | chibi-think・chibi-cheer・chibi-sit（ほのかのデフォルメ：考える・応援・すわってクッキー） | A | Codex | 2026-11-18 | art-irai `requests/okashi/honoka-chibi.md`（step1〜3）・もとの PNG `assets/art/raw/honoka-chibi_step1〜3.png` | 舞台の賑やかし（ショップ＝考える・バトル＝すわって・大きな一撃と勝ち＝応援） |
 | mob-slime・mob-hitsuji（スライム・くもひつじのデフォルメ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step1）・もとの PNG `assets/art/raw/mobs-chibi_step1.png` | 舞台の賑やかしのモブ |

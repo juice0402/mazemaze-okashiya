@@ -13,7 +13,7 @@ function setHeat(h) {
   [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
   lab.textContent = on ? H.names[h] : `${H.names[h]}（場なし）`;
   lab.className = 'heat-label h' + (on ? h : 0);
-  if (H.cool) return tempFx(h);   // 飴の温度（battle-fx.js）
+  if (H.cool) { const st = $('stage'); if (st) st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる
   const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
   heatFx(N.field ? h : 0);   // 鉄板の炎（battle-fx.js）
 }
@@ -355,12 +355,16 @@ const HEROES = {
   wakaba: { battle: ['wakaba-battle', false], joy: ['wakaba-win', false], surprise: ['wakaba-odoroki', false], oops: ['wakaba-komari', false] },
 };
 const chefArt = () => chefNow().art || 'honoka';
-function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka }; }
+function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip, n } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka, n: '' }; }
+/* 足もと（11/19 しょーくん「描写されてるものの位置で足元を合わせて」・影も）：src/data/feet.js（tools/feet.py）の表で、
+   どのポーズでも描かれた足が同じ高さに立つように下げる（--fp）。影 .chef-sh は足もとのまんなか（--fx）に。#stage に置いてシェフと影の両方が使う */
+function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8]; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]}`; }
+function heroSetVars(n, flip) { const st = $('stage'); if (st) for (const kv of heroVars(n, flip).split(';')) { const [k, v] = kv.split(':'); st.style.setProperty(k, v); } }
 function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="chef${ART[chefArt()] ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="chef" data-chef="${chefArt()}" src="${h.src}" alt="${esc(C.job + ' ' + C.name)}">`; }
 let heroT = 0;
 function heroFor(k, ms) {
   const el = $('chef'); if (!el) return;
-  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); delete el.dataset.pose; };
+  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); delete el.dataset.pose; };
   set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
 }
 /* ほのかの戦闘ポーズ（11/18 しょーくん「チャージや攻撃必殺技とか、いつまで見てても飽きない戦闘シーンにしたい」）
@@ -382,9 +386,9 @@ let poseT = 0;
 function heroPose(p, ms) {
   const el = $('chef'); if (!el || !POSE[p]) return;
   const six = POSE_SIX[chefArt()], mi = six && ART[six[p]];
-  const [n, alt] = POSE[p], h = mi ? { src: mi, flip: false } : chefArt() === 'honoka' && ART[n] ? { src: ART[n], flip: false } : heroPick(alt);
+  const [n, alt] = POSE[p], h = mi ? { src: mi, flip: false, n: six[p] } : chefArt() === 'honoka' && ART[n] ? { src: ART[n], flip: false, n } : heroPick(alt);
   if (el.getAttribute('src') !== h.src) el.src = h.src;
-  el.classList.toggle('flip', h.flip); el.dataset.pose = p;
+  el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); el.dataset.pose = p;
   clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
 }
 /* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯が光る） */
@@ -489,11 +493,12 @@ function renderNight() {
       ${viewerHTML()}`;
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
+  const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
-    <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0"${ART['bg-night'] ? ` style="--bgimg:url('${ART['bg-night']}')"` : ''}>${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
-      ${heroImg(after ? (happy ? 'joy' : 'oops') : 'battle')}
+    <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0" style="${ART['bg-night'] ? `--bgimg:url('${ART['bg-night']}');` : ''}${heroVars(hp.n, hp.flip)}">${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
+      <i class="chef-sh"></i><i class="mon-sh"></i>${heroImg(hk)}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">
-      ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
+      ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
       <span class="ov-hm" aria-label="昼のハート ${dayHearts()}こ">昼のハート <i>♥︎</i>×${dayHearts()} <b>味パワー×${Math.round(heartMul() * 100) / 100}</b></span>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>

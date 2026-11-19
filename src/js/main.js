@@ -19,6 +19,7 @@ function render() {
   else if (S.phase === 'result') renderResult();
   else renderTitle();
   $('screen').scrollTop = 0;
+  bgmSync();   // 昼の曲・夜の曲（sound.js）
 }
 
 const ACTS = {
@@ -65,7 +66,7 @@ function boot(data) {
     const ph = S.phase;
     f(el);
     if (S.phase !== ph) wipe();   // 夜・朝・昼・まとめの切りかえは、タイルの幕でさっと
-    renderTop();
+    renderTop(); bgmSync();
   });
   dragInit($('screen'));
   render();

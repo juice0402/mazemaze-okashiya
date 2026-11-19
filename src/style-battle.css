@@ -38,10 +38,21 @@
 @keyframes dcscare{0%,100%{transform:none}20%,60%{transform:translateX(-5%) scale(1.04,.94)}40%,80%{transform:translateX(5%) scale(1.04,.94)}}
 /* 額縁と段のぶん、ほのか・モンスター・火力のメーターを少し上へ */
 /* 大きいほのか（11/18 しょーくん「いつまで見てても飽きない戦闘シーン」・えらぶ質問）：舞台の左に大きく。ちびほのかはショップのときだけ */
-.night .stage .chef{left:0;bottom:max(10px,5cqh);width:56%;height:auto;max-height:62%;max-width:none;transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
+/* 11/19 しょーくん「モンスターとキャラが少し近い・それぞれもう少し小さくして距離を」：シェフは高さで決める（--ch・絵はどれも760の高さなので同じ大きさ）。
+   足もとは描かれた足の位置で合わせる（--fp＝足の下のすき間・src/data/feet.js）・影 .chef-sh・.mon-sh。舞台を container にして cqw・cqh を舞台の大きさに */
+.night .stage{container-type:size}
+.night .stage .chef,.night .stage .chef-sh{--ch:min(59cqw,53cqh)}
+.night .stage .chef{left:1cqw;bottom:calc(12cqh - var(--fp, 0) * var(--ch));height:var(--ch);width:auto;max-height:none;max-width:none;transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
 .deco.battle .dc-chibi,.deco.win .dc-chibi,.stage:not(:has(.shopov)) .deco.shop .dc-chibi{display:none}   /* ちびほのかはショップのときだけ（来店の会話・お礼・結果は大きいほのか） */
 .night .stage .mon{bottom:22%}
-.night .stage .mon.hi{width:36%;max-height:44%}   /* 大きいほのかとつりあう大きさ（11/18） */
+.night .stage .mon.hi{right:3%;width:31%;max-height:40%}   /* 大きいほのかとつりあう大きさ（11/18）・11/19 少し小さく・はなす */
+.chef-sh,.mon-sh{position:absolute;z-index:1;pointer-events:none}
+.chef-sh{left:1cqw;bottom:calc(12cqh - var(--ch) * .05);width:calc(var(--ch) * var(--ca, .8));height:calc(var(--ch) * .1);
+  background:radial-gradient(calc(var(--ch) * .23) calc(var(--ch) * .034) at calc(var(--fx, .45) * 100%) 50%,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);
+  transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
+.mon-sh{right:5.5%;width:26%;bottom:calc(22% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
+.stage:has(.mon.flee) .mon-sh{opacity:0}
+.night:not(:has(.mon.hi)) .mon-sh{display:none}
 .night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 /* 上のまんなかのメダルをよける：左右の札はメダルの手前まで（フィールドの名前は2行目） */
@@ -271,6 +282,13 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .chef[data-pose=field]{translate:6% 1%;scale:1.03 .97}
 .chef[data-pose=win]{translate:0 -6%;scale:1.04}
 .chef[data-pose=burnt]{translate:-6% 0;rotate:-4deg}
+/* 影は床にのこして、横にだけついていく（ポーズの translate の横だけ） */
+.stage:has(#chef[data-pose=charge]) .chef-sh{translate:-3% 0}.stage:has(#chef[data-pose=atk1]) .chef-sh{translate:9% 0}
+.stage:has(#chef[data-pose=atk2]) .chef-sh{translate:14% 0}.stage:has(#chef[data-pose=atk3]) .chef-sh{translate:18% 0;scale:1.06 1}
+.stage:has(#chef[data-pose=special]) .chef-sh{translate:20% 0;scale:1.12 1}.stage:has(#chef[data-pose=support]) .chef-sh{translate:5% 0}
+.stage:has(#chef[data-pose=heatup]) .chef-sh{translate:7% 0}.stage:has(#chef[data-pose=heatdown]) .chef-sh{translate:-5% 0}
+.stage:has(#chef[data-pose=field]) .chef-sh{translate:6% 0}.stage:has(#chef[data-pose=burnt]) .chef-sh{translate:-6% 0}
+.stage:has(#chef[data-pose=win]) .chef-sh{scale:.85 .8;opacity:.8}
 .stage:has(#chef[data-pose=charge]) .glow,.stage:has(#chef[data-pose=special]) .glow{opacity:1}   /* チャージ中は足もとの炎の光が強く */
 /* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯がぱっと光る） */
 .quota{position:relative}
@@ -325,7 +343,7 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 
 /* ==== 軽く描く（11/19 しょーくん「フレームレートも見直して」）：見えていない物は描かない・動かさない ==== */
 /* ショップとビルドえらびが舞台をおおっているあいだ、うしろのシェフ・モンスター・光・火の粉・煙は描かない（重なった層の合成がへる） */
-.stage:has(.shopov:not(.out)) :is(#chef,#mon,.glow,.embers,.smoke),.stage:has(.pickov) :is(#chef,#mon,.glow,.embers,.smoke){display:none}   /* visibility:hidden だと、うごきが毎こま計算されて かえって重い */
+.stage:has(.shopov:not(.out)) :is(#chef,#mon,.glow,.embers,.smoke,.chef-sh,.mon-sh),.stage:has(.pickov) :is(#chef,#mon,.glow,.embers,.smoke,.chef-sh,.mon-sh){display:none}   /* visibility:hidden だと、うごきが毎こま計算されて かえって重い */
 /* 大きく見る画面：うしろをぼかさない（ぼかしは、うしろのカードが光るたびに画面ぜんぶを描きなおす）。かわりに少し濃く */
 .viewer{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(24,12,6,.84)}
 
@@ -423,3 +441,67 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .night .ov-hm{position:absolute;right:10px;top:calc(max(12px,5.5%) + 30px);z-index:6;font-size:10px;font-weight:700;color:#fff3dc;white-space:nowrap;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c,0 -1px 0 #2a170c;pointer-events:none}
 .ov-hm i{font-style:normal;color:#ff7a9a}.ov-hm b{color:#ffe08a;font-weight:700}
 .stage:has(.shopov:not(.out)) .ov-hm{display:none}
+
+/* ==== みなもの夜の空気（11/19 しょーくん「ほのかの火の粉みたいに、もう画面全体で雰囲気を味わえる演出」）：舞台の .aqua（battle-fx.js の aquaHTML・#stage の data-t＝温度）
+   子の順：1 光のゆらめき・2 霜・3 はちみつ色・4〜21 つぶ（雪／泡）・22〜25 湯気。ずっと動く物は transform と opacity だけ ==== */
+.aqua{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size;--aql:rgba(220,250,255,.85)}
+.stage[data-t="4"] .aqua{--aql:rgba(255,226,160,.8)}
+.aq-light,.aq-frost,.aq-warm{position:absolute;inset:0}
+.aq-light{top:36%;overflow:hidden;opacity:.85;-webkit-mask-image:linear-gradient(transparent,#000 45%);mask-image:linear-gradient(transparent,#000 45%)}
+.aq-light::before,.aq-light::after{content:'';position:absolute;inset:-200px;background-repeat:repeat}
+.aq-light::before{background-image:radial-gradient(ellipse 30px 8px at 50% 50%,var(--aql),transparent 70%),radial-gradient(ellipse 18px 6px at 15% 85%,var(--aql),transparent 70%);background-size:120px 56px;animation:aqflow1 7s linear infinite}
+.aq-light::after{background-image:radial-gradient(ellipse 40px 9px at 40% 30%,var(--aql),transparent 70%),radial-gradient(ellipse 22px 6px at 85% 75%,var(--aql),transparent 70%);background-size:170px 84px;animation:aqflow2 11s linear infinite}
+@keyframes aqflow1{from{transform:translate(0,0)}to{transform:translate(120px,56px)}}
+@keyframes aqflow2{from{transform:rotate(-6deg) translate(0,0)}to{transform:rotate(-6deg) translate(-170px,84px)}}
+.aq-frost{opacity:0;transition:opacity .8s;background:radial-gradient(ellipse 76% 70% at 50% 46%,transparent 48%,rgba(200,238,255,.5) 76%,rgba(242,252,255,.95)),linear-gradient(rgba(170,225,255,.16),rgba(170,225,255,.16));box-shadow:inset 0 0 26px 8px rgba(232,250,255,.8)}
+.aq-warm{opacity:0;transition:opacity .8s;background:radial-gradient(120% 62% at 50% 106%,rgba(255,186,90,.5),rgba(255,150,60,.18) 45%,transparent 72%)}
+.stage[data-t="1"] .aq-frost{opacity:.95}.stage[data-t="2"] .aq-frost{opacity:.35}
+.stage[data-t="3"] .aq-warm{opacity:.3}.stage[data-t="4"] .aq-warm{opacity:1}
+/* つぶ：冷たいときは雪と氷のきらきらがふる（.c＝4つの角の氷のきらめき）・温かいときは飴のしずくの泡がのぼる */
+.aq-p{position:absolute;left:var(--x);top:-4%;width:calc(8px * var(--s));height:calc(8px * var(--s));border-radius:50%;background:#fff;box-shadow:0 0 8px 3px rgba(180,236,255,.9);opacity:0;
+  animation:aqfall var(--d) linear infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+.aq-p.c{width:calc(19px * var(--s));height:calc(19px * var(--s));border-radius:0;box-shadow:none;background:radial-gradient(circle,#fff 0 22%,#cff2ff 40%,rgba(140,215,255,.9) 70%);
+  clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%)}
+@keyframes aqfall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:.95}50%{transform:translate(calc(var(--sx) * .6),55cqh) rotate(180deg)}90%{opacity:.85}100%{transform:translate(var(--sx),108cqh) rotate(360deg);opacity:0}}
+.stage[data-t="1"] .aq-p{animation-duration:calc(var(--d) * .7)}
+.stage[data-t="2"] .aq-p:nth-child(n+13){display:none}
+.stage:is([data-t="3"],[data-t="4"]) .aq-p{top:auto;bottom:-4%;width:calc(16px * var(--s));height:calc(16px * var(--s));border-radius:50%;clip-path:none;box-shadow:none;animation-name:aqrise;
+  background:radial-gradient(circle at 34% 30%,#fff 0 12%,rgba(255,255,255,0) 22%),radial-gradient(circle,rgba(190,240,255,0) 50%,rgba(205,246,255,.8) 65%,rgba(140,215,255,.25) 72%,transparent 74%)}
+.stage[data-t="4"] .aq-p{animation-duration:calc(var(--d) * .75);background:radial-gradient(circle at 34% 30%,#fff 0 12%,rgba(255,255,255,0) 22%),radial-gradient(circle,rgba(255,230,170,0) 50%,rgba(255,236,190,.85) 65%,rgba(255,190,110,.3) 72%,transparent 74%)}
+.stage[data-t="3"] .aq-p:nth-child(n+12){display:none}
+@keyframes aqrise{0%{transform:translate(0,0) scale(.6);opacity:0}12%{opacity:.9}50%{transform:translate(calc(var(--sx) * -.5),-50cqh) scale(1)}85%{opacity:.8}100%{transform:translate(var(--sx),-100cqh) scale(1.1);opacity:0}}
+.aq-st{display:none;position:absolute;left:var(--x);bottom:-10%;width:34%;height:28%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,250,240,.65),rgba(255,250,240,0));opacity:0;
+  animation:aqsteam var(--d) ease-out infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
+.stage[data-t="4"] .aq-st{display:block}
+@keyframes aqsteam{0%{transform:translate(-50%,0) scale(.6);opacity:0}30%{opacity:.75}100%{transform:translate(-50%,-58cqh) scale(1.6);opacity:0}}
+/* 温度が変わった一瞬（aquaTempFx）：冷えた＝霜がぱっと広がる・温まった＝下からはちみつ色の光 */
+.aqua::after{content:'';position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 55%,rgba(236,252,255,.8),rgba(160,225,255,.28) 58%,transparent 85%)}
+.stage.aqfreeze .aqua::after{animation:aqflash .6s ease-out}
+.stage.aqfreeze .aq-frost{animation:aqfz .9s ease-out}
+.stage.aqwarm .aqua::after{background:radial-gradient(circle at 50% 95%,rgba(255,222,150,.7),rgba(255,170,80,.2) 60%,transparent 85%);animation:aqflash .7s ease-out}
+@keyframes aqflash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+@keyframes aqfz{0%{opacity:1;transform:scale(1.18)}100%{transform:scale(1)}}
+.zudon.pikin{font-size:34px;color:#f2fcff;-webkit-text-stroke-color:#1a5a8a;text-shadow:0 4px 0 #0c3050,0 0 18px rgba(140,220,255,.95)}
+/* 足もとの光も温度で（冷えるほど水色が強く・とろとろは はちみつ色） */
+.night[data-chef="minamo"] .stage[data-t="1"] .glow{opacity:.75;filter:none}.night[data-chef="minamo"] .stage[data-t="2"] .glow{opacity:.5;filter:none}
+.night[data-chef="minamo"] .stage[data-t="3"] .glow{opacity:.28;filter:none}
+.night[data-chef="minamo"] .stage[data-t="4"] .glow{opacity:.6;filter:none;background:radial-gradient(ellipse 60% 55% at 42% 100%,#ffd080,rgba(255,170,80,.35) 45%,transparent 72%)}
+.stage:has(.shopov:not(.out)) .aqua,.stage:has(.pickov) .aqua{display:none}
+@media (prefers-reduced-motion:reduce){.aq-p,.aq-st{display:none}.aq-light::before,.aq-light::after{animation:none}}
+/* 火花の色もシェフごと（みなも＝しずく・わかば＝若葉の光） */
+body[data-chef="minamo"] .fspark{background:#eafbff;box-shadow:0 0 6px 2px rgba(110,200,255,.85)}
+body[data-chef="minamo"] .fspark.w{background:#fff;box-shadow:0 0 8px 3px rgba(160,225,255,.95);border-radius:2px;rotate:45deg}
+body[data-chef="wakaba"] .fspark{background:#efffbe;box-shadow:0 0 6px 2px rgba(150,220,80,.85)}
+body[data-chef="wakaba"] .fspark.w{background:#fffbe0;box-shadow:0 0 8px 3px rgba(200,240,120,.95)}
+/* 大技の画面いっぱい（fireWall）：みなも＝水の柱と大波と氷のかけら・わかば＝つると葉 */
+.fwall.water .fw-flash{background:radial-gradient(130% 95% at 50% 100%,rgba(228,250,255,.85),rgba(110,200,250,.55) 45%,rgba(20,80,160,.25) 75%,transparent 95%)}
+.fwall.water .fw-t{border-radius:46% 46% 30% 30% / 70% 70% 30% 30%;background:radial-gradient(40% 26% at 50% 10%,#fff 0,rgba(232,250,255,.9) 34%,transparent 62%),linear-gradient(rgba(220,248,255,.92),rgba(120,205,250,.78) 30%,rgba(60,150,230,.58) 75%,rgba(30,110,210,.38))}
+.aw-wave{position:absolute;top:6%;bottom:-6%;left:0;width:66%;border-radius:0 62% 40% 0 / 0 44% 30% 0;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(110,200,250,.28) 40%,rgba(170,232,255,.6) 72%,rgba(255,255,255,.92) 84%,rgba(200,240,255,.45) 90%,transparent);animation:aww .95s cubic-bezier(.3,.6,.4,1) forwards}
+.aw-wave.b{top:32%;width:52%;animation-delay:.18s}
+@keyframes aww{0%{transform:translateX(-110%) skewX(-8deg);opacity:0}15%{opacity:1}80%{opacity:.9}100%{transform:translateX(180%) skewX(-8deg);opacity:0}}
+.aw-ice{position:absolute;left:var(--x);top:var(--y);width:calc(14px * var(--s));height:calc(28px * var(--s));rotate:var(--r);opacity:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+  background:linear-gradient(135deg,#fff,#c6edff 50%,#6cc4f0);animation:awice .75s var(--dl) ease-out both}
+@keyframes awice{0%{transform:scale(0);opacity:0}30%{transform:scale(1.25);opacity:1}100%{transform:scale(.8) translateY(30px);opacity:0}}
+.fwall.leaf .fw-flash{background:radial-gradient(130% 95% at 50% 100%,rgba(250,255,212,.8),rgba(160,225,90,.5) 45%,rgba(60,120,20,.22) 75%,transparent 95%)}
+.fwall.leaf .fw-t{width:16%;border-radius:50% 50% 12% 12% / 90% 90% 10% 10%;background:radial-gradient(46% 14% at 50% 7%,#e2f8a8,transparent 72%),linear-gradient(90deg,transparent 30%,rgba(130,190,60,.92) 42%,rgba(196,238,118,.96) 50%,rgba(112,172,52,.92) 58%,transparent 70%)}

@@ -242,12 +242,36 @@ function tempHTML() {
   for (let k = 0; k < 10; k++) s += `<i class="tst" style="--x:${(4 + r() * 92).toFixed(1)}%;--d:${(2 + r() * 1.6).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 30).toFixed(0)}px"></i>`;
   return (tempCache = `<i class="tcold" aria-hidden="true"></i><span class="tsteam" aria-hidden="true">${s}</span>`);
 }
+/* みなもの夜の空気（11/19 しょーくん「ほのかの火の粉みたいに、もう画面全体で雰囲気を味わえる演出もほしい」）：舞台いっぱいに、温度で変わる
+   ひえひえ＝雪と氷のきらきらがふる・ふちに霜／ひんやり＝少しの雪／あたたか＝飴のしずくの泡がのぼる／とろとろ＝泡と湯気・はちみつ色の光。いつも水面のような光のゆらめき
+   数と形は CSS が #stage の data-t で決める（ずっと動く物は transform と opacity だけ・ショップのあいだは止める） */
+let aquaCache = '';
+function aquaHTML() {
+  if (aquaCache) return aquaCache;
+  const r = prng(41); let e = '';
+  for (let k = 0; k < 18; k++) e += `<i class="aq-p${k % 3 ? '' : ' c'}" style="--x:${(2 + r() * 96).toFixed(1)}%;--d:${(3.4 + r() * 2.8).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 60).toFixed(0)}px;--s:${(.6 + r() * .9).toFixed(2)}"></i>`;
+  for (let k = 0; k < 4; k++) e += `<i class="aq-st" style="--x:${(6 + k * 25 + r() * 8).toFixed(1)}%;--d:${(3.8 + r() * 1.8).toFixed(2)}s;--k:${r().toFixed(2)}"></i>`;
+  return (aquaCache = `<span class="aqua" aria-hidden="true"><i class="aq-light"></i><i class="aq-frost"></i><i class="aq-warm"></i>${e}</span>`);
+}
+/* 温度が変わったとき、舞台ぜんたいで：冷えた＝霜がぱっと広がって氷のかけら（ひえひえになったら ピキーン！）・温まった＝はちみつ色の光と湯気・泡がふわっ */
+function aquaTempFx(h, was) {
+  const st = $('stage'); if (!st || REDUCED) return;
+  const r = st.getBoundingClientRect(), c = { x: r.left + r.width / 2, y: r.top + r.height * .55, w: r.width * .8 };
+  if (h < was) {
+    replay(st, 'aqfreeze'); sparkBurst(c, 22, 'all', 2);
+    if (h === 1) {
+      const b = document.createElement('b'); b.className = 'zudon pikin'; b.textContent = 'ピキーン！';
+      b.style.left = c.x + 'px'; b.style.top = r.top + r.height * .3 + 'px'; fxLayer().appendChild(b); setTimeout(() => b.remove(), 900);
+    }
+  } else { replay(st, 'aqwarm'); sparkBurst({ x: c.x, y: r.bottom - 20, w: r.width * .9 }, 18, 'up', 1.6); }
+}
 let tempWas = null;
 function tempFx(h) {
   const t = document.querySelector('.tiles'); if (!t) return;
   const was = tempWas && tempWas.day === S.day ? tempWas.h : null;
   tempWas = { day: S.day, h }; t.dataset.t = h;
   if (was == null || h === was || REDUCED) return;
+  aquaTempFx(h, was);
   if (h > was) { replay(t, 'heatup'); sparkBurst(t, 9, 'up', .8); } else { replay(t, 'heatdn'); steam(t); }
 }
 /* ラウンドの終わりに飴が冷めたとき：メーターの所に札 */
@@ -298,16 +322,18 @@ function sparkBurst(at, n, mode, spread = 1) {
 }
 /* 画面いっぱいの炎：大技（ノルマの6割をこえる一撃と★3のズドン）だけ。下から炎の舌が調理台や下のパネルまでおおって、画面ごとゆれる
    （大きさのクラスは s-big・s-huge。.big はボタンの名前なので使わない） */
+/* 炎はほのかだけ（11/19）：みなもは画面いっぱいの水の柱と大波（.water・しぶきと氷のかけら）、わかばは若葉色のつると葉（.leaf） */
 function fireWall() {
   const nt = document.querySelector('.night'); if (!nt || REDUCED) return;
   replay(nt, 'quake2');
-  const r = nt.getBoundingClientRect(), w = document.createElement('div'), n = 11;
-  w.className = 'fwall';
+  const ch = document.body.dataset.chef, r = nt.getBoundingClientRect(), w = document.createElement('div'), n = 11;
+  w.className = 'fwall' + (ch === 'minamo' ? ' water' : ch === 'wakaba' ? ' leaf' : '');
   Object.assign(w.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
-  let h = '<i class="fw-flash"></i>';
+  let h = '<i class="fw-flash"></i>' + (ch === 'minamo' ? '<i class="aw-wave"></i><i class="aw-wave b"></i>' : '');
+  if (ch === 'minamo') for (let k = 0; k < 16; k++) h += `<i class="aw-ice" style="--x:${(Math.random() * 100).toFixed(1)}%;--y:${(20 + Math.random() * 60).toFixed(1)}%;--r:${Math.round(Math.random() * 180)}deg;--s:${(.6 + Math.random() * .9).toFixed(2)};--dl:${Math.round(180 + Math.random() * 420)}ms"></i>`;
   for (let k = 0; k < n; k++) h += `<i class="fw-t" style="--x:${((k + .5) / n * 100 + (Math.random() - .5) * 6).toFixed(1)}%;--h:${(46 + Math.random() * 34).toFixed(0)}%;--dl:${Math.round(Math.random() * 140)}ms"></i>`;
   w.innerHTML = h; fxLayer().appendChild(w);
-  setTimeout(() => w.remove(), 1150);
+  setTimeout(() => w.remove(), ch === 'minamo' ? 1400 : 1150);
 }
 /* モンスター：ずっともにもに（CSS の --idle）。当たるとぐにゃっ・ほえる（もにもにはそのまま続く） */
 const MON_IDLE = { hitsuji: 'fluff' };
