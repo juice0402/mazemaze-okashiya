@@ -90,6 +90,16 @@ const CUST_LIKES = {
   otona: ['mugi', 'egg', 'herb', 'hoippu', 'karamel'],
   obaachan: ['hachimitsu', 'egg', 'mizuame', 'kanten'],
 };
+/* 常連さん（11/19・仮）：段ごとに [その日から, その種類のお客さんからのハートの合計, 条件]。条件 minamo＝みなもが仲間・trip＝ガルドが旅のあいだ（日にちは見ない）
+   その日にあてはまる常連さんがいれば、その日はかならず来る（1日1場面・仲間が来る日と物語の場面の日はなし）。来るのは1まいめの見た目。セリフは story.js の STORY.reg */
+const REG_STEPS = {
+  kodomo:   [[2, 1], [5, 3], [8, 6, 'minamo']],
+  gakusei:  [[3, 1], [6, 3], [9, 6], [12, 10]],
+  otona:    [[2, 1], [5, 3], [9, 6]],
+  obaachan: [[2, 1], [6, 3], [0, 6, 'trip']],
+};
+const REG_TRIP = 3;   // ガルドの旅：段3のあと、この日数は来ない（1まいめの見た目を出さない）。帰るのは、そのあとマーサの段3がすんでから
+const regTrip = () => (S.seen['rg:otona'] || 0) >= 3 && !S.seen['rg:pair'];
 function custCount() {
   if (S.day <= 1) return CUST_DAY1;
   return CUST_BASE + Math.floor(S.rep / REP_JAR) + (S.goods.tatekanban || 0);
@@ -110,17 +120,19 @@ function wpick(items, w) {
 }
 /* その日のお客さん（開店のときに決める）：[{ c: お客さんの id, like: すきな素材 }] */
 /* その日のお客さんの順番：同じ種類のお客さんは続けて来ない。見た目ちがいの絵（day-scene.js の custVariants）があれば、その日まだ来ていない見た目から（vr） */
-function custPlan(n, kanbanKey, soroi = [], first = []) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）
-  const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set();
+function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
+  const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + 1] : []);
   const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
+  const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m)); };
+  const away = regTrip() ? ['otona'] : [];   // 旅に出ている常連さんは、1まいめの見た目で来ない
   let prev = null;
   return Array.from({ length: n }, (_, i) => {
-    const c = first[i] || pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev)); prev = c;
-    const vs = custVariants(c), fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
+    if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: 1, like: fix.c === 'kodomo' && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルはいちごが大すき
+    const c = first[i] || pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev && !(fix && i + 1 === fix.i && id === fix.c))); prev = c;
+    const all = custVariants(c), vs = away.includes(c) && all.length > 1 ? all.filter(x => x !== 1) : all;
+    const fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
     used.add(c + vr);
-    const pref = CUST_LIKES[c] || [];
-    const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m));
-    return { c, vr, like };
+    return { c, vr, like: likeOf(c) };
   });
 }
 

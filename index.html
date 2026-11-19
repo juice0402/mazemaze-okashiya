@@ -1474,6 +1474,11 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .cu-bub .hico{width:28px;height:28px}
 .cu-bub.res.none{color:var(--ink-soft)}
 .cu-bub .bh{font-size:22px;line-height:1;color:#e8506c;animation:bhpop .45s cubic-bezier(.3,1.8,.5,1)}
+.cu-bub.say{flex-direction:column;align-items:flex-start;gap:0;max-width:48cqw}
+.cu-bub.cu-bub.say{padding:4px 12px 5px 12px}
+.cu-bub.say span{word-break:keep-all;overflow-wrap:anywhere}
+.cu-bub .cu-rn{font-size:9.5px;line-height:1.15;color:var(--ink-soft)}
+.d-cust.duo .cu.duo2{margin-left:calc(-22cqh - 26cqw);z-index:1}
 @keyframes bhpop{0%{transform:scale(.2)}100%{transform:none}}
 .d-fly{position:absolute;z-index:6;font-style:normal;font-size:26px;line-height:1;color:#e8506c;text-shadow:0 0 4px #fff,0 2px 0 rgba(120,20,40,.4);pointer-events:none;animation:dfly calc(.75s / var(--sp,1)) cubic-bezier(.5,0,.8,.6) forwards}
 @keyframes dfly{0%{transform:translate(-50%,0) scale(1.2)}100%{transform:translate(calc(var(--dx) - 50%),var(--dy)) scale(.5);opacity:.7}}
@@ -2457,6 +2462,14 @@ gakusei: ['milk', 'ichigo', 'minto', 'hoshi'],
 otona: ['mugi', 'egg', 'herb', 'hoippu', 'karamel'],
 obaachan: ['hachimitsu', 'egg', 'mizuame', 'kanten'],
 };
+const REG_STEPS = {
+kodomo:   [[2, 1], [5, 3], [8, 6, 'minamo']],
+gakusei:  [[3, 1], [6, 3], [9, 6], [12, 10]],
+otona:    [[2, 1], [5, 3], [9, 6]],
+obaachan: [[2, 1], [6, 3], [0, 6, 'trip']],
+};
+const REG_TRIP = 3;   // ガルドの旅：段3のあと、この日数は来ない（1まいめの見た目を出さない）。帰るのは、そのあとマーサの段3がすんでから
+const regTrip = () => (S.seen['rg:otona'] || 0) >= 3 && !S.seen['rg:pair'];
 function custCount() {
 if (S.day <= 1) return CUST_DAY1;
 return CUST_BASE + Math.floor(S.rep / REP_JAR) + (S.goods.tatekanban || 0);
@@ -2474,17 +2487,19 @@ let r = Math.random() * sum;
 for (const x of items) { r -= w(x); if (r < 0) return x; }
 return items[items.length - 1];
 }
-function custPlan(n, kanbanKey, soroi = [], first = []) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）
-const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set();
+function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
+const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + 1] : []);
 const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
+const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m)); };
+const away = regTrip() ? ['otona'] : [];   // 旅に出ている常連さんは、1まいめの見た目で来ない
 let prev = null;
 return Array.from({ length: n }, (_, i) => {
-const c = first[i] || pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev)); prev = c;
-const vs = custVariants(c), fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
+if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: 1, like: fix.c === 'kodomo' && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルはいちごが大すき
+const c = first[i] || pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev && !(fix && i + 1 === fix.i && id === fix.c))); prev = c;
+const all = custVariants(c), vs = away.includes(c) && all.length > 1 ? all.filter(x => x !== 1) : all;
+const fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
 used.add(c + vr);
-const pref = CUST_LIKES[c] || [];
-const like = wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m));
-return { c, vr, like };
+return { c, vr, like: likeOf(c) };
 });
 }
 const GOODS = {
@@ -2714,20 +2729,20 @@ if (rec.day === 1) return [
 'ほのか【考える】：材料は、使うぶんだけ買おっと',
 ];
 if (S.stock.niji && !S.seen.m7 && !STORY.mateDay('minamo')) {
-S.seen.m7 = 1;
+S.seen.m7 = 1; S.seen.scDay = S.day;   // 物語の場面の日（常連さんは来ない・day.js の dRegDue）
 return ['ほのか【わくわく】：この水あめで作ったら、お店いちばんのお菓子になるかも！', '→ にじいろの水あめのお菓子を作って、棚へ'];
 }
 if (S.stock.minto && !S.seen.m11 && !STORY.mateDay('wakaba')) {
-S.seen.m11 = 1;
+S.seen.m11 = 1; S.seen.scDay = S.day;
 return ['ほのか【わくわく】：このミントで、さわやかなお菓子、作ってみよう！', '→ きらきらミントのお菓子を作って、棚へ'];
 }
 if (STORY.mate('minamo') && S.day >= ((typeof BUILDS === 'object' && BUILDS.kone && BUILDS.kone.from) || 8) && !S.seen.m9) {
-S.seen.m9 = S.day;
+S.seen.m9 = S.day; S.seen.scDay = S.day;
 return STORY.m9;
 }
 for (const t of M_TOOLS) if (!S.seen['u:' + t.id] && STORY.mate(t.by) && S.day >= STORY.mateDay(t.by) + 1 + t.after) { S.seen['u:' + t.id] = S.day; return STORY.toolTalk[t.id](); }
 if (rec.day === 2 && S.stock.zeri && !S.seen.m5) {
-S.seen.m5 = 1;
+S.seen.m5 = 1; S.seen.scDay = S.day;
 return [
 'ほのか【びっくり】：倉庫に、きのうのゼリーがある！',
 'ほのか【考える】：モンスター素材は、ある分だけ。だいじに使わなきゃ',
@@ -3158,6 +3173,31 @@ more3: ['ほっほ、欲ばりだねぇ', 'ほうきが重くなるよ'],
 },
 },
 custSay: (c, kind) => pick(((STORY.custBy[c] || {})[kind]) || STORY.cust[kind]),
+reg: {
+kodomo: { name: 'ルル', st: [
+['ルル：とどかないの〜', 'ほのか【びっくり】：あっ、ちっちゃいお客さん！いま行くね', 'ルル：いちごの、ちょうだい！'],
+['ルル：ほのかおねえちゃん！', 'ほのか【うっとり】：お、おねえちゃん……！なんだか、てれる', 'ルル：また来たよ〜！'],
+['ルル：あのキラキラ、なあに？', 'みなも【すまし】：……飴細工。見るだけ', 'ルル：……たべたいなぁ'],
+] },
+gakusei: { name: 'コハク', st: [
+['コハク：……いいにおい', 'ほのか【わくわく】：においで来てくれたの？', 'コハク：べ、べつに'],
+['コハク：通りかかっただけ', 'ほのか【ドヤ】：きのうも、おとといも、通りかかってたよね？', 'コハク：……たまたま'],
+['コハク：女の子って、何がすき', 'ほのか【わくわく】：プレゼント？だれにあげるの？', 'コハク：……妹の、誕生日'],
+['コハク：妹、よろこんでた', 'コハク：……ここのが、いちばん', 'ほのか【感動】：（いま、いちばんって言った……！）'],
+] },
+otona: { name: 'ガルド', st: [
+['ガルド：旅のおやつに、もらうよ', 'ほのか【やる気】：道中、おなかすかないように！', 'ガルド：はは、たすかる'],
+['ガルド：北の町のパイもいいけど', 'ガルド：ここのは、あったかい味だ', 'ほのか【うれしい】：えへへ、うれしい！'],
+['ガルド：しばらく長い旅に出る', 'ほのか【やる気】：おやつ、多めに入れときますね', 'ガルド：帰ったら、また来るよ'],
+] },
+obaachan: { name: 'マーサ', st: [
+['マーサ：おやまあ、かわいいお店', 'ほのか【うれしい】：ゆっくり見てってください！', 'マーサ：また来ますよ'],
+['マーサ：孫が甘いものすきでねぇ', 'ほのか【わくわく】：どんなのが、すきなんですか？', 'マーサ：いろいろ、ためしてるの'],
+['マーサ：孫がね、長い旅に出たの', 'マーサ：帰ったら食べさせたくて', 'ほのか【考える】：（長い旅……？どこかで聞いたような）'],
+] },
+},
+regPair: ['ガルド：ただいま！帰ってきたよ', 'マーサ：おやまあ、この子ったら', 'ほのか【びっくり】：えっ、ガルドさんが、マーサさんのお孫さん！？', 'マーサ：すきな味、ここだったのね', 'ガルド：旅先で、ここの話をしたよ'],
+regKoge: ['コハク：……こげくさい'],
 diary(rec) {
 if (rec.day === 1) return ['お店をひらいた日。お客さんは' + rec.visitors + '人。', '夜にスライムが来た。ゼリー、何に使おうかな？'];
 if (S.seen.m9 === rec.day) return ['みなもちゃんに、パン種を教わった。', 'こねすぎて、うでがパンパン。楽しい！'];   // ⑨の日（紙に入るよう少しちぢめた）
@@ -5916,9 +5956,11 @@ const dLen = R => (R && R.len) || DAY_MS;
 function startDay() {
 const k = S.morning && S.morning.kanban, kan = k && S.shelf.some(s => s.key === k && s.n > 0) ? k : null;
 S.dayRun = { open: false, done: false, kanban: kan, t: 0, plan: [], i: 0, cur: null };
+dScene = null; clearTimeout(dRegT);
 }
 function stopDay() {
 clearTimeout(dayTick); dayTick = 0;
+dScene = null; clearTimeout(dRegT);
 S.shelf = [];
 }
 function shelfSlots(kan = S.dayRun && S.dayRun.kanban) {
@@ -5996,9 +6038,10 @@ R.open = true; R.t = 0; R.i = 0; R.cur = null;
 R.soroi = soroiRows(shelfSlots().slots).flatMap(x => x.mats);   // おそろいの段は開店のときの並びで
 if (!R.ev && S.day >= 3 && Math.random() < EVENT_P) R.ev = pick(DAY_EVENTS).id;   // 昼のできごと（11/19）
 const E = dEv(R);
-R.plan = custPlan(Math.max(2, custCount() + ((E && E.add) || 0)), R.kanban, R.soroi, (E && E.first) || []);
+const fx = dRegDue(), first = (E && E.first) || [], n = Math.max(2, custCount() + ((E && E.add) || 0));   // 常連さん（11/19）：来る日は2人目か、できごとのお客さんのあと
+R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) });
 R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
-dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad']; }));   // 今日のお客さんの顔を先に読む
+dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad', ...(x.duo ? ['cust-' + x.duo] : [])]; }));   // 今日のお客さんの顔を先に読む
 R.lk = {}; R.got = {}; R.miss = {};
 S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
 save(); renderDay();
@@ -6049,7 +6092,7 @@ const R = S.dayRun;
 if (S.phase !== 'day' || !R || !R.open || R.done || !$('dstage')) return;
 const now = performance.now(), dt = dayPrev ? Math.min(250, now - dayPrev) : 0;
 dayPrev = now;
-const run = !talking();
+const run = !talking() && !dScene;   // 常連さんの場面のあいだも、営業の時計は止める
 if (run) dayStep(R, dt * daySpeed);
 if (!R.done) { dLightSync(R, run); dayTick = setTimeout(dayLoop, 100); }
 }
@@ -6071,11 +6114,14 @@ else if (R.t >= dLen(R)) closeDay();
 function startVisit(R) {
 const p = R.plan[R.i++];
 R.cur = { c: p.c, vr: p.vr || 1, like: p.like, t: 0, step: 0, res: null };
+if (p.reg) { R.cur.reg = p.reg; if (p.duo) R.cur.duo = p.duo; }
+else if (p.c === 'gakusei' && (p.vr || 1) === 1 && !R.koge && S.seen['rg:gakusei'] && S.night && S.night.burnt > 0) { R.koge = 1; R.cur.reg = 'koge'; }   // 小ネタ「……こげくさい」
 S.today.visitors++; save();
 showCust(R.cur, false); mSe('door', { vol: 0.45 });
 }
 function visitStep(R, dt) {
 const v = R.cur; v.t += dt;
+if (v.reg && v.sc !== 2 && v.t >= V_ARRIVE) { if (!dScene) dRegRun(v); return; }   // 常連さん：来たら、すきな味の前に掛け合い
 if (v.step === 0 && v.t >= V_ARRIVE) {
 v.step = 1; showBubble(v);
 if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}); }
@@ -6091,9 +6137,9 @@ if (!m) { v.res.more = v.mk || 0; return; }
 v.mk = (v.mk || 0) + 1; v.last = m; save(); showMore(v, m, false); mSe('sale', { rate: 1.06 });
 if (dLeft(m.key) <= 0) setTimeout(() => { mSe('soldout'); dSay(m.key === S.today.kanban ? 'kanban' : 'sold', candyOf(m.key).name, true); }, 700);
 } else if (v.step === 2 && v.t >= V_LEAVE + V_MORE * (v.mk || 0)) {
-v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
+v.step = 3; dCustEls().forEach(el => el.classList.add('leave'));
 } else if (v.step === 3 && v.t >= V_END) {
-R.cur = null; const el = custEl(); if (el) el.remove(); save();
+R.cur = null; dCustEls().forEach(el => el.remove()); save();
 }
 }
 const D_MATES = [['minamo', 'niji'], ['wakaba', 'minto']];
@@ -6114,18 +6160,61 @@ S.seen['mate:' + m.id] = S.day; save();
 dCaseUpdate(); mSe('door');
 talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); mJg('jg-nakama'); });   // 仲間になったジングル（11/19）
 }
+let dScene = null, dRegT = 0;
+function dRegDue() {
+if (S.day <= 1 || S.seen.scDay === S.day || dMateDue()) return null;   // 仲間が来る日・物語の場面の日はなし
+const g = c => S.seen['rg:' + c] || 0, gd = c => S.seen['rgd:' + c] || 0, h = c => S.seen['rh:' + c] || 0, trip = regTrip();
+if (trip && S.day >= gd('otona') + REG_TRIP && g('obaachan') >= 3 && gd('obaachan') < S.day) return { c: 'otona', duo: 'obaachan', reg: 'pair' };
+const ok = Object.keys(REG_STEPS).filter(c => {
+const st = REG_STEPS[c][g(c)]; if (!st || gd(c) >= S.day || (c === 'otona' && trip)) return false;
+const [day, hearts, need] = st;
+if (S.day < day || h(c) < hearts) return false;
+if (need === 'minamo' && !STORY.mate('minamo')) return false;
+if (need === 'trip' && !(trip && gd('otona') < S.day)) return false;
+return true;
+});
+if (!ok.length) return null;
+const c = pick(ok);
+return { c, reg: c + ':' + g(c) };
+}
+const dRegLines = reg => reg === 'pair' ? STORY.regPair : reg === 'koge' ? STORY.regKoge : (() => { const [c, k] = reg.split(':'); return ((STORY.reg[c] || {}).st || [])[+k]; })();
+function dRegRun(v) {
+const L = dRegLines(v.reg);
+if (!L || !L.length) { v.sc = 2; return; }
+dScene = v; v.sc = 1; dSkip = Infinity;   // お店のひとことの割りこみを止める
+const nm = { [STORY.reg[v.c].name]: 'dBub', ...(v.duo ? { [STORY.reg[v.duo].name]: 'dBub2' } : {}) };
+let i = 0;
+const step = () => {
+if (dScene !== v || S.phase !== 'day') return;
+if (i >= L.length) return dRegEnd(v);
+const line = L[i++], m = line.match(/^([^【：]+)(?:【[^】]+】)?：(.*)$/), id = m && nm[m[1]];
+if (id) {
+for (const k of ['dBub', 'dBub2']) { const b = $(k); if (b && k !== id) b.className = 'cu-bub'; }   // しゃべっていない子の吹き出しはしまう
+const b = $(id); if (b) { b.className = 'cu-bub say'; b.innerHTML = `<b class="cu-rn">${esc(m[1])}</b><span>${esc(m[2])}</span>`; void b.offsetWidth; b.classList.add('show'); }
+} else dSayRun([line]);
+dRegT = setTimeout(step, (id ? 2300 : 2600) / Math.sqrt(daySpeed));
+};
+step();
+}
+function dRegEnd(v) {
+dScene = null; dSkip = 0; v.sc = 2;
+for (const k of ['dBub', 'dBub2']) { const b = $(k); if (b) b.className = 'cu-bub'; }
+if (v.reg === 'pair') S.seen['rg:pair'] = S.day;
+else if (v.reg !== 'koge') { const [c, k] = v.reg.split(':'); S.seen['rg:' + c] = +k + 1; S.seen['rgd:' + c] = S.day; }
+save();
+}
 const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
 function serve(v) {
 const T = S.today, R = S.dayRun, items = S.shelf.filter(s => s.n > 0);
 const liked = items.filter(s => candyHas(s.key, v.like));
 let s = null, love = false;
 if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
-else if (items.length && Math.random() < OTHER_BUY) s = pick(items);
+else if (items.length && ((v.reg && v.reg !== 'koge') || Math.random() < OTHER_BUY)) s = pick(items);   // 常連さんの場面の日は、かならず何か買う
 if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
 const price = candyOf(s.key).price;
 s.n--; S.money += price; T.sales += price; T.served++;
 if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
-if (love) { S.rep++; T.hearts++; }
+if (love) { S.rep++; T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + 1; }   // 常連さんの段は、種類ごとのハートの合計で
 const more = Math.random() < MORE_P ? (Math.random() < MORE3_P ? 2 : 1) : 0;   // たまに2こ・たまーに3こ（11/19 しょーくん）
 return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other'), more, got: [s.key] };
 }
@@ -6248,13 +6337,16 @@ lay.appendChild(el);
 const gap = ev === 'kotori' || ev === 'kaze' ? 2500 + Math.random() * 2500 : 6500 + Math.random() * 6500;
 dAmbT = setTimeout(dAmbient, gap / Math.sqrt(daySpeed));
 }
-const custEl = () => document.querySelector('#dCust .cu');
+const custEl = () => document.querySelector('#dCust .cu:not(.duo2)');
+const dCustEls = () => document.querySelectorAll('#dCust .cu');   // 2人の場面（常連さん）はマーサもいっしょに
 const faceOf = v => (v.step >= 2 && v.res ? (v.res.kind === 'love' ? 'happy' : v.res.kind === 'none' ? 'sad' : '') : '');
 function showCust(v, now) {
 const box = $('dCust'); if (!box) return;
-const face = faceOf(v);
-box.innerHTML = `<div class="cu cu-${v.c}${face ? ' ' + face : ''}${now ? ' at still' : ''}${v.step >= 3 ? ' leave' : ''}">${custHTML(v.c, face, v.vr)}<div class="cu-bub" id="dBub"></div></div>`;
-if (!now) { const el = custEl(); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('at'))); }
+const face = faceOf(v), at = (now ? ' at still' : '') + (v.step >= 3 ? ' leave' : '');
+const duo = v.duo ? `<div class="cu cu-${v.duo} duo2${at}">${custHTML(v.duo, '', 1)}<div class="cu-bub" id="dBub2"></div></div>` : '';   // 2人の場面：マーサは左うしろ
+box.classList.toggle('duo', !!v.duo);
+box.innerHTML = duo + `<div class="cu cu-${v.c}${face ? ' ' + face : ''}${at}">${custHTML(v.c, face, v.vr)}<div class="cu-bub" id="dBub"></div></div>`;
+if (!now) { const els = dCustEls(); requestAnimationFrame(() => requestAnimationFrame(() => els.forEach(el => el.classList.add('at')))); }
 if (v.step === 1) showBubble(v);
 if (v.step === 2) v.mk && v.last ? showMore(v, v.last, true) : showResult(v, true);
 }
