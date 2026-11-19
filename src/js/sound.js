@@ -6,7 +6,7 @@
 const BGM_LOOP = { hiru: 38.4, yoru: 25.6 };   // 1ループの秒（100BPM・150BPM の16小節）
 const BGM_VOL = 0.45;
 const BGM_FADE = 0.6;
-const bgm = { ctx: null, master: null, buf: {}, want: '', cur: '', src: null, gain: null };
+const bgm = { ctx: null, master: null, buf: {}, fail: {}, want: '', cur: '', src: null, gain: null };
 
 function bgmName() { return S && S.phase === 'night' ? 'yoru' : 'hiru'; }
 function bgmUnlock() {
@@ -17,14 +17,16 @@ function bgmUnlock() {
   if (bgm.ctx.state === 'suspended') bgm.ctx.resume();
   bgmSync();
 }
+/* 読みこめなかったら、10秒たつまで読みなおさない（11/19 点検：読めない所ではタップのたびに読みに行き、夜1回で179回になっていた） */
 function bgmLoad(name, done) {
   if (bgm.buf[name]) return done(bgm.buf[name]);
   if (bgm.buf[name] === 0) return;   // 読みこみ中
+  if (Date.now() - (bgm.fail[name] || 0) < 10000) return;
   bgm.buf[name] = 0;
-  fetch(BGM_SRC[name]).then(r => r.arrayBuffer())
+  fetch(BGM_SRC[name]).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
     .then(a => new Promise((ok, ng) => bgm.ctx.decodeAudioData(a, ok, ng)))
     .then(b => { bgm.buf[name] = b; if (bgm.want === name) done(b); })
-    .catch(() => { delete bgm.buf[name]; });
+    .catch(() => { delete bgm.buf[name]; bgm.fail[name] = Date.now(); if (bgm.want === name) bgm.want = ''; });
 }
 /* mp3 の頭のすき間（エンコーダーの 1105 サンプル）が残っているブラウザでは、そこを外してループする */
 function bgmStart(name, b) {

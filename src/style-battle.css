@@ -376,7 +376,15 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .pk-list.many .pk-chef{font-size:10px}
 .pk-list.many .pk-cards{display:none}
 .pk-list.many .pk-text{font-size:10.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.pk-list.many .pk-on{right:auto;left:-6px;top:-10px;font-size:10px}
+.pk-list.many .pk-on{right:auto;left:50%;translate:-50% 0;top:-17px;font-size:10px}   /* 名前の頭にかぶらないように、カードの上のふちのまんなかへ（11/19 点検） */
+/* 名前と「〇〇・特性 〇〇」は、ことばの切れ目（<wbr>・空白）だけで折る（11/19 点検） */
+.pk-name,.pk-chef{word-break:keep-all;overflow-wrap:anywhere}
+.pk-list.many .pk-pic{flex-basis:34%}
+/* 低い画面（iPhone SE など）では、説明を行の切れ目で短くし、それでも入らないときは「〇〇・特性」の行を休む（11/19 点検：説明の下の行が半分切れていた） */
+.pk-list.many button.pk-card{container-type:size}
+@container (max-height:118px){.pk-list.many .pk-text{-webkit-line-clamp:3}}
+@container (max-height:104px){.pk-list.many .pk-text{-webkit-line-clamp:2}}
+@container (max-height:90px){.pk-list.many .pk-chef{display:none}}
 .pk-on{white-space:nowrap}
 /* ==== わかばの夜（11/19）：火力・温度のメーターはない（くだものはカードの絵で育つ）。飴ジャムの夜の場は大きなびん：入っている実を下に小さく並べる（コードの仮） ==== */
 .night[data-chef="wakaba"] .heat-label,.night[data-chef="wakaba"] .heat-bar,.night[data-chef="wakaba"] .embers{display:none}

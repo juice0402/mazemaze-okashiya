@@ -460,12 +460,14 @@ function shopHTML() {
 }
 
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩・前の夜のビルドがえらばれている）。カードはシェフの絵・ビルドの名前・特性・代表のカード3まい・ひとこと */
+/* ビルドの名前の折り目：かたかなのかたまりの前後だけ（11/19 点検：「くだものケ／ーキ」「火力クッキ／ー」と ことばのとちゅうで折れていた。CSS は keep-all） */
+const pkBr = nm => (String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]).map(esc).join('<wbr>');
 function pickHTML() {
   const list = openBuilds().map(id => {
     const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;
     return `<button class="pk-card${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
       <span class="pk-pic">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-      <span class="pk-body"><b class="pk-name">${esc(B.name)}</b><span class="pk-chef">${esc(C.name)}・特性 ${esc(C.trait)}</span>
+      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(C.trait)}</span>
       <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
       <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');

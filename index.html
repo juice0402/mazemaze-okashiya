@@ -1000,7 +1000,13 @@ background:radial-gradient(120% 90% at 50% 100%,rgba(150,215,255,.38),transparen
 .pk-list.many .pk-chef{font-size:10px}
 .pk-list.many .pk-cards{display:none}
 .pk-list.many .pk-text{font-size:10.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.pk-list.many .pk-on{right:auto;left:-6px;top:-10px;font-size:10px}
+.pk-list.many .pk-on{right:auto;left:50%;translate:-50% 0;top:-17px;font-size:10px}
+.pk-name,.pk-chef{word-break:keep-all;overflow-wrap:anywhere}
+.pk-list.many .pk-pic{flex-basis:34%}
+.pk-list.many button.pk-card{container-type:size}
+@container (max-height:118px){.pk-list.many .pk-text{-webkit-line-clamp:3}}
+@container (max-height:104px){.pk-list.many .pk-text{-webkit-line-clamp:2}}
+@container (max-height:90px){.pk-list.many .pk-chef{display:none}}
 .pk-on{white-space:nowrap}
 .night[data-chef="wakaba"] .heat-label,.night[data-chef="wakaba"] .heat-bar,.night[data-chef="wakaba"] .embers{display:none}
 .fslot .bin-in{position:absolute;left:4%;right:4%;bottom:5%;display:flex;justify-content:center;gap:3%;z-index:4;pointer-events:none}
@@ -4280,12 +4286,13 @@ return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''
 : '<span class="shcard sold"></span>').join('')}</div>
 <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
 }
+const pkBr = nm => (String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]).map(esc).join('<wbr>');
 function pickHTML() {
 const list = openBuilds().map(id => {
 const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;
 return `<button class="pk-card${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
 <span class="pk-pic">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-<span class="pk-body"><b class="pk-name">${esc(B.name)}</b><span class="pk-chef">${esc(C.name)}・特性 ${esc(C.trait)}</span>
+<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(C.trait)}</span>
 <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
 <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
 }).join('');
@@ -6204,7 +6211,7 @@ ${fore}<div class="tt-fx" aria-hidden="true">${motes}</div>
 const BGM_LOOP = { hiru: 38.4, yoru: 25.6 };   // 1ループの秒（100BPM・150BPM の16小節）
 const BGM_VOL = 0.45;
 const BGM_FADE = 0.6;
-const bgm = { ctx: null, master: null, buf: {}, want: '', cur: '', src: null, gain: null };
+const bgm = { ctx: null, master: null, buf: {}, fail: {}, want: '', cur: '', src: null, gain: null };
 function bgmName() { return S && S.phase === 'night' ? 'yoru' : 'hiru'; }
 function bgmUnlock() {
 if (bgm.ctx) { if (bgm.ctx.state === 'suspended' && !document.hidden) bgm.ctx.resume(); return; }
@@ -6217,11 +6224,12 @@ bgmSync();
 function bgmLoad(name, done) {
 if (bgm.buf[name]) return done(bgm.buf[name]);
 if (bgm.buf[name] === 0) return;   // 読みこみ中
+if (Date.now() - (bgm.fail[name] || 0) < 10000) return;
 bgm.buf[name] = 0;
-fetch(BGM_SRC[name]).then(r => r.arrayBuffer())
+fetch(BGM_SRC[name]).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
 .then(a => new Promise((ok, ng) => bgm.ctx.decodeAudioData(a, ok, ng)))
 .then(b => { bgm.buf[name] = b; if (bgm.want === name) done(b); })
-.catch(() => { delete bgm.buf[name]; });
+.catch(() => { delete bgm.buf[name]; bgm.fail[name] = Date.now(); if (bgm.want === name) bgm.want = ''; });
 }
 function bgmStart(name, b) {
 if (bgm.want !== name || bgm.cur === name) return;
