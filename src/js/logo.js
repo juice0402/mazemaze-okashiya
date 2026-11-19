@@ -103,6 +103,7 @@ const LG_STAR = '<svg viewBox="0 0 20 20"><path d="M10 0 C11 7 13 9 20 10 C13 11
 function lgArt(c) { for (const k of c) if (ART[k]) return ART[k]; return ''; }
 function lgTitleHTML(saved, arm) {
   const play = !lgPlayed, logo = logoHTML();
+  setTimeout(() => dPreload(D_PRE_MORNING()), play ? 4500 : 800);   // タイトルの登場が終わってから、朝の絵を先に読む（11/19）
   const B = LG_BG['title-bg'], bg = ART['title-bg'] || ART['bg-night'] || '';
   const lt = B.lt.map(([x, y, s, k], i) => `<i class="tt-lt ${k}" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * 1.37).toFixed(2)}s"></i>`).join('');
   const ray = B.ray.map(([x, y, w, h, r], i) => `<i class="tt-ray" style="--x:${x};--y:${y};--w:${w};--h:${h};--r:${r}deg;animation-delay:${(-i * 2.1).toFixed(1)}s"></i>`).join('');
