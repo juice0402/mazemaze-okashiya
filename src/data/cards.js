@@ -22,13 +22,13 @@ const MATS = {
   horoniga: { cat: 'dough', name: 'ほろにがココア生地', short: 'ほろにが生地', taste: 'こんがり', adj: 'ほろにが', noun: 'クッキー', nr: 9, value: 20, col: '#6b3a1e', fx: { dmg: 30, bitter: 1 } },
   /* こね生地のビルドの生地（主役・菓子パン。11/18 H-012・名前と数字はぽぽちの仮）。pan＝パン生地（パン生地どうしをまぜると「こねる」）・tane＝パン種（ショップに出ない・うっても0コイン）
      nr はお菓子の素材（いちばん大きいのは 6）より大きくして、まぜた名前の主役がいつもパンになるように。nshort は名前が8文字をこえるときの短い形。alt はカードの絵が届くまでの仮の絵 */
-  melonpan: { cat: 'dough', pan: 1, name: 'さくさく皮のメロンパン生地', short: 'メロンパン生地', nshort: 'メロン', taste: 'さくさく', adj: 'さくさく', noun: 'メロンパン', nr: 8.5, value: 20, col: '#f2cf6e', alt: 'candy-sable', fx: { dmg: 30, perKone: 10 } },
-  creampan: { cat: 'dough', pan: 1, name: 'とろーりクリームパン', short: 'クリームパン', nshort: 'クリーム', taste: 'とろーり', adj: 'とろり', noun: 'クリームパン', nr: 8, value: 20, col: '#f6e0a8', alt: 'candy-puff', fx: { dmg: 20, tane2: 1 } },
-  cinnamon: { cat: 'dough', pan: 1, name: 'うずまきシナモンロール', short: 'シナモンロール', taste: 'こくまろ', adj: 'くるくる', noun: 'ロール', nr: 9.5, value: 20, col: '#c98a4b', alt: 'candy-castella', fx: { dmg: 20, koneUp: 1 } },
-  anpan:    { cat: 'dough', pan: 1, name: 'いちばんのりあんパン', short: 'いちばんあんパン', taste: 'あまい', adj: 'いちばん', noun: 'あんパン', nr: 9, value: 20, col: '#b8743c', alt: 'candy-brownie', fx: { dmg: 30, koneRally: 5 } },
-  koronet:  { cat: 'dough', pan: 1, name: 'しめくくりチョココロネ', short: 'しめのコロネ', taste: 'とろーり', adj: 'しめの', noun: 'コロネ', nr: 10, value: 20, col: '#7a4424', alt: 'card-choco', fx: { dmg: 20, koneFin: 0.5 } },
-  tanebin:  { cat: 'dough', pan: 1, name: 'パン種のびん', short: 'パン種のびん', taste: 'ふわふわ', adj: 'ふっくら', noun: 'パン', nr: 7.5, value: 15, col: '#f6ead0', alt: 'card-mizu', fx: { dmg: 10, taneSpawn: 1 } },
-  panetane: { cat: 'dough', pan: 1, tane: 1, name: 'パン種', short: 'パン種', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'パン', nr: 7, value: 0, col: '#fff2dc', alt: 'card-komugi', fx: { dmg: 10 } },
+  melonpan: { cat: 'dough', pan: 1, name: 'さくさく皮のメロンパン生地', short: 'メロンパン生地', nshort: 'メロン', taste: 'さくさく', adj: 'さくさく', noun: 'メロンパン', nr: 8.5, value: 20, col: '#f2cf6e', alt: 'candy-sable', fx: { dmg: 15, perKone: 3 } },
+  creampan: { cat: 'dough', pan: 1, name: 'とろーりクリームパン', short: 'クリームパン', nshort: 'クリーム', taste: 'とろーり', adj: 'とろり', noun: 'クリームパン', nr: 8, value: 20, col: '#f6e0a8', alt: 'candy-puff', fx: { dmg: 10, tane2: 1 } },
+  cinnamon: { cat: 'dough', pan: 1, name: 'うずまきシナモンロール', short: 'シナモンロール', taste: 'こくまろ', adj: 'くるくる', noun: 'ロール', nr: 9.5, value: 20, col: '#c98a4b', alt: 'candy-castella', fx: { dmg: 10, koneUp: 1 } },
+  anpan:    { cat: 'dough', pan: 1, name: 'いちばんのりあんパン', short: 'いちばんあんパン', taste: 'あまい', adj: 'いちばん', noun: 'あんパン', nr: 9, value: 20, col: '#b8743c', alt: 'candy-brownie', fx: { dmg: 15, koneRally: 2 } },
+  koronet:  { cat: 'dough', pan: 1, name: 'しめくくりチョココロネ', short: 'しめのコロネ', taste: 'とろーり', adj: 'しめの', noun: 'コロネ', nr: 10, value: 20, col: '#7a4424', alt: 'card-choco', fx: { dmg: 10, koneFin: 0.15 } },
+  tanebin:  { cat: 'dough', pan: 1, name: 'パン種のびん', short: 'パン種のびん', taste: 'ふわふわ', adj: 'ふっくら', noun: 'パン', nr: 7.5, value: 15, col: '#f6ead0', alt: 'card-mizu', fx: { dmg: 5, taneSpawn: 1 } },
+  panetane: { cat: 'dough', pan: 1, tane: 1, name: 'パン種', short: 'パン種', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'パン', nr: 7, value: 0, col: '#fff2dc', alt: 'card-komugi', fx: { dmg: 5 } },
   /* ほのかの素材（支援・ほのかのビルドどうしで共通） */
   bata:   { cat: 'mat', name: 'ゴーゴーヤギのバター', short: 'ヤギバター', taste: 'こくまろ', adj: 'バター', noun: 'サブレ', nr: 2, value: 20, col: '#f6d36b', fx: { nb: 30 } },
   sato:   { cat: 'mat', name: 'こんぺいトカゲの砂糖', short: 'トカゲ砂糖', taste: 'あまい', adj: 'あまあま', noun: 'キャンディ', nr: 1, value: 15, col: '#f28cab', fx: { next: 2 } },
@@ -54,14 +54,14 @@ const MATS = {
   tsuya:    { cat: 'ame', name: 'しあげのつや', short: 'しあげのつや', taste: 'とろーり', adj: 'しあげの', noun: 'つや飴', nr: 8, value: 20, col: '#fff0c0', fx: { dmg: 20, doneFin: 0.5 } },
   nobashi:  { cat: 'ame', name: 'のばし飴', short: 'のばし飴', taste: 'あまい', adj: 'のびのび', noun: 'のばし飴', nr: 7.5, value: 15, col: '#ffe8b0', fx: { dmg: 10, grow: 2 } },
   /* みなも②ちいさなキャンディ（11/19・名前は絵の依頼のとおり・数字はぽぽちの仮）。cat candy＝キャンディ（主役）。candy＝キャンディのしるし
-     （発動すると れんさ+1・冷えるほど強い：ひえひえ×2・ひんやり×1.5〔COLD_MUL〕。キャンディでないカードが発動すると れんさは0）
+     （発動すると れんさ+1・冷えるほど強い：ひえひえ×1.5・ひんやり×1.25〔COLD_MUL・11/19 ボットで下げた〕。キャンディでないカードが発動すると れんさは0）
      perChain＝れんさ1につき+・petit＝ちいさなキャンディを飛ばす数・link＝両どなりがキャンディなら れんさ+・candyLead＝スタート：キャンディぜんぶ×
      chainFin＝アンカー：合計×(1＋chainFin×れんさ)・coldAgain＝ひんやり以下なら もう1回。twin＝同じカードどうしの★2の名前 */
-  korodrop: { cat: 'candy', name: 'ころころドロップ', short: 'ころころドロップ', twin: 'ごろごろドロップ', taste: 'あまい', adj: 'ころころ', noun: 'ドロップ', nr: 9, value: 20, col: '#ffb8c8', fx: { dmg: 20, candy: 1, perChain: 20 } },
+  korodrop: { cat: 'candy', name: 'ころころドロップ', short: 'ころころドロップ', twin: 'ごろごろドロップ', taste: 'あまい', adj: 'ころころ', noun: 'ドロップ', nr: 9, value: 20, col: '#ffb8c8', fx: { dmg: 20, candy: 1, perChain: 10 } },
   hajike:   { cat: 'candy', name: 'はじけキャンディ', short: 'はじけキャンディ', twin: 'ぱちぱちはじけ飴', taste: 'しゅわしゅわ', adj: 'はじける', noun: 'はじけ飴', nr: 8.5, value: 20, col: '#ffe070', fx: { dmg: 10, candy: 1, petit: 2 } },
   peroc:    { cat: 'candy', name: 'つなぎペロキャン', short: 'つなぎペロキャン', twin: 'ダブルペロキャン', taste: 'あまい', adj: 'つなぎの', noun: 'ペロキャン', nr: 8, value: 20, col: '#c8e8ff', fx: { dmg: 20, candy: 1, link: 2 } },
-  ichidrop: { cat: 'candy', name: 'いちばんドロップ', short: 'いちばんドロップ', twin: 'はじまりドロップ', taste: 'あまい', adj: 'いちばん', noun: 'ドロップ', nr: 9, value: 20, col: '#ffd0a0', fx: { dmg: 20, candy: 1, candyLead: 2 } },
-  candybin: { cat: 'candy', name: 'キャンディのびん', short: 'キャンディのびん', twin: '大びんキャンディ', taste: 'あまい', adj: 'びんづめ', noun: 'びん飴', nr: 9.5, value: 20, col: '#f0e0ff', fx: { dmg: 10, candy: 1, chainFin: 0.25 } },
+  ichidrop: { cat: 'candy', name: 'いちばんドロップ', short: 'いちばんドロップ', twin: 'はじまりドロップ', taste: 'あまい', adj: 'いちばん', noun: 'ドロップ', nr: 9, value: 20, col: '#ffd0a0', fx: { dmg: 20, candy: 1, candyLead: 1.4 } },
+  candybin: { cat: 'candy', name: 'キャンディのびん', short: 'キャンディのびん', twin: '大びんキャンディ', taste: 'あまい', adj: 'びんづめ', noun: 'びん飴', nr: 9.5, value: 20, col: '#f0e0ff', fx: { dmg: 10, candy: 1, chainFin: 0.04 } },
   mintame:  { cat: 'candy', name: 'ひえひえミント飴', short: 'ひえひえミント飴', twin: 'こちこちミント飴', taste: 'さわやか', adj: 'ひえひえ', noun: 'ミント飴', nr: 8, value: 20, col: '#c8f4dc', fx: { dmg: 20, candy: 1, coldAgain: 1 } },
   /* みなもの素材（支援・みなもの2ビルドで共通・11/19 名前は絵の依頼 cards-minamo4・5 のとおり）。役目は ほのかの素材と同じ形 */
   shioame:  { cat: 'mat', name: 'うみヘビのしお飴', short: 'しお飴', taste: 'さわやか', adj: 'うみの', noun: 'しお飴', nr: 2, value: 20, col: '#eef6f8', fx: { nb: 30 } },
@@ -79,12 +79,12 @@ const MATS = {
   hachiroll: { cat: 'cake', name: 'はちみつロール', short: 'はちみつロール', taste: 'あまい', adj: 'はちみつ', noun: 'ロール', nr: 8.6, value: 20, col: '#f2b33a', fx: { dmg: 40, fruitAgain: 1 } },
   /* わかば②飴ジャム（11/19・名前と数字はぽぽちの仮）。cat jam＝ジャム（主役）。場はいつも大きなびん（FIELDS.oobin・フィールドは出ない）：くだものを3つ入れると★3のジャム（'j:'）が調理台に生まれ、びんは空に
      binNow＝大きなびんの実1つにつき+・jamLead＝スタート：ジャムぜんぶ×・jamFin＝アンカー：合計×(1＋jamFin×この夜に作ったジャムの数)・toro＝熟した実は2つ分で入る・shine＝右どなりのジャム×・perJam＝作ったジャム1つにつき+ */
-  garabin:  { cat: 'jam', name: 'こもれびのガラスびん', short: 'ガラスのびん', taste: 'あまい', adj: 'すきとおる', noun: 'ジャム', nr: 9, value: 20, col: '#e8f4f0', fx: { dmg: 20, binNow: 30 } },
-  ichijam:  { cat: 'jam', name: 'いちばんのりジャム', short: 'いちばんジャム', taste: 'あまい', adj: 'あさいち', noun: 'ジャム', nr: 9.2, value: 20, col: '#e04a5a', fx: { dmg: 20, jamLead: 2 } },
-  shimejam: { cat: 'jam', name: 'しめくくりジャム', short: 'しめのジャム', taste: 'とろーり', adj: 'しめの', noun: 'ジャム', nr: 9.6, value: 20, col: '#f5a030', fx: { dmg: 20, jamFin: 0.5 } },
+  garabin:  { cat: 'jam', name: 'こもれびのガラスびん', short: 'ガラスのびん', taste: 'あまい', adj: 'すきとおる', noun: 'ジャム', nr: 9, value: 20, col: '#e8f4f0', fx: { dmg: 20, binNow: 100 } },
+  ichijam:  { cat: 'jam', name: 'いちばんのりジャム', short: 'いちばんジャム', taste: 'あまい', adj: 'あさいち', noun: 'ジャム', nr: 9.2, value: 20, col: '#e04a5a', fx: { dmg: 20, jamLead: 3 } },
+  shimejam: { cat: 'jam', name: 'しめくくりジャム', short: 'しめのジャム', taste: 'とろーり', adj: 'しめの', noun: 'ジャム', nr: 9.6, value: 20, col: '#f5a030', fx: { dmg: 20, jamFin: 1.5 } },
   torojam:  { cat: 'jam', name: 'とろとろジャム', short: 'とろとろジャム', taste: 'とろーり', adj: 'とろり', noun: 'ジャム', nr: 9.4, value: 20, col: '#d83a4a', fx: { dmg: 20, toro: 1 } },
-  kirakira: { cat: 'jam', name: 'きらきら水あめ', short: 'きらきら水あめ', taste: 'あまい', adj: 'きらきら', noun: '水あめ', nr: 8.6, value: 15, col: '#f8f0c0', fx: { dmg: 10, shine: 2 } },
-  jamnabe:  { cat: 'jam', name: 'ジャムの大鍋', short: 'ジャムの大鍋', taste: 'あまい', adj: 'ぐつぐつ', noun: 'ジャム', nr: 8.8, value: 20, col: '#c84a2a', alt: 'field-jamnabe', fx: { dmg: 20, perJam: 20 } },
+  kirakira: { cat: 'jam', name: 'きらきら水あめ', short: 'きらきら水あめ', taste: 'あまい', adj: 'きらきら', noun: '水あめ', nr: 8.6, value: 15, col: '#f8f0c0', fx: { dmg: 10, shine: 3 } },
+  jamnabe:  { cat: 'jam', name: 'ジャムの大鍋', short: 'ジャムの大鍋', taste: 'あまい', adj: 'ぐつぐつ', noun: 'ジャム', nr: 8.8, value: 20, col: '#c84a2a', alt: 'field-jamnabe', fx: { dmg: 20, perJam: 120 } },
 };
 /* わかばのくだもの（11/19・素材〔支援・くだもの〕・わかばの2ビルドで共通・名前と数字はぽぽちの仮）。調理台に置くと、ラウンドの終わりに 花(0)→青い実(1)→熟した実(2) と育つ（わかばの特性）。熟したらそのまま（11/19 しょーくん）
    育つとカードが入れかわる（m:apple0 → m:apple1）。効果は段で強くなる・役目は ほのかの素材と同じ形。まぜられない（育てて使う）。絵は card-<実>-<段>（alt） */
@@ -111,7 +111,7 @@ function scaleFx(fx, m) {
   return o;
 }
 /* わかば②のジャム（'j:実+実+実'）：熟した実ほど強い（★3なので×3）。名前は いちばん多い実で（ぜんぶちがえばミックス） */
-const JAM_DMG = [10, 20, 40];
+const JAM_DMG = [60, 120, 240];
 const jamTop = fr => { const c = {}; for (const m of fr) c[MATS[m].fruit] = (c[MATS[m].fruit] || 0) + 1; const top = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; return { top, n: c[top] }; };
 const jamName = fr => { const { top, n } = jamTop(fr); return n >= 2 || fr.length === 1 ? FRUITS[top].kana + 'ジャム' : 'ミックスジャム'; };
 
@@ -187,8 +187,8 @@ const TEMP = ['', 'ひえひえ', 'ひんやり', 'あたたか', 'とろとろ'
 const GROW = [0, 0, 1, 2, 3];
 const SIZE_MAX = 9;
 const sizeMul = (c, fx) => c >= SIZE_MAX ? fx.done || 5 : 1 + c / 3;   // 完成は ほのかのサイコーと同じ×5（11/19 ボットで火力クッキーに近づけた・仮）
-/* キャンディは冷えるほど強い（11/19 しょーくん：ひえひえ×2・ひんやり×1.5・あたたかと とろとろは×1）。ちいさなキャンディは1こ味パワー10 */
-const COLD_MUL = [1, 2, 1.5, 1, 1];
+/* キャンディは冷えるほど強い（11/19 しょーくん：ひえひえ×2・ひんやり×1.5 → 11/19 ボットで ×1.5・×1.25 に）。ちいさなキャンディは1こ味パワー10 */
+const COLD_MUL = [1, 1.5, 1.25, 1, 1];
 const PETIT_DMG = 10;
 
 /* フィールド：手札（仕入れ）にまざって出てくる。買うと調理台の左の「場」に入り、鉄板の火力が start になる。
@@ -475,7 +475,7 @@ function fxLong(fx, star = 1) {
     p.push(['バトル開始時', `飴の{温度}で{大きさ}が育つ（とろとろ+3・あたたか+2・ひんやり+1）。ひえひえで{固まる}`]);
     p.push(['常時', `{大きさ}で味パワー×（1＋大きさ÷3）。{大きさ}9で{完成}：味パワー×${fx.done}`]);
   }
-  if (fx.candy) p.push(['発動時', '{れんさ}+1。飴の{温度}が ひえひえなら味パワー×2・ひんやりなら×1.5']);
+  if (fx.candy) p.push(['発動時', `{れんさ}+1。飴の{温度}が ひえひえなら味パワー×${COLD_MUL[1]}・ひんやりなら×${COLD_MUL[2]}`]);
   if (fx.lead) p.push(['スタート', `このカードの味パワー×${fx.lead}`]);
   if (fx.candyLead) p.push(['スタート', `このラウンドのキャンディぜんぶ（{ちいさなキャンディ}も）の味パワー×${fx.candyLead}`]);
   if (fx.sai) p.push(['アンカー', `{焼き加減}が{サイコー}の生地1枚ごとに、このカードの味パワー×${fx.sai + 0.5 * (star - 1)}`]);

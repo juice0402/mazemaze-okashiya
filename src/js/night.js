@@ -7,7 +7,9 @@
    鉄板の火力（N.heat 1〜4）はラウンドをまたいで残る。火力カードが発動すると変わり、次のラウンドの焼きに効く
    フィールドも仕入れから。買うと調理台の左の「場」に入る（1つだけ・置きかえOK）。ラウンド1だけ、5まいから3まい えらんで無料
    調理台5マス。画面は night-ui.js */
-const SLOTS = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, QUOTA_BONUS = 2, REROLL = 1;
+const SLOTS = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, REROLL = 1;
+/* おなかの段階（11/19 しょーくん）：左はしが ぺこぺこ。半分まで＝コイン+1・満タン（まんぞく！）＝コイン+3 */
+const TIER_COIN = [0, 1, 3], tierOf = (t, q) => t >= q ? 2 : t >= q / 2 ? 1 : 0;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
 const START_HEAT = 2;           // 夜のはじめの鉄板（中火）
 /* バトルの速さ（11/18 しょーくん「一瞬すぎて何が起きているかわからない」）：ふつうはゆっくり見せて、はやおくり ×2 も選べる（この端末に覚える） */
@@ -505,12 +507,12 @@ function omotenashi() {
   });
 }
 function finishRound(res) {
-  const q = quota(N.round, S.day), ok = res.total >= q;
+  const q = quota(N.round, S.day), tier = tierOf(res.total, q), ok = tier === 2;
   N.board = res.board; N.heat = res.heat; N.kone = res.kone; if (res.call) N.call = true;
   if (res.fert) N.fert = true; if (res.basket) N.basket = (N.basket || 0) + res.basket;   // ひりょう・収穫かご（わかば）
   N.score += res.total; N.burnt += res.burnt;
   if (ok) N.met++;
-  N.last = { round: N.round, total: res.total, q, ok };
+  N.last = { round: N.round, total: res.total, q, ok, tier };
   N.stage = 'roundEnd'; busy = false; fighting = false; resultAnim = true;
   save(); renderNight();
 }
@@ -518,7 +520,7 @@ function nextRound() {
   if (N.stage !== 'roundEnd') return;
   tipEv('next');
   if (N.round >= ROUNDS) return endNight();
-  N.coins += INCOME + (N.last.ok ? QUOTA_BONUS : 0);
+  N.coins += INCOME + TIER_COIN[N.last.tier != null ? N.last.tier : N.last.ok ? 2 : 0];
   const cooled = coolDown(), grown = fruitEnd();
   N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
   rollShop(); save(); renderNight();

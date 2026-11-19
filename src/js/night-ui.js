@@ -211,6 +211,7 @@ function scoreTick(dmg, run, q) {
   countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');
   $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q);
   $('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
+  if (run >= q / 2 && run - dmg < q / 2 && run < q) setTimeout(() => replay(document.querySelector('.quota'), 'half'), T(200));   // 半分＝コイン+1
   if (run >= q && run - dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
 }
 /* 計算の札のデータ：calc＝数字にすいこまれる札（v＝この札のあとの数字・p＝前の数字・src＝効果の元のマス・k＝マスに残った札の種類）
@@ -402,10 +403,11 @@ function heatCells() { return Array.from({ length: HEAT_MAX }, () => '<i></i>').
 function viewerHTML() {
   if (N.stage === 'roundEnd') {
     const L = N.last, gain = [];
-    if (L.ok) gain.push(`コイン+${QUOTA_BONUS}`);
-    return `<div class="viewer soft"><div class="vbox result ${L.ok ? 'ok' : ''}" data-act="noop">
+    const tier = L.tier != null ? L.tier : L.ok ? 2 : 0;
+    if (TIER_COIN[tier]) gain.push(`コイン+${TIER_COIN[tier]}`);
+    return `<div class="viewer soft"><div class="vbox result ${['', 'half', 'ok'][tier]}" data-act="noop">
       <p class="r-round">ラウンド ${L.round}</p><p class="r-num">${fmt(L.total)}</p><p class="r-q">おなか ${fmt(L.q)}</p>
-      <p class="r-msg">${L.ok ? 'まんぞく！' : 'まだ たりない…'}</p>${gain.length ? `<p class="r-gain">${gain.join('　')}</p>` : ''}
+      <p class="r-msg">${['まだ ぺこぺこ…', 'はんぶん まんぞく', 'まんぞく！'][tier]}</p>${gain.length ? `<p class="r-gain">${gain.join('　')}</p>` : ''}
       <button class="big" data-act="next">${L.round >= ROUNDS ? 'おもてなしの結果へ' : '次のラウンドへ'}</button></div></div>`;
   }
   const s = N.sel;
@@ -495,7 +497,7 @@ function renderNight() {
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
-    <div class="quota"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
+    <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
     ${body}</section>`;
   setHeat(N.heat);
   for (const c of N.board) if (c) delete c.born;

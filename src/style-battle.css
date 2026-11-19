@@ -410,3 +410,12 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .tcold::after{content:"";position:absolute;inset:auto 0 -3px;height:30%;background:var(--ui-frost) center bottom/auto 100% repeat-x;opacity:0;transition:opacity .5s}
 .tiles[data-t="1"] .tcold::after{opacity:1}.tiles[data-t="2"] .tcold::after{opacity:.45}
 .tiles[data-t="4"] .tst,.tiles[data-t="3"] .tst:nth-child(-n+4){width:30px;height:20px;border-radius:0;background:var(--ui-steam) center/contain no-repeat}
+/* おなかの段階（11/19）：半分に+1・満タンに+3 の印（コインの色）。帯の絵（ui-quota）はそのまま */
+.qwrap{position:relative;flex:1;min-width:0;display:flex}
+.qwrap .qbar{flex:1}
+.qmk{position:absolute;top:-11px;translate:-50% 0;z-index:2;font-family:var(--disp);font-weight:400;font-size:9px;line-height:1;color:#ffe08a;-webkit-text-stroke:2px #3a1408;paint-order:stroke fill;pointer-events:none}
+.qmk i{position:absolute;left:50%;top:11px;width:2px;height:12px;translate:-50% 0;background:rgba(255,236,190,.85);box-shadow:0 0 0 1px rgba(58,20,8,.6);border-radius:1px}
+.qmk.m3{translate:-80% 0}.qmk.m3 i{display:none}
+.quota.half .qmk.m1{animation:qmkpop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes qmkpop{40%{transform:scale(1.7)}}
+.result.half .r-msg{color:#ffd27a}

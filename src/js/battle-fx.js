@@ -209,8 +209,8 @@ function sproutFx(t, ripe) {
   const u = ART[ripe ? 'fx-sprout-bloom' : 'fx-sprout'] || ART['fx-sprout'], e = document.createElement('i');
   e.className = 'fx-sprout' + (u ? '' : ' code'); e.innerHTML = u ? `<img src="${u}" alt="">` : '<b></b><b></b><b></b><b></b>';
   t.appendChild(e); setTimeout(() => e.remove(), 1500);
-  const pu = ART[ripe ? 'fx-petal' : 'fx-leaf'];
   for (let k = 0; k < 6; k++) {
+    const pu = ART[ripe ? (k % 2 ? 'fx-flower' : 'fx-petal') : 'fx-leaf'];   // 熟したら花びらと小さな花
     const p = document.createElement('i'); p.className = 'fx-leafp' + (pu ? '' : ripe ? ' code ripe' : ' code');
     p.style.cssText = `--x:${(15 + k * 14).toFixed(0)}%;--dx:${((k - 2.5) * 9).toFixed(0)}px;--dy:${-(46 + (k * 17) % 30)}px;--r:${(k % 2 ? 1 : -1) * (90 + k * 40)}deg;--dl:${280 + k * 50}ms` + (pu ? `;background-image:url('${pu}')` : '');
     t.appendChild(p); setTimeout(() => p.remove(), 1800);
