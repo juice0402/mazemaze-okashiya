@@ -16,7 +16,7 @@ if (since) {
   if (pageDir) for (const f of ['app.css', 'app.js']) map[f] = { from: resolve(pageDir, f), contentType: f.endsWith('.css') ? 'text/css' : 'text/javascript' };
   for (const l of out.split('\n')) {
     if (/^assets\/art\/[^/]+\.(webp|png)$/.test(l)) map[l.slice(11)] = l.slice(11);
-    else if (/^assets\/(bgm|se|koe)\/[^/]+\.mp3$/.test(l)) map[l.slice(7)] = { from: join(root, l), contentType: 'audio/mpeg' };   // 曲・効果音・掛け声（11/19 H-034）
+    else if (/^assets\/(bgm|se|koe)\/[^/]+\.mp3$/.test(l) && pageDir) map['snd-pack.mp3'] = { from: resolve(pageDir, 'snd-pack.mp3'), contentType: 'audio/mpeg' };   // 曲・効果音・掛け声は1つにまとめた snd-pack.mp3（11/19・アーティファクトは511ファイルまで）
   }
   if (!pageDir) console.log('ページのフォルダがない（app.css・app.js が入らない）');
   console.log(JSON.stringify(map));

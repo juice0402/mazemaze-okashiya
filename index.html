@@ -1660,6 +1660,7 @@ const ART = {"bg-day-mado-glow":"assets/art/bg-day-mado-glow.webp?v=6a6b2a12","b
 const BGM_SRC = {"asa":"assets/bgm/asa.mp3?v=9f49eef7","hiru":"assets/bgm/hiru.mp3?v=08a11e69","jg-hirameki":"assets/bgm/jg-hirameki.mp3?v=884d71df","jg-manzoku":"assets/bgm/jg-manzoku.mp3?v=2bb5d502","jg-nakama":"assets/bgm/jg-nakama.mp3?v=004795a4","matome":"assets/bgm/matome.mp3?v=708bd5d3","title":"assets/bgm/title.mp3?v=9e55a6ff","yoru":"assets/bgm/yoru.mp3?v=780d37c7"};
 const SE_SRC = {"bake":"assets/se/bake.mp3?v=955a1754","burnt":"assets/se/burnt.mp3?v=7e25b240","buy":"assets/se/buy.mp3?v=d31cae0a","card":"assets/se/card.mp3?v=3c926078","close":"assets/se/close.mp3?v=18b7af46","coin":"assets/se/coin.mp3?v=9bab6919","done":"assets/se/done.mp3?v=418655ad","door":"assets/se/door.mp3?v=fcb3ea27","drop":"assets/se/drop.mp3?v=39b5b719","fire":"assets/se/fire.mp3?v=fa1a6b8d","heart":"assets/se/heart.mp3?v=6ddca35d","hit":"assets/se/hit.mp3?v=8380eddd","kanban":"assets/se/kanban.mp3?v=1ec33fce","manzoku":"assets/se/manzoku.mp3?v=79b75506","mult":"assets/se/mult.mp3?v=10a5e644","pick":"assets/se/pick.mp3?v=d38cfd76","place":"assets/se/place.mp3?v=e3029347","reroll":"assets/se/reroll.mp3?v=22a18a43","sale":"assets/se/sale.mp3?v=722c846d","serve":"assets/se/serve.mp3?v=adbb6f44","soldout":"assets/se/soldout.mp3?v=76e23ade","soroi":"assets/se/soroi.mp3?v=ba7cacc8","star":"assets/se/star.mp3?v=ed2d4808","tap":"assets/se/tap.mp3?v=772f6c46","wipe":"assets/se/wipe.mp3?v=b0554866"};
 const KOE_SRC = {"hono-achaa":"assets/koe/hono-achaa.mp3?v=f6f9fb18","hono-ei":"assets/koe/hono-ei.mp3?v=fb33e57f","hono-sore":"assets/koe/hono-sore.mp3?v=1c501b4b","hono-uun":"assets/koe/hono-uun.mp3?v=64b28366","hono-waa":"assets/koe/hono-waa.mp3?v=462cd46f","hono-ya":"assets/koe/hono-ya.mp3?v=83b093d3","hono-yatta":"assets/koe/hono-yatta.mp3?v=8076531d","hono-yoshi":"assets/koe/hono-yoshi.mp3?v=a251c691","mina-fu":"assets/koe/mina-fu.mp3?v=a1d09c57","mina-ha":"assets/koe/mina-ha.mp3?v=06fd8686","mina-n":"assets/koe/mina-n.mp3?v=abe4045b","mina-uun":"assets/koe/mina-uun.mp3?v=75700a5a","mina-yoshi":"assets/koe/mina-yoshi.mp3?v=6e0752a0","waka-araara":"assets/koe/waka-araara.mp3?v=157b0201","waka-ei":"assets/koe/waka-ei.mp3?v=daadb451","waka-maa":"assets/koe/waka-maa.mp3?v=9428c78f","waka-sore":"assets/koe/waka-sore.mp3?v=8739c114","waka-ufufu":"assets/koe/waka-ufufu.mp3?v=95583d34","waka-uun":"assets/koe/waka-uun.mp3?v=5e054bf4"};
+const SND_PACK = null;
 const TRIAL = false;
 /* src/js/core.js */
 
@@ -6346,6 +6347,7 @@ bgmSync();
 }
 function bgmLoad(name, done) {
 if (bgm.buf[name]) return done(bgm.buf[name]);
+if (!BGM_SRC[name]) return;   // ためしのページで、音のまとめ（snd-pack.mp3）をまだ読んでいる
 if (bgm.buf[name] === 0) return;   // 読みこみ中
 if (Date.now() - (bgm.fail[name] || 0) < 10000) return;
 bgm.buf[name] = 0;
@@ -6380,6 +6382,13 @@ if (!name) { bgm.want = ''; bgmFadeOut(); return; }
 if (bgm.want === name && (bgm.cur === name || bgm.buf[name] === 0)) return;
 bgm.want = name;
 bgmLoad(name, b => bgmStart(name, b));
+}
+if (typeof SND_PACK !== 'undefined' && SND_PACK) {
+fetch(SND_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
+const T = { bgm: BGM_SRC, se: typeof SE_SRC !== 'undefined' ? SE_SRC : {}, koe: typeof KOE_SRC !== 'undefined' ? KOE_SRC : {} };
+for (const [k, [o, l]] of Object.entries(SND_PACK.items)) { const [d, n] = k.split('/'); if (T[d]) T[d][n] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: 'audio/mpeg' })); }
+bgm.fail = {}; bgm.want = ''; bgmSync();
+}).catch(() => {});
 }
 document.addEventListener('pointerdown', bgmUnlock, true);
 document.addEventListener('visibilitychange', () => {
