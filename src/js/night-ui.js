@@ -11,7 +11,7 @@ function setHeat(h) {
   const H = heatOf(), on = !H.field || N.field;   // みなもの飴の温度（11/19）は、場がなくても効く
   if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
   [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
-  lab.textContent = on ? H.names[h] : `${H.names[h]}（場なし）`;
+  lab.textContent = H.names[h];   // 場がないときは字の色だけ灰色（h0）。「（場なし）」は右上に収まらないのでやめた（11/19・場のマスは調理台で見える）
   lab.className = 'heat-label h' + (on ? h : 0);
   if (H.cool) { const st = $('stage'); if (st) st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる
   const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
@@ -504,7 +504,7 @@ function renderNight() {
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
-      <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
+      <div class="ov-heat${koneBadge() ? ' two' : ''}"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
     <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
     ${body}</section>`;

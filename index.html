@@ -717,7 +717,11 @@ background:radial-gradient(calc(var(--ch) * var(--sw, .23)) calc(var(--ch) * .03
 transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
 .mon-sh{right:5.5%;width:26%;bottom:calc(22% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
 .mon.flee~.mon-sh{opacity:0}
-.night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}
+.night .stage .ov-top,.night .stage .ov-heat{top:9px;height:30px;align-items:center}
+.night .stage .ov-heat{bottom:auto;left:auto;right:12px;justify-content:flex-end;gap:4px;z-index:9}
+.night .stage .ov-heat .heat-label{min-width:0;white-space:nowrap;font-size:10px;letter-spacing:-.02em}
+.night .stage .ov-heat .heat-bar{width:80px}
+.night .stage .ov-heat.two .heat-label{display:none}
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 .night .ov-top>span{max-width:calc(50% - 32px);white-space:nowrap}
 .night .ov-top>span:first-child{line-height:1.25}
@@ -886,6 +890,9 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .tipf svg{display:block;width:100%;height:100%}
 .tipf-ring{position:absolute;left:19px;top:2px;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(255,190,90,.7);opacity:0}
 .night.dragging~.tipf{display:none}
+.tipd{position:fixed;inset:0;z-index:43;pointer-events:none;background:linear-gradient(rgba(20,8,2,.1),rgba(20,8,2,.26) 45%,rgba(20,8,2,.42));animation:tipdIn .3s ease-out}
+@keyframes tipdIn{from{opacity:0}}
+.night.dragging~.tipd{display:none}
 .pickov{position:absolute;inset:6px;z-index:7;display:flex;flex-direction:column;gap:6px;padding:2px 10px max(72px,21%);border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch;animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
 .stage:has(.pickov) .ov-top,.stage:has(.pickov) .ov-heat{visibility:hidden}
 .stage:has(.pickov) .dc-chibi{display:none}
@@ -3864,7 +3871,7 @@ const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
 const H = heatOf(), on = !H.field || N.field;   // みなもの飴の温度（11/19）は、場がなくても効く
 if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
 [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
-lab.textContent = on ? H.names[h] : `${H.names[h]}（場なし）`;
+lab.textContent = H.names[h];   // 場がないときは字の色だけ灰色（h0）。「（場なし）」は右上に収まらないのでやめた（11/19・場のマスは調理台で見える）
 lab.className = 'heat-label h' + (on ? h : 0);
 if (H.cool) { const st = $('stage'); if (st) st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる
 const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
@@ -4307,7 +4314,7 @@ $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-c
 <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
 ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
-<div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
+<div class="ov-heat${koneBadge() ? ' two' : ''}"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
 ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
 <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
 ${body}</section>`;
@@ -4928,7 +4935,11 @@ function tipEv(kind) {
 if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
 }
 function tipClose() { TIP = null; tipClear(); }
-function tipClear() { for (const id of ['tipb', 'tipf']) { const el = $(id); if (el) el.remove(); } }
+function tipClear() { for (const id of ['tipb', 'tipf', 'tipd']) { const el = $(id); if (el) el.remove(); } }
+function tipDim(scr, before) {
+const d = document.createElement('div'); d.id = 'tipd'; d.className = 'tipd';
+scr.insertBefore(d, before);
+}
 const tipKw = s => s.replace(/\{([^}]+)\}/g, '<b class="kw">$1</b>');
 const tipMid = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
 function tipDraw() {
@@ -4956,6 +4967,7 @@ b.style.top = Math.round(Math.max(6, r.top - b.offsetHeight - 14)) + 'px';
 }
 TIP.fresh = false;
 const h = TIP.t.hand();
+tipDim(scr, b);
 if (!h || !h[0] || (h.length > 1 && !h[1])) return;
 const f = document.createElement('div');
 f.id = 'tipf'; f.className = 'tipf';

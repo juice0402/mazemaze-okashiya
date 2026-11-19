@@ -91,7 +91,12 @@ function tipEv(kind) {
   if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
 }
 function tipClose() { TIP = null; tipClear(); }
-function tipClear() { for (const id of ['tipb', 'tipf']) { const el = $(id); if (el) el.remove(); } }
+function tipClear() { for (const id of ['tipb', 'tipf', 'tipd']) { const el = $(id); if (el) el.remove(); } }
+/* うしろを少し暗く（11/19 しょーくん・えらぶ質問「暗くする」＝朝昼の会話とそろえる）。指がさす調理台が見えるよう、朝昼より少しうすく。さわれるように pointer-events なし */
+function tipDim(scr, before) {
+  const d = document.createElement('div'); d.id = 'tipd'; d.className = 'tipd';
+  scr.insertBefore(d, before);
+}
 
 /* ---------- 描く：吹き出しはほのかの右上・指は fixed で、さす所の上へ ---------- */
 const tipKw = s => s.replace(/\{([^}]+)\}/g, '<b class="kw">$1</b>');
@@ -123,6 +128,7 @@ function tipDraw() {
   }
   TIP.fresh = false;
   const h = TIP.t.hand();
+  tipDim(scr, b);
   if (!h || !h[0] || (h.length > 1 && !h[1])) return;
   const f = document.createElement('div');
   f.id = 'tipf'; f.className = 'tipf';

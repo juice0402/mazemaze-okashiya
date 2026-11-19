@@ -52,7 +52,12 @@
   transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
 .mon-sh{right:5.5%;width:26%;bottom:calc(22% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
 .mon.flee~.mon-sh{opacity:0}
-.night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}
+/* ビルドのゲージ（火力・温度・こね・びん）は右上（11/19 しょーくん「もともと味パワーがあった箇所に、ビルド別の特殊なゲージがあれば右上に」） */
+.night .stage .ov-top,.night .stage .ov-heat{top:9px;height:30px;align-items:center}   /* ラウンドの札とビルドのゲージは同じ高さ・同じまんなか（11/19 しょーくん「ラウンドの高さと揃うように」） */
+.night .stage .ov-heat{bottom:auto;left:auto;right:12px;justify-content:flex-end;gap:4px;z-index:9}
+.night .stage .ov-heat .heat-label{min-width:0;white-space:nowrap;font-size:10px;letter-spacing:-.02em}
+.night .stage .ov-heat .heat-bar{width:80px}
+.night .stage .ov-heat.two .heat-label{display:none}   /* こね生地はメーターとこねの数の2つ：字を出すとまんなかのメダルにかかるので、火力は色だけ */
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 /* 上のまんなかのメダルをよける：左右の札はメダルの手前まで（フィールドの名前は2行目） */
 .night .ov-top>span{max-width:calc(50% - 32px);white-space:nowrap}
@@ -239,6 +244,9 @@
 .tipf svg{display:block;width:100%;height:100%}
 .tipf-ring{position:absolute;left:19px;top:2px;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(255,190,90,.7);opacity:0}
 .night.dragging~.tipf{display:none}
+.tipd{position:fixed;inset:0;z-index:43;pointer-events:none;background:linear-gradient(rgba(20,8,2,.1),rgba(20,8,2,.26) 45%,rgba(20,8,2,.42));animation:tipdIn .3s ease-out}
+@keyframes tipdIn{from{opacity:0}}
+.night.dragging~.tipd{display:none}   /* 夜のヒントのうしろを少し暗く（tips.js の tipDim・11/19）。つかんでいるあいだは消す */
 
 /* ---------- 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩）：ショップと同じ日よけの板に、ビルドのカード（紙のパネルの絵 ui-panel）を並べる ---------- */
 .pickov{position:absolute;inset:6px;z-index:7;display:flex;flex-direction:column;gap:6px;padding:2px 10px max(72px,21%);border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch;animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
