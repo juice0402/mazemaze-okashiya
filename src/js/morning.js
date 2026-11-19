@@ -371,7 +371,7 @@ function zakkaHTML() {
     const lv = id === 'tatekanban' ? S.goods.tatekanban || 0 : id === 'showcase' ? S.goods.showcase || 0 : 0;
     const tx = GOODS[id] ? G.text : '見た目だけ';
     const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置けない' : 'かざった';
-    return `<div class="ms-good"><span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
+    return `<div class="ms-good${mGoodIco('good-' + id) ? ' hasico' : ''}">${mGoodIco('good-' + id)}<span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
   }).join('')}${mToolRows()}</div>`;
   const sbg = ART['bg-zakka'];
   return `<section class="morning mzakka fit" id="msec">
@@ -410,11 +410,13 @@ function renderMorning() {
 function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 
 /* ---------- べんり道具（11/19・hiru.js の M_TOOLS）：雑貨屋の行・おまかせオーブン・からくり陳列人形 ---------- */
+/* 雑貨屋のグッズとべんり道具の絵（H-027：good-<id>・tool-<id>。届くまでは字だけ） */
+const mGoodIco = n => ART[n] ? `<img class="msg-ico" src="${ART[n]}" alt="">` : '';
 function mToolRows() {
   const open = M_TOOLS.filter(t => mToolOpen(t.id)); if (!open.length) return '';
   return `<p class="ms-sec">べんり道具</p>` + open.map(t => {
     const id = 't-' + t.id, p = goodNext(id);
-    return `<div class="ms-good"><span class="msg-nm">${esc(t.name)}</span><span class="msg-tx">${esc(t.text)}</span>${p == null ? '<span class="msg-done">お店にある</span>' : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
+    return `<div class="ms-good${mGoodIco('tool-' + t.id) ? ' hasico' : ''}">${mGoodIco('tool-' + t.id)}<span class="msg-nm">${esc(t.name)}</span><span class="msg-tx">${esc(t.text)}</span>${p == null ? '<span class="msg-done">お店にある</span>' : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
   }).join('');
 }
 /* おまかせオーブン：きのう作ったお菓子（S.yesterday.made の順）を、棚のあきと お財布のぶんだけ まとめて焼く */

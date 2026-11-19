@@ -14,6 +14,7 @@ const HIRU_SVG = {
 };
 const ICON_CACHE = new Map();
 function matIcon(m) {
+  const hi = ART['mat-' + m]; if (hi) return `<img class="hico" src="${hi}" alt="">`;   // 描き下ろしの素材の絵（H-027・届いたら自動で出る）
   if (HIRU_SVG[m]) return `<svg class="hico" viewBox="0 0 32 32" aria-hidden="true">${HIRU_SVG[m]}</svg>`;
   return MATS[m] ? `<img class="hico" src="${matURL(m)}" alt="">` : '';
 }
@@ -43,6 +44,9 @@ function candySVG(key) {
 function candyIcon(key) {
   if (ICON_CACHE.has(key)) return ICON_CACHE.get(key);
   const c = candyOf(key);
+  /* 描き下ろしのお菓子の絵（H-027）：sweet-<a>-<b>（名前の順にならべた素材の id）・モンスター素材どうしは sweet-parfait */
+  const hi = !c.old && ART[c.name === 'まぜまぜパフェ' && !c.mats.some(isHiruMat) ? 'sweet-parfait' : 'sweet-' + c.mats.slice().sort().join('-')];
+  if (hi) { const h = `<img class="hico" src="${hi}" alt="">`; ICON_CACHE.set(key, h); return h; }
   const h = c.old || (!c.mats.some(isHiruMat) && c.name !== 'まぜまぜパフェ') ? `<img class="hico" src="${candyURL(key)}" alt="">` : candySVG(key);
   ICON_CACHE.set(key, h); return h;
 }
