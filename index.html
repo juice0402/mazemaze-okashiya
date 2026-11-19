@@ -1602,12 +1602,21 @@ const pick = a => a[rand(a.length)];
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
 function artBlobs(done) {
-let fin = false, left = 0; const end = () => { if (!fin) { fin = true; uiVars(); done(); } };
+let fin = false, left = 0; const later = [];
+const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); };
 try {
-for (const k of Object.keys(ART)) if (/^(ui|title)-/.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }
+for (const k of Object.keys(ART)) {
+if (ART_FIRST.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }
+else if (k.startsWith('ui-')) later.push(k);
+}
 } catch (e) { /* 読めなくても始める */ }
 if (!left) end(); else setTimeout(end, 1500);
+}
+function artWarm(names) {
+const go = () => { for (const k of names) { try { const im = new Image(); im.decoding = 'async'; im.src = ART[k]; } catch (e) { /* 読めなくてもよい */ } } };
+if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 1500 }); else setTimeout(go, 200);
 }
 function uiVars() {
 const st = document.documentElement.style;
@@ -3299,6 +3308,19 @@ return `<div class="ds-bg" aria-hidden="true">
 <i class="ds-lamp"></i><i class="ds-wains"></i>
 </div>`;
 }
+const D_PRE = new Map();
+function dPreload(names) {
+const go = () => {
+for (const n of names) {
+const u = n && ART[n]; if (!u || D_PRE.has(u)) continue;
+const im = new Image(); im.decoding = 'async'; im.src = u; D_PRE.set(u, im);
+if (im.decode) im.decode().catch(() => {});
+}
+};
+if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 2000 }); else setTimeout(go, 300);
+}
+const D_PRE_DAY = () => ['bg-day', 'bg-day-mado', 'bg-day-mado-glow', 'ui-sign', 'ui-think', 'ui-think-tail', 'ui-bubble', 'ui-bubble-tail', 'ui-jar', ...CUSTOMERS.map(c => 'cust-' + c.id)];
+const D_PRE_MORNING = () => ['bg-morning', 'bg-zakka', 'ui-ovenslot', 'ui-tile', ...Object.keys(HIRU_MATS).map(m => 'mat-' + m)];
 function dayStageFront() {
 const bg = ART['bg-day'];
 return bg ? `<i class="ds-front" style="--bgimg:url('${bg}')"></i>` : '<i class="ds-counter"></i>';
@@ -5139,10 +5161,10 @@ mBusy = false; M.oven = [];
 if (fresh) { S.recipes[key] = S.day; S.today.flashes.push(key); }
 S.today.made.push(key); M.baked.push({ key, n: BATCH }); save();
 renderMorning(); const t = mFly(key, fresh);
-if (S.day === 1 && !S.seen.mBaked) { S.seen.mBaked = 1; save(); setTimeout(() => talk([...STORY.mTut.baked, ...STORY.mTut.shelf], () => {}, { dim: false }), t); }
+if (S.day === 1 && !S.seen.mBaked) { S.seen.mBaked = 1; save(); setTimeout(() => talk([...STORY.mTut.baked, ...STORY.mTut.shelf], () => {}), t); }
 }, REDUCED ? 300 : BAKE_MS);
 };
-if (S.day === 1 && !S.seen.mBake) { S.seen.mBake = 1; save(); talk(STORY.mTut.bake, run, { dim: false }); }
+if (S.day === 1 && !S.seen.mBake) { S.seen.mBake = 1; save(); talk(STORY.mTut.bake, run); }
 else run();
 }
 function mFly(key, fresh) {
@@ -5419,14 +5441,15 @@ M.talked = true;
 const tut = S.day === 1 && !S.seen.mOven ? (S.seen.mOven = 1, STORY.mTut.oven) : [];
 const lines = [...STORY.morning(S.today, S.yesterday), ...tut];
 save();
-if (lines.length) talk(lines, () => {}, { dim: false });
+if (lines.length) talk(lines, () => {});
 }
-if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}, { dim: false }); }
+if (v === 'display' && S.day === 1 && !S.seen.dayPre && !talking() && placedN() + M.baked.length) { S.seen.dayPre = 1; save(); talk(STORY.dayPre, () => {}); }
 if (v === 'display' && !S.seen.soroi && !talking()) {
 const so = soroiRows(dSlots().slots);
-if (so.length) { S.seen.soroi = S.day; save(); talk(STORY.soroiFirst(so[0].mats[0]), () => {}, { dim: false }); }
+if (so.length) { S.seen.soroi = S.day; save(); talk(STORY.soroiFirst(so[0].mats[0]), () => {}); }
 }
 if (v === 'kitchen' && M.oven.length === 2 && !mBusy) setTimeout(bake, 0);   // 焼いているとちゅうで閉じたとき
+dPreload(v === 'display' ? D_PRE_DAY() : D_PRE_MORNING());   // つぎの画面の絵を先に読む（11/19・2回は読まない）
 }
 function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 const mGoodIco = n => ART[n] ? `<img class="msg-ico" src="${ART[n]}" alt="">` : '';
@@ -5605,7 +5628,8 @@ ${tip ? `<p class="d-tip">${esc(tip)}</p>` : ''}
 ${bar}
 </section>`;
 if (R.cur) showCust(R.cur, true);
-if (pre && !empty && S.day === 1 && !S.seen.dayPre && !talking()) talk(STORY.dayPre, () => { S.seen.dayPre = 1; save(); }, { dim: false });
+dLight(R);
+if (pre && !empty && S.day === 1 && !S.seen.dayPre && !talking()) talk(STORY.dayPre, () => { S.seen.dayPre = 1; save(); });
 if (R.open && !R.done) { dayPrev = 0; dayLoop(); dAmbT = setTimeout(dAmbient, 1500); }
 }
 function pickKanban(i) {
@@ -5624,13 +5648,50 @@ if (!R.ev && S.day >= 3 && Math.random() < EVENT_P) R.ev = pick(DAY_EVENTS).id; 
 const E = dEv(R);
 R.plan = custPlan(Math.max(2, custCount() + ((E && E.add) || 0)), R.kanban, R.soroi, (E && E.first) || []);
 R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
+dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad']; }));   // 今日のお客さんの顔を先に読む
 R.lk = {}; R.got = {}; R.miss = {};
 S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
 save(); renderDay();
 setTimeout(() => { const E = dEv(R); E ? dSayRun(STORY.pickE(STORY.ev[E.id].open)) : dSay('open'); }, 700);
 };
-if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go, { dim: false }); }
+if (S.day === 1 && !S.seen.dayOpen) { S.seen.dayOpen = 1; save(); talk(STORY.dayOpen, go); }
 else go();
+}
+const D_LIGHT = [
+['.ds-m1', '', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .15 }, { opacity: .62, offset: .593 }, { opacity: .62, offset: 1 }]],
+['.ds-m2', '', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .5 }, { opacity: 1, offset: 1 }]],
+['.ds-dusk', '', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .25 }, { opacity: .72, offset: .97 }, { opacity: .72, offset: 1 }]],
+['.ds-front', '::after', [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .25 }, { opacity: .72, offset: .97 }, { opacity: .72, offset: 1 }]],
+['.ds-glow', '', [{ opacity: .08 }, { opacity: .38 }]],
+];
+let dLightA = [];
+const dLightT = R => R.done ? dLen(R) : R.open ? Math.min(dLen(R), R.t || 0) : 0;
+function dLight(R) {
+for (const a of dLightA) a.cancel();
+dLightA = [];
+dLightLast = { run: null, sp: 0, at: 0 };
+const st = $('dstage'); if (!st || !st.animate) return;
+const len = dLen(R), t = dLightT(R);
+try {
+for (const [sel, pe, kf] of D_LIGHT) for (const el of st.querySelectorAll(sel)) {
+const a = el.animate(kf, pe ? { duration: len, fill: 'both', pseudoElement: pe } : { duration: len, fill: 'both' });
+a.pause(); a.currentTime = t; a.playbackRate = daySpeed; dLightA.push(a);
+}
+} catch (e) { for (const a of dLightA) a.cancel(); dLightA = []; }   // 動かせないブラウザは前のやり方（--p）
+}
+let dLightLast = { run: null, sp: 0, at: 0 };
+function dLightSync(R, run) {
+if (!dLightA.length) return;
+const now = performance.now();   // 動いているあいだは、止める・速さ・2秒ごとのずれ合わせのときだけ（毎回さわると計算がふえる）
+if (run === dLightLast.run && daySpeed === dLightLast.sp && now - dLightLast.at < 2000) return;
+dLightLast = { run, sp: daySpeed, at: now };
+const t = dLightT(R);
+for (const a of dLightA) {
+if (a.playbackRate !== daySpeed) a.playbackRate = daySpeed;
+if (Math.abs((a.currentTime || 0) - t) > 400) a.currentTime = t;
+if (run && a.playState !== 'running' && t < dLen(R)) a.play();
+else if (!run && a.playState === 'running') a.pause();
+}
 }
 function dayLoop() {
 clearTimeout(dayTick); dayTick = 0;
@@ -5638,12 +5699,13 @@ const R = S.dayRun;
 if (S.phase !== 'day' || !R || !R.open || R.done || !$('dstage')) return;
 const now = performance.now(), dt = dayPrev ? Math.min(250, now - dayPrev) : 0;
 dayPrev = now;
-if (!talking()) dayStep(R, dt * daySpeed);
-if (!R.done) dayTick = setTimeout(dayLoop, 100);
+const run = !talking();
+if (run) dayStep(R, dt * daySpeed);
+if (!R.done) { dLightSync(R, run); dayTick = setTimeout(dayLoop, 100); }
 }
 function dayStep(R, dt) {
 R.t += dt;
-const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / dLen(R)).toFixed(3));   // 外の明るさ（ゲージのかわり）
+if (!dLightA.length) { const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / dLen(R)).toFixed(3)); }   // 外の明るさ：ふだんは dLight の動きにおまかせ（動かせないブラウザだけ、ここで --p）
 if (R.cur) return visitStep(R, dt);
 if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
 if (R.i >= 1 && !R.mated) { const m = dMateDue(); if (m) return dMateVisit(R, m); }
@@ -5666,7 +5728,7 @@ function visitStep(R, dt) {
 const v = R.cur; v.t += dt;
 if (v.step === 0 && v.t >= V_ARRIVE) {
 v.step = 1; showBubble(v);
-if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}, { dim: false }); }
+if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}); }
 } else if (v.step === 1 && v.t >= V_ASK) {
 v.step = 2; v.res = serve(v); save(); showResult(v, false);
 const r = v.res, out = r.key && dLeft(r.key) <= 0, nm = r.key ? candyOf(r.key).name : '';   // 同じお菓子が2マスあるときは、ぜんぶ売れてから「売り切れ」（11/19）
@@ -5698,7 +5760,7 @@ const T = S.today, it = S.shelf.find(s => s.key === m.key && s.n > 0), price = c
 it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
 if (it.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
 S.seen['mate:' + m.id] = S.day; save();
-const cs = $('dCase'); if (cs) cs.innerHTML = caseHTML(false);
+dCaseUpdate();
 talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); });
 }
 const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
@@ -5731,12 +5793,13 @@ clearTimeout(dayTick); dayTick = 0;
 const loss = S.shelf.some(s => s.n > 0) && !S.seen.loss ? (S.seen.loss = S.day, STORY.lossFirst) : [];   // 売れのこりは今日でおしまい（はじめての日だけ ほのかが言う）
 save(); if (msg) toast(msg);
 renderDay();
+setTimeout(() => dPreload(D_PRE_MORNING()), 4000);   // 夜のあいだに、あしたの朝の絵を先に読んでおく（夜の絵が読みおわってから）
 setTimeout(() => {
 const sd = dSum(R), E = dEv(R);
 const lines = [...loss, ...(E ? STORY.pickE(STORY.ev[E.id].close) : []), ...(sd ? STORY.fill(STORY.pickE(STORY.sum[sd.k]), sd) : [])];
 lines.length ? dSayRun(lines.slice(0, 3)) : dSay('close', '', true);
 }, 500);
-if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk([...STORY.dayClose(S.today), ...loss], () => {}, { dim: false }); }
+if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk([...STORY.dayClose(S.today), ...loss], () => {}); }
 }
 let dSayT = 0, dSayAt = 0, dSayLast = '', dSkip = 0;
 function dSay(kind, c = '', force = false) {
@@ -5852,9 +5915,16 @@ if (now) { b.classList.add('show'); return; }
 void b.offsetWidth; b.classList.add('show');
 soldFx(m.key);
 }
+function dCaseUpdate() {
+const cs = $('dCase'); if (!cs) return null;
+const tmp = document.createElement('div'); tmp.innerHTML = caseHTML(false);
+const olds = [...cs.children], news = [...tmp.children];
+if (olds.length !== news.length) cs.replaceChildren(...news);
+else news.forEach((n, i) => { if (n.outerHTML !== olds[i].outerHTML) olds[i].replaceWith(n); });
+return cs;
+}
 function soldFx(key) {
-const cs = $('dCase'); if (!cs) return;
-cs.innerHTML = caseHTML(false);
+const cs = dCaseUpdate(); if (!cs) return;
 const sl = cs.querySelector(`.dslot[data-key="${CSS.escape(key)}"]`); if (!sl) return;
 sl.classList.add('pop');
 sl.insertAdjacentHTML('beforeend', '<span class="d-sold">売れた！</span>');
@@ -5882,6 +5952,7 @@ function toggleDayFast(el) {
 daySpeed = dSpeedNext();
 const st = $('dstage'); if (st) st.style.setProperty('--sp', daySpeed);
 if (el) el.textContent = dSpeedLbl();
+const R = S.dayRun; if (R) dLightSync(R, R.open && !R.done && !talking());
 }
 const DAY_ACTS = {
 'd-pick': el => pickKanban(el.dataset.i),
@@ -6013,6 +6084,7 @@ const LG_STAR = '<svg viewBox="0 0 20 20"><path d="M10 0 C11 7 13 9 20 10 C13 11
 function lgArt(c) { for (const k of c) if (ART[k]) return ART[k]; return ''; }
 function lgTitleHTML(saved, arm) {
 const play = !lgPlayed, logo = logoHTML();
+setTimeout(() => dPreload(D_PRE_MORNING()), play ? 4500 : 800);   // タイトルの登場が終わってから、朝の絵を先に読む（11/19）
 const B = LG_BG['title-bg'], bg = ART['title-bg'] || ART['bg-night'] || '';
 const lt = B.lt.map(([x, y, s, k], i) => `<i class="tt-lt ${k}" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * 1.37).toFixed(2)}s"></i>`).join('');
 const ray = B.ray.map(([x, y, w, h, r], i) => `<i class="tt-ray" style="--x:${x};--y:${y};--w:${w};--h:${h};--r:${r}deg;animation-delay:${(-i * 2.1).toFixed(1)}s"></i>`).join('');

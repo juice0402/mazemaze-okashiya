@@ -61,3 +61,5 @@
 - 描きなおしは `render()` でまるごと。指に合わせて毎フレーム動く物（ドラッグなど）は style の transform だけ変える（innerHTML を作りなおさない）
 - 使わなくなったクラス・関数・絵はけずる（コメントで残さない）。src のコメントはビルドで消えるので、説明は書いてよい
 - 夜のバトルの速さ `T()`・はやおくりは夜だけのもの（昼は day.js の `scn.speed`）
+- 時間で少しずつ変わる見た目（昼の外の明るさなど）は、CSS の変数をこまめに書きかえない（毎回ぜんぶ計算しなおしになる）。Web Animations（el.animate の opacity・transform）にまかせる（11/19 H-031・day.js の dLight）
+- 次の画面の絵は、ひまなときに先に読む（day-scene.js の dPreload）。起動で待つのはタイトルの絵とタイトルのボタンの皮だけ（core.js の artBlobs・ほかの ui-* は artWarm でタイトルのあと）

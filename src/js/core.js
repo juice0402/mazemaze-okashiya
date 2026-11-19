@@ -10,12 +10,23 @@ const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduc
 
 /* 絵（11/19〜）：ART は 名前 → assets/art/<ファイル>?v=… の表（tools/build.mjs）。絵はページに埋めこまず、使うときにブラウザが読む。
    起動のときは、どの画面にも出る UI の絵（ui-*）とタイトルの絵（title-*）だけ先に読んでおく（待つのは長くて1.5秒） */
+/* 起動で待つのはタイトルの絵（title-*）とタイトルのボタンの皮（.big＝ui-btn-red・.sub＝ui-btn-wood）だけ（11/19 H-031 しょーくん「描写までの表示を爆速に」）。
+   ほかの ui-*（夜の札・カードのふち・紋章など約80まい）は、タイトルが出てから ひまなときに読む（artWarm） */
+const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
 function artBlobs(done) {
-  let fin = false, left = 0; const end = () => { if (!fin) { fin = true; uiVars(); done(); } };
+  let fin = false, left = 0; const later = [];
+  const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); };
   try {
-    for (const k of Object.keys(ART)) if (/^(ui|title)-/.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }
+    for (const k of Object.keys(ART)) {
+      if (ART_FIRST.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }
+      else if (k.startsWith('ui-')) later.push(k);
+    }
   } catch (e) { /* 読めなくても始める */ }
   if (!left) end(); else setTimeout(end, 1500);
+}
+function artWarm(names) {
+  const go = () => { for (const k of names) { try { const im = new Image(); im.decoding = 'async'; im.src = ART[k]; } catch (e) { /* 読めなくてもよい */ } } };
+  if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 1500 }); else setTimeout(go, 200);
 }
 
 /* UI の絵（ui-* の名前の絵）を CSS の変数 --ui-<名前> に入れる。style.css の「UI の絵」が border-image に使う（昼の画面も同じ変数） */
