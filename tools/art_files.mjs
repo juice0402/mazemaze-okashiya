@@ -15,7 +15,8 @@ if (since) {
   const map = {};
   if (pageDir) for (const f of ['app.css', 'app.js']) map[f] = { from: resolve(pageDir, f), contentType: f.endsWith('.css') ? 'text/css' : 'text/javascript' };
   for (const l of out.split('\n')) {
-    if (/^assets\/art\/[^/]+\.(webp|png)$/.test(l)) map[l.slice(11)] = l.slice(11);
+    if (/^assets\/art\/(ui|fx)-[^/]+\.(webp|png)$/.test(l) && pageDir) map['art-pack.webp'] = { from: resolve(pageDir, 'art-pack.webp'), contentType: 'image/webp' };   // ui-*・fx-* は1つにまとめた art-pack.webp（11/19）
+    else if (/^assets\/art\/[^/]+\.(webp|png)$/.test(l)) map[l.slice(11)] = l.slice(11);
     else if (/^assets\/(bgm|se|koe)\/[^/]+\.mp3$/.test(l) && pageDir) map['snd-pack.mp3'] = { from: resolve(pageDir, 'snd-pack.mp3'), contentType: 'audio/mpeg' };   // 曲・効果音・掛け声は1つにまとめた snd-pack.mp3（11/19・アーティファクトは511ファイルまで）
   }
   if (!pageDir) console.log('ページのフォルダがない（app.css・app.js が入らない）');

@@ -14,6 +14,17 @@ const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduc
    ほかの ui-*（夜の札・カードのふち・紋章など約80まい）は、タイトルが出てから ひまなときに読む（artWarm） */
 const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
 function artBlobs(done) {
+  /* ためしのページ（アーティファクト）は、ui-*・fx-* の絵が1つのファイル art-pack.webp（11/19・1つの版に511ファイルまで）。先に読んで、1まいずつ blob の URL にする */
+  if (typeof ART_PACK !== 'undefined' && ART_PACK && !artBlobs.pk) {
+    artBlobs.pk = 1; let go = false;
+    const next = () => { if (go) return; go = true; artBlobs(done); };
+    fetch(ART_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
+      for (const [k, [o, l, t]] of Object.entries(ART_PACK.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
+      if (go) uiVars();   // 待ちきれずに始めていたら、あとから皮を入れなおす
+    }).catch(() => {}).finally(next);
+    setTimeout(next, 6000);   // 読めなくても始める
+    return;
+  }
   let fin = false, left = 0; const later = [];
   const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); };
   try {
