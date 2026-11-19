@@ -682,7 +682,7 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* ==== UI の絵 その3（11/18 art-irai ui-shop・ui-board）==== */
 /* 夜のショップの板（ui-shop・400×600）：上の日よけ（絵の上から52px）は上のふちに、木の板はまんなかでのびる。左右と下はふちなし（舞台の額縁の中に入る）。
    日よけの高さは、絵の形のまま画面のはばに合わせる。朝の仕入れ（.mshop）は昼のチャットの持ち物なので、まだ前の形 */
-.night .shopov{background:none;box-shadow:none;border-radius:0;border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);padding-top:2px;border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch}
+.night .shopov{--awn:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);background:none;box-shadow:none;border-radius:0;border:0 solid transparent;border-top-width:var(--awn);padding-top:2px;border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch}
 .night .shopov::before{display:none}
 .night.drag-own .shopov.over{box-shadow:inset 0 0 0 3px #ffd0a0,inset 0 0 24px rgba(255,190,120,.45)}
 /* 調理台（ui-board-tray）：こげ茶の木のふちと真ちゅうの角・面は鉄板。絵は padding の中まで（マスはその上） */

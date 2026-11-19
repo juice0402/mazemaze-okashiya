@@ -581,7 +581,6 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov.many .shcard{aspect-ratio:5/8.75;--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 4px) / 2 / 1.75),150px)}
 .night .shopov.many{padding-bottom:34px}   /* 2段目のカードの下のふち（紙の下）だけ 草にかくれてよい */
 .night .shopov.many .sh-cards{gap:4px 6px}
-.night .shopov.many .sh-top{margin-top:-27px;padding:0 4px;position:relative;z-index:2}   /* 5まいの夜は、札の段を日よけの下のほうに重ねて、カードの高さに回す */
 .night .shcard .pc.tall:not(.tile):not(.ci-card){background-image:none;border:0 solid transparent;border-image:var(--ui-card-bronze) 86% 0 10.5% 0 fill/calc(var(--w) * 1.376) 0 calc(var(--w) * .168) 0 stretch}
 .night .shcard .pc.tall.s2:not(.tile):not(.ci-card){border-image-source:var(--ui-card-silver)}
 .night .shcard .pc.tall.s3:not(.tile):not(.ci-card){border-image-source:var(--ui-card-gold)}
@@ -592,9 +591,23 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shcard .pc.tall .pc-text{top:124.2cqw;bottom:11.2cqw;overflow:hidden}
 .pc-text .sn.cut{display:none}
 .pc-text .sn.clamp{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+.pc-text.brk .cw{display:inline;white-space:normal;word-break:break-all}
 .sh-br{flex-basis:100%;height:0;margin-top:-4px}   /* 5まいは 3と2の2段（ヒントで小さくなっても4まい並ばない） */
-/* ショップの札は今のラウンド（11/20 しょーくん「ショップの字はいらない・戦闘画面と同じ文で」）：字は舞台の .ov-top と同じ */
-.sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
+/* ショップの上の段（11/20 しょーくん「ラウンドは左上固定・入れかえは右上固定」「無料も入れかえと同じ枠に」）：
+   バトルの .ov-top と同じ所（舞台の上から9px・左右13px・高さ30px）に重ねる。左＝今のラウンド（.ov-top と同じ札と字）とこね・ジャムの数、右＝コインと入れかえ（1ラウンド目は「無料 3まい」の枠）。
+   日よけ（--awn）の上なので、どれも枠つき。カードの段の高さは そのぶん広い */
+.night .sh-top{position:absolute;top:calc(9px - var(--awn));left:13px;right:13px;height:30px;min-height:0;margin:0;padding:0;z-index:3;justify-content:space-between;gap:6px;pointer-events:none}
+.sh-top .sh-l,.sh-top .sh-r{display:flex;align-items:center;gap:6px;min-width:0;pointer-events:auto}
+.sh-top .sh-l,.sh-top .sh-r{position:relative}
+/* 2つめの札（コイン・こねとジャムの数）は、まんなかのメダルにかからないように、ラウンドと入れかえの下の段に */
+.sh-top .sh-coin{position:absolute;right:0;top:35px;margin-left:0}
+.sh-top .kone-n{position:absolute;left:0;top:35px}
+.sh-top .sh-r{flex-direction:row-reverse}
+.night .shopov:not(.many) .sh-cards{padding-top:28px}   /* 下の段の札のぶん（カードは はばで決まるので小さくならない） */
+.night .shopov.many .sh-top .kone-n{display:none}   /* 1ラウンド目（無料の5まい）は こね・ジャムはまだ0 */
+.sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
+.night .sh-top .sh-free{margin:0;padding:5px 12px;font-size:13px;font-weight:700;pointer-events:none}
+.night .sh-top .sh-free b{margin:0 2px;font-size:16px;line-height:1;color:var(--gold);text-shadow:0 1px 0 #2a170c}
 
 /* ==== 大技の描き下ろし（11/20 fx-wall-*・battle-fx.js の fireWall と iceShatter）：絵は画面の下から（はばいっぱい）。動くのは transform と opacity だけ ==== */
 .fw-art{position:absolute;left:-3%;width:106%;bottom:0;transform-origin:50% 100%;will-change:transform}
