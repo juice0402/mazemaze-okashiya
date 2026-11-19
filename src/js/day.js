@@ -53,7 +53,7 @@ function dSoroiRibs(slots) {
   return out;
 }
 /* 7文字より長い名前は字をつめる（11/19：商品を並べるの棚で「ミルクキャラメル」「はちみつクッキー」の最後が切れていた） */
-const dNmLong = nm => nm.length >= 7 ? ' lg' : '';
+const dNmLong = nm => nm.length >= 7 ? ' dnl' : '';   // 「lg」はロゴの箱の名前なので使わない（11/19 しょーくん「文字数多いときの表示、絶対変」＝ロゴの箱の大きさがついていた）
 function slotHTML(o, idx, ks, pre, rib = '') {
   const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
   if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
