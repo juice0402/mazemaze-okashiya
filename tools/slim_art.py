@@ -4,6 +4,7 @@
   python3 -I tools/slim_art.py --check  … まだ軽くしていない絵の名前を出すだけ（何も書かない）
 決まり：
 - 強さは opts()：ふつうの絵は quality 78・すける所（アルファ）も alpha_quality 60。ui-* は枠のふちと字のための形なので quality 82・アルファはそのまま
+  キャラが大きく出る絵（honoka*・minamo*・wakaba* の立ち絵・表情・戦闘ポーズ・chibi はのぞく）は quality 88・アルファ 85（11/19 H-032・もとの大きさで取りこむ）
   （11/19 に q86 の絵と2倍に拡大してくらべて、ちがいが見えない強さ。ほのかの必殺技の立ち絵 207KB → 128KB）
 - 一度軽くした絵は assets/slim.json に「名前：バイト数」を残して、二度と保存しなおさない（くり返すと少しずつ画質が落ちるため）
 - 新しい絵は tools/prep_art.py が同じ強さで保存する。取りこんだあとにこの道具をかけると、表に入るだけ（ほとんど小さくならない絵はそのまま）
@@ -16,8 +17,15 @@ ART = os.path.join(ROOT, 'assets', 'art')
 TABLE = os.path.join(ROOT, 'assets', 'slim.json')
 
 
+def big_chara(name):
+    """キャラが大きく出る絵（立ち絵・表情・戦闘ポーズ。デフォルメ chibi はのぞく）"""
+    return name.split('-')[0] in ('honoka', 'minamo', 'wakaba') and 'chibi' not in name
+
+
 def opts(name):
     """絵の名前 → WebP で保存するときの強さ（prep_art.py もこれを使う）"""
+    if big_chara(name):   # 11/19 H-032：会話で大きく出るので、もとの大きさ（prep_art の上限1520）で quality 88・アルファ85
+        return dict(quality=88, alpha_quality=85, method=6)
     if name.startswith('ui-'):
         return dict(quality=82, method=6)
     return dict(quality=78, alpha_quality=60, method=6)

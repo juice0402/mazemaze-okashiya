@@ -66,7 +66,7 @@ console.log('index.html', page.length, 'art', Object.keys(ART).length);
   const raw = files.filter(x => slim[x.n] !== x.b);
   if (raw.length) console.log(`まだ軽くしていない絵 ${raw.length}まい（python3 -I tools/slim_art.py をかけてね）：` + raw.slice(0, 8).map(x => x.n).join(' '));
   if (page.length > BUDGET) console.log(`index.html が ${(page.length / 1e6).toFixed(1)}MB（めやす ${BUDGET / 1e6}MB）`);
-  const big = files.filter(x => x.b > 150e3); if (big.length) console.log('150KB をこえる絵：' + big.map(x => `${x.n} ${Math.round(x.b / 1e3)}KB`).join('・'));
+  const big = files.filter(x => x.b > (/^(honoka|minamo|wakaba)(-|$)/.test(x.n) && !/chibi/.test(x.n) ? 300e3 : 150e3));   // キャラの大きい絵はもとの大きさ（H-032）なので 300KB まで if (big.length) console.log('150KB をこえる絵：' + big.map(x => `${x.n} ${Math.round(x.b / 1e3)}KB`).join('・'));
 }
 // アーティファクトは ?v= をつけない（出した絵のパスそのまま）
 // 11/19〜 ページは小さな骨だけにして、CSS と JS は同じ所の app.css・app.js（新しい会話は出しなおす前に今のページをぜんぶ読む決まり。0.5MB のページは読みきれなかった）

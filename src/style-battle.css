@@ -42,13 +42,13 @@
    足もとは描かれた足の位置で合わせる（--fp＝足の下のすき間・src/data/feet.js）・影 .chef-sh・.mon-sh。舞台を container にして cqw・cqh を舞台の大きさに */
 .night .stage{container-type:size}
 .night .stage .chef,.night .stage .chef-sh{--ch:min(59cqw,53cqh)}
-.night .stage .chef{left:1cqw;bottom:calc(12cqh - var(--fp, 0) * var(--ch));height:var(--ch);width:auto;max-height:none;max-width:none;transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
+.night .stage .chef{left:1cqw;bottom:calc(12cqh - var(--fp, 0) * var(--ch));height:var(--ch);width:auto;max-height:none;max-width:none;transform-origin:50% calc(100% - var(--fp, 0) * 100%);transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
 .deco.battle .dc-chibi,.deco.win .dc-chibi,.stage:not(:has(.shopov)) .deco.shop .dc-chibi{display:none}   /* ちびほのかはショップのときだけ（来店の会話・お礼・結果は大きいほのか） */
 .night .stage .mon{bottom:22%}
 .night .stage .mon.hi{right:3%;width:31%;max-height:40%}   /* 大きいほのかとつりあう大きさ（11/18）・11/19 少し小さく・はなす */
 .chef-sh,.mon-sh{position:absolute;z-index:1;pointer-events:none}
 .chef-sh{left:1cqw;bottom:calc(12cqh - var(--ch) * .05);width:calc(var(--ch) * var(--ca, .8));height:calc(var(--ch) * .1);
-  background:radial-gradient(calc(var(--ch) * .23) calc(var(--ch) * .034) at calc(var(--fx, .45) * 100%) 50%,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);
+  background:radial-gradient(calc(var(--ch) * var(--sw, .23)) calc(var(--ch) * .036) at calc(var(--fx, .45) * 100%) 50%,rgba(15,5,0,.6),rgba(15,5,0,.42) 55%,transparent);
   transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
 .mon-sh{right:5.5%;width:26%;bottom:calc(22% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
 .mon.flee~.mon-sh{opacity:0}
@@ -267,27 +267,29 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .kone-n small{font-size:10px;color:#7a5a4a}
 .kone-n b{font-family:var(--disp);font-weight:400;font-size:15px;color:#c2541c;font-variant-numeric:tabular-nums}
 .kone-n.bump b{display:inline-block;animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
-/* ---------- ほのかの戦闘ポーズ（night-ui.js の heroPose）：絵を切りかえて、translate・scale・rotate で動く。絵がまだないポーズは動きだけ ---------- */
+/* ---------- ほのかの戦闘ポーズ（night-ui.js の heroPose）：絵を切りかえて、translate・scale・rotate で動く。絵がまだないポーズは動きだけ ----------
+   11/19 しょーくん「絵によって、影とキャラクターの距離がバラバラ」→ どのポーズも足は影の上（たての translate はなし・scale と rotate は足の線を中心に＝上の transform-origin）。
+   影の横の大きさは足のひらき方（feet.js の sw）・影は横の translate と横の scale だけついていく */
 .night .stage .chef[data-pose]:not([data-pose=stance]){animation:none}
-.chef[data-pose=charge]{translate:-3% 2%;scale:.96 1.03}
-.chef[data-pose=atk1]{translate:9% -1%}
-.chef[data-pose=atk2]{translate:14% -2%;rotate:3deg}
-.chef[data-pose=atk3]{translate:18% -5%;scale:1.06}
-.chef[data-pose=special]{translate:20% -6%;scale:1.12;rotate:-2deg}
-.chef[data-pose=support]{translate:5% -5%}
-.chef[data-pose=heatup]{translate:7% -3%;scale:1.04}
-.chef[data-pose=heatdown]{translate:-5% 1%;scale:.98}
+.chef[data-pose=charge]{translate:-3% 0;scale:.96 1.03}
+.chef[data-pose=atk1]{translate:9% 0}
+.chef[data-pose=atk2]{translate:14% 0;rotate:3deg}
+.chef[data-pose=atk3]{translate:18% 0;scale:1.06}
+.chef[data-pose=special]{translate:20% 0;scale:1.12;rotate:-2deg}
+.chef[data-pose=support]{translate:5% 0}
+.chef[data-pose=heatup]{translate:7% 0;scale:1.04}
+.chef[data-pose=heatdown]{translate:-5% 0;scale:.98}
 .chef[data-pose=knead]{scale:1.04 .95}
-.chef[data-pose=field]{translate:6% 1%;scale:1.03 .97}
-.chef[data-pose=win]{translate:0 -6%;scale:1.04}
+.chef[data-pose=field]{translate:6% 0;scale:1.03 .97}
+.chef[data-pose=win]{scale:1.04}
 .chef[data-pose=burnt]{translate:-6% 0;rotate:-4deg}
 /* 影は床にのこして、横にだけついていく（ポーズの translate の横だけ） */
-.stage[data-pose=charge] .chef-sh{translate:-3% 0}.stage[data-pose=atk1] .chef-sh{translate:9% 0}
+.stage[data-pose=charge] .chef-sh{translate:-3% 0;scale:.96 1}.stage[data-pose=atk1] .chef-sh{translate:9% 0}
 .stage[data-pose=atk2] .chef-sh{translate:14% 0}.stage[data-pose=atk3] .chef-sh{translate:18% 0;scale:1.06 1}
 .stage[data-pose=special] .chef-sh{translate:20% 0;scale:1.12 1}.stage[data-pose=support] .chef-sh{translate:5% 0}
-.stage[data-pose=heatup] .chef-sh{translate:7% 0}.stage[data-pose=heatdown] .chef-sh{translate:-5% 0}
-.stage[data-pose=field] .chef-sh{translate:6% 0}.stage[data-pose=burnt] .chef-sh{translate:-6% 0}
-.stage[data-pose=win] .chef-sh{scale:.85 .8;opacity:.8}
+.stage[data-pose=heatup] .chef-sh{translate:7% 0;scale:1.04 1}.stage[data-pose=heatdown] .chef-sh{translate:-5% 0;scale:.98 1}
+.stage[data-pose=field] .chef-sh{translate:6% 0;scale:1.03 1}.stage[data-pose=burnt] .chef-sh{translate:-6% 0}
+.stage[data-pose=win] .chef-sh{scale:1.04 1}.stage[data-pose=knead] .chef-sh{scale:1.04 1}
 .stage[data-pose=charge] .glow,.stage[data-pose=special] .glow{opacity:1}   /* チャージ中は足もとの炎の光が強く */
 /* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯がぱっと光る） */
 .quota{position:relative}

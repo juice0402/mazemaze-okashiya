@@ -52,12 +52,23 @@ function talkImg(who, face) {
   return k && ART[k] ? { src: ART[k], flip: !!T.flip } : null;
 }
 
+/* 会話を始めるときに、その会話で出る表情の絵をぜんぶ先に読む（11/19 H-032：キャラの絵がもとの大きさになったので、表情が変わったときに一瞬おくれないように） */
+const TALK_PRE = new Set();
+function talkPreload(L) {
+  for (const l of L) for (const f of l.who ? [l.face, null] : []) {
+    const im = talkImg(l.who, f); if (!im || TALK_PRE.has(im.src)) continue;
+    TALK_PRE.add(im.src); const pre = new Image(); pre.decoding = 'async'; pre.src = im.src;
+    if (pre.decode) pre.decode().catch(() => {});
+  }
+}
+
 let TK = null;   // 開いている会話
 const talking = () => !!TK;
 function talk(lines, done, opt = {}) {
   const L = (lines || []).map(talkParse).filter(Boolean);
   if (TK) talkClose(true);
   if (!L.length) { if (done) setTimeout(() => talkEnd(done), 0); return; }
+  talkPreload(L);
   const el = document.createElement('div');
   el.id = 'talk'; el.className = 'talk' + (opt.dim === false ? '' : ' dim');
   el.innerHTML = `<div class="tk-stage"><span class="tk-p l"></span><span class="tk-p r"></span></div>

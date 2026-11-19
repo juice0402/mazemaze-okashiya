@@ -363,7 +363,7 @@ const chefArt = () => chefNow().art || 'honoka';
 function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip, n } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka, n: '' }; }
 /* 足もと（11/19 しょーくん「描写されてるものの位置で足元を合わせて」・影も）：src/data/feet.js（tools/feet.py）の表で、
    どのポーズでも描かれた足が同じ高さに立つように下げる（--fp）。影 .chef-sh は足もとのまんなか（--fx）に。#stage に置いてシェフと影の両方が使う */
-function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8]; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]}`; }
+function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8, .23]; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]};--sw:${f[3]}`; }
 function heroSetVars(n, flip) { const st = $('stage'); if (st) for (const kv of heroVars(n, flip).split(';')) { const [k, v] = kv.split(':'); st.style.setProperty(k, v); } }
 function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="chef${ART[chefArt()] ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="chef" data-chef="${chefArt()}" src="${h.src}" alt="${esc(C.job + ' ' + C.name)}">`; }
 let heroT = 0;

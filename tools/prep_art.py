@@ -7,6 +7,7 @@
   python3 tools/prep_art.py bg <もとの PNG> <名前>                             … 背景（緑は抜かない・16:9に切って横960）
   python3 tools/prep_art.py parts <もとの PNG> <幅の上限> <名前1> <名前2> …   … UI のシート（緑で区切られた部品を、上の段から左→右の順に1つずつ。'-' は飛ばす）
   どのモードも --strict をつけると、ほぼ純な緑だけ抜く（ミントのリボンなど、緑っぽい色が消えてしまう絵に）
+  キャラが大きく出る絵（honoka*・minamo*・wakaba* の立ち絵・表情・戦闘ポーズ）は、上限 1520（＝もとの大きさ・11/19 H-032）。デフォルメ chibi は 320
 できた絵は assets/art/<名前>.webp。もとの PNG はリポジトリに入れない（作業場所の /tmp などに置いて使う。出どころは docs/ART.md に書く）。
 11/18 までのもとの PNG は枝 art-raw にある（取り出し方は docs/ART.md の「取りこみ方」）
 """
@@ -90,8 +91,8 @@ if __name__ == '__main__':
     if mode == 'box':
         x0, y0, x1, y1 = map(int, sys.argv[5].split(','))
         im = key_green(src).crop((x0, y0, x1, y1))
-        lim = int(sys.argv[4]); sc = lim / max(im.size)
-        save(im.resize((round(im.width * sc), round(im.height * sc)), Image.LANCZOS), sys.argv[3])
+        lim = int(sys.argv[4]); sc = min(1.0, lim / max(im.size))   # 大きくはしない（上限1520＝もとの大きさのまま）
+        save(im.resize((round(im.width * sc), round(im.height * sc)), Image.LANCZOS) if sc < 1 else im, sys.argv[3])
     elif mode == 'bg':
         im = src.convert('RGB'); w, h = im.size; th = round(w * 9 / 16)
         if th < h: im = im.crop((0, (h - th) // 2, w, (h - th) // 2 + th))
