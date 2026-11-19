@@ -1294,7 +1294,7 @@ background:linear-gradient(135deg,#fff,#c6edff 50%,#6cc4f0);animation:awice .75s
 .md-case .d-nm.dnl{font-size:9.5px;letter-spacing:-.07em}
 .mw{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
 .mw .hico{width:36px;height:36px}
-.mw-nm{max-width:100%;min-height:2.2em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:9.5px;font-weight:700;line-height:1.1;letter-spacing:-.03em;text-align:center;color:var(--ink);word-break:break-all}
+.mw-nm{max-width:100%;min-height:2.2em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:9.5px;font-weight:700;line-height:1.1;letter-spacing:-.03em;text-align:center;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
 .mw-empty{flex:1;align-self:center;text-align:center;margin:0;font-size:12px;color:var(--milk-soft)}
 .mghost{position:fixed;z-index:50;margin:0;pointer-events:none;box-shadow:0 10px 18px rgba(0,0,0,.4);transition:none;animation:none}
 .morning .lift{opacity:.35}
@@ -1543,7 +1543,8 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @media (prefers-reduced-motion:reduce){.d-say{transition:none}}
 .m-tools{position:absolute;right:8px;top:8px;z-index:5;display:flex;align-items:center;gap:8px}
 .m-tools .pill{height:44px;padding:0 14px;font-size:13px}
-.m-bookb svg{width:24px;height:24px;display:block}
+.m-bookb{display:grid;place-items:center}
+.m-bookb svg{width:26px;height:26px;display:block}
 .m-bookb .m-bookimg{width:30px;height:30px;max-width:none;object-fit:contain;display:block}
 .md-autob{position:absolute;right:8px;top:8px;z-index:5;height:34px;padding:0 12px;font-size:12px}
 .ms-sec{margin:6px 2px 2px;font-size:12px;font-weight:800;color:#fff2d8;text-shadow:0 1px 0 rgba(42,20,8,.8)}
@@ -5462,7 +5463,7 @@ return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">$
 function displayHTML(M) {
 const bg = ART['bg-day'], { slots, ks } = dSlots();
 const tip = M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
-const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${esc(candyOf(b.key).name)}</span></div>`).join('');
+const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${mNmBr(candyOf(b.key).name)}</span></div>`).join('');
 return `<section class="morning mdisp fit" id="msec">
 <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
 <p class="md-tip">${esc(tip)}</p>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}
@@ -5565,6 +5566,15 @@ for (let i = 0; i < n && pool.length; i++) if (!slots[i]) slots[i] = pool.shift(
 S.shelf = [slots[ks], ...slots.filter((o, i) => o && i !== ks)];
 M.baked = pool; M.kanban = kan.key;
 save(); renderMorning(); toast('からくり人形が、並べてくれた！');
+}
+const M_NM_TAIL = ['キャラメル', 'キャンディ', 'クッキー', 'シフォン', 'スコーン', 'ババロア', 'カステラ', 'ドロップ', 'ケーキ', 'アイス', 'プリン', 'タルト', 'ゼリー', 'サブレ', 'ムース', 'ティー', 'パフェ', 'ボーロ', 'スフレ', 'ソルベ', 'ジャム', 'ラスク'];
+function mNmBr(nm) {
+const out = [];
+for (const s of String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]) {
+const t = /^[ァ-ヶー]{6,}$/.test(s) && M_NM_TAIL.find(w => s.endsWith(w) && s.length - w.length >= 2);
+if (t) out.push(s.slice(0, -t.length), t); else out.push(s);
+}
+return out.map(esc).join('<wbr>');
 }
 const M_BOOK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c2.6-1 5.2-1 8 .6 2.8-1.6 5.4-1.6 8-.6v13c-2.6-1-5.2-1-8 .6-2.8-1.6-5.4-1.6-8-.6z" fill="#fff4e4" stroke="#5a3418" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.1v13" stroke="#5a3418" stroke-width="1.4"/><path d="M6.5 9h3.5M6.5 12h3.5M14 9h3.5M14 12h3.5" stroke="#e8607a" stroke-width="1.2" stroke-linecap="round"/></svg>';
 const M_FORMS = ['mugi', 'hachimitsu', 'milk', 'egg', 'ichigo', 'mizuame', 'herb'];

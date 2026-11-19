@@ -361,7 +361,7 @@ function mSlotHTML(o, idx, ks, rib = '') {
 function displayHTML(M) {
   const bg = ART['bg-day'], { slots, ks } = dSlots();
   const tip = M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
-  const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${esc(candyOf(b.key).name)}</span></div>`).join('');
+  const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${mNmBr(candyOf(b.key).name)}</span></div>`).join('');
   return `<section class="morning mdisp fit" id="msec">
     <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
       <p class="md-tip">${esc(tip)}</p>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}
@@ -477,6 +477,17 @@ function mAutoArrange() {
 
 /* ---------- レシピ帳（11/19 しょーくん「作り込みとほのかの一言をクスッとくるように」）：ひらめいたお菓子と、ほのかのひとこと（STORY.note） ---------- */
 /* レシピ帳の本（ui-book）・まだのお菓子のふた（ui-mada）は描き下ろしが届いたら自動で出る（11/19 しょーくん「レシピ帳のアイコンが描き下ろされてなかった」→ H-033） */
+/* 天板の名前の2行：ことばの切れ目だけで折る（11/19 しょーくん「天板の文字改行がやっぱり気になる」＝かりかりラス／ク になっていた）
+   かたかなのかたまりの前後で切る（野いちご・のど飴はひとまとまり）。かたかなだけの長い名前は、お菓子の形の名前の前で切る（カスタード／プリン） */
+const M_NM_TAIL = ['キャラメル', 'キャンディ', 'クッキー', 'シフォン', 'スコーン', 'ババロア', 'カステラ', 'ドロップ', 'ケーキ', 'アイス', 'プリン', 'タルト', 'ゼリー', 'サブレ', 'ムース', 'ティー', 'パフェ', 'ボーロ', 'スフレ', 'ソルベ', 'ジャム', 'ラスク'];
+function mNmBr(nm) {
+  const out = [];
+  for (const s of String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]) {
+    const t = /^[ァ-ヶー]{6,}$/.test(s) && M_NM_TAIL.find(w => s.endsWith(w) && s.length - w.length >= 2);
+    if (t) out.push(s.slice(0, -t.length), t); else out.push(s);
+  }
+  return out.map(esc).join('<wbr>');
+}
 const M_BOOK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c2.6-1 5.2-1 8 .6 2.8-1.6 5.4-1.6 8-.6v13c-2.6-1-5.2-1-8 .6-2.8-1.6-5.4-1.6-8-.6z" fill="#fff4e4" stroke="#5a3418" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.1v13" stroke="#5a3418" stroke-width="1.4"/><path d="M6.5 9h3.5M6.5 12h3.5M14 9h3.5M14 12h3.5" stroke="#e8607a" stroke-width="1.2" stroke-linecap="round"/></svg>';
 const M_FORMS = ['mugi', 'hachimitsu', 'milk', 'egg', 'ichigo', 'mizuame', 'herb'];
 function mBookSecs() {
