@@ -51,7 +51,7 @@ function resume() {
   if (S.phase === 'day' && !S.dayRun) startDay();
 }
 function boot(data) {
-  if (!boot.art) { boot.art = 1; return artBlobs(() => boot(data)); }   // 先に絵を blob URL に（core.js）
+  if (!boot.art) { boot.art = 1; return artBlobs(() => boot(data)); }   // 先に UI とタイトルの絵を読む（core.js）
   const s = data && data.S ? sanitize(data.S) : null;
   S = s || newState();
   if (!s) S.phase = 'title'; else resume();

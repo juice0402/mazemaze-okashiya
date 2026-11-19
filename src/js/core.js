@@ -8,31 +8,14 @@ const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
 
-/* 絵を軽く渡す（11/18 軽量化・11/19 使うときだけ）：ART の dataURL（1まい数十KB）を画面の文字に入れると、描きなおすたびに何百KBの文字を作って読みなおす。
-   blob URL（短い名前）にかえて渡す。11/19：起動のときに282まいをぜんぶかえると、スマホで1秒くらい待つので、はじめて使うときに1まいずつかえる（ART は Proxy・tools/build.mjs）。
-   起動のときは1まいだけ blob の絵が出せるか見る。出せない所では dataURL のまま。見おわってから done() */
-let artBlobOk = false;
-const artBlobURL = d => {
-  const c = d.indexOf(','), bin = atob(d.slice(c + 1)), u = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
-  return URL.createObjectURL(new Blob([u], { type: d.slice(5, d.indexOf(';')) }));
-};
-function artGet(t, k) {
-  const v = t[k];
-  if (artBlobOk && typeof v === 'string' && v.startsWith('data:')) { try { return (t[k] = artBlobURL(v)); } catch (e) { artBlobOk = false; } }
-  return v;
-}
+/* 絵（11/19〜）：ART は 名前 → assets/art/<ファイル>?v=… の表（tools/build.mjs）。絵はページに埋めこまず、使うときにブラウザが読む。
+   起動のときは、どの画面にも出る UI の絵（ui-*）とタイトルの絵（title-*）だけ先に読んでおく（待つのは長くて1.5秒） */
 function artBlobs(done) {
-  let fin = false; const end = () => { if (!fin) { fin = true; uiVars(); done(); } };
+  let fin = false, left = 0; const end = () => { if (!fin) { fin = true; uiVars(); done(); } };
   try {
-    const k0 = Object.keys(ART)[0];
-    if (!k0 || !URL.createObjectURL) return end();
-    const img = new Image();
-    img.onload = () => { artBlobOk = true; end(); };
-    img.onerror = end;
-    img.src = artBlobURL(ART[k0]);
-    setTimeout(end, 400);   // 待ちすぎない（そのときは dataURL のまま）
-  } catch (e) { end(); }
+    for (const k of Object.keys(ART)) if (/^(ui|title)-/.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }
+  } catch (e) { /* 読めなくても始める */ }
+  if (!left) end(); else setTimeout(end, 1500);
 }
 
 /* UI の絵（ui-* の名前の絵）を CSS の変数 --ui-<名前> に入れる。style.css の「UI の絵」が border-image に使う（昼の画面も同じ変数） */

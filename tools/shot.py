@@ -33,6 +33,7 @@ PRE = {
     'result': ("talkClose(true); goResult()", 1400),
 }
 html = (ROOT / 'index.html').read_text()
+html = html.replace('<head>', f'<head><base href="file://{ROOT}/">', 1)   # 絵は assets/art の外のファイル（11/19〜）
 i = html.rfind('})();')
 tmp = pathlib.Path('/tmp/_okashi_shot.html')
 tmp.write_text(html[:i] + "window.__ev = s => eval(s);\n" + html[i:])
