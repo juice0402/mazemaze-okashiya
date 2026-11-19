@@ -209,11 +209,9 @@ function showEvent(e, run, q) {
   } else t += 420;
   return t;
 }
-/* 味パワーの札とおなかの帯を、この一撃のぶん進める（ちいさなキャンディも使う） */
+/* おなかの帯を、この一撃のぶん進める（ちいさなキャンディも使う・味パワーの合計の札は 11/19 にやめた） */
 function scoreTick(dmg, run, q) {
   if (!$('qfill')) return;
-  const sc = $('score'), before = N.score + run - dmg;
-  countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');
   $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q);
   $('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
   if (run >= q / 2 && run - dmg < q / 2 && run < q) setTimeout(() => replay(document.querySelector('.quota'), 'half'), T(200));   // 半分＝コイン+1
@@ -505,8 +503,7 @@ function renderNight() {
       <i class="chef-sh"></i>${heroImg(hk)}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
-      <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
-      <span class="ov-hm" aria-label="昼のハート ${dayHearts()}こ">昼のハート <i>♥︎</i>×${dayHearts()} <b>味パワー×${Math.round(heartMul() * 100) / 100}</b></span>
+      <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span></div>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
     <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>

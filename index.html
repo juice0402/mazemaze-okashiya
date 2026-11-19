@@ -94,7 +94,6 @@ background:radial-gradient(ellipse 60% 55% at 42% 100%,#ff7a2a,rgba(255,90,30,.3
 .ov-top,.ov-heat{position:absolute;left:8px;right:8px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;pointer-events:none}
 .ov-top{top:4px;justify-content:space-between}
 .ov-top em{font-style:normal;color:var(--caramel)}
-.ov-top .score b{font-size:22px;font-variant-numeric:tabular-nums;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
 .ov-heat{bottom:5px}
 .float{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-size:14px;font-weight:700;color:var(--gold);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;white-space:nowrap;pointer-events:none;animation:up .95s ease-out forwards;z-index:3}
 .float.koge{color:#e0d6cc;top:-4px}
@@ -377,7 +376,6 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 background:radial-gradient(30% 50% at 22% 50%,rgba(0,0,0,.45),transparent 70%),radial-gradient(22% 45% at 82% 50%,rgba(0,0,0,.4),transparent 70%)}
 .ov-top{z-index:6}
 .ov-top>span{padding:2px 9px;border-radius:9px;background:linear-gradient(rgba(42,23,12,.78),rgba(42,23,12,.6));box-shadow:inset 0 0 0 1px rgba(255,214,140,.45)}
-.ov-top .score b{font-family:var(--disp);font-weight:400;font-size:21px;color:#ffe08a}
 .ov-heat{z-index:6}
 .fx-ball{position:absolute;z-index:6;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;pointer-events:none;
 background:radial-gradient(circle at 40% 40%,#fffbe0 0,#ffd45a 28%,#ff7a24 56%,rgba(220,60,20,0) 72%);box-shadow:0 0 18px 8px rgba(255,140,40,.65)}
@@ -437,9 +435,6 @@ filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
 .panel h2,.end h2{font-family:var(--disp);font-weight:400;letter-spacing:1px;color:#ffd27a;-webkit-text-stroke:3px #3a1404;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
 .end h2{font-size:24px}
 .bignum{color:#ffe08a}
-#score{display:inline-block}
-#score.tick{animation:scoretick .32s cubic-bezier(.2,1.6,.4,1)}
-@keyframes scoretick{0%{transform:scale(1.45)}100%{transform:scale(1)}}
 .tiles{position:relative}
 .tiles::after{content:"";position:absolute;left:4px;right:4px;bottom:2px;height:70%;z-index:3;border-radius:0 0 10px 10px;pointer-events:none;opacity:0;
 background:radial-gradient(10% 70% at 8% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 80% at 25% 100%,rgba(255,120,40,.85),transparent 70%),radial-gradient(10% 70% at 42% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 85% at 59% 100%,rgba(255,120,40,.85),transparent 70%),radial-gradient(10% 70% at 76% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 80% at 93% 100%,rgba(255,120,40,.85),transparent 70%);
@@ -798,7 +793,7 @@ background:var(--bc);box-shadow:0 0 0 1.5px #2a1408,0 0 9px 2px var(--bc);animat
 .buff.absorb{animation:buffout .42s ease-in forwards}
 @keyframes buffin{from{opacity:0;transform:scale(2.2)}}
 @keyframes buffout{35%{transform:scale(1.45)}100%{opacity:0;transform:translateY(22px) scale(.2)}}
-#heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
+#heatBar.ahit{animation:ahit .45s ease-out}
 .night .quota{position:relative;z-index:2}
 .tiles>:where(.tslot){z-index:1}
 .tiles{--fs:.3;--fo:.35;--go:.05}
@@ -1059,9 +1054,6 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .quota.half .qmk.m1{animation:qmkpop .6s cubic-bezier(.3,1.6,.5,1)}
 @keyframes qmkpop{40%{transform:scale(1.7)}}
 .result.half .r-msg{color:#ffd27a}
-.night .ov-hm{position:absolute;right:10px;top:calc(max(12px,5.5%) + 30px);z-index:6;font-size:10px;font-weight:700;color:#fff3dc;white-space:nowrap;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c,0 -1px 0 #2a170c;pointer-events:none}
-.ov-hm i{font-style:normal;color:#ff7a9a}.ov-hm b{color:#ffe08a;font-weight:700}
-.stage:has(.shopov:not(.out)) .ov-hm{display:none}
 .aqua{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size;--aql:rgba(220,250,255,.85)}
 .stage[data-t="4"] .aqua{--aql:rgba(255,226,160,.8)}
 .aq-light,.aq-frost,.aq-warm{position:absolute;inset:0}
@@ -4057,8 +4049,6 @@ return t;
 }
 function scoreTick(dmg, run, q) {
 if (!$('qfill')) return;
-const sc = $('score'), before = N.score + run - dmg;
-countUp(sc, before, N.score + run, T(460)); replay(sc, 'tick');
 $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q);
 $('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
 if (run >= q / 2 && run - dmg < q / 2 && run < q) setTimeout(() => replay(document.querySelector('.quota'), 'half'), T(200));   // 半分＝コイン+1
@@ -4323,8 +4313,7 @@ $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-c
 <i class="chef-sh"></i>${heroImg(hk)}
 <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
 ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
-<div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
-<span class="ov-hm" aria-label="昼のハート ${dayHearts()}こ">昼のハート <i>♥︎</i>×${dayHearts()} <b>味パワー×${Math.round(heartMul() * 100) / 100}</b></span>
+<div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span></div>
 <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
 ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
 <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
@@ -4376,7 +4365,7 @@ decoReact('jump', 600);
 }
 function fxLayer() { let l = $('fxl'); if (!l) { l = document.createElement('div'); l.id = 'fxl'; document.body.appendChild(l); } return l; }
 function spot(x) {
-const el = typeof x === 'number' ? (tslot(x) && (tslot(x).querySelector('.pc') || tslot(x))) : x === 'heat' ? $('heatBar') : x === 'score' ? $('score') : x;
+const el = typeof x === 'number' ? (tslot(x) && (tslot(x).querySelector('.pc') || tslot(x))) : x === 'heat' ? $('heatBar') : x === 'score' ? ($('qfill') && $('qfill').parentElement) : x;   // 'score'＝おなかの帯（味パワーの札は 11/19 にやめた）
 if (!el || !el.getBoundingClientRect) return null;
 const r = el.getBoundingClientRect();
 return { el, x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height };
@@ -4424,7 +4413,6 @@ const tos = Array.isArray(o.to) ? o.to : [o.to];
 tos.forEach((to, n) => setTimeout(() => aura(e.i, to, o.k, () => {
 if (BUFF_TXT[o.k]) addBuff(to, o.k, BUFF_TXT[o.k](o), e.i);
 if (o.k === 'heat') { setHeat(e.heat[1]); replay($('heatBar'), 'ahit'); }
-if (o.k === 'fin') replay($('score'), 'tick');
 if (o.k === 'sear' && e.sear) {
 const c2 = updTile(e.sear.i, e.sear.cid, e.sear.burnt ? undefined : e.sear.to);
 if (c2) replay(c2, 'sear');

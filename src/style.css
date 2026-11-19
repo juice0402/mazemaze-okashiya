@@ -84,7 +84,6 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .ov-top,.ov-heat{position:absolute;left:8px;right:8px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;pointer-events:none}
 .ov-top{top:4px;justify-content:space-between}
 .ov-top em{font-style:normal;color:var(--caramel)}
-.ov-top .score b{font-size:22px;font-variant-numeric:tabular-nums;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
 .ov-heat{bottom:5px}
 .float{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-size:14px;font-weight:700;color:var(--gold);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;white-space:nowrap;pointer-events:none;animation:up .95s ease-out forwards;z-index:3}
 .float.koge{color:#e0d6cc;top:-4px}
@@ -435,7 +434,6 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
   background:radial-gradient(30% 50% at 22% 50%,rgba(0,0,0,.45),transparent 70%),radial-gradient(22% 45% at 82% 50%,rgba(0,0,0,.4),transparent 70%)}
 .ov-top{z-index:6}
 .ov-top>span{padding:2px 9px;border-radius:9px;background:linear-gradient(rgba(42,23,12,.78),rgba(42,23,12,.6));box-shadow:inset 0 0 0 1px rgba(255,214,140,.45)}
-.ov-top .score b{font-family:var(--disp);font-weight:400;font-size:21px;color:#ffe08a}
 .ov-heat{z-index:6}
 
 /* バトルの演出：ほのかの火の玉 → モンスターに当たって、光の輪と火花（hitFx） */
@@ -514,9 +512,6 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .panel h2,.end h2{font-family:var(--disp);font-weight:400;letter-spacing:1px;color:#ffd27a;-webkit-text-stroke:3px #3a1404;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
 .end h2{font-size:24px}
 .bignum{color:#ffe08a}
-#score{display:inline-block}
-#score.tick{animation:scoretick .32s cubic-bezier(.2,1.6,.4,1)}
-@keyframes scoretick{0%{transform:scale(1.45)}100%{transform:scale(1)}}
 /* 焼き：調理台の下から炎がゆらっと上がる */
 .tiles{position:relative}
 .tiles::after{content:"";position:absolute;left:4px;right:4px;bottom:2px;height:70%;z-index:3;border-radius:0 0 10px 10px;pointer-events:none;opacity:0;

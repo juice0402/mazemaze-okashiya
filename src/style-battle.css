@@ -135,7 +135,7 @@
 .buff.absorb{animation:buffout .42s ease-in forwards}
 @keyframes buffin{from{opacity:0;transform:scale(2.2)}}
 @keyframes buffout{35%{transform:scale(1.45)}100%{opacity:0;transform:translateY(22px) scale(.2)}}
-#heatBar.ahit,#score.ahit{animation:ahit .45s ease-out}
+#heatBar.ahit{animation:ahit .45s ease-out}
 
 /* ---------- ほのかの炎（Version 38・動きは battle-fx.js の 4） ---------- */
 /* 鉄板の炎：マスの下のふちの手前で小さく（11/18 16時 しょーくん「カードが浮いてるみたい」「少し炎の演出を弱めて前に」）。.tiles の data-z（0＝場なし（種火）・1 弱火〜4 火力マックス）で燃え方が変わる */
@@ -441,9 +441,7 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 @keyframes qmkpop{40%{transform:scale(1.7)}}
 .result.half .r-msg{color:#ffd27a}
 /* 昼のハートで味パワーアップ（11/19 H-029）：舞台の上・味パワーの札の下に小さく */
-.night .ov-hm{position:absolute;right:10px;top:calc(max(12px,5.5%) + 30px);z-index:6;font-size:10px;font-weight:700;color:#fff3dc;white-space:nowrap;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c,0 -1px 0 #2a170c;pointer-events:none}
-.ov-hm i{font-style:normal;color:#ff7a9a}.ov-hm b{color:#ffe08a;font-weight:700}
-.stage:has(.shopov:not(.out)) .ov-hm{display:none}
+/* 上の味パワーの札と昼のハートの倍率（.ov-hm）は 11/19 にやめた（しょーくん「味パワー4桁からもう収まらない」「何ダメージ出てるかは、もう勘でいい」「昼のハート倍率とかも消してスッキリ」）。ハートの倍率は night.js の heartMul で味パワーにかかったまま */
 
 /* ==== みなもの夜の空気（11/19 しょーくん「ほのかの火の粉みたいに、もう画面全体で雰囲気を味わえる演出」）：舞台の .aqua（battle-fx.js の aquaHTML・#stage の data-t＝温度）
    子の順：1 光のゆらめき・2 霜・3 はちみつ色・4〜21 つぶ（雪／泡）・22〜25 湯気。ずっと動く物は transform と opacity だけ ==== */

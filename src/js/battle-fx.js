@@ -49,7 +49,7 @@ function slamFx(card) {
 function fxLayer() { let l = $('fxl'); if (!l) { l = document.createElement('div'); l.id = 'fxl'; document.body.appendChild(l); } return l; }
 /* マスの番号・'heat'（火力のメーター）・'score'・要素 → 画面の中の場所 */
 function spot(x) {
-  const el = typeof x === 'number' ? (tslot(x) && (tslot(x).querySelector('.pc') || tslot(x))) : x === 'heat' ? $('heatBar') : x === 'score' ? $('score') : x;
+  const el = typeof x === 'number' ? (tslot(x) && (tslot(x).querySelector('.pc') || tslot(x))) : x === 'heat' ? $('heatBar') : x === 'score' ? ($('qfill') && $('qfill').parentElement) : x;   // 'score'＝おなかの帯（味パワーの札は 11/19 にやめた）
   if (!el || !el.getBoundingClientRect) return null;
   const r = el.getBoundingClientRect();
   return { el, x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height };
@@ -101,7 +101,6 @@ function auraOut(e, o) {
   tos.forEach((to, n) => setTimeout(() => aura(e.i, to, o.k, () => {
     if (BUFF_TXT[o.k]) addBuff(to, o.k, BUFF_TXT[o.k](o), e.i);
     if (o.k === 'heat') { setHeat(e.heat[1]); replay($('heatBar'), 'ahit'); }
-    if (o.k === 'fin') replay($('score'), 'tick');
     if (o.k === 'sear' && e.sear) {
       const c2 = updTile(e.sear.i, e.sear.cid, e.sear.burnt ? undefined : e.sear.to);
       if (c2) replay(c2, 'sear');
