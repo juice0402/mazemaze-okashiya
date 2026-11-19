@@ -45,6 +45,6 @@ function renderResult() {
       </dl>${jarHTML()}</div>
       <p class="sum-money">お財布 <b>${fmt(S.money)}</b>円</p>
     </div>
-    <button class="big" data-act="nextDay">${S.day + 1}日目の朝へ</button>
+    <div class="r-bar"><button class="sub" data-act="opt">せってい</button><button class="big" data-act="nextDay">${S.day + 1}日目の朝へ</button></div>
   </section>`;
 }

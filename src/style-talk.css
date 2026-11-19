@@ -104,3 +104,20 @@
 .sum-om{display:flex;flex-wrap:wrap;column-gap:1em;font-size:min(13px,3.4vw);letter-spacing:-.02em}
 .sum-om span{white-space:nowrap}
 .sum dd{min-width:0}
+/* ==== せってい（11/19 H-034・main.js の optHTML）：紙のパネル（ui-panel）・オンオフはタブ（ui-tab）・とじるは丸いボタン（ui-round）。窓はタイトルとまとめの画面の上に重ねる ==== */
+.optv{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(24,12,6,.72);animation:fadein .15s ease-out}
+.panel.opt{position:relative;width:min(100%,330px);display:flex;flex-direction:column;gap:12px;background:none;box-shadow:none;border:24px solid transparent;border-radius:0;border-image:var(--ui-panel) 70 fill/24px stretch;padding:2px 2px 0;color:#4a2814;animation:popin .22s ease-out}
+.panel.opt .vclose{position:absolute;right:-30px;top:-30px}
+.opt-ttl{margin:0;text-align:center;font-family:var(--disp);font-weight:400;font-size:20px;color:#5a2410}
+.opt-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.opt-nm{font-weight:700;font-size:15px}
+.opt-tabs{display:flex;gap:8px}
+.opt-tabs .tab{min-width:64px;padding:9px 12px;font-size:14px}
+.opt-cr{margin-top:4px;padding-top:10px;border-top:1.5px dashed rgba(90,52,24,.35);font-size:10.5px;line-height:1.5;color:#6a4428}
+.opt-cr b{display:block;margin-bottom:2px;font-size:11.5px;color:#5a2410}
+.opt-cr p{margin:0}
+/* せっていのボタン：タイトルは右上の小さな札・まとめは「次の朝へ」の左（朝の雑貨屋と同じならび） */
+.opt-btn{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:30;padding:6px 14px;font-size:13px}
+.r-bar{flex:none;display:flex;align-items:center;gap:8px}
+.r-bar .big{flex:1;min-width:0}
+.r-bar .sub{flex:none;padding:12px 14px;font-size:14px}

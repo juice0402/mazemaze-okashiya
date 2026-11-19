@@ -56,11 +56,14 @@
 | --- | --- | --- | --- | --- | --- |
 | assets/bgm/hiru.mp3（昼のお店・38.4秒・1ループ） | C・コードで作った曲 | tools/bgm/make_bgm.py（FluidSynth）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 司令塔（枝 shireitou/bgm・作り方は tools/bgm/README.md） | タイトル・プロローグ・朝・昼・まとめ（src/js/sound.js） |
 | assets/bgm/yoru.mp3（夜のバトル・25.6秒・1ループ） | C・コードで作った曲 | tools/bgm/make_bgm.py（FluidSynth）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 司令塔（枝 shireitou/bgm） | 夜（夕方の会話・ショップ・バトル） |
+| assets/bgm/title.mp3・asa.mp3・matome.mp3（タイトル28.8秒・朝32秒・まとめ26.7秒・1ループ）と jg-hirameki・jg-manzoku・jg-nakama（ジングル・1回） | C・コードで作った曲 | tools/bgm/make_bgm_hiru.py（make_bgm.py の部品）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 昼のチャット（PR #20・H-034） | 曲はタイトルとプロローグ・朝・まとめ（sound.js の bgmName）・ジングルは se.js の jgPlay（新しいお菓子・大満足・仲間の来店） |
+| assets/se/*.mp3（効果音25こ：tap・wipe・card・buy・reroll・serve・hit・mult・star・manzoku・coin・fire・burnt と朝昼の pick・drop・bake・done・place・kanban・soroi・door・heart・sale・soldout・close） | C・コードで作った音 | tools/se/make_se.py（FluidR3_GM＋numpy） | 2026-11-19 | 昼のチャット（PR #20・H-034） | se.js の sePlay（夜は night.js・night-ui.js・battle-fx.js・main.js から） |
+| assets/koe/*.mp3（掛け声19こ：ほのか hono-・みなも mina-・わかば waka-） | 音声合成 | VOICEVOX（ほのか＝春日部つむぎ・みなも＝冥鳴ひまり・わかば＝WhiteCUL） | 2026-11-19 | 声の依頼箱 juice0402/koe-irai の out/okashi/kakegoe（PR #20） | se.js の koePlay（夜の攻撃・大満足・だめだったとき）。「うーん」の3つは koe-irai を直したら作りなおす。App Store の前に春日部つむぎ・WhiteCUL のくわしい規約を司令塔が読む |
 
 ### クレジット（クレジットの画面・ストアの説明に入れる）
 - 楽器の音：FluidR3_GM（Frank Wen・MIT ライセンス）
-
-- 掛け声（「えいっ」「はっ」など）は、あとで声の依頼箱 juice0402/koe-irai（VOICEVOX）で作る。クレジット画面に「音声合成：VOICEVOX:…」の1行
+- 音声合成：VOICEVOX:WhiteCUL、VOICEVOX:春日部つむぎ、VOICEVOX:冥鳴ひまり
+- ゲームの中では、タイトルとまとめの画面の「せってい」の窓に出す（main.js の optHTML・11/19）
 | chibi-think・chibi-cheer・chibi-sit（ほのかのデフォルメ：考える・応援・すわってクッキー） | A | Codex | 2026-11-18 | art-irai `requests/okashi/honoka-chibi.md`（step1〜3）・もとの PNG `assets/art/raw/honoka-chibi_step1〜3.png` | 舞台の賑やかし（ショップ＝考える・バトル＝すわって・大きな一撃と勝ち＝応援） |
 | mob-slime・mob-hitsuji（スライム・くもひつじのデフォルメ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step1）・もとの PNG `assets/art/raw/mobs-chibi_step1.png` | 舞台の賑やかしのモブ |
 | mob-tokage・mob-hiyoko・mob-kurage（こんぺいトカゲ・ほのお鳥のひよこ・しずくクラゲ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step2）・もとの PNG `assets/art/raw/mobs-chibi_step2.png` | 舞台の賑やかしのモブ（あとで敵にしてもよい） |

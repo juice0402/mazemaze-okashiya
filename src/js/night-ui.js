@@ -23,7 +23,14 @@ function updTile(i, cid, cook, ice) {
   slot.innerHTML = `<i class="ord">${i + 1}</i>${cardTile(cid, { cook, ice })}`;
   return slot.querySelector('.pc');
 }
-function burntFx(slot) { replay($('smoke'), 'on'); heroPose('burnt', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
+/* 掛け声（11/19 H-034・声は koe-irai の VOICEVOX）：大きい攻撃（★2・★3・必殺技）はいつも・★1 は3回に1回くらい。大満足・だめだったときは night.js の nightEndSnd */
+const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore'], minamo: ['mina-ha', 'mina-fu'], wakaba: ['waka-sore', 'waka-ei'] };
+const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-araara'] };
+function atkKoe(pose) {
+  const L = KOE_ATK[chefArt()]; if (!L || (pose === 'atk1' && Math.random() > .34)) return;
+  koePlay(L[Math.floor(Math.random() * L.length)]);
+}
+function burntFx(slot) { sePlay('burnt'); replay($('smoke'), 'on'); heroPose('burnt', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
 function floatAt(el, text, cls = '') {
   if (!el) return;
   const f = document.createElement('span');
@@ -195,6 +202,7 @@ function showEvent(e, run, q) {
   else if (e.chainBreak >= 2) floatAt(slot, 'れんさ おわり', 'ice');
   if (e.again) takeBuff(e.i, e.i - 1, 'again');
   /* 1. 発動したカードが跳ねる（★1 ぽん・★2 大きく・★3 縦にくるっと1回転してズドン） */
+  sePlay('serve');   // おもてなしの発動（11/19 H-034）
   let t = card ? actBounce(card, d.star) : 300;
   const C = actChips(e), H = {};
   /* ほのかの戦闘ポーズ：ダメージのあるカードは チャージ → 攻撃（★で3段・おなかの6割をこえる一撃は必殺技）、ないカードは役目のポーズ */
@@ -216,11 +224,11 @@ function showEvent(e, run, q) {
   if (e.dmg > 0) {
     setTimeout(() => hubFin(H, e.dmg), T(t));
     const atk = e.dmg >= q * 0.6 ? 'special' : 'atk' + Math.min(3, d.star || 1);
-    setTimeout(() => heroPose(atk, 820), T(t + 120));   // 数字が飛ぶのに合わせて、ほのかが攻撃
+    setTimeout(() => { heroPose(atk, 820); atkKoe(atk); }, T(t + 120));   // 数字が飛ぶのに合わせて、ほのかが攻撃（掛け声も）
     t += 300;
     setTimeout(() => {
       if (!$('qfill')) return;   // 夜の画面からはなれたあと（11/19）
-      hitFx(e.dmg, q, H.el); scoreTick(e.dmg, run, q);
+      hitFx(e.dmg, q, H.el); scoreTick(e.dmg, run, q); sePlay('hit', { rate: Math.min(2, Math.pow(1.12, (H.mk || 0) + 1)) });
     }, T(t));
     t += 760;
   } else t += 420;
@@ -343,7 +351,7 @@ function mixFx(from, ca, cb, cr, to, done) {
   /* ガキーン：白く光って、大きくゆれて、光の輪と線と火花。できたカードがくるっと出て、名前の札 */
   let R;
   setTimeout(() => {
-    ov.classList.add('hit');
+    ov.classList.add('hit'); sePlay('star');   // ★アップ（11/19 H-034）
     // ゆれは演出の板（.mixfx.hit）で：夜の画面ぜんぶをゆらすと、ショップのカードが毎こま描きなおされて重かった（11/19 しょーくん「まぜまぜの瞬間が激重」）
     heroFor('joy', HOLD + LAND + 300);
     moving.forEach(el => el.animate([{ opacity: el.classList.contains('ghost') ? .4 : 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }));

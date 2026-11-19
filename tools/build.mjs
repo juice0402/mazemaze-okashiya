@@ -12,7 +12,7 @@ const rd = p => readFileSync(join(root, p), 'utf8');
 const STYLES = ['src/style.css', 'src/style-battle.css', 'src/style-talk.css', 'src/style-hiru.css'];
 const ORDER = [
   'src/js/core.js', 'src/data/cards.js', 'src/data/world.js', 'src/data/feet.js', 'src/data/hiru.js', 'src/data/story.js',
-  'src/js/art.js', 'src/js/cards-ui.js', 'src/js/day-scene.js', 'src/js/night.js', 'src/js/night-ui.js', 'src/js/battle-fx.js', 'src/js/drag.js', 'src/js/tips.js', 'src/js/talk.js', 'src/js/morning.js', 'src/js/day.js', 'src/js/flow.js', 'src/js/logo.js', 'src/js/sound.js', 'src/js/main.js',
+  'src/js/art.js', 'src/js/cards-ui.js', 'src/js/day-scene.js', 'src/js/night.js', 'src/js/night-ui.js', 'src/js/battle-fx.js', 'src/js/drag.js', 'src/js/tips.js', 'src/js/talk.js', 'src/js/morning.js', 'src/js/day.js', 'src/js/flow.js', 'src/js/logo.js', 'src/js/sound.js', 'src/js/se.js', 'src/js/main.js',
 ];
 // 絵（11/19 しょーくん「重すぎてアーティファクトが開けない」）：埋めこまず、名前→ assets/art/<ファイル>?v=<中身の短いハッシュ> の表だけ入れる。
 // 絵は使うときにブラウザが1まいずつ読む（アーティファクトは files で assets/art を同じパスに出す・tools/art_files.mjs）
@@ -25,17 +25,20 @@ for (const f of readdirSync(artDir).sort()) {
   ART[m[1]] = `__ARTDIR__${f}?v=` + createHash('md5').update(readFileSync(join(artDir, f))).digest('hex').slice(0, 8);
 }
 // BGM（11/19 司令塔の見本2曲）：assets/bgm/*.mp3 → 名前→場所の表 BGM_SRC（埋めこまない・遊ぶ人は assets/bgm/・アーティファクトは bgm/）
+// 効果音と掛け声（11/19 H-034 昼のチャット）：assets/se・assets/koe → SE_SRC・KOE_SRC（BGM と同じ形・遊ぶ人は assets/se/・アーティファクトは se/）
+const SND_SRC = sub => { const T = {}; try { for (const f of readdirSync(join(root, 'assets', sub)).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) T[m[1]] = `__${sub.toUpperCase()}DIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets', sub, f))).digest('hex').slice(0, 8); } } catch (e) { /* ない */ } return T; };
+const SE_SRC = SND_SRC('se'), KOE_SRC = SND_SRC('koe');
 const BGM_SRC = {}; try { for (const f of readdirSync(join(root, 'assets/bgm')).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) BGM_SRC[m[1]] = `__BGMDIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets/bgm', f))).digest('hex').slice(0, 8); } } catch (e) { /* 曲がない */ }
 // 小さくする（11/18 軽量化）：遊ぶ人の index.html には、コメントと行の頭の空白を入れない（src はそのまま読みやすく）
 // CSS：/* */ を消して空白をつめる。JS：1行まるごとのコメント（// と /* */）と行の頭の空白だけ消す（文字列やテンプレートの中には書かない決まり）
 const minCss = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '\n').replace(/\n+/g, '\n').trim();
 const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').replace(/^[ \t]*\/\/.*$/gm, '').replace(/^[ \t]+/gm, '').replace(/\n{2,}/g, '\n');
 // TRIAL：ためしのページ（--artifact）だけ true（こね生地などを日にちを待たずに ためせる）。遊ぶ人の index.html は false
-const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst BGM_SRC = " + JSON.stringify(BGM_SRC) + ";\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
+const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst BGM_SRC = " + JSON.stringify(BGM_SRC) + ";\nconst SE_SRC = " + JSON.stringify(SE_SRC) + ";\nconst KOE_SRC = " + JSON.stringify(KOE_SRC) + ";\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
 // 絵の場所：遊ぶ人の index.html は assets/art/・アーティファクトは絵をページと同じ所に出す（files を短くするため・tools/art_files.mjs）
 const fragOf = (trial, dir = 'assets/art/') => rd('src/shell.html')
   .replace('<!--STYLE-->', () => '<style>\n' + FONTS + minCss(STYLES.map(rd).join('\n')) + '</style>')
-  .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial).replaceAll('__ARTDIR__', dir).replaceAll('__BGMDIR__', dir ? 'assets/bgm/' : 'bgm/') + '\n</script>');
+  .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial).replaceAll('__ARTDIR__', dir).replaceAll('__BGMDIR__', dir ? 'assets/bgm/' : 'bgm/').replaceAll('__SEDIR__', dir ? 'assets/se/' : 'se/').replaceAll('__KOEDIR__', dir ? 'assets/koe/' : 'koe/') + '\n</script>');
 const frag = fragOf('false');
 
 const cut = frag.indexOf('<div id="app">');
@@ -75,7 +78,7 @@ const ai = process.argv.indexOf('--artifact');
 if (ai > 0 && process.argv[ai + 1]) {
   const out = process.argv[ai + 1], dir = dirname(out), h8 = s => createHash('md5').update(s).digest('hex').slice(0, 8);
   const css = FONTS + minCss(STYLES.map(rd).join('\n'));
-  const aj = js.replace('__TRIAL__', 'true').replaceAll('__ARTDIR__', '').replaceAll('__BGMDIR__', 'bgm/').replace(/\.(webp|png|mp3)\?v=[0-9a-f]{8}"/g, '.$1"');
+  const aj = js.replace('__TRIAL__', 'true').replaceAll('__ARTDIR__', '').replaceAll('__BGMDIR__', 'bgm/').replaceAll('__SEDIR__', 'se/').replaceAll('__KOEDIR__', 'koe/').replace(/\.(webp|png|mp3)\?v=[0-9a-f]{8}"/g, '.$1"');
   writeFileSync(join(dir, 'app.css'), css); writeFileSync(join(dir, 'app.js'), aj);
   const af = rd('src/shell.html').replace('<!--STYLE-->', `<link rel="stylesheet" href="app.css?v=${h8(css)}">`).replace('<!--SCRIPT-->', `<script src="app.js?v=${h8(aj)}"></script>`);
   writeFileSync(out, af); console.log('artifact', af.length, 'app.js', aj.length, 'app.css', css.length);

@@ -8,7 +8,26 @@ function renderTop() {
 }
 function renderTitle() {
   const saved = load();
-  $('screen').innerHTML = lgTitleHTML(saved, resetArm);
+  $('screen').innerHTML = lgTitleHTML(saved, resetArm) + '<button class="pill opt-btn" data-act="opt">せってい</button>';   // せっていはタイトルの右上（11/19 しょーくん「タイトルとまとめの画面だけ」）
+}
+/* ==== せってい（11/19 H-034）：BGM と効果音（声・ジングルもふくむ）を べつべつに オン／オフ・クレジット。タイトルとまとめの画面の「せってい」から
+   画面は描きなおさず（タイトルの動きが はじめからにならないように）、上に窓を重ねて、その中だけ書きかえる ==== */
+const OPT_ROWS = [['bgm', 'BGM'], ['se', '効果音・声']];
+function optHTML() {
+  const row = ([k, name]) => `<div class="opt-row"><span class="opt-nm">${name}</span><span class="opt-tabs">${[[1, 'オン'], [0, 'オフ']].map(([v, t]) => `<button class="tab${!!v === (S.opt[k] !== false) ? ' on' : ''}" data-act="optSet" data-k="${k}" data-v="${v}">${t}</button>`).join('')}</span></div>`;
+  return `<div class="panel opt" data-act="noop"><button class="vclose" data-act="optX" aria-label="とじる">×</button><h3 class="opt-ttl">せってい</h3>${OPT_ROWS.map(row).join('')}
+    <div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM（Frank Wen・MIT ライセンス）</p><p>音声合成：VOICEVOX:WhiteCUL、VOICEVOX:春日部つむぎ、VOICEVOX:冥鳴ひまり</p></div></div>`;
+}
+function optOpen() {
+  let v = $('optv');
+  if (!v) { v = document.createElement('div'); v.id = 'optv'; v.className = 'optv'; v.dataset.act = 'optX'; $('screen').appendChild(v); }
+  v.innerHTML = optHTML();
+}
+function optClose() { const v = $('optv'); if (v) v.remove(); }
+function optSet(el) {
+  S.opt[el.dataset.k] = el.dataset.v === '1'; save();
+  optOpen();
+  if (el.dataset.k === 'se' && S.opt.se) sePlay('tap');
 }
 function render() {
   renderTop();
@@ -42,6 +61,7 @@ const ACTS = {
   toEvening: () => goEvening(),
   toResult: () => (S.phase === 'day' ? goEvening() : goResult()),   // 昼の「閉店」（前の昼の画面のボタン名のまま）は夕方へ
   nextDay: () => nextDay(),
+  opt: () => optOpen(), optX: () => optClose(), optSet: el => optSet(el),
   ...MORNING_ACTS, ...DAY_ACTS,   // 朝と昼の画面のボタン（morning.js・day.js＝昼のチャット）
   toCard: el => MORNING_ACTS.toShelf(el),   // 11/18 朝のお菓子はカードにしない（昼のチャットが朝の画面を作りなおすまで、棚に入れる）
 };
@@ -62,7 +82,7 @@ function boot(data) {
     if (!el || el.dataset.act !== 'kw') hideKw();   // ことばの説明は、ほかの所をタップでとじる
     if (!el || el.disabled) return;
     const f = ACTS[el.dataset.act]; if (!f) return;
-    if (el.tagName === 'BUTTON' && el.dataset.act !== 'noop') pressFx(el);   // 押したときの光（ぜんぶのせシップの形）
+    if (el.tagName === 'BUTTON' && el.dataset.act !== 'noop') { pressFx(el); if (!NO_TAP[el.dataset.act]) sePlay('tap'); }   // 押したときの光（ぜんぶのせシップの形）と音（11/19 H-034）
     const ph = S.phase;
     f(el);
     if (S.phase !== ph) wipe();   // 夜・朝・昼・まとめの切りかえは、タイルの幕でさっと
@@ -71,6 +91,8 @@ function boot(data) {
   dragInit($('screen'));
   render();
 }
+/* 自分の音を鳴らすボタンは tap を重ねない（買う・入れかえ・せっていのオンオフ） */
+const NO_TAP = { buy: 1, reroll: 1, optSet: 1 };
 /* 押したときの光（ぜんぶのせシップの fxBuy の形）：ボタンの形の白い輪が広がって消える。画面を描きなおしても残るよう body に出す */
 function pressFx(el) {
   if (REDUCED || !el.matches('.big,.bake,.pill,.go2,.sub,.vclose')) return;
@@ -82,6 +104,7 @@ function pressFx(el) {
 /* 画面の切りかえ（ぜんぶのせシップの pixWipe を、お菓子屋さんの形に）：ギンガムのタイルが左上から右下へ順に小さくなって、新しい画面が見える */
 let wipeRaf = 0;
 function wipe(ms = 620) {
+  sePlay('wipe');   // 幕の音（11/19 H-034）
   if (REDUCED) return;
   let cv = document.getElementById('wipe');
   if (!cv) { cv = document.createElement('canvas'); cv.id = 'wipe'; cv.setAttribute('aria-hidden', 'true'); document.body.appendChild(cv); }

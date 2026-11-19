@@ -56,7 +56,7 @@ function nightPrep() { N.heat = heatOf().start; N.field = curBuild().bin || null
 function nightTalk() {
   if (talking()) return;
   if (N.stage === 'arrive') talk(STORY.evening(S.today), () => { N.stage = 'shop'; dealAnim = true; save(); renderNight(); });
-  else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); });
+  else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); nightEndSnd(); });
 }
 /* 前の形のセーブ（6マス・前のカード）は、その夜をはじめからにする */
 function nightOk(n) {
@@ -138,7 +138,7 @@ function buy(i, to) {
     if (at < 0) return toast(BOARD_FULL);
     if (!place(cid, at)) return;
   }
-  pay(1, d.cost); N.shop[i] = null; unsel(); tipEv('buy');
+  pay(1, d.cost); N.shop[i] = null; unsel(); tipEv('buy'); sePlay('buy'); sePlay('card', { vol: .8 });
   const born = d.fx.taneSpawn ? spawnTane(d.fx.taneSpawn, []) : 0;   // パン種のびん：置いたとき、パン種が生まれる
   save(); renderNight();
   if (born) taneFx(born);
@@ -190,13 +190,13 @@ function sellAt(p) {
   const d = cardDef(c.cid), v = sellValue(d);
   if (v) N.coins += v; else if (!d.tane) N.picks = Math.min(ROUND1_PICKS, N.picks + 1);   // パン種は0コイン（無料の枠ももどらない）
   if (p.where === 'field') N.field = null; else N.board[p.i] = null;
-  unsel(); tipEv('sell'); save(); renderNight();
+  unsel(); tipEv('sell'); sePlay(v ? 'coin' : 'card', { vol: .7 }); save(); renderNight();
 }
 function sell() { sellAt(N.sel); }
 function reroll() {
   if (busy || N.stage !== 'shop' || N.round === 1) return;
   if (N.coins < REROLL) return toast('コインがたりない');
-  N.coins -= REROLL; rollShop(); unsel(); tipEv('reroll'); save(); renderNight();
+  N.coins -= REROLL; rollShop(); unsel(); tipEv('reroll'); sePlay('reroll'); save(); renderNight();
 }
 
 /* ---------- まぜる：同じ★で、属性の合うものどうし（cards.js の mixable）。調理台・ショップのどれどうしでも、まぜられる（ショップのカードは買いながら） ---------- */
@@ -294,7 +294,7 @@ function doMix(p, q, from) {
 function moveTo(i, j) {
   if (busy || !N.board[i]) return;
   [N.board[j], N.board[i]] = [N.board[i], N.board[j]];
-  unsel(); tipEv('move'); save(); renderNight();
+  unsel(); tipEv('move'); sePlay('card', { vol: .8 }); save(); renderNight();
   const t = document.querySelector(`.tslot[data-w="board"][data-i="${j}"] .pc`); if (t) replay(t, 'kon');
 }
 function closeView() { unsel(); renderNight(); }
@@ -528,6 +528,7 @@ function finishRound(res) {
   N.score += res.total; N.burnt += res.burnt;
   if (ok) N.met++;
   N.last = { round: N.round, total: res.total, q, ok, tier };
+  if (tier === 2) setTimeout(() => sePlay('manzoku'), T(700));   // まんぞく！のハンコ（11/19 H-034・ハンコが押される .7s に合わせる）
   N.stage = 'roundEnd'; busy = false; fighting = false; resultAnim = true;
   save(); renderNight();
 }
@@ -568,6 +569,13 @@ function coolDown() {
   return N.heat !== h0 ? [h0, N.heat] : null;
 }
 /* おもてなしの結果：満足（MOODS）で、モンスター素材（倉庫へ・次の朝から使える）とお礼のコイン（お店のお金）をくれる */
+/* 夜の結果の音（11/19 H-034）：お礼のコイン・大満足はジングルと よろこぶ声・ちょっと満足は しょんぼりの声 */
+function nightEndSnd() {
+  const m = S.today.mood, L = KOE_END[chefArt()] || [];
+  setTimeout(() => sePlay('coin'), 650);
+  if (m >= 3) { jgPlay('jg-manzoku'); if (L[0]) setTimeout(() => koePlay(L[0]), 400); }
+  else if (m <= 1 && L[1]) setTimeout(() => koePlay(L[1]), 400);
+}
 function endNight() {
   const M = MONSTERS[N.mon], belly = nightHP(S.day), mood = moodOf(N.score, belly), R = MOODS[mood];
   S.stock[M.drop] = (S.stock[M.drop] || 0) + R.mats;

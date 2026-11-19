@@ -3,12 +3,16 @@
    - Web Audio のループで鳴らす（<audio loop> はつなぎ目でプツッとなることがある）
    - スマホはさわる前に鳴らせないので、はじめのタップのあとで鳴らしはじめる
    - 昼の曲（hiru）：タイトル・プロローグ・朝・昼・まとめ／夜の曲（yoru）：夜（夕方の会話・ショップ・バトル） */
-const BGM_LOOP = { hiru: 38.4, yoru: 25.6 };   // 1ループの秒（100BPM・150BPM の16小節）
+const BGM_LOOP = { hiru: 38.4, yoru: 25.6, title: 28.8, asa: 32.0, matome: 26.6667 };   // 1ループの秒（hiru 100BPM・yoru 150BPM の16小節・title／asa／matome は 11/19 H-034 昼のチャット）
 const BGM_VOL = 0.45;
 const BGM_FADE = 0.6;
 const bgm = { ctx: null, master: null, buf: {}, fail: {}, want: '', cur: '', src: null, gain: null };
 
-function bgmName() { return S && S.phase === 'night' ? 'yoru' : 'hiru'; }
+/* 曲えらび（11/19 H-034）：タイトルとプロローグ＝title・朝＝asa・昼＝hiru・夜＝yoru・まとめ＝matome。せっていで BGM を消したら ''（止める） */
+function bgmName() {
+  if (!S || (S.opt && S.opt.bgm === false)) return '';
+  const ph = S.phase; return ph === 'night' ? 'yoru' : ph === 'morning' ? 'asa' : ph === 'day' ? 'hiru' : ph === 'result' ? 'matome' : 'title';
+}
 function bgmUnlock() {
   if (bgm.ctx) { if (bgm.ctx.state === 'suspended' && !document.hidden) bgm.ctx.resume(); return; }
   const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
@@ -52,6 +56,7 @@ function bgmFadeOut() {
 function bgmSync() {
   if (!bgm.ctx || typeof BGM_SRC === 'undefined') return;
   const name = bgmName();
+  if (!name) { bgm.want = ''; bgmFadeOut(); return; }
   if (bgm.want === name && (bgm.cur === name || bgm.buf[name] === 0)) return;
   bgm.want = name;
   bgmLoad(name, b => bgmStart(name, b));

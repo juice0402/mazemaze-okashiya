@@ -90,6 +90,7 @@ function newState() {
     seen: {},                      // 見た物語の場面（prologue など）
     night: null, morning: null, dayRun: null,
     today: null, yesterday: null,  // 1日の記録（newDay）と、きのうの記録
+    opt: { bgm: true, se: true },  // せってい（11/19 H-034・しょーくん「タイトルとまとめの画面だけ」）：BGM・効果音（声とジングルもふくむ）
   };
 }
 /* 1日の記録（H-008）：朝のはじめに作る。朝のひとり言（昼のチャット）とまとめの日記で使う */
@@ -116,6 +117,8 @@ function sanitize(o) {
   if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
   for (const k of ['money', 'rep', 'shelfMax']) if (!Number.isFinite(o[k])) o[k] = d[k];
   if (!BUILDS[o.build]) o.build = 'cookie';
+  if (!o.opt || typeof o.opt !== 'object') o.opt = {};
+  for (const k of ['bgm', 'se']) o.opt[k] = o.opt[k] !== false;
   /* レシピと棚はいまの材料だけ。倉庫は数が正しい物だけ（基本素材の id は昼のチャットの hiru.js なので、名前ではけさない） */
   const okMat = m => MATS[m] || (typeof HIRU_MATS !== 'undefined' && HIRU_MATS[m]);   // 夜の素材と朝昼の素材（H-010）
   const okKey = k => typeof k === 'string' && k.split('+').length === 2 && k.split('+').every(okMat);

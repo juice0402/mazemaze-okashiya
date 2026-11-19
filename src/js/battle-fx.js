@@ -342,6 +342,7 @@ function sparkBurst(at, n, mode, spread = 1) {
    （大きさのクラスは s-big・s-huge。.big はボタンの名前なので使わない） */
 /* 炎はほのかだけ（11/19）：みなもは画面いっぱいの水の柱と大波（.water・しぶきと氷のかけら）、わかばは若葉色のつると葉（.leaf） */
 function fireWall() {
+  sePlay('fire');   // 大技（11/19 H-034）
   const nt = document.querySelector('.night'); if (!nt || REDUCED) return;
   replay(nt, 'quake2');
   const ch = document.body.dataset.chef, r = nt.getBoundingClientRect(), w = document.createElement('div'), n = 11;
@@ -417,6 +418,8 @@ function chipFly(e, c, H) {
   if (c.src && c.src.length) { const got = c.src.map(s => takeBuff(e.i, s, c.k)); if (!got.some(Boolean)) from = c.src[0]; }
   const a = spot(from), tgt = H.num ? spot(H.num.firstElementChild) : null, b = tgt || hubPoint();
   const land = () => {
+    if (/^×/.test(String(c.b || ''))) { H.mk = (H.mk || 0) + 1; sePlay('mult'); }   // 倍々（11/19 H-034：数字の音は倍々のたびに 1.12 倍ずつ高く）
+    sePlay('hit', { rate: Math.min(2, Math.pow(1.12, H.mk || 0)), vol: .7 });
     if (H.num) {
       const n = H.num.firstElementChild;
       if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); n.textContent = fmt(Math.floor(c.v)); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(240)); }
