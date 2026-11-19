@@ -256,7 +256,7 @@ function actChips(e) {
   }
   if (e.fin) calc.push({ b: '×' + fmtMul(e.fin[0]), s: 'アンカー：合計', c: 'gold', v: e.dmg, p: v, out: out('fin') });
   const rl = out('rally'); if (rl != null) outs.push({ b: '+' + fmt(e.out[rl].v), s: d.fx.koneRally ? 'パンぜんぶへ' : '主役ぜんぶへ', c: 'mint', out: rl });
-  const nb = out('nb'); if (nb != null) outs.push({ b: '+' + fmt(e.out[nb].v), s: 'となりへ', c: 'mint', out: nb });
+  const nb = out('nb'); if (nb != null) outs.push({ b: '+' + fmt(e.out[nb].v), s: '右2枚へ', c: 'mint', out: nb });
   if (e.heat) { const H = heatOf(); outs.push({ b: `${H.names[e.heat[0]]}→${H.names[e.heat[1]]}`, s: H.word, c: H.cool && e.heat[1] < e.heat[0] ? 'mint' : 'ember', out: out('heat') }); }
   if (e.sear) outs.push(e.sear.burnt ? { b: '焦げた', s: '右の生地', c: 'koge', out: out('sear') } : { b: `焼き+${e.sear.to - e.sear.from}`, s: '右の生地', c: 'ember', out: out('sear') });
   if (e.grow) outs.push({ b: e.grow.to >= SIZE_MAX ? '完成！' : `大きさ+${e.grow.to - e.grow.from}`, s: '右の大作', c: 'mint', out: out('grow') });

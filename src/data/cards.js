@@ -129,7 +129,7 @@ const TOOLS = {
   amebasami: { name: 'ガラスの飴ばさみ', short: '飴ばさみ', mini: 'はさみ', role: '支援', fx: { grow: 2, chainUp: 1 } },   // キャンディの夜は れんさ+1（れんさを切らない）
   amebell:   { name: '飴職人のベル', short: '職人のベル', mini: 'ベル', role: '仕入れ', fx: { call: 1 } },
   /* わかばの道具（わかばの2ビルドで共通・11/19・名前は絵の依頼のとおり）。water＝発動すると右どなりのくだものが育つ・fert＝このラウンドの終わりに くだものぜんぶ もう1段
-     scare＝両どなりのくだものの効果×・basket＝次のショップに くだもの（花）が多く出る・call＝畑のベル（飴ジャムの夜はフィールドがないので、熟した実を1枚） */
+     scare＝右2枚のくだものの効果×（11/19 前は両どなり）・basket＝次のショップに くだもの（花）が多く出る・call＝畑のベル（飴ジャムの夜はフィールドがないので、熟した実を1枚） */
   joro:     { name: '森のじょうろ', short: 'じょうろ', mini: 'じょうろ', role: '支援', fx: { water: 1 } },
   hiryo:    { name: 'ふかふかひりょう', short: 'ひりょう', mini: 'ひりょう', role: '支援', fx: { fert: 1 } },
   kakashi:  { name: 'にこにこかかし', short: 'かかし', mini: 'かかし', role: '支援', fx: { scare: 1.5 } },
@@ -436,7 +436,7 @@ function fxList(fx, star = 1) {
   if (fx.link) p.push(`両どなり飴で れんさ+${fx.link}`);
   if (fx.coldAgain) p.push('ひんやりで2回');
   if (fx.next) p.push(`次の主役×${fx.next}`);
-  if (fx.nb) p.push(`となり+${f(fx.nb)}`);
+  if (fx.nb) p.push(`右2枚+${f(fx.nb)}`);
   if (fx.again) p.push(`右がもう${fx.again}回`);
   if (fx.koneUp) p.push(`発動：こね+${fx.koneUp}`);
   if (fx.tane2) p.push(`こねるとパン種+${fx.tane2}`);
@@ -448,7 +448,7 @@ function fxList(fx, star = 1) {
   if (fx.chainUp && candyNight()) p.push(`れんさ+${fx.chainUp}`);
   if (fx.water) p.push(`右の実：育つ+${fx.water}`);
   if (fx.fert) p.push('実ぜんぶ もう1段');
-  if (fx.scare) p.push(`となりの実×${fx.scare}`);
+  if (fx.scare) p.push(`右2枚の実×${fx.scare}`);
   if (fx.basket) p.push(`次に実が${fx.basket}枚`);
   if (fx.soon) p.push('育つと右がもう1回');
   if (fx.heat) p.push(`${heatOf().word}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
@@ -507,7 +507,7 @@ function fxLong(fx, star = 1) {
   if (fx.link) p.push(['', `両どなりが キャンディなら {れんさ}+${fx.link}`]);
   if (fx.coldAgain) p.push(['', 'ひんやり以下なら もう1回発動']);
   if (fx.next) p.push(['', `次の主役の 味パワー×${fx.next}`]);
-  if (fx.nb) p.push(['', `両どなりの 味パワー+${f(fx.nb)}`]);
+  if (fx.nb) p.push(['', `右2枚の 味パワー+${f(fx.nb)}`]);
   if (fx.again) p.push(['', `右を もう${fx.again}回発動`]);
   if (fx.koneUp) p.push(['', `{こね}た回数+${fx.koneUp}`]);
   if (fx.tane2) p.push(['', `こねると {パン種}+${fx.tane2}こ`]);
@@ -519,7 +519,7 @@ function fxLong(fx, star = 1) {
   if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}（ここで 切れない）`]);
   if (fx.water) p.push(['', `右の{実}が ${fx.water}段育つ`]);
   if (fx.fert) p.push(['', 'ラウンドの終わりに {実}がぜんぶ 1段育つ']);
-  if (fx.scare) p.push(['', `両どなりの {実}の効果×${fx.scare}`]);
+  if (fx.scare) p.push(['', `右2枚の {実}の効果×${fx.scare}`]);
   if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚`]);
   if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
   if (fx.heat) { const H = heatOf(); if (!H.none) p.push(['', `${H.of} {${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }

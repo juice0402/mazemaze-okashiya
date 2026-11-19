@@ -2175,7 +2175,7 @@ if (fx.petit) p.push(`ちいさな飴${fx.petit}こ`);
 if (fx.link) p.push(`両どなり飴で れんさ+${fx.link}`);
 if (fx.coldAgain) p.push('ひんやりで2回');
 if (fx.next) p.push(`次の主役×${fx.next}`);
-if (fx.nb) p.push(`となり+${f(fx.nb)}`);
+if (fx.nb) p.push(`右2枚+${f(fx.nb)}`);
 if (fx.again) p.push(`右がもう${fx.again}回`);
 if (fx.koneUp) p.push(`発動：こね+${fx.koneUp}`);
 if (fx.tane2) p.push(`こねるとパン種+${fx.tane2}`);
@@ -2187,7 +2187,7 @@ if (fx.grow && !(fx.chainUp && candyNight())) p.push(`右の大作：大きさ+$
 if (fx.chainUp && candyNight()) p.push(`れんさ+${fx.chainUp}`);
 if (fx.water) p.push(`右の実：育つ+${fx.water}`);
 if (fx.fert) p.push('実ぜんぶ もう1段');
-if (fx.scare) p.push(`となりの実×${fx.scare}`);
+if (fx.scare) p.push(`右2枚の実×${fx.scare}`);
 if (fx.basket) p.push(`次に実が${fx.basket}枚`);
 if (fx.soon) p.push('育つと右がもう1回');
 if (fx.heat) p.push(`${heatOf().word}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
@@ -2235,7 +2235,7 @@ if (fx.petit) p.push(['', `小さな飴を ${fx.petit}こ飛ばす`]);
 if (fx.link) p.push(['', `両どなりが キャンディなら {れんさ}+${fx.link}`]);
 if (fx.coldAgain) p.push(['', 'ひんやり以下なら もう1回発動']);
 if (fx.next) p.push(['', `次の主役の 味パワー×${fx.next}`]);
-if (fx.nb) p.push(['', `両どなりの 味パワー+${f(fx.nb)}`]);
+if (fx.nb) p.push(['', `右2枚の 味パワー+${f(fx.nb)}`]);
 if (fx.again) p.push(['', `右を もう${fx.again}回発動`]);
 if (fx.koneUp) p.push(['', `{こね}た回数+${fx.koneUp}`]);
 if (fx.tane2) p.push(['', `こねると {パン種}+${fx.tane2}こ`]);
@@ -2247,7 +2247,7 @@ if (fx.grow && !(fx.chainUp && candyNight())) p.push(['', `右の大作の 大�
 if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}（ここで 切れない）`]);
 if (fx.water) p.push(['', `右の{実}が ${fx.water}段育つ`]);
 if (fx.fert) p.push(['', 'ラウンドの終わりに {実}がぜんぶ 1段育つ']);
-if (fx.scare) p.push(['', `両どなりの {実}の効果×${fx.scare}`]);
+if (fx.scare) p.push(['', `右2枚の {実}の効果×${fx.scare}`]);
 if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚`]);
 if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
 if (fx.heat) { const H = heatOf(); if (!H.none) p.push(['', `${H.of} {${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }
@@ -3796,7 +3796,7 @@ let jamMul = 1;
 const isJam = j => !!board[j] && cardDef(board[j].cid).cat === 'jam', isFruit = j => !!board[j] && cardDef(board[j].cid).fruit;
 const scareOf = j => board[j] ? cardDef(board[j].cid).fx.scare || 1 : 1;
 const fieldMul = d => !F || !F.fruitMul ? 1 : d.stage === RIPE && F.ripeMul ? F.ripeMul : F.fruitMul;   // のびのび肥料：×2・熟した実は×3
-const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, fieldMul(d) * Math.max(scareOf(j - 1), scareOf(j + 1))) : d.fx; };   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
+const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, fieldMul(d) * Math.max(scareOf(j - 1), scareOf(j - 2))) : d.fx; };   // かかしは右2枚の実に効く（11/19 しょーくん「左から順に計算するので右2枚に」）   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
 const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
 for (const i of idx) {
 const cold = cardDef(board[i].cid).fx.coldAgain && heat <= 2 ? 1 : 0;   // ひえひえミント飴：ひんやり以下なら もう1回
@@ -3830,7 +3830,7 @@ if (i === first && t === 0 && fx.doneRally && doneN()) {   // あめの花かご
 rally += fx.doneRally * sm; e.rally = true;
 e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j)), v: fx.doneRally * sm });
 }
-if (fx.nb && dmgAt(i + 1)) e.out.push({ k: 'nb', to: [i + 1], v: fx.nb * sm });
+if (fx.nb) { const to = [i + 1, i + 2].filter(j => j < SLOTS && dmgAt(j)); if (to.length) e.out.push({ k: 'nb', to, v: fx.nb * sm }); }   // 右2枚の味パワー+（11/19 しょーくん・前は両どなり）
 if (fx.koneUp) { e.kone = [kone, kone + fx.koneUp]; kone += fx.koneUp; }
 if (fx.heat) { const h0 = heat; heat = Math.max(1, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
 if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
@@ -3881,7 +3881,8 @@ const rp = idx.filter(j => (isFruit(j) && cardDef(board[j].cid).stage === RIPE) 
 base *= v; if (n) parts.push(['×', v, `熟した実${n}`, rp]);
 }
 let nb = 0; const nbs = [];
-for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid), ofx = fxAt(j); if (ofx.nb) { nb += ofx.nb * STAR_MUL[od.star]; nbs.push(j); } } }
+for (const j of [i - 1, i - 2]) { const o = board[j]; if (o) {   // 左の2枚から（右2枚に効くカード・11/19）
+const od = cardDef(o.cid), ofx = fxAt(j); if (ofx.nb) { nb += ofx.nb * STAR_MUL[od.star]; nbs.push(j); } } }
 if (nb) { base += nb; parts.push(['+', nb, 'となり', nbs]); }
 if (rally) { base += rally; parts.push(['+', rally, 'スタート', [first]]); }
 if (panRally && d.pan) { base += panRally; parts.push(['+', panRally, 'スタート', i === first ? undefined : [first]]); }   // いちばんあんパン自身にも効く
@@ -4225,7 +4226,7 @@ calc.push({ b: op + fmtMul(x), s: label, c: PART_C(label), v, p, src: src && src
 }
 if (e.fin) calc.push({ b: '×' + fmtMul(e.fin[0]), s: 'アンカー：合計', c: 'gold', v: e.dmg, p: v, out: out('fin') });
 const rl = out('rally'); if (rl != null) outs.push({ b: '+' + fmt(e.out[rl].v), s: d.fx.koneRally ? 'パンぜんぶへ' : '主役ぜんぶへ', c: 'mint', out: rl });
-const nb = out('nb'); if (nb != null) outs.push({ b: '+' + fmt(e.out[nb].v), s: 'となりへ', c: 'mint', out: nb });
+const nb = out('nb'); if (nb != null) outs.push({ b: '+' + fmt(e.out[nb].v), s: '右2枚へ', c: 'mint', out: nb });
 if (e.heat) { const H = heatOf(); outs.push({ b: `${H.names[e.heat[0]]}→${H.names[e.heat[1]]}`, s: H.word, c: H.cool && e.heat[1] < e.heat[0] ? 'mint' : 'ember', out: out('heat') }); }
 if (e.sear) outs.push(e.sear.burnt ? { b: '焦げた', s: '右の生地', c: 'koge', out: out('sear') } : { b: `焼き+${e.sear.to - e.sear.from}`, s: '右の生地', c: 'ember', out: out('sear') });
 if (e.grow) outs.push({ b: e.grow.to >= SIZE_MAX ? '完成！' : `大きさ+${e.grow.to - e.grow.from}`, s: '右の大作', c: 'mint', out: out('grow') });

@@ -372,7 +372,7 @@ function resolveRound() {
   const isJam = j => !!board[j] && cardDef(board[j].cid).cat === 'jam', isFruit = j => !!board[j] && cardDef(board[j].cid).fruit;
   const scareOf = j => board[j] ? cardDef(board[j].cid).fx.scare || 1 : 1;
   const fieldMul = d => !F || !F.fruitMul ? 1 : d.stage === RIPE && F.ripeMul ? F.ripeMul : F.fruitMul;   // のびのび肥料：×2・熟した実は×3
-  const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, fieldMul(d) * Math.max(scareOf(j - 1), scareOf(j + 1))) : d.fx; };   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
+  const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, fieldMul(d) * Math.max(scareOf(j - 1), scareOf(j - 2))) : d.fx; };   // かかしは右2枚の実に効く（11/19 しょーくん「左から順に計算するので右2枚に」）   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
   /* ほかのカードにかかる効果は、バトルの画面でオーラを飛ばすので、どこからどこへかを残す（11/18 しょーくん）
      e.out＝このカードから飛ばす [{k, to, v}]（to はマスの番号の列・'heat'・'score'）。parts の4つめ＝かかった元のマス */
   const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
@@ -408,7 +408,7 @@ function resolveRound() {
         rally += fx.doneRally * sm; e.rally = true;
         e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j)), v: fx.doneRally * sm });
       }
-      if (fx.nb && dmgAt(i + 1)) e.out.push({ k: 'nb', to: [i + 1], v: fx.nb * sm });
+      if (fx.nb) { const to = [i + 1, i + 2].filter(j => j < SLOTS && dmgAt(j)); if (to.length) e.out.push({ k: 'nb', to, v: fx.nb * sm }); }   // 右2枚の味パワー+（11/19 しょーくん・前は両どなり）
       if (fx.koneUp) { e.kone = [kone, kone + fx.koneUp]; kone += fx.koneUp; }
       if (fx.heat) { const h0 = heat; heat = Math.max(1, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
       if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
@@ -460,7 +460,8 @@ function resolveRound() {
           base *= v; if (n) parts.push(['×', v, `熟した実${n}`, rp]);
         }
         let nb = 0; const nbs = [];
-        for (const j of [i - 1, i + 1]) { const o = board[j]; if (o) { const od = cardDef(o.cid), ofx = fxAt(j); if (ofx.nb) { nb += ofx.nb * STAR_MUL[od.star]; nbs.push(j); } } }
+        for (const j of [i - 1, i - 2]) { const o = board[j]; if (o) {   // 左の2枚から（右2枚に効くカード・11/19）
+ const od = cardDef(o.cid), ofx = fxAt(j); if (ofx.nb) { nb += ofx.nb * STAR_MUL[od.star]; nbs.push(j); } } }
         if (nb) { base += nb; parts.push(['+', nb, 'となり', nbs]); }
         if (rally) { base += rally; parts.push(['+', rally, 'スタート', [first]]); }
         if (panRally && d.pan) { base += panRally; parts.push(['+', panRally, 'スタート', i === first ? undefined : [first]]); }   // いちばんあんパン自身にも効く
