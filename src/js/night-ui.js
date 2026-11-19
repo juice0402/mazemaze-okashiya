@@ -495,6 +495,7 @@ function renderNight() {
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">
       ${embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
+      <span class="ov-hm" aria-label="昼のハート ${dayHearts()}こ">昼のハート <i>♥︎</i>×${dayHearts()} <b>味パワー×${Math.round(heartMul() * 100) / 100}</b></span>
       <div class="ov-heat"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
     <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>

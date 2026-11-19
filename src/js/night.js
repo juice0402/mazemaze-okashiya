@@ -320,6 +320,10 @@ function growStep(c, t, spd = 0) {
   return { from, to: c.cook, melt, cid: c.cid };
 }
 /* 1ラウンドの計算（画面より先に、ぜんぶ決める）。board と heat は finishRound で N に入れる */
+/* 昼のハート（11/19 H-029 しょーくん「昼パートをしっかりやらないと夜の火力が伸びない連動」・えらぶ質問で「ハート1こにつき+5%」）：その日の昼のハート（仲間の来店の1こもふくむ）で、夜の味パワーが上がる */
+const HEART_UP = 0.05;
+const dayHearts = () => Math.max(0, (S.today && S.today.hearts) || 0);
+const heartMul = () => 1 + HEART_UP * dayHearts();
 function resolveRound() {
   const F = N.field ? FIELDS[N.field] : null, ev = [];
   const board = N.board.map(c => c && Object.assign({ cid: c.cid, cook: c.cook }, c.ice ? { ice: 1 } : {}, c.plus ? { plus: c.plus } : {}));
@@ -354,6 +358,7 @@ function resolveRound() {
   const doneN = () => idx.filter(j => board[j] && cardDef(board[j].cid).grow && board[j].cook >= SIZE_MAX).length;   // 完成した大作の数（そのときの）
   const extra = Array(SLOTS).fill(0);
   let pend = 1, total = 0, rally = 0, pendEv = [], kone = N.kone || 0, panRally = 0;
+  const HM = heartMul();   // 昼のハートで味パワーアップ（11/19 H-029）
   /* みなも②（11/19）：chain＝れんさ（キャンディが続けて発動した数・素材や道具が発動すると0）・candyMul＝いちばんドロップの「キャンディぜんぶ×」 */
   let chain = (F && F.chain0) || 0, candyMul = 1;
   const petitN = (F && F.petit) || 0, isCandy = j => !!board[j] && cardDef(board[j].cid).candy;
@@ -456,7 +461,7 @@ function resolveRound() {
           for (const p of pendEv) p.out.push({ k: 'next', to: [i], v: p.next });
         }
         pend = 1; pendEv = [];
-        dmg = Math.min(DMG_CAP, Math.floor(base));
+        dmg = Math.min(DMG_CAP, Math.floor(base * HM));
         e.base = fx.dmg * sm; e.parts = parts;
       }
       if (fx.next) { pend *= fx.next; e.next = fx.next; pendEv.push(e); }
@@ -464,7 +469,7 @@ function resolveRound() {
       const pet = [];   // はじけキャンディ：ちいさなキャンディが1こずつ飛ぶ（れんさ+1ずつ・冷えるほど強い・いちばんドロップも効く）
       if (fx.petit) {
         const n = fx.petit + petitN, pm = (COLD_MUL[heat] || 1) * candyMul;
-        for (let k = 0; k < n; k++) { chain++; const pd = Math.min(DMG_CAP, Math.floor(PETIT_DMG * sm * pm)); total += pd; pet.push({ type: 'petit', i, cid: c.cid, k, n, dmg: pd, chain }); }
+        for (let k = 0; k < n; k++) { chain++; const pd = Math.min(DMG_CAP, Math.floor(PETIT_DMG * sm * pm * HM)); total += pd; pet.push({ type: 'petit', i, cid: c.cid, k, n, dmg: pd, chain }); }
       }
       if (d.cat === 'cake' && dmg > 0 && F && F.decoHits) {   // デコレーション台：そのケーキの1割が5連撃（熟した実の★3は10連撃）・11/19 しょーくん
         const n = F.decoHits[fx.fruitCake ? 1 : 0], pd = Math.max(1, Math.floor(dmg * F.decoRate));

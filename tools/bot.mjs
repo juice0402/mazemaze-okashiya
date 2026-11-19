@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FILES = ['src/js/core.js', 'src/data/cards.js', 'src/data/world.js', 'src/data/hiru.js', 'src/data/story.js', 'src/js/night.js'];
+const HEARTS = +(process.env.HEARTS || 0);   // 昼のハート（HEARTS=10 node tools/bot.mjs …）
 const RUNS = +(process.argv[2] || 60), ONLY = process.argv[3] && process.argv[3] !== 'all' ? process.argv[3].split(',') : null, DAY = +(process.argv[4] || 1);
 // 画面と演出の関数（ボットでは何もしない）
 const STUB = { renderNight: '()=>{}', toast: '()=>{}', save: '()=>{}', cutIn: '()=>0', tipEv: '()=>{}', tipClear: '()=>{}', kneadFx: '()=>{}', taneFx: '()=>{}', coolFx: '()=>{}', fruitFx: '()=>{}', binFx: '()=>{}',
@@ -30,6 +31,7 @@ for (;;) {
 }
 
 const DRIVER = String.raw`
+var HEARTS_ = 0;
 const RIPE_ = typeof RIPE !== 'undefined' ? RIPE : 2;
 const snap = () => JSON.stringify(N), back = t => { N = JSON.parse(t); S.night = N; };
 function evalTotal() { const t = snap(); let v = 0; try { v = resolveRound().total; } catch (e) { v = 0; } back(t); return v; }
@@ -84,6 +86,7 @@ function weakShop() {
 }
 function sim(build, day, smart) {
   S = newState(); S.day = day; S.today = newDay(day); S.seen = S.seen || {}; S.seen['mate:minamo'] = 1; S.seen['mate:wakaba'] = 1; S.seen.m9 = 1;
+  S.today.hearts = HEARTS_;
   startNight(); N = S.night; N.stage = 'pick'; pickBuild(build); pickGo(); N = S.night; N.stage = 'shop';
   const out = [];
   for (let r = 1; r <= ROUNDS; r++) {
@@ -96,6 +99,7 @@ function sim(build, day, smart) {
 }
 `;
 vm.runInContext(DRIVER, ctx, { filename: 'driver.js' });
+vm.runInContext(`HEARTS_ = ${HEARTS};`, ctx);
 const builds = ONLY || ['cookie', 'kone', 'taisaku', 'candy', 'fruitcake', 'jam'];
 const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 const f = n => n >= 1e4 ? (n / 1e4).toFixed(n >= 1e5 ? 0 : 1) + '万' : String(Math.round(n));
@@ -103,7 +107,7 @@ for (const b of builds) {
   const sm = [], wk = [];
   const run = smart => { for (let t = 0; ; t++) { try { return vm.runInContext(`sim(${JSON.stringify(b)}, ${DAY}, ${smart})`, ctx); } catch (e) { const m = /^(\w+) is not defined/.exec(e.message); if (!m || t > 30) throw e; vm.runInContext(`${m[1]} = () => 0;`, ctx); console.log('（空にした：' + m[1] + '）'); } } };
   for (let k = 0; k < RUNS; k++) { sm.push(run(true)); wk.push(run(false)); }
-  console.log(`\n== ${b}（日${DAY}・${RUNS}回）  r: smart 25/50/75/90% ｜ weak 50/90% ｜ いまの quota・smart 満タン率・weak 満タン率`);
+  console.log(`\n== ${b}（日${DAY}・ハート${HEARTS}・${RUNS}回）  r: smart 25/50/75/90% ｜ weak 50/90% ｜ いまの quota・smart 満タン率・weak 満タン率`);
   for (let r = 0; r < 9; r++) {
     const s = sm.map(x => x[r]), w = wk.map(x => x[r]), q = vm.runInContext(`quota(${r + 1}, ${DAY})`, ctx);
     const full = a => Math.round(a.filter(v => v >= q).length / a.length * 100) + '%';

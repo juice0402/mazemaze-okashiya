@@ -797,8 +797,8 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .tiles[data-z="4"] .tf.tf{background-image:var(--ui-flame-mid);filter:brightness(1.15)}
 .tiles[data-z="4"] .tf.tf.x{background-image:var(--ui-flame-wide)}
 /* ==== UI の絵 その8（11/18 夜 art-irai ui-misc1）==== */
-/* こげ茶の木の札（ui-label・320×95・左右のはし約48が角）：夜の舞台の上の札・ショップの題とコイン・朝昼の札・お財布 */
-.ov-top>span,.sh-ttl.sh-ttl,.sh-coin.sh-coin,.mo-hint.mo-hint,.md-tip.md-tip,.d-tip.d-tip,.m-wallet.m-wallet{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 15% fill/50% 1.1em stretch}
+/* こげ茶の木の札（ui-label・288×95〔11/19 右の透けた30pxを切った・H-029〕・左右のはし約48が角）：夜の舞台の上の札・ショップの題とコイン・朝昼の札・お財布 */
+.ov-top>span,.sh-ttl.sh-ttl,.sh-coin.sh-coin,.mo-hint.mo-hint,.md-tip.md-tip,.d-tip.d-tip,.m-wallet.m-wallet{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch}
 .m-wallet.m-wallet::before,.mz-wallet.mz-wallet::before{content:"";display:inline-block;width:1.5em;height:1.35em;margin:-3px 4px -3px -3px;vertical-align:middle;background:var(--ui-purse) center/contain no-repeat}
 /* クリーム色の紙の行（ui-strip・480×169・四すみに真ちゅうのびょう）：雑貨屋の品物・ドラッグの札・トースト */
 .ms-good.ms-good,.dragtip.dragtip,#toast{background:none;box-shadow:none;border:2px solid transparent;border-radius:0;border-image:var(--ui-strip) 30 fill/9px stretch}

@@ -44,7 +44,7 @@ const moodOf = (score, belly) => score >= belly ? 3 : score >= belly * 0.5 ? 2 :
 const ROUNDS = 9;
 /* おなか（11/19 しょーくん「引きが良ければ2ラウンド目から満タンを狙える・ビルドを組めないと最後まで満たせない」「日がたっても変動なし（キャラに成長がないので）」）。
    ボット（tools/bot.mjs）の火力クッキー・大作・くだものケーキで決めた：r1〜2 は運のいい4人に1人が満タン・後半はちゃんと組めた夜（まんなかくらい）で満タン・組めないと半分にも届かない */
-const QUOTA = [300, 1000, 2500, 5000, 10000, 18000, 28000, 42000, 60000];
+const QUOTA = [450, 1500, 3800, 7500, 15000, 27000, 42000, 63000, 90000];
 const quota = (r, day) => QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
 function nightHP(day) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day); return s; }
 
