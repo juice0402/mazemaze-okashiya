@@ -234,7 +234,7 @@ const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && 
 /* まぜられる相手の決まり（ドラッグの案内・大きく見る画面） */
 function mixRule(d) {
   if (d.cat === 'field') return fixedField() && d.cid === 'b:' + N.field ? 'くだものを入れて、3つでジャム' : 'フィールドは まぜられない';
-  if (d.star >= 3) return '★3は完成。もう まぜられない';
+  if (d.star >= 3) return d.cat === 'dough' ? '★3は完成。焦げない・もう まぜられない' : '★3は完成。もう まぜられない';
   if (d.grow && N.heat < AME_SOFT) return AME_COLD;
   if (d.fruit) return binNight() ? '場の大きなびんへ（3つでジャム）' : d.stage === RIPE ? '★2のケーキにはなすと★3' : 'まぜずに育てる（熟すと★2のケーキへ）';   // わかば（11/19）
   const C = chefNow(), main = ['ame', 'candy', 'cake', 'jam'].includes(d.cat) ? CAT_NAME[d.cat] : candyNight() ? 'キャンディ' : binNight() ? 'ジャム' : C === CHEFS.minamo ? '飴細工' : C === CHEFS.wakaba ? 'ケーキ' : '生地';

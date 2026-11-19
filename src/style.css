@@ -880,3 +880,8 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* スペシャルのカットインの帯（fx-cutin-<シェフ>・11/19 描き下ろし）：横長の絵の右よりの所（いちばん動きのある所）を大きく。金のふちは絵にあるので、コードのふちはやめて光だけ */
 .ci-band.art{background-color:transparent;background-size:cover;background-position:72% 50%;background-repeat:no-repeat;box-shadow:0 0 46px rgba(255,190,110,.7)}
 .ci-band.art .ci-lines{opacity:.45}
+/* まぜの札は横書きのまま（11/19 しょーくん「まぜが縦になる場合がある」：5まいのショップの細いカード） */
+.mixmark{white-space:nowrap}
+/* 見開きの「ほかの効果」（カードの紙に入らない3つめからの文）：ことばの説明より上に・少し大きく */
+.cinfo .ci-fx p.wide.more{font-size:14px;color:#4a2414}
+.cinfo .ci-fx p.wide.more .cw{display:inline-block}

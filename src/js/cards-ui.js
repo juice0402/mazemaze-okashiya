@@ -66,8 +66,11 @@ function cardSents(d, tap) {
   if (d.cat === 'field') return FIELDS[d.cid.slice(2)].chips.map(t => ({ t, h: chunkHTML(t, c => kwShort(c, tap)) }));
   const rows = fxLong(d.fx, d.star);
   if (!rows.length) return [{ t: plainLine(d), h: chunkHTML(plainLine(d), esc), plain: true }];
-  return rows.map(([w, x]) => { const t = w ? `{${w}}：${x}` : x; return { t, h: chunkHTML(t, c => kwLong(c, tap)) }; });
+  /* カードの紙は2文まで（11/19 しょーくん「メロンパンコロネの説明が長すぎて大変なことに」）：スタート・アンカーの文を先に。3つめからは見開き（cardInfo）へ */
+  const ord = rows.map((r, k) => [r, r[0] ? 0 : 1, k]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map(x => x[0]);
+  return ord.map(([w, x], k) => { const t = w ? `{${w}}：${x}` : x; return { t, h: chunkHTML(t, c => kwLong(c, tap)), more: k >= FACE_MAX }; });
 }
+const FACE_MAX = 2;
 /* 文のかたまり：半角スペースと「：」のあとだけで折り返す（「味パ｜ワー」のように ことばの とちゅうで切れないように） */
 const sentChunks = t => t.replace(/：/g, '：\n').split(/ |\n/).filter(Boolean);
 function chunkHTML(t, f) {
@@ -93,7 +96,7 @@ function faceFs(S) {
 function cardFace(cid, cls, opt = {}) {
   const d = cardDef(cid), dmg = cardDmg(d, opt.cook), lines = cardChips(d).slice(0, 2);
   const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = 64;   // 紙の字の幅（cqw・ふちの絵の紙の内側）。11/19 しょーくん「カードが切れてる」：実機の字はテストより太いので70→64・黄色いことばは1つ4つめる。焼き加減・大きさは右上へ（11/19 しょーくん「文字が見えない」）
-  const S = cardSents(d, opt.tap), txt = S.map(x => `<span class="sn${x.plain ? ' plain' : ''}">${x.h}</span>`).join('');   // 1つの文（折り返して2行まで・11/19）
+  const S = cardSents(d, opt.tap).filter(x => !x.more), txt = S.map(x => `<span class="sn${x.plain ? ' plain' : ''}">${x.h}</span>`).join('');   // 1つの文（折り返して2行まで・11/19）
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
@@ -115,8 +118,8 @@ function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook, tap: true });
 /* 大きなカードの下の「見開き」（11/19 しょーくん「一応、見開きとして残そう。基本は見たらわかるレベルに」）：
    カードの文はカードに出ているのでくり返さない。文に出てくる黄色いことばの説明だけを並べる（ことばがなければ窓は出さない） */
 function cardInfo(cid) {
-  const d = cardDef(cid), words = [];
-  for (const x of cardSents(d)) for (const m of x.t.matchAll(/\{([^}]+)\}|スタート|アンカー|サイコー|火力|焦げ|パン種|こね|温度|熟した実/g)) { const w = m[1] || m[0]; if (KW[w] && !words.includes(w)) words.push(w); }
-  if (!words.length) return '';
-  return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${words.map(w => `<b class="tg${w === 'スタート' || w === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${w}">${w}</b><p>${esc(KW[w])}</p>`).join('')}</div></div>`;
+  const d = cardDef(cid), words = [], all = cardSents(d, true), more = all.filter(x => x.more);
+  for (const x of all) for (const m of x.t.matchAll(/\{([^}]+)\}|スタート|アンカー|サイコー|火力|焦げ|パン種|こね|温度|熟した実/g)) { const w = m[1] || m[0]; if (KW[w] && !words.includes(w)) words.push(w); }
+  if (!words.length && !more.length) return '';
+  return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${more.map(x => `<p class="wide more">${x.h}</p>`).join('')}${words.map(w => `<b class="tg${w === 'スタート' || w === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${w}">${w}</b><p>${esc(KW[w])}</p>`).join('')}</div></div>`;
 }

@@ -513,7 +513,7 @@ function fxLong(fx, star = 1) {
   if (fx.tane2) p.push(['', `こねると {パン種}+${fx.tane2}こ`]);
   if (fx.taneSpawn) p.push(['', `置くと {パン種}が${fx.taneSpawn}こ`]);
   if (fx.stop) p.push(['', 'ぜんぶの生地が {焦げ}ない']);
-  if (fx.noburn) p.push(['', '{焦げ}ない']);
+  if (fx.noburn && star < 3) p.push(['', '{焦げ}ない']);   // ★3の生地は みんな焦げない（きまり＝大きく見たときの下の札に書く）
   if (fx.sear) p.push(['', `右の生地の {焼き加減}+${fx.sear}`]);
   if (fx.grow && !(fx.chainUp && candyNight())) p.push(['', `右の大作の 大きさ+${fx.grow}`]);
   if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}（ここで 切れない）`]);
