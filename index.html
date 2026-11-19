@@ -1937,27 +1937,27 @@ const heatOf = () => chefNow().heat;
 const BUILDS = {
 cookie: {
 chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text: '鉄板で生地を焼いて、サイコーをそろえる。アンカーで倍々',
-doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
+bal: [1.14, 1.111], doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
 },
 kone: {
 chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
-doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
+bal: [0.34, 1.268], doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
 },
 taisaku: {
 chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: '飴の温度で大作を育てる。大きさ9で完成、焦げずに ずっと強い',
-doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
+bal: [0.74, 1.139], doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
 chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。冷えるほど強い',
-doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
+bal: [1.15, 0.964], doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
 },
 fruitcake: {
 chef: 'wakaba', name: 'くだものケーキ', from: 11, mate: 'wakaba', pic: 'wakaba-battle', text: 'くだものを育てて、熟した実を★2のケーキにのせると★3',
-doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
+bal: [1.31, 1.037], doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
 },
 jam: {
 chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。くだもの3つで★3のジャムが生まれる',
-doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
+bal: [1.10, 1.070], doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
 },
 };
 const candyNight = () => { try { return !!N && N.build === 'candy'; } catch (e) { return false; } };
@@ -2247,8 +2247,14 @@ null,
 const moodOf = (score, belly) => score >= belly ? 3 : score >= belly * 0.5 ? 2 : 1;
 const ROUNDS = 9;
 const QUOTA = [450, 1500, 3800, 7500, 15000, 27000, 42000, 63000, 90000];
-const quota = (r, day) => QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
-function nightHP(day) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day); return s; }
+const round2 = v => { const p = Math.pow(10, Math.max(0, Math.floor(Math.log10(v)) - 1)); return Math.round(v / p) * p; };
+function quota(r, day, build) {
+const q = QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
+let b = build; if (!b) try { b = N && N.build; } catch (e) { b = null; }
+const B = b && BUILDS[b] && BUILDS[b].bal;
+return B ? round2(q / (B[0] * Math.pow(B[1], r - 1))) : q;
+}
+function nightHP(day, build) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day, build); return s; }
 const CUSTOMERS = [
 { id: 'kodomo', name: '妖精の子', h: 15, small: true, skin: '#f6cfae', hair: '#5a3418', hat: '#e0484f', hatDk: '#a8302f', shirt: '#f7c843', arm: '#d9a72a', pants: '#3f6fb5' },
 { id: 'gakusei', name: 'けもみみの子', h: 19, skin: '#f3c9a5', hair: '#2a1d1a', shirt: '#2f3f6b', arm: '#253256', pants: '#2f3f6b', collar: '#ffffff' },
@@ -3386,7 +3392,7 @@ function startNight() {
 S.phase = 'night';
 if (!S.today) S.today = newDay(S.day);
 const mon = nightMonster(), id = MONSTERS[mon].id;
-Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id), belly: nightHP(S.day) });
+Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
 const open = openBuilds();
 S.night = {
 mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
@@ -3394,13 +3400,14 @@ board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
 sel: null, view: false, last: null,
 build: open.includes(S.build) ? S.build : open[0], kone: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
 };
+S.today.belly = nightHP(S.day, S.night.build);   // おなかはビルドで変わる（11/19・world.js の quota）
 N = S.night; nightPrep(); rollShop(); dealAnim = true;   // 夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
 save(); render();
 }
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; nightPrep(); save(); renderNight(); }
 function pickGo() {
 if (N.stage !== 'pick') return;
-S.build = N.build; nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
+S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
 save(); renderNight();
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];

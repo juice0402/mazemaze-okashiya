@@ -45,8 +45,18 @@ const ROUNDS = 9;
 /* おなか（11/19 しょーくん「引きが良ければ2ラウンド目から満タンを狙える・ビルドを組めないと最後まで満たせない」「日がたっても変動なし（キャラに成長がないので）」）。
    ボット（tools/bot.mjs）の火力クッキー・大作・くだものケーキで決めた：r1〜2 は運のいい4人に1人が満タン・後半はちゃんと組めた夜（まんなかくらい）で満タン・組めないと半分にも届かない */
 const QUOTA = [450, 1500, 3800, 7500, 15000, 27000, 42000, 63000, 90000];
-const quota = (r, day) => QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
-function nightHP(day) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day); return s; }
+/* ビルドごとのおなか（11/19 しょーくん「引きやビルドが悪ければ最後まで全然だめな感じで、うまく噛み合ったらラウンド9は完璧」）：
+   おなか ＝ QUOTA ÷（bal[0] × bal[1]^(ラウンド−1)）を2けたに丸める。bal は cards.js の BUILDS（はじめの強さ・ラウンドごとの伸び）。
+   ビルドごとに味パワーの伸び方がちがう（こね生地は序盤に強く後半ゆるやか・キャンディは後半に爆発）ので、おなかの方をそのシェフに合わせる（味パワーの計算と画面の数字はそのまま）。
+   合わせ方は tools/bot.mjs の SUM=1（ねらい：うまい人の満タンが ラウンド2で4人に1人・ラウンド9で半分・組めない人は最後まで3割にも届かない） */
+const round2 = v => { const p = Math.pow(10, Math.max(0, Math.floor(Math.log10(v)) - 1)); return Math.round(v / p) * p; };
+function quota(r, day, build) {
+  const q = QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
+  let b = build; if (!b) try { b = N && N.build; } catch (e) { b = null; }
+  const B = b && BUILDS[b] && BUILDS[b].bal;
+  return B ? round2(q / (B[0] * Math.pow(B[1], r - 1))) : q;
+}
+function nightHP(day, build) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day, build); return s; }
 
 /* お昼のお客さん：すきな味が1つでも入ったお菓子は2倍の値段で買ってハート。ハート3つで常連さん（あとで仲間に） */
 /* お客さん：名前・見た目（キャラなのでリーダー）。すきな味は src/data/hiru.js の CUST_LIKES（昼のチャット） */

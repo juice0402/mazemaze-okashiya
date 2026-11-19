@@ -100,6 +100,8 @@ function sim(build, day, smart) {
 `;
 vm.runInContext(DRIVER, ctx, { filename: 'driver.js' });
 vm.runInContext(`HEARTS_ = ${HEARTS};`, ctx);
+// BAL=kone:0.7:1.1,cookie:1:1.05 … で、ビルドの強さの曲線（BUILDS の bal）をためしに変える
+if (process.env.BAL) for (const t of process.env.BAL.split(',')) { const [b, a, g] = t.split(':'); vm.runInContext(`BUILDS[${JSON.stringify(b)}].bal = [${+a}, ${+g}];`, ctx); }
 const builds = ONLY || ['cookie', 'kone', 'taisaku', 'candy', 'fruitcake', 'jam'];
 const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 const f = n => n >= 1e4 ? (n / 1e4).toFixed(n >= 1e5 ? 0 : 1) + '万' : String(Math.round(n));
@@ -107,6 +109,18 @@ for (const b of builds) {
   const sm = [], wk = [];
   const run = smart => { for (let t = 0; ; t++) { try { return vm.runInContext(`sim(${JSON.stringify(b)}, ${DAY}, ${smart})`, ctx); } catch (e) { const m = /^(\w+) is not defined/.exec(e.message); if (!m || t > 30) throw e; vm.runInContext(`${m[1]} = () => 0;`, ctx); console.log('（空にした：' + m[1] + '）'); } } };
   for (let k = 0; k < RUNS; k++) { sm.push(run(true)); wk.push(run(false)); }
+  if (process.env.SUM) {   // 1行まとめ（SUM=1）：満タン率 r2・r5・r9 ｜ r9 の 25/50/90%（おなかの何倍）｜ weak r9 の 90%（何倍）｜ 夜の満足（ちょっと／満足／大満足 の%）
+    const q9 = vm.runInContext(`quota(9, ${DAY})`, ctx), fr = (a, r) => Math.round(a.filter(x => x[r] >= vm.runInContext(`quota(${r + 1}, ${DAY})`, ctx)).length / a.length * 100);
+    const r9 = sm.map(x => x[8]), belly = vm.runInContext(`nightHP(${DAY})`, ctx);
+    const moods = a => { const c = [0, 0, 0, 0]; a.forEach(x => c[vm.runInContext(`moodOf(${x.reduce((u, v) => u + v, 0)}, ${belly})`, ctx)]++); return c.slice(1).map(n => Math.round(n / a.length * 100)).join('/'); };
+    const k = v => (v / q9).toFixed(2);
+    // ねらい（r2 で25％・r9 で50％が満タン）に合わせる bal の目安：いまの bal の倍率 × いまのおなか ÷ そのラウンドの味パワー（r2 は上から25％の所・r9 はまんなか）。bal はおなかを割る数
+    const bal = vm.runInContext(`JSON.stringify(BUILDS[${JSON.stringify(b)}].bal || [1, 1])`, ctx), [a0, g0] = JSON.parse(bal), cur = r => a0 * Math.pow(g0, r - 1);
+    const m2 = vm.runInContext('quota(2, 1)', ctx) / Math.max(1, pct(sm.map(x => x[1]), .75)) * cur(2), m9 = q9 / Math.max(1, pct(r9, .5)) * cur(9);
+    const g = Math.pow(m9 / m2, 1 / 7), a = m2 / g;
+    console.log(`${b.padEnd(9)} 満タン r2 ${String(fr(sm, 1)).padStart(3)}% r5 ${String(fr(sm, 4)).padStart(3)}% r9 ${String(fr(sm, 8)).padStart(3)}% ｜ r9 ${k(pct(r9, .25))}/${k(pct(r9, .5))}/${k(pct(r9, .9))} ｜ weak r9 90% ${k(pct(wk.map(x => x[8]), .9))} ｜ 満足 smart ${moods(sm)} weak ${moods(wk)} ｜ bal ${bal} → 目安 [${a.toFixed(2)}, ${g.toFixed(3)}]`);
+    continue;
+  }
   console.log(`\n== ${b}（日${DAY}・ハート${HEARTS}・${RUNS}回）  r: smart 25/50/75/90% ｜ weak 50/90% ｜ いまの quota・smart 満タン率・weak 満タン率`);
   for (let r = 0; r < 9; r++) {
     const s = sm.map(x => x[r]), w = wk.map(x => x[r]), q = vm.runInContext(`quota(${r + 1}, ${DAY})`, ctx);

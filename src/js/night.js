@@ -30,7 +30,7 @@ function startNight() {
   S.phase = 'night';
   if (!S.today) S.today = newDay(S.day);
   const mon = nightMonster(), id = MONSTERS[mon].id;
-  Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id), belly: nightHP(S.day) });
+  Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
   const open = openBuilds();
   S.night = {
     mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
@@ -38,6 +38,7 @@ function startNight() {
     sel: null, view: false, last: null,
     build: open.includes(S.build) ? S.build : open[0], kone: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
   };
+  S.today.belly = nightHP(S.day, S.night.build);   // おなかはビルドで変わる（11/19・world.js の quota）
   N = S.night; nightPrep(); rollShop(); dealAnim = true;   // 夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
   save(); render();
 }
@@ -45,7 +46,7 @@ function startNight() {
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; nightPrep(); save(); renderNight(); }
 function pickGo() {
   if (N.stage !== 'pick') return;
-  S.build = N.build; nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
+  S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
   save(); renderNight();
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
