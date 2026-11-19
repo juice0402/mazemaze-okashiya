@@ -105,13 +105,14 @@ function countUp(el, from, to, ms, f = fmt) {
 function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（battle-fx.js の flyHub）。あればそれがモンスターへ飛ぶ（なければ ほのかの手から火の玉）
   const chef = $('chef'), a = spot(proj || chef), b = spot($('mon'));
   if (!chef || !chef.dataset.pose) replay(chef, 'act');   // 戦闘ポーズ中は heroPose の動きにまかせる
-  const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(size ? 380 : 320);
+  const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(size ? 520 : 440);
   const land = p => {
     if (proj) proj.remove();
     monReact(size ? 'hitbig' : 'hit'); dmgNum(dmg, size, p);
     decoReact(size ? 'jump' : 'hop', size ? 800 : 500);
     if (size) decoChibi('cheer', 1400);
-    if (size === 'huge') fireWall(); else if (size) replay($('stage'), 'quake');
+    impactFx(p, size);   // 11/19 しょーくん「攻撃の迫力が見たい」「枠外にも演出」：画面いっぱいの光・額縁をこえる衝撃波・斬撃・ゆれ
+    if (size === 'huge') fireWall();
   };
   if (REDUCED || !a || !b || !document.body.animate) return land(b);
   const L = fxLayer(), x0 = proj ? a.x : a.x + a.w * .32, y0 = proj ? a.y : a.y - a.h * .18, x1 = b.x - b.w * .05, y1 = b.y;
@@ -122,11 +123,14 @@ function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（batt
   ball.animate([...Array(9)].map((_, k) => { const t = k / 8, p = at(t); return { transform: `translate(${p.x - x0}px,${p.y - y0}px) rotate(${ang}deg) scale(${proj ? 1 + .5 * t : .55 + .85 * t})` }; }), { duration: fly, fill: 'forwards' });
   for (let k = 1; k < 8; k++) setTimeout(() => sparkBurst({ ...at(k / 8), w: 8 }, size ? 3 : 2, 'all', .35), fly * k / 8);
   setTimeout(() => {
+    if (!REDUCED) ball.animate([{ transform: ball.style.transform || 'none' }], { duration: 1 });   // ヒットストップ：当たった所で一瞬止まる
+  }, fly - 2);
+  setTimeout(() => {
     ball.remove(); land({ x: x1, y: y1 });
     const h = document.createElement('i'); h.className = 'fx-hit' + (size ? ' s-' + size : ''); h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
     L.appendChild(h); setTimeout(() => h.remove(), 520);
     sparkBurst({ x: x1, y: y1, w: 20 }, size === 'huge' ? 34 : size ? 24 : 14, 'all', size === 'huge' ? 2.3 : size ? 1.7 : 1.15);
-  }, fly);
+  }, fly + T(90));   // 90ms 止まってから はじける
 }
 
 /* ---------- バトルの流れ（11/18 しょーくん「一瞬すぎて味気ない」「ショップ→戦闘の移行をかっこよく」・ぜんぶのせシップの切りかえを参考に） ---------- */
@@ -210,28 +214,32 @@ function showEvent(e, run, q) {
   else heroPose(e.heat ? (e.heat[1] > e.heat[0] ? 'heatup' : 'heatdown') : e.kone ? 'knead' : e.sear ? 'heatup' : e.grow || e.water ? 'field' : 'support', 1100);
   /* 2. ダメージのあるカード：メダルが舞台へ → 計算の札が飛んできて数字が変わる */
   if (e.dmg > 0) {
-    setTimeout(() => Object.assign(H, flyHub(e, e.dmg >= q / 3)), T(t)); t += 360;
-    const ck = C.calc.length > 3 ? 900 / C.calc.length / 300 : 1;   // 札が多いときは間をつめて、1攻撃 2〜3秒に
-    C.calc.forEach(c => { setTimeout(() => chipFly(e, c, H), T(t)); t += Math.round((c.src && c.src.length ? 340 : 300) * ck); });
-    t += 260;
+    setTimeout(() => { Object.assign(H, flyHub(e, e.dmg >= q / 3)); edgeGlow('soft'); }, T(t)); t += 560;
+    const ck = C.calc.length > 4 ? 2400 / C.calc.length / 560 : 1;   // 札が多いときは間をつめて、1攻撃 5秒くらいに（11/19 しょーくん「もっとゆっくり豪華に」）
+    C.calc.forEach(c => { setTimeout(() => chipFly(e, c, H), T(t)); t += Math.round((c.src && c.src.length ? 600 : 560) * ck); });
+    t += 300;
   }
   /* 3. ほかのカードへの効果：タイルの上に札がぽん・オーラが相手へ */
   C.outs.forEach(c => {
     setTimeout(() => { chipPop(slot, c); if (c.out != null) auraOut(e, e.out[c.out]); if (c.kone) setKone(c.kone); }, T(t));
-    t += c.out != null ? 460 : 380;
+    t += c.out != null ? 600 : 520;
   });
   /* 4. 数字がモンスターへバーン */
   if (e.dmg > 0) {
+    /* ため（11/19）：数字がふるえて光が集まる・画面のふちが暗くなる → 金色に決まる → シェフが攻撃 */
+    setTimeout(() => numTame(H), T(t)); t += 480;
     setTimeout(() => hubFin(H, e.dmg), T(t));
     const atk = e.dmg >= q * 0.6 ? 'special' : 'atk' + Math.min(3, d.star || 1);
-    setTimeout(() => { heroPose(atk, 820); atkKoe(atk); }, T(t + 120));   // 数字が飛ぶのに合わせて、ほのかが攻撃（掛け声も）
-    t += 300;
+    setTimeout(() => { heroPose(atk, 1100); atkKoe(atk); }, T(t + 120));   // 数字が飛ぶのに合わせて、ほのかが攻撃（掛け声も）
+    t += 420;
+    const tk = t;
     setTimeout(() => {
       if (!$('qfill')) return;   // 夜の画面からはなれたあと（11/19）
-      hitFx(e.dmg, q, H.el); scoreTick(e.dmg, run, q); sePlay('hit', { rate: Math.min(2, Math.pow(1.12, (H.mk || 0) + 1)) });
-    }, T(t));
-    t += 760;
-  } else t += 420;
+      hitFx(e.dmg, q, H.el); sePlay('hit', { rate: Math.min(2, Math.pow(1.12, (H.mk || 0) + 1)) });
+      setTimeout(() => { if ($('qfill')) { orbsToBelly(e.dmg, q); setTimeout(() => { if ($('qfill')) scoreTick(e.dmg, run, q); }, T(620)); } }, T(560));   // 味の光の玉が モンスターから おなかの帯へ（額縁の外）
+    }, T(tk));
+    t += 1700;   // 一撃 → 光の玉が おなかへ → 帯がのびる まで
+  } else t += 620;
   return t;
 }
 /* おなかの帯を、この一撃のぶん進める（ちいさなキャンディも使う・味パワーの合計の札は 11/19 にやめた） */

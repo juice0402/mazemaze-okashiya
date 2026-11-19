@@ -42,7 +42,7 @@ PAIRS = r"""(() => { const vis = e => { const r = e.getBoundingClientRect(); ret
   const out = [];
   for (const a of src) for (const b of dst) { const p = { where: a.e.dataset.w, i: +a.e.dataset.i }, q = { where: b.e.dataset.w, i: +b.e.dataset.i };
     let P = null; try { P = dropPlan(p, q); } catch (err) { P = { kind: 'ERR', err: err.message }; }
-    out.push({ p, q, kind: P ? P.kind : null, ng: P ? (P.ng || '') : '', ax: a.r.x + a.r.width / 2, ay: a.r.y + a.r.height / 2, bx: b.r.x + b.r.width / 2, by: b.r.y + b.r.height / 2 }); }
+    out.push({ p, q, kind: P ? P.kind : null, ng: P ? (P.ng || '') : '', ax: a.r.x + a.r.width / 2, ay: a.r.y + a.r.height / 2, bx: b.r.x + b.r.width / 2, by: q.where === 'sell' ? b.r.bottom - 14 : b.r.y + b.r.height / 2 }); }   // うる所はショップの下のはし（11/19 ショップのカードが大きくなって、まんなかはカードの上＝まぜになった）
   return JSON.stringify(out); })()"""
 
 def ev(page, code):

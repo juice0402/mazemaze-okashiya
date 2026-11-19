@@ -422,15 +422,69 @@ function chipFly(e, c, H) {
     sePlay('hit', { rate: Math.min(2, Math.pow(1.12, H.mk || 0)), vol: .7 });
     if (H.num) {
       const n = H.num.firstElementChild;
-      if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); n.textContent = fmt(Math.floor(c.v)); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(240)); }
+      if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); n.textContent = fmt(Math.floor(c.v)); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(380)); }
       replay(H.num, 'bump');
+      numGrow(H, /^×/.test(String(c.b || '')));   // 数字が育つ：札がすいこまれるたびに大きく・倍々は光の輪と画面のふち（11/19）
     }
     if (b) sparkBurst({ x: b.x, y: b.y, w: 16 }, 4, 'all', .5);
     if (c.out != null) auraOut(e, e.out[c.out]);
   };
   if (!a || !b) return land();
   const p = { x: a.x, y: a.y - a.h * .3 }, ch = fxEl(`fchip c-${c.c}`, p, chipHTML(c));
-  arcFly(ch, { x: 0, y: 0 }, { x: b.x - p.x, y: b.y - p.y }, T(300), 34, 1.15, .8, () => { ch.classList.add('gone'); setTimeout(() => ch.remove(), 240); land(); });
+  arcFly(ch, { x: 0, y: 0 }, { x: b.x - p.x, y: b.y - p.y }, T(420), 40, 1.25, .8, () => { ch.classList.add('gone'); setTimeout(() => ch.remove(), 240); land(); });
+}
+/* 数字が育つ（11/19 しょーくん「数字が育つ間」）：札がすいこまれるたびに数字が少しずつ大きく（--nz）。倍々の札は 光の輪＋画面のふちが光る */
+function numGrow(H, mul) {
+  if (!H.num) return;
+  H.k = (H.k || 0) + 1;
+  H.num.style.setProperty('--nz', Math.min(1.7, 1 + H.k * .13 + (mul ? .06 : 0)).toFixed(2));
+  if (mul && !REDUCED) { ringAt(H.num.firstElementChild, 'r-gold'); edgeGlow('pulse'); sparkBurst(spot(H.num.firstElementChild) || hubPoint(), 8, 'all', .9); }
+}
+/* ため（11/19）：数字がふるえて光が集まる・画面のまわりが少し暗くなる */
+function numTame(H) {
+  if (!H.el || REDUCED) return;
+  H.el.classList.add('tame'); edgeGlow('dim');
+  const p = spot(H.num ? H.num.firstElementChild : H.el); if (!p) return;
+  for (let k = 0; k < 10; k++) {   // 光の粒が まわりから数字へ集まる
+    const a = Math.PI * 2 * k / 10, r = 90 + (k % 3) * 24, e = fxEl('fx-gather', { x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r }, '');
+    e.animate([{ transform: 'translate(-50%,-50%) scale(1.2)', opacity: 0 }, { opacity: 1, offset: .3 }, { transform: `translate(calc(-50% + ${-Math.cos(a) * r}px),calc(-50% + ${-Math.sin(a) * r}px)) scale(.3)`, opacity: .2 }], { duration: T(440), easing: 'cubic-bezier(.5,0,.9,.5)', fill: 'forwards' });
+    setTimeout(() => e.remove(), T(460));
+  }
+}
+/* ---------- 7. 一撃の迫力と、額縁の外の演出（11/19 しょーくん「攻撃の迫力が見たい」「枠外にも何か演出がほしい」） ----------
+   edgeGlow：画面のふち（額縁の外もふくむ・画面ぜんぶ）がシェフの色で光る／暗くなる。動かすのは opacity だけ
+   impactFx：画面いっぱいの白い光・額縁をこえて広がる衝撃波・シェフの斬撃と衝撃の絵（fx-slash-*・fx-burst-* が届いたら）・画面ぜんぶのゆれ
+   orbsToBelly：味の光の玉が モンスターから 舞台の外の おなかの帯へ飛ぶ */
+function edgeGlow(kind) {
+  if (REDUCED) return;
+  let g = $('edgefx'); if (!g) { g = document.createElement('div'); g.id = 'edgefx'; g.innerHTML = '<i class="eg-glow"></i><i class="eg-dim"></i><i class="eg-flash"></i>'; document.body.appendChild(g); }
+  const el = g.querySelector(kind === 'dim' ? '.eg-dim' : kind === 'flash' ? '.eg-flash' : '.eg-glow');
+  el.classList.remove('soft', 'pulse', 'big', 'on'); void el.offsetWidth; el.classList.add(kind === 'soft' || kind === 'pulse' || kind === 'big' ? kind : 'on');
+}
+function impactFx(p, size) {
+  if (REDUCED || !p) return;
+  const chef = chefArt(), big = size === 'big' || size === 'huge';
+  edgeGlow('flash'); edgeGlow(big ? 'big' : 'pulse');
+  const nt = document.querySelector('.night'); if (nt) replay(nt, big ? 'quake2' : 'quake');   // 画面ぜんぶ（舞台・調理台・おなかの帯）がゆれる
+  const w = fxEl('fx-wave' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w.remove(), T(800));   // 額縁をこえて広がる衝撃波
+  if (big) { const w2 = fxEl('fx-wave w2' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w2.remove(), T(900)); }
+  const burst = ART['fx-burst-' + chef], slash = ART['fx-slash-' + chef];
+  if (burst) { const b = fxEl('fx-art fx-burst' + (size ? ' s-' + size : ''), p, `<img src="${burst}" alt="">`); setTimeout(() => b.remove(), T(700)); }
+  if (slash) { const s = fxEl('fx-art fx-slash' + (size ? ' s-' + size : ''), p, `<img src="${slash}" alt="">`); setTimeout(() => s.remove(), T(560)); }
+  const W = innerWidth, H = innerHeight;   // 画面のはしまで飛ぶ火花（額縁の外へ）
+  sparkBurst(p, big ? 18 : 10, 'all', Math.max(W, H) / 120);
+}
+function orbsToBelly(dmg, q) {
+  const m = $('mon'), bar = document.querySelector('.quota .qbar'); if (!m || !bar || REDUCED) return;
+  const a = spot(m), r = bar.getBoundingClientRect(), fill = $('qfill'), fr = fill ? fill.getBoundingClientRect() : r;
+  const to = { x: Math.min(r.right - 6, Math.max(r.left + 10, fr.right)), y: r.top + r.height / 2 };
+  const n = Math.min(12, 5 + Math.round(dmg / q * 8));
+  for (let k = 0; k < n; k++) setTimeout(() => {
+    const o = fxEl('fx-orb', { x: a.x + (Math.random() - .5) * a.w * .5, y: a.y + (Math.random() - .5) * a.h * .4 }, '');
+    const f = { x: parseFloat(o.style.left), y: parseFloat(o.style.top) };
+    arcFly(o, { x: 0, y: 0 }, { x: to.x - f.x, y: to.y - f.y }, T(520), 70 + Math.random() * 60, 1.1, .5, () => { o.remove(); });
+  }, T(k * 45));
+  setTimeout(() => { const qb = document.querySelector('.quota'); if (qb) replay(qb, 'gain'); sePlay('coin', { vol: .45 }); }, T(560));
 }
 /* 3. 数字が決まる（金色にはねる） */
 function hubFin(H, dmg) {

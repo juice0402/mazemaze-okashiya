@@ -55,6 +55,8 @@
 | fx-cutin-honoka・fx-cutin-minamo・fx-cutin-wakaba（スペシャルのカットインの帯：炎・水・若葉） | A | Codex | 2026-11-19 | art-irai `requests/okashi/fx-cutin.md`（PR #160） | night-ui.js の cutIn（.ci-band.art） |
 | ui-badge・ui-tag-gold・ui-nametag・ui-hangsign・ui-empty-round・ui-empty-sq（数のバッジ・とくべつの金の札・名札・つるした看板の札・空きのしるし 丸と四角） | A | Codex | 2026-11-19 | art-irai `requests/okashi/ui-misc3.md`（PR #158） | 昼の画面（材料だなの数・とくべつ・陳列の名前と看板・オーブンと陳列の空き）＝昼のチャットが自分の CSS に入れる |
 
+| fx-burst-honoka・fx-burst-minamo・fx-burst-wakaba・fx-slash-honoka・fx-slash-minamo・fx-slash-wakaba（一撃の衝撃と斬撃：炎・水・花びら） | A | Codex | 2026-11-19 | art-irai `requests/okashi/fx-impact.md`（PR #163）・黒い背景は取りこむときに明るさで すけに変えた（#fxl の中では screen が効かない） | battle-fx.js の impactFx（一撃の瞬間） |
+
 ## 音
 | 名前 | 分類 | 道具 | 作った日 | 出どころ | 使う所 |
 | --- | --- | --- | --- | --- | --- |
