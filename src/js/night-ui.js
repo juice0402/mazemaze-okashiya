@@ -329,7 +329,7 @@ function mixFx(from, ca, cb, cr, to, done) {
   document.body.appendChild(ov);
   const card = (cid, f, w, cls = '') => {
     const c = document.createElement('div');
-    c.className = 'mf-card ' + cls; c.innerHTML = cls.includes('ghost') ? `<div class="mf-gh">${artImg(cid)}</div>` : cardMini(cid);   // 残像は絵だけの軽いカード（11/19 軽く）
+    c.className = 'mf-card ' + cls; c.innerHTML = cls.includes('ghost') ? `<div class="mf-gh">${artImg(cid)}</div>` : cardTile(cid);   // 残像は絵だけ・飛ぶカードとできたカードも字のない調理台の形（11/20 しょーくん「文字は不要・軽く」）
     Object.assign(c.style, { width: w + 'px', left: f.x - w / 2 + 'px', top: f.y - w * 0.7 + 'px' });
     ov.appendChild(c); return c;
   };
@@ -514,11 +514,31 @@ function shopHTML() {
     : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
   const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
   return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
-    <div class="sh-top"><b class="sh-ttl">ショップ</b>${koneBadge()}${jamBadge()}${head}</div>
+    <div class="sh-top"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}${head}</div>
     <div class="sh-cards">${list.map((cid, i) => cid
-      ? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid)}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
-      : '<span class="shcard sold"></span>').join('')}</div>
+      ? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
+      : '<span class="shcard sold"></span>').map((h, i) => i === 3 ? '<i class="sh-br"></i>' + h : h).join('')}</div>
     <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
+}
+
+/* ショップのカードの文が紙に入らないとき（スマホの字は 8px より小さくならない・11/20 しょーくんの写真）、うしろの文から紙にかくす。
+   かくした文は、タップで大きく見ると出る。はかるのは描いたあと1回だけ */
+let shopRO = null;
+function shopFit() {
+  const sc = document.querySelector('.shopov .sh-cards'); if (!sc) return;
+  const fit = () => {
+    for (const t of sc.querySelectorAll('.pc-text')) {
+      const sp = t.firstElementChild, ss = [...t.querySelectorAll('.sn')]; if (!sp) continue;
+      ss.forEach(e => e.classList.remove('cut'));
+      for (let k = ss.length - 1; k > 0 && sp.offsetHeight > t.clientHeight + 1; k--) ss[k].classList.add('cut');
+      const f = ss[0]; if (!f) continue;   // 1つの文でも入らない小さな画面は、入る行までで「…」
+      f.style.webkitLineClamp = ''; f.classList.remove('clamp');
+      if (sp.offsetHeight > t.clientHeight + 1) { f.classList.add('clamp'); f.style.webkitLineClamp = Math.max(1, Math.floor(t.clientHeight / (parseFloat(getComputedStyle(f).fontSize) * 1.2))); }
+    }
+  };
+  fit();
+  if (shopRO) shopRO.disconnect();   // ヒントが列の下をあけたとき・画面の大きさが変わったときも はかりなおす
+  if (window.ResizeObserver) { shopRO = new ResizeObserver(fit); shopRO.observe(sc); }
 }
 
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩・前の夜のビルドがえらばれている）。カードはシェフの絵・ビルドの名前・特性・代表のカード3まい・ひとこと */
@@ -578,5 +598,6 @@ function renderNight() {
   if (resultAnim && N.stage === 'roundEnd') { resultAnim = false; const r = document.querySelector('.r-num'); if (r) countUp(r, 0, N.last.total, T(700)); }
   /* 来店とお礼の会話（night.js の nightTalk） */
   if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
+  if (N.stage === 'shop' && !fighting) shopFit();
   tipSync();   // 夜のヒント（tips.js）
 }

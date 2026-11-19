@@ -338,21 +338,46 @@ function sparkBurst(at, n, mode, spread = 1) {
     setTimeout(() => s.remove(), ms + 30);
   }
 }
-/* 画面いっぱいの炎：大技（ノルマの6割をこえる一撃と★3のズドン）だけ。下から炎の舌が調理台や下のパネルまでおおって、画面ごとゆれる
-   （大きさのクラスは s-big・s-huge。.big はボタンの名前なので使わない） */
-/* 炎はほのかだけ（11/19）：みなもは画面いっぱいの水の柱と大波（.water・しぶきと氷のかけら）、わかばは若葉色のつると葉（.leaf） */
+/* 大技の画面いっぱい（ノルマの6割をこえる一撃と★3のズドン）：描き下ろし fx-wall-*（11/20 しょーくん「ほのかは下からメラメラ・みなもは氷が画面の下の方を侵食して、ピキピキピキッ、パリーン！」）
+   ほのか＝炎の壁が下からせり上がって、2こまの炎でメラメラ／みなも＝氷の層がせり上がる → ひびが3回（ピキ・ピキ・ピキッ）→ われて かけらが飛ぶ（パリーン）／
+   わかば＝奥のつる → 前の葉と花が いっせいにのびる。動くのは transform と opacity だけ。時間は はやおくりに合わせる（--k）。（大きさのクラスは s-big・s-huge。.big はボタンの名前なので使わない） */
 function fireWall() {
-  sePlay('fire');   // 大技（11/19 H-034）
+  const ch = document.body.dataset.chef === 'minamo' ? 'minamo' : document.body.dataset.chef === 'wakaba' ? 'wakaba' : 'honoka';
+  if (ch === 'honoka') sePlay('fire');   // 大技（11/19 H-034）
+  else if (ch === 'wakaba') { sePlay('wipe', { rate: .85 }); sePlay('star', { vol: .5 }); }
   const nt = document.querySelector('.night'); if (!nt || REDUCED) return;
   replay(nt, 'quake2');
-  const ch = document.body.dataset.chef, r = nt.getBoundingClientRect(), w = document.createElement('div'), n = 11;
-  w.className = 'fwall' + (ch === 'minamo' ? ' water' : ch === 'wakaba' ? ' leaf' : '');
+  const r = nt.getBoundingClientRect(), w = document.createElement('div'), k = T(1000) / 1000;
+  const img = (n, c = '') => ART[n] ? `<img class="${c}" src="${ART[n]}" alt="">` : '';
+  w.className = 'fwall ' + (ch === 'minamo' ? 'water' : ch === 'wakaba' ? 'leaf' : 'fire');
   Object.assign(w.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
-  let h = '<i class="fw-flash"></i>' + (ch === 'minamo' ? '<i class="aw-wave"></i><i class="aw-wave b"></i>' : '');
-  if (ch === 'minamo') for (let k = 0; k < 16; k++) h += `<i class="aw-ice" style="--x:${(Math.random() * 100).toFixed(1)}%;--y:${(20 + Math.random() * 60).toFixed(1)}%;--r:${Math.round(Math.random() * 180)}deg;--s:${(.6 + Math.random() * .9).toFixed(2)};--dl:${Math.round(180 + Math.random() * 420)}ms"></i>`;
-  for (let k = 0; k < n; k++) h += `<i class="fw-t" style="--x:${((k + .5) / n * 100 + (Math.random() - .5) * 6).toFixed(1)}%;--h:${(46 + Math.random() * 34).toFixed(0)}%;--dl:${Math.round(Math.random() * 140)}ms"></i>`;
+  w.style.setProperty('--k', k);
+  let h = '<i class="fw-flash"></i>';
+  if (ch === 'honoka') h += `<div class="fw-art">${img('fx-wall-honoka-a', 'fa')}${img('fx-wall-honoka-b', 'fb')}</div>`;
+  else if (ch === 'wakaba') h += `<div class="fw-art back">${img('fx-wall-wakaba-back')}</div><div class="fw-art front">${img('fx-wall-wakaba-front')}</div>`;
+  else h += `<div class="fw-art ice">${img('fx-wall-minamo')}${[[6, 22, -14, .62], [46, 8, 20, .7], [24, 44, 168, .58]].map(([x, y, rt, sc], i) =>
+      `<img class="fw-crack" src="${ART['fx-crack-minamo'] || ''}" alt="" style="left:${x}%;top:${y}%;--r:${rt}deg;--s:${sc};--d:${i}">`).join('')}</div><i class="fw-iflash"></i>`;
   w.innerHTML = h; fxLayer().appendChild(w);
-  setTimeout(() => w.remove(), ch === 'minamo' ? 1400 : 1150);
+  if (ch === 'minamo') {
+    [0, 1, 2].forEach(i => setTimeout(() => sePlay('hit', { rate: 2.3 + i * .35, vol: .35 }), (420 + i * 160) * k));   // ピキ・ピキ・ピキッ
+    setTimeout(() => { if (w.isConnected) iceShatter(w, r); }, 900 * k);   // パリーン
+  }
+  setTimeout(() => w.remove(), (ch === 'minamo' ? 1800 : 1300) * k);
+}
+/* パリーン：氷の層を消して、かけら（fx-shard-minamo-1〜6）を層のあちこちから はじけ飛ばす */
+function iceShatter(w, r) {
+  w.classList.add('shat'); sePlay('star', { rate: 1.6, vol: .8 }); sePlay('hit', { rate: 3, vol: .5 });
+  const ice = w.querySelector('.fw-art.ice'), ih = ice ? ice.offsetHeight : r.height * .45, k = parseFloat(w.style.getPropertyValue('--k')) || 1;
+  for (let i = 0; i < 24; i++) {
+    const u = ART['fx-shard-minamo-' + (i % 6 + 1)]; if (!u) continue;
+    const e = document.createElement('img'), x = r.width * (.04 + Math.random() * .92), y = r.height - ih * (.1 + Math.random() * .8), z = 40 + Math.random() * 54;
+    e.className = 'fw-shard'; e.src = u; e.alt = '';
+    Object.assign(e.style, { left: x - z / 2 + 'px', top: y - z / 2 + 'px', width: z + 'px' });
+    w.appendChild(e);
+    const dx = (x - r.width / 2) * (.5 + Math.random() * .7) + (Math.random() - .5) * 80, dy = -(90 + Math.random() * 240), rt = (Math.random() - .5) * 720;
+    e.animate([{ transform: 'translate(0,0) rotate(0deg) scale(.7)', opacity: 1 }, { transform: `translate(${dx * .6}px,${dy}px) rotate(${rt * .6}deg) scale(1.1)`, opacity: 1, offset: .55 },
+      { transform: `translate(${dx}px,${dy * .55 + 90}px) rotate(${rt}deg) scale(.8)`, opacity: 0 }], { duration: (620 + Math.random() * 380) * k, easing: 'cubic-bezier(.15,.75,.4,1)', fill: 'forwards' });
+  }
 }
 /* モンスター：ずっともにもに（CSS の --idle）。当たるとぐにゃっ・ほえる（もにもにはそのまま続く） */
 const MON_IDLE = { hitsuji: 'fluff' };
@@ -570,7 +595,7 @@ function nightWarm(build) {
     const P = chef === 'minamo' ? POSE_MINAMO : chef === 'wakaba' ? POSE_WAKABA : POSE;
     const keys = Object.values(P).map(v => Array.isArray(v) ? v[0] : v);   // シェフの戦闘ポーズ（いちばん大きい絵）
     for (const k of Object.keys(ART)) {
-      if (/^fx-(burst|slash|cutin)-/.test(k)) { if (k.endsWith('-' + chef)) keys.push(k); }   // 一撃の衝撃・斬撃・カットインの帯は そのシェフの分
+      if (/^fx-(burst|slash|cutin|wall|crack|shard)-/.test(k)) { if (k.includes('-' + chef)) keys.push(k); }   // 一撃の衝撃・斬撃・カットインの帯・大技の壁（11/20）は そのシェフの分
       else if (/^fx-/.test(k)) keys.push(k);
       else if (/^(candy|special|jam|burnt)-/.test(k)) keys.push(k);   // まぜてできる★2・★3の絵
     }

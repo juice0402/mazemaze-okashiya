@@ -37,9 +37,9 @@ function dragBegin(D) {
   D.cid = p.where === 'field' ? 'b:' + N.field : cardAt(p).cid;
   D.w = Math.max(r.width, 78); D.h = D.w * 1.4;
   D.home = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-  /* 外の箱は位置だけ（transform の translate3d・GPU で動かすだけで描きなおさない）、中の箱に大きさ・影・カード（11/19 しょーくん「戦闘のカード操作が重いとストレス」） */
+  /* つかんだカードは字のない調理台の形（11/20 軽く）。外の箱は位置だけ（transform の translate3d・GPU で動かすだけで描きなおさない）、中の箱に大きさ・影・カード（11/19 しょーくん「戦闘のカード操作が重いとストレス」） */
   const g = document.createElement('div');
-  g.className = 'dragghost'; g.innerHTML = `<div class="dg-in" style="width:${D.w}px">${cardMini(D.cid, { cook: p.where === 'field' ? 0 : cardAt(p).cook })}</div>`;
+  g.className = 'dragghost'; g.innerHTML = `<div class="dg-in" style="width:${D.w}px">${cardTile(D.cid, { cook: p.where === 'field' ? 0 : cardAt(p).cook })}</div>`;
   document.body.appendChild(g); D.g = g; D.gi = g.firstChild;
   const tip = document.createElement('div');
   tip.className = 'dragtip'; document.body.appendChild(tip); D.tip = tip;
@@ -94,7 +94,7 @@ function tipHTML(cid, P) {
   if (P && P.kind === 'mix') {
     const r = cardDef(P.r.cid), kn = !P.ng && P.kn;   // 11/18 夜のまぜまぜではレシピはひらめかない（朝に）。こね生地は「こねる」
     const price = P.P.n ? `（${N.round === 1 ? `無料${P.P.n}まい` : `コイン${P.P.cost}`}）` : '';
-    return `<span class="dt-card">${cardMini(P.r.cid)}</span><div class="dt-body"><p class="dt-main">${'★'.repeat(r.star)} ${esc(r.name)}</p>
+    return `<span class="dt-card">${cardTile(P.r.cid)}</span><div class="dt-body"><p class="dt-main">${'★'.repeat(r.star)} ${esc(r.name)}</p>
       <p class="dt-sub">${P.ng ? `<em>${esc(P.ng)}</em>` : `はなすと まぜる${price}`}</p>
       <p class="dt-fx">${kwShort(fxText(r.fx, r.star))}</p>${kn ? `<p class="dt-flash">こねる！ こね+${kn.kone}・パン種+${kn.tane}</p>` : ''}</div>`;
   }
@@ -104,7 +104,7 @@ function tipHTML(cid, P) {
     : P.kind === 'place' ? 'はなすと 置く'
     : P.kind === 'move' ? (P.swap ? 'はなすと 入れかえ' : 'はなすと うごかす')
     : P.v ? `はなすと うる（+${P.v}）` : 'はなすと もどす（無料の枠がもどる）';
-  return `<span class="dt-card">${cardMini(cid)}</span><div class="dt-body"><p class="dt-main">${esc(d.short)}</p><p class="dt-sub">${t}</p></div>`;
+  return `<span class="dt-card">${cardTile(cid)}</span><div class="dt-body"><p class="dt-main">${esc(d.short)}</p><p class="dt-sub">${t}</p></div>`;
 }
 
 function dragFinish(D) {

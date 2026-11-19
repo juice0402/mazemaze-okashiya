@@ -80,7 +80,7 @@ function chunkHTML(t, f) {
   return out.map(c => c === ' ' ? ' ' : `<span class="cw">${f(c)}</span>`).join('');
 }
 /* 紙の文の字の大きさ：紙の内側（幅64cqw・高さ21.5cqw）に、折り返して入る いちばん大きい字（9cqw まで）。黄色いことばは ふちの分だけ広く数える */
-function faceFs(S) {
+function faceFs(S, H = 21.5) {   // H＝紙の字の高さ（cqw）。ショップのたて長のカードは 31
   const sents = S.map(x => sentChunks(x.t).map(c => textW(c.replace(/[{}]/g, '')) + (c.match(/\{/g) || []).length * .5));
   for (let fs = 9; fs > 4.5; fs -= .25) {
     let lines = 0, ok = true;
@@ -89,7 +89,7 @@ function faceFs(S) {
       for (const w of cs) { const px = w * fs; if (px > 64) { ok = false; break; } const need = x ? x + .4 * fs + px : px; if (need > 64) { lines++; x = px; } else x = need; }
       if (!ok) break;
     }
-    if (ok && lines * 1.2 * fs <= 21.5) return fs;
+    if (ok && lines * 1.2 * fs <= H) return fs;
   }
   return 4.5;
 }
@@ -98,10 +98,10 @@ function cardFace(cid, cls, opt = {}) {
   const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = 64;   // 紙の字の幅（cqw・ふちの絵の紙の内側）。11/19 しょーくん「カードが切れてる」：実機の字はテストより太いので70→64・黄色いことばは1つ4つめる。焼き加減・大きさは右上へ（11/19 しょーくん「文字が見えない」）
   const S = cardSents(d, opt.tap).filter(x => !x.more), txt = S.map(x => `<span class="sn${x.plain ? ' plain' : ''}">${x.h}</span>`).join('');   // 1つの文（折り返して2行まで・11/19）
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
-  return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
+  return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${opt.tall ? ' tall' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
     <div class="pc-name"><span style="font-size:${nameFs(d.short)}cqw">${esc(d.short)}</span></div>${attrBar(d)}
-    <div class="pc-text"><span class="pl sents" style="font-size:${faceFs(S)}cqw">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
+    <div class="pc-text"><span class="pl sents" style="font-size:max(8px,${faceFs(S, opt.tall || 21.5)}cqw)">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
     ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
   </div>`;
 }

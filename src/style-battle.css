@@ -214,12 +214,8 @@
 @keyframes steam{0%{transform:scale(.4);opacity:0}20%{opacity:.9}100%{transform:translateY(-70px) scale(2.2);opacity:0}}
 .zudon.boh{font-size:36px;color:#fff0c0;-webkit-text-stroke-color:#8a2004}
 .fwall{position:absolute;overflow:hidden;pointer-events:none}
-.fw-flash{position:absolute;inset:0;background:radial-gradient(130% 95% at 50% 100%,rgba(255,200,90,.85),rgba(255,90,20,.55) 45%,rgba(120,20,4,.25) 75%,transparent 95%);animation:fwflash .75s ease-out forwards}
+.fw-flash{position:absolute;inset:0;background:radial-gradient(130% 95% at 50% 100%,rgba(255,200,90,.85),rgba(255,90,20,.55) 45%,rgba(120,20,4,.25) 75%,transparent 95%);animation:fwflash calc(var(--k,1) * .75s) ease-out forwards}
 @keyframes fwflash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
-.fw-t{position:absolute;bottom:-4%;left:var(--x);width:34%;height:var(--h);translate:-50% 0;transform-origin:50% 100%;border-radius:50% 50% 34% 34% / 76% 76% 24% 24%;
-  background:radial-gradient(48% 40% at 50% 90%,#fff8d8 0,#ffe27a 22%,transparent 55%),linear-gradient(transparent,rgba(255,80,20,.42) 25%,rgba(255,120,30,.72) 60%,rgba(255,194,58,.9) 92%);
-  opacity:0;animation:fwt .9s var(--dl) cubic-bezier(.2,.8,.3,1) both}
-@keyframes fwt{0%{transform:scale(.6,.05);opacity:0}22%{transform:scale(1,1.05);opacity:.95}60%{transform:scale(.85,1);opacity:.8}100%{transform:scale(.3,1.2);opacity:0}}
 .fx-dmg{position:absolute;translate:-50% -50%;white-space:nowrap;font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;color:#fff3c0;-webkit-text-stroke:6px #7a1a04;paint-order:stroke fill;
   text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
 .fx-dmg.s-big{font-size:min(50px,12vw)}
@@ -529,16 +525,7 @@ body[data-chef="wakaba"] .fspark{background:#efffbe;box-shadow:0 0 6px 2px rgba(
 body[data-chef="wakaba"] .fspark.w{background:#fffbe0;box-shadow:0 0 8px 3px rgba(200,240,120,.95)}
 /* 大技の画面いっぱい（fireWall）：みなも＝水の柱と大波と氷のかけら・わかば＝つると葉 */
 .fwall.water .fw-flash{background:radial-gradient(130% 95% at 50% 100%,rgba(228,250,255,.85),rgba(110,200,250,.55) 45%,rgba(20,80,160,.25) 75%,transparent 95%)}
-.fwall.water .fw-t{border-radius:46% 46% 30% 30% / 70% 70% 30% 30%;background:radial-gradient(40% 26% at 50% 10%,#fff 0,rgba(232,250,255,.9) 34%,transparent 62%),linear-gradient(rgba(220,248,255,.92),rgba(120,205,250,.78) 30%,rgba(60,150,230,.58) 75%,rgba(30,110,210,.38))}
-.aw-wave{position:absolute;top:6%;bottom:-6%;left:0;width:66%;border-radius:0 62% 40% 0 / 0 44% 30% 0;opacity:0;
-  background:linear-gradient(90deg,transparent,rgba(110,200,250,.28) 40%,rgba(170,232,255,.6) 72%,rgba(255,255,255,.92) 84%,rgba(200,240,255,.45) 90%,transparent);animation:aww .95s cubic-bezier(.3,.6,.4,1) forwards}
-.aw-wave.b{top:32%;width:52%;animation-delay:.18s}
-@keyframes aww{0%{transform:translateX(-110%) skewX(-8deg);opacity:0}15%{opacity:1}80%{opacity:.9}100%{transform:translateX(180%) skewX(-8deg);opacity:0}}
-.aw-ice{position:absolute;left:var(--x);top:var(--y);width:calc(14px * var(--s));height:calc(28px * var(--s));rotate:var(--r);opacity:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
-  background:linear-gradient(135deg,#fff,#c6edff 50%,#6cc4f0);animation:awice .75s var(--dl) ease-out both}
-@keyframes awice{0%{transform:scale(0);opacity:0}30%{transform:scale(1.25);opacity:1}100%{transform:scale(.8) translateY(30px);opacity:0}}
 .fwall.leaf .fw-flash{background:radial-gradient(130% 95% at 50% 100%,rgba(250,255,212,.8),rgba(160,225,90,.5) 45%,rgba(60,120,20,.22) 75%,transparent 95%)}
-.fwall.leaf .fw-t{width:16%;border-radius:50% 50% 12% 12% / 90% 90% 10% 10%;background:radial-gradient(46% 14% at 50% 7%,#e2f8a8,transparent 72%),linear-gradient(90deg,transparent 30%,rgba(130,190,60,.92) 42%,rgba(196,238,118,.96) 50%,rgba(112,172,52,.92) 58%,transparent 70%)}
 /* ==== 場のカードの特色（11/19 しょーくん「戦闘画面はこんなに大きくなくていい・カードの直下に特色を」）：調理台のすぐ下の6マス（左はしは場の列＝空き）。
    2段ぶんの高さをいつもとっておく（カードを置いても舞台の大きさが変わらない）。舞台はそのぶん小さくなる。札は描き下ろしの ui-chip-*（style.css の .tk） ==== */
 .tkws{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0 6px;height:34px;margin:3px 0 -2px;padding:0 9px;pointer-events:none}
@@ -546,8 +533,6 @@ body[data-chef="wakaba"] .fspark.w{background:#fffbe0;box-shadow:0 0 8px 3px rgb
 /* ショップのカードを大きく（11/19 しょーくん「ゼンゼロはショップのカードが大きい」）：舞台の額縁の上までショップを広げて、3まいを横いっぱいに */
 .night .shopov{inset:0;padding-left:13px;padding-right:13px}   /* 左右は額縁の木のふち（約12px）の内がわ（11/20 しょーくん「ショップの左右でカードがはみ出してた」） */
 .night .sh-cards{gap:12px 6px}
-.night .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 44px) * .714),150px)}
-.night .shopov.many .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 30px) / 2 * .714),150px)}
 /* ==== 攻撃のリッチな演出（11/19 しょーくん「1攻撃5秒くらい・攻撃の迫力・枠外にも演出」・battle-fx.js の 7）==== */
 body{--chefc:255,150,60}
 body[data-chef="minamo"]{--chefc:110,200,255}
@@ -588,3 +573,48 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 @keyframes fxslash{0%{transform:translate(-45%,28%) scale(.7);opacity:0}22%{opacity:1}100%{transform:translate(6%,-6%) scale(1.12);opacity:0}}
 /* 味の光の玉：モンスターから おなかの帯へ */
 .fx-orb{position:absolute;translate:-50% -50%;width:16px;height:16px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 0,#fff6c8 30%,rgba(var(--chefc),.95) 55%,rgba(var(--chefc),0) 72%)}
+
+/* ==== ショップのたて長のカード（11/20 しょーくん「ショップに並んでるカードの説明が入り切らない・もう少し縦長に」）====
+   5:8.4。ふちの絵（ui-card-*・225×360＝1:1.6）は紙のまんなか（86〜89.5%）だけをのばして、上と下は絵のままの比で描く（border-image）。
+   中の窓・リボン・属性・紙の位置は、絵の比の cqw（カードの幅が100）。スマホの字は 8px より小さくならないので、入らない文は shopFit がかくす */
+.night .shcard{aspect-ratio:5/8.4;--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 44px) / 1.68),150px)}
+.night .shopov.many .shcard{aspect-ratio:5/8.75;--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 4px) / 2 / 1.75),150px)}
+.night .shopov.many{padding-bottom:34px}   /* 2段目のカードの下のふち（紙の下）だけ 草にかくれてよい */
+.night .shopov.many .sh-cards{gap:4px 6px}
+.night .shopov.many .sh-top{margin-top:-27px;padding:0 4px;position:relative;z-index:2}   /* 5まいの夜は、札の段を日よけの下のほうに重ねて、カードの高さに回す */
+.night .shcard .pc.tall:not(.tile):not(.ci-card){background-image:none;border:0 solid transparent;border-image:var(--ui-card-bronze) 86% 0 10.5% 0 fill/calc(var(--w) * 1.376) 0 calc(var(--w) * .168) 0 stretch}
+.night .shcard .pc.tall.s2:not(.tile):not(.ci-card){border-image-source:var(--ui-card-silver)}
+.night .shcard .pc.tall.s3:not(.tile):not(.ci-card){border-image-source:var(--ui-card-gold)}
+.night .shcard .pc.tall.k-b:not(.tile):not(.ci-card){border-image-source:var(--ui-card-field)}
+.night .shcard .pc.tall .pc-win{top:18.2cqw;bottom:auto;height:71.6cqw}
+.night .shcard .pc.tall .pc-name{top:93.1cqw;height:13.8cqw}
+.night .shcard .pc.tall .pc-attr{top:114.6cqw;height:8.3cqw}
+.night .shcard .pc.tall .pc-text{top:124.2cqw;bottom:11.2cqw;overflow:hidden}
+.pc-text .sn.cut{display:none}
+.pc-text .sn.clamp{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+.sh-br{flex-basis:100%;height:0;margin-top:-4px}   /* 5まいは 3と2の2段（ヒントで小さくなっても4まい並ばない） */
+/* ショップの札は今のラウンド（11/20 しょーくん「ショップの字はいらない・戦闘画面と同じ文で」）：字は舞台の .ov-top と同じ */
+.sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
+
+/* ==== 大技の描き下ろし（11/20 fx-wall-*・battle-fx.js の fireWall と iceShatter）：絵は画面の下から（はばいっぱい）。動くのは transform と opacity だけ ==== */
+.fw-art{position:absolute;left:-3%;width:106%;bottom:0;transform-origin:50% 100%;will-change:transform}
+.fw-art img{display:block;width:100%;height:auto}
+.fwall.fire .fw-art{animation:fwrise calc(var(--k) * 1.25s) cubic-bezier(.2,.9,.3,1) forwards}
+@keyframes fwrise{0%{transform:translateY(100%) scaleY(.6)}20%{transform:translateY(0) scaleY(1.08)}32%{transform:translateY(0) scaleY(.96)}44%{transform:translateY(0) scaleY(1.04)}70%{transform:translateY(3%) scaleY(1);opacity:1}100%{transform:translateY(45%) scaleY(.8);opacity:0}}
+.fw-art .fb{position:absolute;left:0;bottom:0;animation:fwflick calc(var(--k) * .18s) steps(1) infinite}
+.fw-art .fa{animation:fwflick calc(var(--k) * .18s) steps(1) infinite reverse}
+@keyframes fwflick{0%{opacity:0}50%{opacity:1}}
+/* みなも：氷がせり上がって（とまって）→ ひびが3回 → パリーン（.shat で消えて かけら） */
+.fwall.water .fw-art.ice{animation:fwice calc(var(--k) * .38s) cubic-bezier(.2,.9,.3,1) both}
+@keyframes fwice{0%{transform:translateY(100%) scaleY(.7)}70%{transform:translateY(-2%) scaleY(1.03)}100%{transform:translateY(0) scaleY(1)}}
+.fw-crack{position:absolute;width:72%;height:auto;opacity:0;filter:drop-shadow(0 0 1px rgba(8,50,100,.95)) drop-shadow(0 0 3px rgba(20,90,160,.8)) drop-shadow(0 0 7px rgba(255,255,255,.9));transform:rotate(var(--r)) scale(var(--s));animation:fwcrack calc(var(--k) * .14s) calc(var(--k) * (.42s + var(--d) * .16s)) ease-out forwards}
+@keyframes fwcrack{0%{opacity:0;transform:rotate(var(--r)) scale(calc(var(--s) * .4))}100%{opacity:1;transform:rotate(var(--r)) scale(var(--s))}}
+.fwall.water.shat .fw-art.ice{animation:fwbreak calc(var(--k) * .22s) ease-out forwards}
+@keyframes fwbreak{0%{transform:scale(1);opacity:1}100%{transform:scale(1.06);opacity:0}}
+.fw-iflash{position:absolute;inset:0;opacity:0;background:radial-gradient(120% 70% at 50% 100%,rgba(255,255,255,.95),rgba(200,240,255,.6) 40%,transparent 80%)}
+.fwall.water.shat .fw-iflash{animation:fwflash calc(var(--k) * .5s) ease-out forwards}
+.fw-shard{position:absolute;height:auto;pointer-events:none;will-change:transform;filter:drop-shadow(0 0 1px rgba(10,70,130,.9)) drop-shadow(0 0 8px rgba(200,245,255,.95))}
+/* わかば：奥のつるが先に、前の葉と花があとから のびる（少しゆれて しずむ） */
+.fwall.leaf .fw-art.back{animation:fwgrow calc(var(--k) * 1.25s) cubic-bezier(.2,.9,.3,1) both}
+.fwall.leaf .fw-art.front{animation:fwgrow calc(var(--k) * 1.15s) calc(var(--k) * .12s) cubic-bezier(.2,.9,.3,1) both}
+@keyframes fwgrow{0%{transform:translateY(100%) scaleY(.5)}24%{transform:translateY(0) scaleY(1.06)}38%{transform:translateY(0) scaleY(.97) skewX(-1.5deg)}52%{transform:translateY(0) scaleY(1.02) skewX(1.5deg)}72%{transform:translateY(2%) scaleY(1);opacity:1}100%{transform:translateY(40%);opacity:0}}
