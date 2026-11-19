@@ -1,6 +1,6 @@
 // まぜまぜおかし屋のビルド（Node の標準だけ）。node tools/build.mjs
 // src/shell.html の <!--STYLE--> に src/style.css、<!--SCRIPT--> に JS を順に入れて index.html を作る
-// --artifact <ファイル> をつけると、アーティファクト用（doctype などなし）も書く
+// --artifact <ファイル> をつけると、アーティファクト用（小さな骨のページ＋同じフォルダの app.css・app.js）も書く
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -69,5 +69,14 @@ console.log('index.html', page.length, 'art', Object.keys(ART).length);
   const big = files.filter(x => x.b > 150e3); if (big.length) console.log('150KB をこえる絵：' + big.map(x => `${x.n} ${Math.round(x.b / 1e3)}KB`).join('・'));
 }
 // アーティファクトは ?v= をつけない（出した絵のパスそのまま）
+// 11/19〜 ページは小さな骨だけにして、CSS と JS は同じ所の app.css・app.js（新しい会話は出しなおす前に今のページをぜんぶ読む決まり。0.5MB のページは読みきれなかった）
+// → <ファイル> と同じフォルダに app.css・app.js も書く。publish の files に app.css・app.js（とふえた絵・曲）をわたす
 const ai = process.argv.indexOf('--artifact');
-if (ai > 0 && process.argv[ai + 1]) { const af = fragOf('true', '').replace(/\.(webp|png|mp3)\?v=[0-9a-f]{8}"/g, '.$1"'); writeFileSync(process.argv[ai + 1], af); console.log('artifact', af.length); }
+if (ai > 0 && process.argv[ai + 1]) {
+  const out = process.argv[ai + 1], dir = dirname(out), h8 = s => createHash('md5').update(s).digest('hex').slice(0, 8);
+  const css = FONTS + minCss(STYLES.map(rd).join('\n'));
+  const aj = js.replace('__TRIAL__', 'true').replaceAll('__ARTDIR__', '').replaceAll('__BGMDIR__', 'bgm/').replace(/\.(webp|png|mp3)\?v=[0-9a-f]{8}"/g, '.$1"');
+  writeFileSync(join(dir, 'app.css'), css); writeFileSync(join(dir, 'app.js'), aj);
+  const af = rd('src/shell.html').replace('<!--STYLE-->', `<link rel="stylesheet" href="app.css?v=${h8(css)}">`).replace('<!--SCRIPT-->', `<script src="app.js?v=${h8(aj)}"></script>`);
+  writeFileSync(out, af); console.log('artifact', af.length, 'app.js', aj.length, 'app.css', css.length);
+}
