@@ -245,9 +245,8 @@ function showEvent(e, run, q) {
 /* おなかの帯を、この一撃のぶん進める（ちいさなキャンディも使う・味パワーの合計の札は 11/19 にやめた） */
 function scoreTick(dmg, run, q) {
   if (!$('qfill')) return;
-  $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q);
-  $('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
-  if (run >= q / 2 && run - dmg < q / 2 && run < q) setTimeout(() => replay(document.querySelector('.quota'), 'half'), T(200));   // 半分＝コイン+1
+  $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q); qCount(run - dmg, run);
+  for (const [f, c, k] of QMK) if (run >= q * f && run - dmg < q * f) setTimeout(() => qCollect(k, c), T(650));   // 半分＝コイン+1・満タン＝+3（+の数が消えかけてから）
   if (run >= q && run - dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
 }
 /* 計算の札のデータ：calc＝数字にすいこまれる札（v＝この札のあとの数字・p＝前の数字・src＝効果の元のマス・k＝マスに残った札の種類）
@@ -438,11 +437,32 @@ function heroPose(p, ms) {
   clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
 }
 /* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯が光る） */
+/* おなかゲージ（11/20 ゼンゼロの形）：左に いまの味の力の合計・真ちゅうの帯・半分（+1）と満タン（+3）にコインの印とその数。とどいたらコインがとれて チェックに変わる */
+const QMK = [[.5, 1, 'm1'], [1, 3, 'm3']];
+function quotaHTML(q, run) {
+  const mk = QMK.map(([f, c, k]) => `<b class="qmk ${k}${run >= q * f ? ' qok' : ''}" style="left:${f * 100}%"><i class="qc"><em>+${c}</em></i><small>${fmt(Math.ceil(q * f))}</small></b>`).join('');
+  return `<div class="quota"><div class="qnow"><b id="qtext">${fmt(run)}</b></div><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, run / q * 100)}%"></i></div><div class="qmks">${mk}</div></div></div>`;
+}
+/* 左の数：前の数から いまの数へ かぞえ上げる（字だけ・はばは きまっている） */
+function qCount(from, to) {
+  const el = $('qtext'); if (!el) return;
+  const t0 = performance.now(), ms = REDUCED ? 0 : T(420);
+  replay(el.parentNode, 'bump');
+  const step = now => { const k = ms ? Math.min(1, (now - t0) / ms) : 1; el.textContent = fmt(from + (to - from) * (1 - (1 - k) * (1 - k))); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+/* とどいた：コインがはねて 上へとんで消え、印は チェックに */
+function qCollect(k, c) {
+  const m = document.querySelector('.quota .qmk.' + k); if (!m || m.classList.contains('qok')) return;
+  const fly = document.createElement('i'); fly.className = 'qfly'; fly.innerHTML = `<em>コイン+${c}</em>`; m.appendChild(fly);
+  m.classList.add('qok'); replay(m, 'qpop'); sePlay('coin', { vol: .8 }); sePlay('star', { vol: .45 });
+  setTimeout(() => fly.remove(), T(1300));
+}
 function qGain(dmg, run, q) {
-  const qb = document.querySelector('.quota'); if (!qb || !dmg) return;
+  const qw = document.querySelector('.quota .qwrap'); if (!qw || !dmg) return;
   const g = document.createElement('b'); g.className = 'qgain'; g.textContent = '+' + fmt(dmg);
-  const bar = qb.querySelector('.qbar'); g.style.left = Math.max(22, Math.round(bar.offsetLeft + bar.offsetWidth * Math.min(1, run / q))) + 'px';
-  qb.appendChild(g); replay(qb, 'gain'); setTimeout(() => g.remove(), T(1100));
+  const bar = qw.querySelector('.qbar'); g.style.left = Math.round(bar.offsetLeft + 9 + (bar.offsetWidth - 18) * Math.min(1, run / q)) + 'px';
+  qw.appendChild(g); replay(qw.parentNode, 'gain'); setTimeout(() => g.remove(), T(1100));
 }
 const MON_URL = {};
 const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || ART[(MONSTERS.find(m => m.id === id) || {}).alt] || big(MON_SPR[id] || MON_SPR.slime, 8));
@@ -550,7 +570,7 @@ function renderNight() {
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
       <div class="ov-heat${koneBadge() ? ' two' : ''}"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
-    <div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
+    ${quotaHTML(q, lastRun)}
     ${body}</section>`;
   setHeat(N.heat);
   for (const c of N.board) if (c) delete c.born;

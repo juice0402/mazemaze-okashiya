@@ -391,7 +391,6 @@ background:radial-gradient(circle,#fff 0,rgba(255,240,190,.95) 14%,rgba(255,150,
 .quota{font-weight:700}
 .qbar{height:10px;border-radius:6px;background:linear-gradient(#24130a,#3a2418);box-shadow:inset 0 1px 2px rgba(0,0,0,.7),0 0 0 1.5px rgba(217,168,90,.65)}
 .qbar i{border-radius:6px;background:linear-gradient(#ffe9a8,var(--gold) 45%,#e08a2a);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 8px rgba(255,190,80,.7)}
-#qtext{font-family:var(--disp);font-weight:400;font-size:11px;color:var(--milk);letter-spacing:.5px}
 .tiles{background:radial-gradient(100% 140% at 50% 0%,rgba(255,226,170,.18),transparent 60%),repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 40px),linear-gradient(#7a5236,#4a2f20);box-shadow:inset 0 0 0 2px rgba(255,214,140,.55),inset 0 2px 0 rgba(255,240,210,.35),inset 0 -4px 0 rgba(0,0,0,.35),0 4px 0 #24130a,0 10px 18px rgba(0,0,0,.4)}
 .tslot{background:radial-gradient(70% 60% at 50% 40%,rgba(255,220,170,.08),rgba(20,8,2,.35));box-shadow:inset 0 3px 7px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,214,140,.18)}
 .sub{background:linear-gradient(#b8875a,#8a5e3c 55%,#6e4628);color:#fff4e4;border:2px solid #2a170c;box-shadow:inset 0 2px 0 rgba(255,236,200,.45),inset 0 -3px 0 rgba(0,0,0,.25),0 3px 0 #2a170c;text-shadow:0 1px 0 rgba(0,0,0,.4)}
@@ -852,7 +851,7 @@ background:var(--bc);box-shadow:0 0 0 1.5px #2a1408,0 0 9px 2px var(--bc);animat
 @keyframes buffin{from{opacity:0;transform:scale(2.2)}}
 @keyframes buffout{35%{transform:scale(1.45)}100%{opacity:0;transform:translateY(22px) scale(.2)}}
 #heatBar.ahit{animation:ahit .45s ease-out}
-.night .quota{position:relative;z-index:2}
+.night .quota{position:relative;z-index:8}
 .tiles>:where(.tslot){z-index:1}
 .tiles{--fs:.3;--fo:.35;--go:.05}
 .tiles[data-z="1"]{--fs:.5;--fo:.55;--go:.14}
@@ -994,7 +993,7 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .stage[data-pose=charge] .glow,.stage[data-pose=special] .glow{opacity:1}
 .quota{position:relative}
 .qbar i{transition:width .5s cubic-bezier(.2,.9,.3,1)}
-.qgain{position:absolute;bottom:60%;z-index:6;font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#ffe08a;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;white-space:nowrap;pointer-events:none;animation:qgain 1.1s ease-out forwards}
+.qgain{position:absolute;top:-10px;z-index:6;font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#ffe08a;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;white-space:nowrap;pointer-events:none;animation:qgain 1.1s ease-out forwards}
 @keyframes qgain{0%{opacity:0;transform:translate(-50%,6px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1;transform:translate(-50%,-8px) scale(1)}100%{opacity:0;transform:translate(-50%,-16px)}}
 .qbar{position:relative}
 .qbar::after{content:"";position:absolute;inset:3px 9px;border-radius:4px;background:rgba(255,244,200,.85);opacity:0;pointer-events:none}
@@ -1113,13 +1112,27 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .tcold::after{content:"";position:absolute;inset:auto 0 -3px;height:30%;background:var(--ui-frost) center bottom/auto 100% repeat-x;opacity:0;transition:opacity .5s}
 .tiles[data-t="1"] .tcold::after{opacity:1}.tiles[data-t="2"] .tcold::after{opacity:.45}
 .tiles[data-t="4"] .tst,.tiles[data-t="3"] .tst:nth-child(-n+4){width:30px;height:20px;border-radius:0;background:var(--ui-steam) center/contain no-repeat}
-.qwrap{position:relative;flex:1;min-width:0;display:flex}
+.night .quota{height:36px;align-items:flex-start;gap:6px;padding-top:2px}
+.qnow{flex:none;width:66px;height:26px;display:flex;align-items:center;justify-content:center;border:solid transparent;border-width:0 12px;border-image:var(--ui-chip-gold) 0 40 fill/0 12px stretch;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45))}
+.qnow b{font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#4a1f08;letter-spacing:0;white-space:nowrap;text-shadow:0 1px 0 rgba(255,246,210,.7)}
+.qnow.bump b{display:inline-block;animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
+.qwrap{position:relative;flex:1;min-width:0;display:flex;padding-top:7px;margin-right:10px}
 .qwrap .qbar{flex:1}
-.qmk{position:absolute;top:-11px;translate:-50% 0;z-index:2;font-family:var(--disp);font-weight:400;font-size:9px;line-height:1;color:#ffe08a;-webkit-text-stroke:2px #3a1408;paint-order:stroke fill;pointer-events:none}
-.qmk i{position:absolute;left:50%;top:11px;width:2px;height:12px;translate:-50% 0;background:rgba(255,236,190,.85);box-shadow:0 0 0 1px rgba(58,20,8,.6);border-radius:1px}
-.qmk.m3{translate:-80% 0}.qmk.m3 i{display:none}
-.quota.half .qmk.m1{animation:qmkpop .6s cubic-bezier(.3,1.6,.5,1)}
-@keyframes qmkpop{40%{transform:scale(1.7)}}
+.qmks{position:absolute;left:9px;right:9px;top:0;height:100%;pointer-events:none}
+.qmk{position:absolute;top:2px;width:24px;translate:-50% 0;z-index:2;display:flex;flex-direction:column;align-items:center}
+.qc{position:relative;display:block;width:22px;height:22px;background:var(--ui-coin) center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
+.qc em{position:absolute;right:-6px;bottom:-4px;font-style:normal;font-family:var(--disp);font-size:10px;line-height:1;color:#ffe08a;-webkit-text-stroke:2.5px #3a1408;paint-order:stroke fill}
+.qmk small{margin-top:3px;font-family:var(--disp);font-size:9px;line-height:1;color:var(--milk);-webkit-text-stroke:2px #2a1408;paint-order:stroke fill;white-space:nowrap}
+.qmk.qok .qc{background:var(--ui-chip-mint) center/100% 100% no-repeat;border-radius:50%}
+.qmk.qok .qc em{display:none}
+.qmk.qok .qc::after{content:"";position:absolute;left:7.5px;top:4px;width:5px;height:10px;border:solid #fff;border-width:0 3px 3px 0;rotate:42deg;filter:drop-shadow(0 1px 0 rgba(16,58,44,.8))}
+.qmk.qok small{color:#c9f5cf}
+.qmk.qpop .qc{animation:qmkpop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes qmkpop{0%{transform:scale(.3)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.qfly{position:absolute;left:50%;top:0;width:22px;height:22px;margin-left:-11px;background:var(--ui-coin) center/contain no-repeat;z-index:3;animation:qfly 1.2s cubic-bezier(.2,.8,.3,1) forwards}
+.qfly em{position:absolute;left:50%;bottom:100%;translate:-50% -2px;font-style:normal;font-family:var(--disp);font-size:10px;line-height:1;color:#ffe08a;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;white-space:nowrap}
+.qmk.m3 .qfly em{left:auto;right:-2px;translate:0 -2px}
+@keyframes qfly{0%{transform:scale(1);opacity:1}25%{transform:translateY(-10px) scale(1.9);opacity:1}70%{transform:translateY(-34px) scale(1.4);opacity:1}100%{transform:translateY(-46px) scale(1.1);opacity:0}}
 .result.half .r-msg{color:#ffd27a}
 .aqua{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;container-type:size}
 .aq-frost,.aq-warm{position:absolute;inset:0}
@@ -4322,9 +4335,8 @@ return t;
 }
 function scoreTick(dmg, run, q) {
 if (!$('qfill')) return;
-$('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q);
-$('qtext').textContent = `${fmt(run)} / おなか ${fmt(q)}`;
-if (run >= q / 2 && run - dmg < q / 2 && run < q) setTimeout(() => replay(document.querySelector('.quota'), 'half'), T(200));   // 半分＝コイン+1
+$('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q); qCount(run - dmg, run);
+for (const [f, c, k] of QMK) if (run >= q * f && run - dmg < q * f) setTimeout(() => qCollect(k, c), T(650));   // 半分＝コイン+1・満タン＝+3（+の数が消えかけてから）
 if (run >= q && run - dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
 }
 const PART_K = l => l === '次の主役' ? 'next' : l === 'となり' ? 'nb' : l === 'スタート' ? 'rally' : l === 'いちばん' ? 'clead' : l === 'きらきら' ? 'shine' : l.startsWith('サイコー') ? 'best' : '';
@@ -4494,11 +4506,29 @@ el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); el.dataset.pose =
 const st = $('stage'); if (st) st.dataset.pose = p;   // 影と足もとの光は #stage の data-pose で（:has を使わない＝軽い・11/19）
 clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
 }
+const QMK = [[.5, 1, 'm1'], [1, 3, 'm3']];
+function quotaHTML(q, run) {
+const mk = QMK.map(([f, c, k]) => `<b class="qmk ${k}${run >= q * f ? ' qok' : ''}" style="left:${f * 100}%"><i class="qc"><em>+${c}</em></i><small>${fmt(Math.ceil(q * f))}</small></b>`).join('');
+return `<div class="quota"><div class="qnow"><b id="qtext">${fmt(run)}</b></div><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, run / q * 100)}%"></i></div><div class="qmks">${mk}</div></div></div>`;
+}
+function qCount(from, to) {
+const el = $('qtext'); if (!el) return;
+const t0 = performance.now(), ms = REDUCED ? 0 : T(420);
+replay(el.parentNode, 'bump');
+const step = now => { const k = ms ? Math.min(1, (now - t0) / ms) : 1; el.textContent = fmt(from + (to - from) * (1 - (1 - k) * (1 - k))); if (k < 1) requestAnimationFrame(step); };
+requestAnimationFrame(step);
+}
+function qCollect(k, c) {
+const m = document.querySelector('.quota .qmk.' + k); if (!m || m.classList.contains('qok')) return;
+const fly = document.createElement('i'); fly.className = 'qfly'; fly.innerHTML = `<em>コイン+${c}</em>`; m.appendChild(fly);
+m.classList.add('qok'); replay(m, 'qpop'); sePlay('coin', { vol: .8 }); sePlay('star', { vol: .45 });
+setTimeout(() => fly.remove(), T(1300));
+}
 function qGain(dmg, run, q) {
-const qb = document.querySelector('.quota'); if (!qb || !dmg) return;
+const qw = document.querySelector('.quota .qwrap'); if (!qw || !dmg) return;
 const g = document.createElement('b'); g.className = 'qgain'; g.textContent = '+' + fmt(dmg);
-const bar = qb.querySelector('.qbar'); g.style.left = Math.max(22, Math.round(bar.offsetLeft + bar.offsetWidth * Math.min(1, run / q))) + 'px';
-qb.appendChild(g); replay(qb, 'gain'); setTimeout(() => g.remove(), T(1100));
+const bar = qw.querySelector('.qbar'); g.style.left = Math.round(bar.offsetLeft + 9 + (bar.offsetWidth - 18) * Math.min(1, run / q)) + 'px';
+qw.appendChild(g); replay(qw.parentNode, 'gain'); setTimeout(() => g.remove(), T(1100));
 }
 const MON_URL = {};
 const monURL = id => MON_URL[id] || (MON_URL[id] = ART['mon-' + id] || ART[(MONSTERS.find(m => m.id === id) || {}).alt] || big(MON_SPR[id] || MON_SPR.slime, 8));
@@ -4596,7 +4626,7 @@ ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
 <div class="ov-heat${koneBadge() ? ' two' : ''}"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
 ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
-<div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, lastRun / q * 100)}%"></i></div><b class="qmk m1" style="left:50%"><i></i>+1</b><b class="qmk m3" style="left:100%"><i></i>+3</b></div><span id="qtext">${N.stage === 'roundEnd' ? fmt(lastRun) + ' / ' : ''}おなか ${fmt(q)}</span></div>
+${quotaHTML(q, lastRun)}
 ${body}</section>`;
 setHeat(N.heat);
 for (const c of N.board) if (c) delete c.born;
