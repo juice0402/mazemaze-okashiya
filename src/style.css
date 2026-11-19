@@ -868,3 +868,6 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* まぜられるしるし（＋）・ヒントのとじる（×）：丸いボタンの皮 */
 .mx-dot.mx-dot{background:var(--ui-chip-mint) center/100% 100% no-repeat;box-shadow:none;border-radius:50%}
 .tip-x.tip-x{background:var(--ui-round) center/100% 100% no-repeat;color:#5a3418;font-weight:900}
+/* カードの効果の字は、属性の【】に合わせて左そろえ（11/19 しょーくん）。帯は .pc-attr の left 13.5%・紙は 11% なので、そのぶん内へ */
+.pc:not(.tile):not(.ci-card) .pc-text{justify-content:flex-start;padding-left:3.5cqw}
+.pc:not(.tile):not(.ci-card) .pc-text span.ln{text-align:left}
