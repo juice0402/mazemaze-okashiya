@@ -6,8 +6,13 @@
    数字は src/data/hiru.js・絵は day-scene.js・セリフは story.js ==== */
 
 let dayTick = 0, dayPrev = 0, daySpeed = 1;
-/* お客さん1人の流れ（ms・ふつうの速さ）：入ってくる → 吹き出しにすきな素材 → 買う（ハート）か帰る → 出ていく */
-const V_ARRIVE = 900, V_ASK = 2200, V_LEAVE = 3500, V_END = 4200;
+/* お客さん1人の流れ（ms・ふつうの速さ）：入ってくる → 吹き出しにすきな素材 → 買う（ハート）か帰る → 出ていく
+   11/19 しょーくん「吹き出しが消えるのが早すぎて、何が起きたかよくわからなかった」→ すきな味 1.7秒・買ったあと 2.4秒（前は 1.3秒ずつ）
+   もう1こ買う人（「これも買っていこうかな」・MORE_P）は、1こごとに V_MORE だけ長くいる */
+const V_ARRIVE = 900, V_ASK = 2600, V_LEAVE = 5000, V_END = 5600, V_MORE = 1700;
+/* 営業の長さ：ふだんは DAY_MS。お客さんが多い日は、1人ずつ吹き出しが読めるように少しのばす（外の明るさもこれに合わせる） */
+const D_SLOT = 6000;
+const dLen = R => (R && R.len) || DAY_MS;
 
 /* 昼のはじめ（flow.js の goDay から呼ぶ） */
 /* 看板は朝の「商品を並べる」で決めたもの（S.morning.kanban）。朝の「お店を開ける」から来たら、すぐ営業（morning.js の mOpen が openDay を呼ぶ） */
@@ -47,11 +52,13 @@ function dSoroiRibs(slots) {
   dSoroiLast = now;
   return out;
 }
+/* 7文字より長い名前は字をつめる（11/19：商品を並べるの棚で「ミルクキャラメル」「はちみつクッキー」の最後が切れていた） */
+const dNmLong = nm => nm.length >= 7 ? ' lg' : '';
 function slotHTML(o, idx, ks, pre, rib = '') {
   const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
   if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
   const c = candyOf(o.s.key), out = o.s.n <= 0, tag = pre ? 'button' : 'div';
-  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}${rib}</${tag}>`;
+  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm${dNmLong(c.name)}">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うりきれ</span>' : ''}${rib}</${tag}>`;
 }
 function caseHTML(pre) {
   const { slots, ks } = shelfSlots(), rib = dSoroiRibs(slots);
@@ -71,7 +78,7 @@ function renderDay() {
   const tip = !pre ? '' : empty ? '棚がからっぽ……今日はお休みかな' : R.kanban ? `今日の看板は ${candyOf(R.kanban).name}` : '看板にするお菓子を、タップしてえらんでね';
   const rows = Math.ceil(Math.min(SHELF_MAX, S.shelfMax || 6) / SHELF_COLS);
   $('screen').innerHTML = `<section class="day fit">
-    <div class="dstage${pre ? ' pre' : ''}${(dEv(R) || {}).cls ? ' ' + dEv(R).cls : ''}" id="dstage" style="--sp:${daySpeed};--p:${R.done ? 1 : Math.min(1, (R.t || 0) / DAY_MS).toFixed(3)}">
+    <div class="dstage${pre ? ' pre' : ''}${(dEv(R) || {}).cls ? ' ' + dEv(R).cls : ''}" id="dstage" style="--sp:${daySpeed};--p:${R.done ? 1 : Math.min(1, (R.t || 0) / dLen(R)).toFixed(3)}">
       ${dayStageBg(sign)}
       <div class="d-cust" id="dCust"></div>
       ${dayStageFront()}
@@ -102,6 +109,7 @@ function openDay() {
     if (!R.ev && S.day >= 3 && Math.random() < EVENT_P) R.ev = pick(DAY_EVENTS).id;   // 昼のできごと（11/19）
     const E = dEv(R);
     R.plan = custPlan(Math.max(2, custCount() + ((E && E.add) || 0)), R.kanban, R.soroi, (E && E.first) || []);
+    R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
     R.lk = {}; R.got = {}; R.miss = {};
     S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
     save(); renderDay();
@@ -123,19 +131,19 @@ function dayLoop() {
 }
 function dayStep(R, dt) {
   R.t += dt;
-  const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / DAY_MS).toFixed(3));   // 外の明るさ（ゲージのかわり）
+  const st = $('dstage'); if (st) st.style.setProperty('--p', Math.min(1, R.t / dLen(R)).toFixed(3));   // 外の明るさ（ゲージのかわり）
   if (R.cur) return visitStep(R, dt);
   if (!S.shelf.some(s => s.n > 0)) return closeDay('ぜんぶ売り切れ！');
   if (R.i >= 1 && !R.mated) { const m = dMateDue(); if (m) return dMateVisit(R, m); }
   /* お客さんのいない間のひとこと（営業の3割・6.5割のところで1回ずつ） */
-  for (const at of [.3, .5, .72]) if (!(R.idle || {})[at] && R.t >= at * DAY_MS) {
+  for (const at of [.3, .5, .72]) if (!(R.idle || {})[at] && R.t >= at * dLen(R)) {
     (R.idle = R.idle || {})[at] = 1;
     const E = dEv(R);
     if (at === .5) { if (E) dSayRun(STORY.pickE(STORY.ev[E.id].mid)); }
     else dSay('idle');
   }
-  if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * DAY_MS / R.plan.length) startVisit(R); }
-  else if (R.t >= DAY_MS) closeDay();
+  if (R.i < R.plan.length) { if (R.t >= (R.i + 0.5) * dLen(R) / R.plan.length) startVisit(R); }
+  else if (R.t >= dLen(R)) closeDay();
 }
 function startVisit(R) {
   const p = R.plan[R.i++];
@@ -153,7 +161,12 @@ function visitStep(R, dt) {
     const r = v.res, out = r.key && dLeft(r.key) <= 0, nm = r.key ? candyOf(r.key).name : '';   // 同じお菓子が2マスあるときは、ぜんぶ売れてから「売り切れ」（11/19）
     if (R.lk && v.like) { R.lk[v.like] = (R.lk[v.like] || 0) + 1; const b = r.kind === 'love' ? R.got : R.miss; b[v.like] = (b[v.like] || 0) + 1; }   // ふり返り（dSum）
     setTimeout(() => out ? dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true) : dSay(r.kind), 700);
-  } else if (v.step === 2 && v.t >= V_LEAVE) {
+  } else if (v.step === 2 && (v.mk || 0) < (v.res.more || 0) && v.t >= V_ASK + V_MORE * ((v.mk || 0) + 1)) {
+    const m = dServeMore(v);   // 「これもおいしそう！」もう1こ（11/19）
+    if (!m) { v.res.more = v.mk || 0; return; }
+    v.mk = (v.mk || 0) + 1; v.last = m; save(); showMore(v, m, false);
+    if (dLeft(m.key) <= 0) setTimeout(() => dSay(m.key === S.today.kanban ? 'kanban' : 'sold', candyOf(m.key).name, true), 700);
+  } else if (v.step === 2 && v.t >= V_LEAVE + V_MORE * (v.mk || 0)) {
     v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
   } else if (v.step === 3 && v.t >= V_END) {
     R.cur = null; const el = custEl(); if (el) el.remove(); save();
@@ -194,7 +207,18 @@ function serve(v) {
   s.n--; S.money += price; T.sales += price; T.served++;
   if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   if (love) { S.rep++; T.hearts++; }
-  return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other') };
+  const more = Math.random() < MORE_P ? (Math.random() < MORE3_P ? 2 : 1) : 0;   // たまに2こ・たまーに3こ（11/19 しょーくん）
+  return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other'), more, got: [s.key] };
+}
+/* もう1こ買う：まだ買っていないお菓子から（すきな味が先）。ハートは1人1つのまま（お金と売れ行きだけ）。棚にないときは買わずに帰る */
+function dServeMore(v) {
+  const T = S.today, items = S.shelf.filter(s => s.n > 0); if (!items.length) return null;
+  const got = v.res.got || [], fresh = items.filter(s => !got.includes(s.key)), pool = fresh.length ? fresh : items;
+  const liked = pool.filter(s => candyHas(s.key, v.like)), s = pick(liked.length ? liked : pool), price = candyOf(s.key).price;
+  s.n--; S.money += price; T.sales += price;
+  if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
+  v.res.got = [...got, s.key];
+  return { key: s.key, say: STORY.custSay(v.c, (v.mk || 0) >= 1 ? 'more3' : 'more') };
 }
 function closeDay(msg) {
   const R = S.dayRun; R.done = true; R.cur = null;
@@ -310,7 +334,7 @@ function showCust(v, now) {
   box.innerHTML = `<div class="cu cu-${v.c}${face ? ' ' + face : ''}${now ? ' at still' : ''}${v.step >= 3 ? ' leave' : ''}">${custHTML(v.c, face, v.vr)}<div class="cu-bub" id="dBub"></div></div>`;
   if (!now) { const el = custEl(); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('at'))); }
   if (v.step === 1) showBubble(v);
-  if (v.step === 2) showResult(v, true);
+  if (v.step === 2) v.mk && v.last ? showMore(v, v.last, true) : showResult(v, true);
 }
 function showBubble(v) {
   const b = $('dBub'); if (!b) return;
@@ -329,6 +353,15 @@ function showResult(v, now) {
   if (now) return;
   if (r.key) soldFx(r.key);
   if (r.kind === 'love') heartFx(b);
+}
+/* もう1こ：吹き出しをお菓子と「これも！」に変えて、もう一度ぽんと出す */
+function showMore(v, m, now) {
+  const b = $('dBub'); if (!b) return;
+  b.className = 'cu-bub res other more';
+  b.innerHTML = `${candyIcon(m.key)}<span>${esc(m.say)}</span>`;
+  if (now) { b.classList.add('show'); return; }
+  void b.offsetWidth; b.classList.add('show');
+  soldFx(m.key);
 }
 /* 売れた：棚を描きなおして、そのマスに「売れた！」 */
 function soldFx(key) {
