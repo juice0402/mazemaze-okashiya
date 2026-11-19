@@ -15,10 +15,10 @@ function startDay() {
   const k = S.morning && S.morning.kanban, kan = k && S.shelf.some(s => s.key === k && s.n > 0) ? k : null;
   S.dayRun = { open: false, done: false, kanban: kan, t: 0, plan: [], i: 0, cur: null };
 }
-/* 昼をおえる（flow.js の goEvening から呼ぶ）：売り切れのマスを棚からはずす（売れのこりは次の日も棚に） */
+/* 昼をおえる（flow.js の goEvening から呼ぶ）：売れのこりは今日でおしまい（11/19 しょーくん「単純にロストでいい。売らないと損になるし、看板とか集客を買う意味も出てくる」）→ 毎朝、棚はからっぽ */
 function stopDay() {
   clearTimeout(dayTick); dayTick = 0;
-  S.shelf = S.shelf.filter(s => s.n > 0);
+  S.shelf = [];
 }
 
 /* ---------- 棚：3列・看板の枠はまんなか（hiru.js の kanbanSlot） ---------- */
@@ -150,9 +150,9 @@ function visitStep(R, dt) {
     if (S.day === 1 && !S.seen.dayBubble) { S.seen.dayBubble = 1; save(); talk(STORY.dayBubble, () => {}, { dim: false }); }
   } else if (v.step === 1 && v.t >= V_ASK) {
     v.step = 2; v.res = serve(v); save(); showResult(v, false);
-    const r = v.res, it = r.key && S.shelf.find(s => s.key === r.key), nm = r.key ? candyOf(r.key).name : '';
+    const r = v.res, out = r.key && dLeft(r.key) <= 0, nm = r.key ? candyOf(r.key).name : '';   // 同じお菓子が2マスあるときは、ぜんぶ売れてから「売り切れ」（11/19）
     if (R.lk && v.like) { R.lk[v.like] = (R.lk[v.like] || 0) + 1; const b = r.kind === 'love' ? R.got : R.miss; b[v.like] = (b[v.like] || 0) + 1; }   // ふり返り（dSum）
-    setTimeout(() => it && it.n <= 0 ? dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true) : dSay(r.kind), 700);
+    setTimeout(() => out ? dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true) : dSay(r.kind), 700);
   } else if (v.step === 2 && v.t >= V_LEAVE) {
     v.step = 3; const el = custEl(); if (el) el.classList.add('leave');
   } else if (v.step === 3 && v.t >= V_END) {
@@ -173,13 +173,15 @@ function dMateDue() {
 }
 function dMateVisit(R, m) {
   R.mated = 1;
-  const T = S.today, it = S.shelf.find(s => s.key === m.key), price = candyOf(m.key).price;
+  const T = S.today, it = S.shelf.find(s => s.key === m.key && s.n > 0), price = candyOf(m.key).price;   // 売り切れのマスをえらばない（11/19：同じお菓子が2マスのとき n がマイナスになった）
   it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
-  if (it.n <= 0 && it.key === T.kanban) T.kanbanSoldOut = true;
+  if (it.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   S.seen['mate:' + m.id] = S.day; save();
   const cs = $('dCase'); if (cs) cs.innerHTML = caseHTML(false);
   talk(STORY.mateVisit[m.id](), () => { save(); renderDay(); });
 }
+/* そのお菓子が棚にあと何こ（同じお菓子が2マス以上あってもぜんぶ数える） */
+const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
 /* 買う：すきな素材が入ったお菓子（看板が先・なければ高いほう）→ ハート。なければ OTHER_BUY の人がほかのを1こ */
 function serve(v) {
   const T = S.today, R = S.dayRun, items = S.shelf.filter(s => s.n > 0);
@@ -190,21 +192,22 @@ function serve(v) {
   if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
   const price = candyOf(s.key).price;
   s.n--; S.money += price; T.sales += price; T.served++;
-  if (s.n <= 0 && s.key === T.kanban) T.kanbanSoldOut = true;
+  if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   if (love) { S.rep++; T.hearts++; }
   return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other') };
 }
 function closeDay(msg) {
   const R = S.dayRun; R.done = true; R.cur = null;
   clearTimeout(dayTick); dayTick = 0;
+  const loss = S.shelf.some(s => s.n > 0) && !S.seen.loss ? (S.seen.loss = S.day, STORY.lossFirst) : [];   // 売れのこりは今日でおしまい（はじめての日だけ ほのかが言う）
   save(); if (msg) toast(msg);
   renderDay();
   setTimeout(() => {
     const sd = dSum(R), E = dEv(R);
-    const lines = [...(E ? STORY.pickE(STORY.ev[E.id].close) : []), ...(sd ? STORY.fill(STORY.pickE(STORY.sum[sd.k]), sd) : [])];
+    const lines = [...loss, ...(E ? STORY.pickE(STORY.ev[E.id].close) : []), ...(sd ? STORY.fill(STORY.pickE(STORY.sum[sd.k]), sd) : [])];
     lines.length ? dSayRun(lines.slice(0, 3)) : dSay('close', '', true);
   }, 500);
-  if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk(STORY.dayClose(S.today), () => {}, { dim: false }); }
+  if (S.day === 1 && !S.seen.dayClose) { S.seen.dayClose = 1; save(); talk([...STORY.dayClose(S.today), ...loss], () => {}, { dim: false }); }
 }
 
 /* ---------- 昼のお店のひとこと（11/19）：文は STORY.daySay。舞台の下に小さく出して消える（会話の窓にしない＝営業は止めない）
