@@ -209,11 +209,11 @@ const FIELDS = {
   /* わかば①くだものケーキのフィールド（11/19 しょーくん：のびのび肥料・すくすく肥料・ケーキの味パワーのデコ）。start がない＝温度も火力も変えない。alt は絵が届くまでの仮の絵
      slowGrow＝くだものが育つのは2ラウンドに1回・fruitMul＝くだものの効果×（ripeMul＝熟した実・11/19 しょーくん「成長しきったら3倍くらい」）・growAdd＝ラウンドの終わりに多く育つ段
      decoHits＝ケーキが発動すると、デコの連撃 [ふつうのケーキ, 熟した実をのせた★3] 回・decoRate＝1回の味パワー（そのケーキの1割・11/19 しょーくん「連続で大量にヒットする爽快感」） */
-  nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 3, alt: 'field-hatake', chips: ['育つのは2回に1回', '熟した実の効果×3'], long: [['', '{くだもの}が育つのは 2ラウンドに1回'], ['', '{くだもの}の効果×2・{熟した実}は×3']] },
-  suku:    { name: 'すくすく肥料', growAdd: 1, alt: 'card-hiryo', chips: ['1ターンはやく熟す'], long: [['', '{くだもの}が1ラウンドに2段育つ']] },
-  decodai: { name: 'デコレーション台', decoHits: [5, 10], decoRate: 0.1, alt: 'field-terrace', chips: ['ケーキがデコ5連撃', '実のケーキは10連撃'], long: [['', 'ケーキの発動で デコの5連撃（実のケーキは10連撃）']] },
+  nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 3, alt: 'field-hatake', chips: ['育つのは 2回に1回', '熟した実の 効果×3'], long: [['', '{くだもの}が育つのは 2ラウンドに1回'], ['', '{くだもの}の効果×2・{熟した実}は×3']] },
+  suku:    { name: 'すくすく肥料', growAdd: 1, alt: 'card-hiryo', chips: ['1ターン はやく熟す'], long: [['', '{くだもの}が1ラウンドに2段育つ']] },
+  decodai: { name: 'デコレーション台', decoHits: [5, 10], decoRate: 0.1, alt: 'field-terrace', chips: ['ケーキが デコ5連撃', '実のケーキは 10連撃'], long: [['', 'ケーキの発動で デコの5連撃（実のケーキは10連撃）']] },
   /* わかば②飴ジャムの場（11/19 しょーくん：フィールドを持たず、場がいつも大きなびん）。fixed＝買えない・うれない・入れかわらない */
-  oobin:   { name: '大きなびん', fixed: 1, alt: 'card-ookibin', chips: ['実3つでジャム'], long: [['', '{くだもの}を3つ入れると★3の{ジャム}が生まれる'], ['', 'ずっと場にある（うれない）']] },
+  oobin:   { name: '大きなびん', fixed: 1, alt: 'card-ookibin', chips: ['実3つで ジャム'], long: [['', '{くだもの}を3つ入れると★3の{ジャム}が生まれる'], ['', 'ずっと場にある（うれない）']] },
 };
 
 /* シェフ：特性と、シェフの2ビルドで共通の素材と道具。草のパティシエは、あとで常連さんから仲間になる（素材も道具も別）
@@ -470,61 +470,60 @@ const jamFinOf = (fx, star = 1) => fx.jamFin + 0.25 * (star - 1);
 
 /* 大きく見る画面の効果：[いつ, なにが起きる]（ゼンゼロの形）。いつ＝スタート・アンカー（置く場所）か、発動時・常時・バトル開始時・焼かれるとき・焦げたとき・置いたとき
    文の {ことば} は黄色で、タップすると KW の説明。状態（いまは焦げ）は「○○状態にならない」の形で、ほかの状態がふえても同じ書き方 */
-/* 大きく見る画面の効果の行（11/19 しょーくん「文字が多すぎて全然わからない・長くても2行に・書かなくていいことは省く」）：
-   1行は26字くらいまで（画面で2行）。そのカードだけのことを書く（大作の育ち方・冷えたら本気・まぜられる温度など、ビルドのきまりは {完成} などのことばの説明とヒントで）。
-   いつの札は スタート・アンカーだけ（11/19 しょーくん「常時とか開始時とかも書かなくてもわかる」）。ほかは '' にして、いるときだけ文に「置くと」「こねると」と書く */
+/* カードの効果の文（11/19 しょーくん「ゼンゼロみたいに究極にシンプルに」「1つの文にそろえる」）：カードの紙に出す文はこれだけ（大きく見ても同じ）。
+   [いつ, 文]。いつはスタート・アンカーだけ（紙では「スタート：…」）。1枚の紙で2行におさまるように、文は短く（16字くらいまで）。{ことば} は黄色でタップすると説明 */
 function fxLong(fx, star = 1) {
   const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-  if (fx.taisaku) p.push(['', `{完成}して冷えたら 味パワー×${fx.done}`]);
-  if (fx.candy) p.push(['', `{れんさ}+1。冷えるほど強い（ひえひえ×${COLD_MUL[1]}）`]);
-  if (fx.lead) p.push(['スタート', `このカードの味パワー×${fx.lead}`]);
-  if (fx.candyLead) p.push(['スタート', `キャンディぜんぶの味パワー×${fx.candyLead}`]);
-  if (fx.sai) p.push(['アンカー', `{サイコー}の生地1枚ごとに このカード×${fx.sai + 0.5 * (star - 1)}`]);
-  if (fx.fin) p.push(['アンカー', `このラウンドの合計×${fx.fin}`]);
-  if (fx.chainFin) p.push(['アンカー', `合計×（1＋${chainFinOf(fx, star)}×{れんさ}の数）`]);
-  if (fx.doneFin) p.push(['アンカー', `合計×（1＋${doneFinOf(fx, star)}×冷えた{完成}の数）`]);
-  if (fx.koneFin) p.push(['アンカー', `合計×（1＋${koneFinOf(fx, star)}×{こね}た回数）`]);
-  if (fx.ripeFin) p.push(['アンカー', `{熟した実}1つごとに このカード×${ripeFinOf(fx, star)}`]);
-  if (fx.jamFin) p.push(['アンカー', `合計×（1＋${jamFinOf(fx, star)}×作った{ジャム}の数）`]);
-  if (fx.jamLead) p.push(['スタート', `ジャムのカードぜんぶ×${fx.jamLead}`]);
-  if (fx.rollGrow) p.push(['スタート', '{くだもの}ぜんぶが1段育つ']);
-  if (fx.tartFruit) p.push(['', `となりが{くだもの}なら このカード×${fx.tartFruit}`]);
-  if (fx.fruitAgain) p.push(['', '右が{くだもの}なら もう1回発動']);
-  if (fx.perGrow) p.push(['', `実が1段育つたびに このカード+${f(fx.perGrow)}`]);
-  if (fx.binNow) p.push(['', `{大きなびん}の実1つにつき このカード+${f(fx.binNow)}`]);
-  if (fx.perJam) p.push(['', `作った{ジャム}1つにつき このカード+${f(fx.perJam)}`]);
-  if (fx.shine) p.push(['', `右がジャムなら その味パワー×${fx.shine}`]);
-  if (fx.toro) p.push(['', '{熟した実}は びんに2つ分入る']);
-  if (fx.madeJam) p.push(['', '入れた実の効果がのったジャム']);
-  if (fx.fruitCake) p.push(['', '{熟した実}の効果がのったケーキ']);
-  if (fx.rally) p.push(['スタート', `主役のカードぜんぶ+${f(fx.rally)}`]);
-  if (fx.doneRally) p.push(['スタート', `冷えた{完成}があれば 主役ぜんぶ+${f(fx.doneRally)}`]);
-  if (fx.koneRally) p.push(['スタート', `パン生地ぜんぶ+${f(fx.koneRally)}×{こね}た回数`]);
-  if (fx.perKone) p.push(['', `{こね}た回数1回ごとに このカード+${f(fx.perKone)}`]);
-  if (fx.perChain) p.push(['', `{れんさ}1につき このカード+${f(fx.perChain)}`]);
-  if (fx.petit) p.push(['', `小さな飴を${fx.petit}こ飛ばす（1こ${f(PETIT_DMG)}・{れんさ}+1）`]);
-  if (fx.link) p.push(['', `両どなりがキャンディなら {れんさ}+${fx.link}`]);
-  if (fx.coldAgain) p.push(['', 'ひんやり以下なら もう1回発動']);
-  if (fx.next) p.push(['', `次の主役のカード×${fx.next}`]);
-  if (fx.nb) p.push(['', `両どなりのカード+${f(fx.nb)}`]);
-  if (fx.again) p.push(['', `右のカードを もう${fx.again}回発動`]);
-  if (fx.koneUp) p.push(['', `{こね}た回数+${fx.koneUp}`]);
-  if (fx.tane2) p.push(['', `こねると {パン種}が${fx.tane2}こ多く生まれる`]);
-  if (fx.taneSpawn) p.push(['', `置くと 空いたマスに{パン種}が${fx.taneSpawn}こ生まれる`]);
-  if (fx.stop) p.push(['', 'ほかの生地も{焦げ}ない（{サイコー}で止まる）']);
-  if (fx.noburn) p.push(['', '{焦げ}ない（{サイコー}で止まる）']);
-  if (fx.sear) p.push(['', `右の生地の{焼き加減}+${fx.sear}`]);
-  if (fx.grow && !(fx.chainUp && candyNight())) p.push(['', `右の大作の大きさ+${fx.grow}`]);
-  if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}（{れんさ}が切れない）`]);
-  if (fx.water) p.push(['', `右の{くだもの}が${fx.water}段育つ`]);
-  if (fx.fert) p.push(['', 'ラウンドの終わりに 実ぜんぶ もう1段育つ']);
-  if (fx.scare) p.push(['', `両どなりの{くだもの}の効果×${fx.scare}`]);
-  if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚出る`]);
-  if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
-  if (fx.heat) { const H = heatOf(); p.push(['', `${H.of}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }
-  if (fx.call) p.push(['', binNight() ? '次のショップに {熟した実}が1枚出る' : '次のショップに フィールドが1枚出る']);
-  if (fx.bitter && !fx.noburn) p.push(['', '焦げると 焦げ焦げクッキー★2になる']);
-  if (fx.spd) p.push(fx.taisaku ? ['', `大きさが${Math.abs(fx.spd)}段${fx.spd > 0 ? '多く' : '少なく'}育つ`] : ['', `焼かれると {焼き加減}が${Math.abs(fx.spd)}段${fx.spd > 0 ? '多く' : '少なく'}進む`]);
+  if (fx.taisaku) p.push(['', `{完成}して 冷えたら ×${fx.done}`]);
+  if (fx.lead) p.push(['スタート', `味パワー×${fx.lead}`]);
+  if (fx.candyLead) p.push(['スタート', `キャンディ ぜんぶ×${fx.candyLead}`]);
+  if (fx.sai) p.push(['アンカー', `{サイコー}1枚 ごとに×${fx.sai + 0.5 * (star - 1)}`]);
+  if (fx.fin) p.push(['アンカー', `合計×${fx.fin}`]);
+  if (fx.chainFin) p.push(['アンカー', `合計×（1＋${chainFinOf(fx, star)} ×{れんさ}）`]);
+  if (fx.doneFin) p.push(['アンカー', `合計×（1＋${doneFinOf(fx, star)} ×{完成}）`]);
+  if (fx.koneFin) p.push(['アンカー', `合計×（1＋${koneFinOf(fx, star)} ×{こね}）`]);
+  if (fx.ripeFin) p.push(['アンカー', `{熟した実}1つ ごとに×${ripeFinOf(fx, star)}`]);
+  if (fx.jamFin) p.push(['アンカー', `合計×（1＋${jamFinOf(fx, star)} ×{ジャム}）`]);
+  if (fx.jamLead) p.push(['スタート', `ジャム ぜんぶ×${fx.jamLead}`]);
+  if (fx.rollGrow) p.push(['スタート', '{くだもの} ぜんぶ 1段育つ']);
+  if (fx.tartFruit) p.push(['', `となりが {くだもの}なら ×${fx.tartFruit}`]);
+  if (fx.fruitAgain) p.push(['', '右が {くだもの}なら もう1回']);
+  if (fx.perGrow) p.push(['', `実が育つ たびに+${f(fx.perGrow)}`]);
+  if (fx.binNow) p.push(['', `びんの実 1つにつき+${f(fx.binNow)}`]);
+  if (fx.perJam) p.push(['', `{ジャム}1つ につき+${f(fx.perJam)}`]);
+  if (fx.shine) p.push(['', `右のジャム ×${fx.shine}`]);
+  if (fx.toro) p.push(['', '{熟した実}は 2つ分']);
+  if (fx.madeJam) p.push(['', '入れた実の 効果がのる']);
+  if (fx.fruitCake) p.push(['', '{熟した実}の 効果がのる']);
+  if (fx.rally) p.push(['スタート', `主役ぜんぶ +${f(fx.rally)}`]);
+  if (fx.doneRally) p.push(['スタート', `{完成}があれば 主役+${f(fx.doneRally)}`]);
+  if (fx.koneRally) p.push(['スタート', `パンぜんぶ +${f(fx.koneRally)}×{こね}`]);
+  if (fx.perKone) p.push(['', `{こね}1回 ごとに+${f(fx.perKone)}`]);
+  if (fx.perChain) p.push(['', `{れんさ}1 ごとに+${f(fx.perChain)}`]);
+  if (fx.petit) p.push(['', `小さな飴を ${fx.petit}こ飛ばす`]);
+  if (fx.link) p.push(['', `両どなりが 飴なら {れんさ}+${fx.link}`]);
+  if (fx.coldAgain) p.push(['', 'ひんやり以下で もう1回']);
+  if (fx.next) p.push(['', `次の主役 ×${fx.next}`]);
+  if (fx.nb) p.push(['', `両どなり +${f(fx.nb)}`]);
+  if (fx.again) p.push(['', `右を もう${fx.again}回発動`]);
+  if (fx.koneUp) p.push(['', `{こね}+${fx.koneUp}`]);
+  if (fx.tane2) p.push(['', `こねると {パン種}+${fx.tane2}`]);
+  if (fx.taneSpawn) p.push(['', `置くと {パン種}が${fx.taneSpawn}こ`]);
+  if (fx.stop) p.push(['', 'ぜんぶの生地が {焦げ}ない']);
+  if (fx.noburn) p.push(['', '{焦げ}ない']);
+  if (fx.sear) p.push(['', `右の生地の {焼き加減}+${fx.sear}`]);
+  if (fx.grow && !(fx.chainUp && candyNight())) p.push(['', `右の大作の 大きさ+${fx.grow}`]);
+  if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}・ 切れない`]);
+  if (fx.water) p.push(['', `右の{くだもの}が ${fx.water}段育つ`]);
+  if (fx.fert) p.push(['', '終わりに 実ぜんぶ 1段育つ']);
+  if (fx.scare) p.push(['', `両どなりの {くだもの}×${fx.scare}`]);
+  if (fx.basket) p.push(['', `次のショップに 花${fx.basket}枚`]);
+  if (fx.soon) p.push(['', '{青い実}で 右をもう1回']);
+  if (fx.heat) { const H = heatOf(); p.push(['', `${H.of} {${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }
+  if (fx.call) p.push(['', binNight() ? '次のショップに {熟した実}' : '次のショップに フィールド']);
+  if (fx.bitter && !fx.noburn) p.push(['', '焦げると ★2になる']);
+  if (fx.spd) p.push(['', fx.taisaku ? (fx.spd > 0 ? 'よく育つ' : '育ちにくい') : fx.spd > 0 ? '{焼き加減}が 進みやすい' : '{焼き加減}が 進みにくい']);
+  if (fx.candy && !p.length) p.push(['', '{れんさ}+1・ 冷えるほど強い']);   // キャンディのきまり（れんさ・冷えるほど強い）は、ほかの効果がないカードだけに書く（ことばの説明にもある）
   return p;
 }
 /* ことばの説明（黄色いことばと、いつの札をタップすると出る） */
@@ -552,7 +551,7 @@ const KW = {   // 11/19 しょーくん「長くても2行」：説明の吹き�
   完成: '大きさ9の大作。冷えたら本気（それまで×0.3）',
   固まる: '飴が冷えて、大作が本気になること（それまで×0.3）',
   /* みなも②（11/19） */
-  れんさ: 'キャンディが続けて発動した数。素材や道具で0にもどる',
+  れんさ: 'キャンディが続けて発動した数（冷えるほど強い）。素材や道具で0にもどる',
   ちいさなキャンディ: '小さな飴（1こ味パワー10）。れんさに数える',
   /* わかば（11/19） */
   くだもの: 'わかばの素材。ラウンドの終わりに 花→青い実→熟した実 と育つ',

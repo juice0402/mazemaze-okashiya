@@ -60,16 +60,45 @@ function powBadge(dmg) {
   return `<b class="pc-pow l${Math.min(t.length, 5)}${pw}">${t}</b>`;
 }
 /* カードの形（mini と huge は同じ形で大きさだけちがう）。紙は1つの効果を1行で、上から大事な2つまで */
+/* カードの効果の文（11/19 しょーくん「ゼンゼロみたいに1つの文」）：紙に出す文と、大きく見たときの文は同じ。フィールドは短い札の文（FIELDS の chips）。
+   返すのは [{ t: 長さを数える字, h: HTML }]。効果のない★1は役目だけ（plain） */
+function cardSents(d, tap) {
+  if (d.cat === 'field') return FIELDS[d.cid.slice(2)].chips.map(t => ({ t, h: chunkHTML(t, c => kwShort(c, tap)) }));
+  const rows = fxLong(d.fx, d.star);
+  if (!rows.length) return [{ t: plainLine(d), h: chunkHTML(plainLine(d), esc), plain: true }];
+  return rows.map(([w, x]) => { const t = w ? `{${w}}：${x}` : x; return { t, h: chunkHTML(t, c => kwLong(c, tap)) }; });
+}
+/* 文のかたまり：半角スペースと「：」のあとだけで折り返す（「味パ｜ワー」のように ことばの とちゅうで切れないように） */
+const sentChunks = t => t.replace(/：/g, '：\n').split(/ |\n/).filter(Boolean);
+function chunkHTML(t, f) {
+  const out = []; let buf = '';
+  for (const ch of t) { if (ch === ' ') { if (buf) out.push(buf); out.push(' '); buf = ''; } else { buf += ch; if (ch === '：') { out.push(buf); buf = ''; } } }
+  if (buf) out.push(buf);
+  return out.map(c => c === ' ' ? ' ' : `<span class="cw">${f(c)}</span>`).join('');
+}
+/* 紙の文の字の大きさ：紙の内側（幅64cqw・高さ21.5cqw）に、折り返して入る いちばん大きい字（9cqw まで）。黄色いことばは ふちの分だけ広く数える */
+function faceFs(S) {
+  const sents = S.map(x => sentChunks(x.t).map(c => textW(c.replace(/[{}]/g, '')) + (c.match(/\{/g) || []).length * .5));
+  for (let fs = 9; fs > 4.5; fs -= .25) {
+    let lines = 0, ok = true;
+    for (const cs of sents) {
+      let x = 0; lines++;
+      for (const w of cs) { const px = w * fs; if (px > 64) { ok = false; break; } const need = x ? x + .4 * fs + px : px; if (need > 64) { lines++; x = px; } else x = need; }
+      if (!ok) break;
+    }
+    if (ok && lines * 1.2 * fs <= 21.5) return fs;
+  }
+  return 4.5;
+}
 function cardFace(cid, cls, opt = {}) {
   const d = cardDef(cid), dmg = cardDmg(d, opt.cook), lines = cardChips(d).slice(0, 2);
   const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = 64;   // 紙の字の幅（cqw・ふちの絵の紙の内側）。11/19 しょーくん「カードが切れてる」：実機の字はテストより太いので70→64・黄色いことばは1つ4つめる。焼き加減・大きさは右上へ（11/19 しょーくん「文字が見えない」）
-  const txt = lines.length ? lines.map(t => `<span class="ln" style="font-size:${fitFs(t, w - 4 * (t.match(KW_SHORT) || []).length)}cqw">${kwShort(t, opt.tap)}</span>`).join('')   // 黄色いことばは ふちの分だけ広いので、その分つめる（11/19「×2」が切れていた）
-    : `<span class="ln plain">${esc(plainLine(d))}</span>`;
+  const S = cardSents(d, opt.tap), txt = S.map(x => `<span class="sn${x.plain ? ' plain' : ''}">${x.h}</span>`).join('');   // 1つの文（折り返して2行まで・11/19）
   const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
     <div class="pc-name"><span style="font-size:${nameFs(d.short)}cqw">${esc(d.short)}</span></div>${attrBar(d)}
-    <div class="pc-text"><span class="pl">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
+    <div class="pc-text"><span class="pl sents" style="font-size:${faceFs(S)}cqw">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
     ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
   </div>`;
 }
@@ -83,13 +112,11 @@ function cardTile(cid, opt = {}) {
     ${cook != null ? `${meterIcon(d, cook, opt.ice)}<i class="cook${d.grow ? ' am' : ''} c${cookStage(cook)}" style="--c:${cook}"></i>` : ''}${glossI(d)}</div>`;
 }
 function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook, tap: true }); }
-/* 大きなカードの下（ゼンゼロの形・11/18 しょーくん）：名前・属性・焼き加減はカードに出ているので書かない。材料も出さない
-   効果を1行ずつ [いつ] なにが起きる。いつの札とことばはタップで説明 */
+/* 大きなカードの下の「見開き」（11/19 しょーくん「一応、見開きとして残そう。基本は見たらわかるレベルに」）：
+   カードの文はカードに出ているのでくり返さない。文に出てくる黄色いことばの説明だけを並べる（ことばがなければ窓は出さない） */
 function cardInfo(cid) {
-  const d = cardDef(cid);
-  let rows = d.cat === 'field' ? FIELDS[d.cid.slice(2)].long : fxLong(d.fx, d.star);
-  if (!rows.length) rows = [['', d.role === '主役' ? 'モンスターに味パワーをとどける' : plainLine(d)]];
-  return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${rows.map(([t, x]) => t   // いつの札はスタート・アンカーだけ（11/19）。ないときは文を左はしから
-    ? `<b class="tg${t === 'スタート' || t === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${t}">${t}</b><p>${kwLong(x, true)}</p>`
-    : `<p class="wide">${kwLong(x, true)}</p>`).join('')}</div></div>`;
+  const d = cardDef(cid), words = [];
+  for (const x of cardSents(d)) for (const m of x.t.matchAll(/\{([^}]+)\}|スタート|アンカー|サイコー|火力|焦げ|パン種|こね|温度|熟した実/g)) { const w = m[1] || m[0]; if (KW[w] && !words.includes(w)) words.push(w); }
+  if (!words.length) return '';
+  return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${words.map(w => `<b class="tg${w === 'スタート' || w === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${w}">${w}</b><p>${esc(KW[w])}</p>`).join('')}</div></div>`;
 }

@@ -700,6 +700,10 @@ background:linear-gradient(rgba(255,236,200,.55),rgba(255,236,200,0) 35%) paddin
 .pc:not(.tile):not(.ci-card) .pc-text{justify-content:flex-start;padding-left:3.5cqw}
 .pc:not(.tile):not(.ci-card) .pc-text span.ln{text-align:left}
 .cinfo .ci-fx p.wide{grid-column:1/-1}
+.pc-text span.pl.sents{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center;gap:.8cqw;line-height:1.2;overflow:visible;-webkit-line-clamp:unset}
+.pc-text span.sn{display:block;font-size:inherit;font-weight:900;line-height:1.2;color:#4a2414;white-space:normal;overflow:visible;-webkit-line-clamp:unset;line-break:strict;text-align:left}
+.pc-text span.sn.plain{font-weight:700;color:#9a7458}
+.pc-text span.cw{display:inline-block;font-size:inherit;white-space:nowrap;overflow:visible;-webkit-line-clamp:unset;color:inherit;font-weight:inherit;line-height:inherit}
 .deco{position:absolute;inset:0;z-index:8;pointer-events:none;container-type:size;border-radius:inherit}
 .dc-frame{position:absolute;inset:0;border:10px solid transparent;border-image:var(--ui-stage-frame) 74/20px round;box-shadow:inset 0 0 14px 4px rgba(20,8,2,.45)}
 .dc-medal{position:absolute;left:50%;top:-1px;width:36px;aspect-ratio:150/157;translate:-50% 0;background:var(--ui-stage-medal) center/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
@@ -1148,6 +1152,10 @@ background:linear-gradient(135deg,#fff,#c6edff 50%,#6cc4f0);animation:awice .75s
 .fwall.leaf .fw-t{width:16%;border-radius:50% 50% 12% 12% / 90% 90% 10% 10%;background:radial-gradient(46% 14% at 50% 7%,#e2f8a8,transparent 72%),linear-gradient(90deg,transparent 30%,rgba(130,190,60,.92) 42%,rgba(196,238,118,.96) 50%,rgba(112,172,52,.92) 58%,transparent 70%)}
 .tkws{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0 6px;height:34px;margin:3px 0 -2px;padding:0 9px;pointer-events:none}
 .tkw{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;font-style:normal}
+.night .shopov{inset:0;padding-left:3px;padding-right:3px}
+.night .sh-cards{gap:12px 6px}
+.night .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 44px) * .714),150px)}
+.night .shopov.many .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 30px) / 2 * .714),150px)}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -1963,10 +1971,10 @@ oonabe: { name: '飴の大鍋', start: 4, chips: ['とろとろにする'], long
 kobo:   { name: 'ガラスの工房', start: 3, slow: 1, chips: ['あたたかにする', '冷めにくい'], long: [['', '飴の{温度}が あたたか になる'], ['', '2ラウンドに1回しか冷めない']] },
 dairiseki: { name: '大理石の台', start: 2, chain0: 1, chips: ['ひんやりにする', 'れんさ1から'], long: [['', '飴の{温度}が ひんやり になる'], ['', '{れんさ}が1から始まる']] },
 yatai:     { name: 'キャンディの屋台', start: 2, petit: 1, chips: ['ひんやりにする', 'ちいさな飴+1'], long: [['', '飴の{温度}が ひんやり になる'], ['', '小さな飴を1こ多く飛ばす']] },
-nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 3, alt: 'field-hatake', chips: ['育つのは2回に1回', '熟した実の効果×3'], long: [['', '{くだもの}が育つのは 2ラウンドに1回'], ['', '{くだもの}の効果×2・{熟した実}は×3']] },
-suku:    { name: 'すくすく肥料', growAdd: 1, alt: 'card-hiryo', chips: ['1ターンはやく熟す'], long: [['', '{くだもの}が1ラウンドに2段育つ']] },
-decodai: { name: 'デコレーション台', decoHits: [5, 10], decoRate: 0.1, alt: 'field-terrace', chips: ['ケーキがデコ5連撃', '実のケーキは10連撃'], long: [['', 'ケーキの発動で デコの5連撃（実のケーキは10連撃）']] },
-oobin:   { name: '大きなびん', fixed: 1, alt: 'card-ookibin', chips: ['実3つでジャム'], long: [['', '{くだもの}を3つ入れると★3の{ジャム}が生まれる'], ['', 'ずっと場にある（うれない）']] },
+nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 3, alt: 'field-hatake', chips: ['育つのは 2回に1回', '熟した実の 効果×3'], long: [['', '{くだもの}が育つのは 2ラウンドに1回'], ['', '{くだもの}の効果×2・{熟した実}は×3']] },
+suku:    { name: 'すくすく肥料', growAdd: 1, alt: 'card-hiryo', chips: ['1ターン はやく熟す'], long: [['', '{くだもの}が1ラウンドに2段育つ']] },
+decodai: { name: 'デコレーション台', decoHits: [5, 10], decoRate: 0.1, alt: 'field-terrace', chips: ['ケーキが デコ5連撃', '実のケーキは 10連撃'], long: [['', 'ケーキの発動で デコの5連撃（実のケーキは10連撃）']] },
+oobin:   { name: '大きなびん', fixed: 1, alt: 'card-ookibin', chips: ['実3つで ジャム'], long: [['', '{くだもの}を3つ入れると★3の{ジャム}が生まれる'], ['', 'ずっと場にある（うれない）']] },
 };
 const CHEFS = {
 honoka: {
@@ -2180,56 +2188,56 @@ const ripeFinOf = (fx, star = 1) => fx.ripeFin + 0.5 * (star - 1);
 const jamFinOf = (fx, star = 1) => fx.jamFin + 0.25 * (star - 1);
 function fxLong(fx, star = 1) {
 const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-if (fx.taisaku) p.push(['', `{完成}して冷えたら 味パワー×${fx.done}`]);
-if (fx.candy) p.push(['', `{れんさ}+1。冷えるほど強い（ひえひえ×${COLD_MUL[1]}）`]);
-if (fx.lead) p.push(['スタート', `このカードの味パワー×${fx.lead}`]);
-if (fx.candyLead) p.push(['スタート', `キャンディぜんぶの味パワー×${fx.candyLead}`]);
-if (fx.sai) p.push(['アンカー', `{サイコー}の生地1枚ごとに このカード×${fx.sai + 0.5 * (star - 1)}`]);
-if (fx.fin) p.push(['アンカー', `このラウンドの合計×${fx.fin}`]);
-if (fx.chainFin) p.push(['アンカー', `合計×（1＋${chainFinOf(fx, star)}×{れんさ}の数）`]);
-if (fx.doneFin) p.push(['アンカー', `合計×（1＋${doneFinOf(fx, star)}×冷えた{完成}の数）`]);
-if (fx.koneFin) p.push(['アンカー', `合計×（1＋${koneFinOf(fx, star)}×{こね}た回数）`]);
-if (fx.ripeFin) p.push(['アンカー', `{熟した実}1つごとに このカード×${ripeFinOf(fx, star)}`]);
-if (fx.jamFin) p.push(['アンカー', `合計×（1＋${jamFinOf(fx, star)}×作った{ジャム}の数）`]);
-if (fx.jamLead) p.push(['スタート', `ジャムのカードぜんぶ×${fx.jamLead}`]);
-if (fx.rollGrow) p.push(['スタート', '{くだもの}ぜんぶが1段育つ']);
-if (fx.tartFruit) p.push(['', `となりが{くだもの}なら このカード×${fx.tartFruit}`]);
-if (fx.fruitAgain) p.push(['', '右が{くだもの}なら もう1回発動']);
-if (fx.perGrow) p.push(['', `実が1段育つたびに このカード+${f(fx.perGrow)}`]);
-if (fx.binNow) p.push(['', `{大きなびん}の実1つにつき このカード+${f(fx.binNow)}`]);
-if (fx.perJam) p.push(['', `作った{ジャム}1つにつき このカード+${f(fx.perJam)}`]);
-if (fx.shine) p.push(['', `右がジャムなら その味パワー×${fx.shine}`]);
-if (fx.toro) p.push(['', '{熟した実}は びんに2つ分入る']);
-if (fx.madeJam) p.push(['', '入れた実の効果がのったジャム']);
-if (fx.fruitCake) p.push(['', '{熟した実}の効果がのったケーキ']);
-if (fx.rally) p.push(['スタート', `主役のカードぜんぶ+${f(fx.rally)}`]);
-if (fx.doneRally) p.push(['スタート', `冷えた{完成}があれば 主役ぜんぶ+${f(fx.doneRally)}`]);
-if (fx.koneRally) p.push(['スタート', `パン生地ぜんぶ+${f(fx.koneRally)}×{こね}た回数`]);
-if (fx.perKone) p.push(['', `{こね}た回数1回ごとに このカード+${f(fx.perKone)}`]);
-if (fx.perChain) p.push(['', `{れんさ}1につき このカード+${f(fx.perChain)}`]);
-if (fx.petit) p.push(['', `小さな飴を${fx.petit}こ飛ばす（1こ${f(PETIT_DMG)}・{れんさ}+1）`]);
-if (fx.link) p.push(['', `両どなりがキャンディなら {れんさ}+${fx.link}`]);
-if (fx.coldAgain) p.push(['', 'ひんやり以下なら もう1回発動']);
-if (fx.next) p.push(['', `次の主役のカード×${fx.next}`]);
-if (fx.nb) p.push(['', `両どなりのカード+${f(fx.nb)}`]);
-if (fx.again) p.push(['', `右のカードを もう${fx.again}回発動`]);
-if (fx.koneUp) p.push(['', `{こね}た回数+${fx.koneUp}`]);
-if (fx.tane2) p.push(['', `こねると {パン種}が${fx.tane2}こ多く生まれる`]);
-if (fx.taneSpawn) p.push(['', `置くと 空いたマスに{パン種}が${fx.taneSpawn}こ生まれる`]);
-if (fx.stop) p.push(['', 'ほかの生地も{焦げ}ない（{サイコー}で止まる）']);
-if (fx.noburn) p.push(['', '{焦げ}ない（{サイコー}で止まる）']);
-if (fx.sear) p.push(['', `右の生地の{焼き加減}+${fx.sear}`]);
-if (fx.grow && !(fx.chainUp && candyNight())) p.push(['', `右の大作の大きさ+${fx.grow}`]);
-if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}（{れんさ}が切れない）`]);
-if (fx.water) p.push(['', `右の{くだもの}が${fx.water}段育つ`]);
-if (fx.fert) p.push(['', 'ラウンドの終わりに 実ぜんぶ もう1段育つ']);
-if (fx.scare) p.push(['', `両どなりの{くだもの}の効果×${fx.scare}`]);
-if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚出る`]);
-if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
-if (fx.heat) { const H = heatOf(); p.push(['', `${H.of}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }
-if (fx.call) p.push(['', binNight() ? '次のショップに {熟した実}が1枚出る' : '次のショップに フィールドが1枚出る']);
-if (fx.bitter && !fx.noburn) p.push(['', '焦げると 焦げ焦げクッキー★2になる']);
-if (fx.spd) p.push(fx.taisaku ? ['', `大きさが${Math.abs(fx.spd)}段${fx.spd > 0 ? '多く' : '少なく'}育つ`] : ['', `焼かれると {焼き加減}が${Math.abs(fx.spd)}段${fx.spd > 0 ? '多く' : '少なく'}進む`]);
+if (fx.taisaku) p.push(['', `{完成}して 冷えたら ×${fx.done}`]);
+if (fx.lead) p.push(['スタート', `味パワー×${fx.lead}`]);
+if (fx.candyLead) p.push(['スタート', `キャンディ ぜんぶ×${fx.candyLead}`]);
+if (fx.sai) p.push(['アンカー', `{サイコー}1枚 ごとに×${fx.sai + 0.5 * (star - 1)}`]);
+if (fx.fin) p.push(['アンカー', `合計×${fx.fin}`]);
+if (fx.chainFin) p.push(['アンカー', `合計×（1＋${chainFinOf(fx, star)} ×{れんさ}）`]);
+if (fx.doneFin) p.push(['アンカー', `合計×（1＋${doneFinOf(fx, star)} ×{完成}）`]);
+if (fx.koneFin) p.push(['アンカー', `合計×（1＋${koneFinOf(fx, star)} ×{こね}）`]);
+if (fx.ripeFin) p.push(['アンカー', `{熟した実}1つ ごとに×${ripeFinOf(fx, star)}`]);
+if (fx.jamFin) p.push(['アンカー', `合計×（1＋${jamFinOf(fx, star)} ×{ジャム}）`]);
+if (fx.jamLead) p.push(['スタート', `ジャム ぜんぶ×${fx.jamLead}`]);
+if (fx.rollGrow) p.push(['スタート', '{くだもの} ぜんぶ 1段育つ']);
+if (fx.tartFruit) p.push(['', `となりが {くだもの}なら ×${fx.tartFruit}`]);
+if (fx.fruitAgain) p.push(['', '右が {くだもの}なら もう1回']);
+if (fx.perGrow) p.push(['', `実が育つ たびに+${f(fx.perGrow)}`]);
+if (fx.binNow) p.push(['', `びんの実 1つにつき+${f(fx.binNow)}`]);
+if (fx.perJam) p.push(['', `{ジャム}1つ につき+${f(fx.perJam)}`]);
+if (fx.shine) p.push(['', `右のジャム ×${fx.shine}`]);
+if (fx.toro) p.push(['', '{熟した実}は 2つ分']);
+if (fx.madeJam) p.push(['', '入れた実の 効果がのる']);
+if (fx.fruitCake) p.push(['', '{熟した実}の 効果がのる']);
+if (fx.rally) p.push(['スタート', `主役ぜんぶ +${f(fx.rally)}`]);
+if (fx.doneRally) p.push(['スタート', `{完成}があれば 主役+${f(fx.doneRally)}`]);
+if (fx.koneRally) p.push(['スタート', `パンぜんぶ +${f(fx.koneRally)}×{こね}`]);
+if (fx.perKone) p.push(['', `{こね}1回 ごとに+${f(fx.perKone)}`]);
+if (fx.perChain) p.push(['', `{れんさ}1 ごとに+${f(fx.perChain)}`]);
+if (fx.petit) p.push(['', `小さな飴を ${fx.petit}こ飛ばす`]);
+if (fx.link) p.push(['', `両どなりが 飴なら {れんさ}+${fx.link}`]);
+if (fx.coldAgain) p.push(['', 'ひんやり以下で もう1回']);
+if (fx.next) p.push(['', `次の主役 ×${fx.next}`]);
+if (fx.nb) p.push(['', `両どなり +${f(fx.nb)}`]);
+if (fx.again) p.push(['', `右を もう${fx.again}回発動`]);
+if (fx.koneUp) p.push(['', `{こね}+${fx.koneUp}`]);
+if (fx.tane2) p.push(['', `こねると {パン種}+${fx.tane2}`]);
+if (fx.taneSpawn) p.push(['', `置くと {パン種}が${fx.taneSpawn}こ`]);
+if (fx.stop) p.push(['', 'ぜんぶの生地が {焦げ}ない']);
+if (fx.noburn) p.push(['', '{焦げ}ない']);
+if (fx.sear) p.push(['', `右の生地の {焼き加減}+${fx.sear}`]);
+if (fx.grow && !(fx.chainUp && candyNight())) p.push(['', `右の大作の 大きさ+${fx.grow}`]);
+if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}・ 切れない`]);
+if (fx.water) p.push(['', `右の{くだもの}が ${fx.water}段育つ`]);
+if (fx.fert) p.push(['', '終わりに 実ぜんぶ 1段育つ']);
+if (fx.scare) p.push(['', `両どなりの {くだもの}×${fx.scare}`]);
+if (fx.basket) p.push(['', `次のショップに 花${fx.basket}枚`]);
+if (fx.soon) p.push(['', '{青い実}で 右をもう1回']);
+if (fx.heat) { const H = heatOf(); p.push(['', `${H.of} {${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }
+if (fx.call) p.push(['', binNight() ? '次のショップに {熟した実}' : '次のショップに フィールド']);
+if (fx.bitter && !fx.noburn) p.push(['', '焦げると ★2になる']);
+if (fx.spd) p.push(['', fx.taisaku ? (fx.spd > 0 ? 'よく育つ' : '育ちにくい') : fx.spd > 0 ? '{焼き加減}が 進みやすい' : '{焼き加減}が 進みにくい']);
+if (fx.candy && !p.length) p.push(['', '{れんさ}+1・ 冷えるほど強い']);   // キャンディのきまり（れんさ・冷えるほど強い）は、ほかの効果がないカードだけに書く（ことばの説明にもある）
 return p;
 }
 const KW = {   // 11/19 しょーくん「長くても2行」：説明の吹き出しで2行（40字くらい）まで
@@ -2254,7 +2262,7 @@ const KW = {   // 11/19 しょーくん「長くても2行」：説明の吹き�
 大きさ: '大作の育ちぐあい（0〜9）。9で完成',
 完成: '大きさ9の大作。冷えたら本気（それまで×0.3）',
 固まる: '飴が冷えて、大作が本気になること（それまで×0.3）',
-れんさ: 'キャンディが続けて発動した数。素材や道具で0にもどる',
+れんさ: 'キャンディが続けて発動した数（冷えるほど強い）。素材や道具で0にもどる',
 ちいさなキャンディ: '小さな飴（1こ味パワー10）。れんさに数える',
 くだもの: 'わかばの素材。ラウンドの終わりに 花→青い実→熟した実 と育つ',
 青い実: 'くだものの2段め。もう1回育つと熟した実',
@@ -3298,16 +3306,41 @@ function powBadge(dmg) {
 const t = fmt(Math.floor(dmg)), c = chefArt(), pw = c === 'honoka' ? '' : ` pw-${c}${ART['ui-pow-' + c] ? '' : ' pw-code'}`;
 return `<b class="pc-pow l${Math.min(t.length, 5)}${pw}">${t}</b>`;
 }
+function cardSents(d, tap) {
+if (d.cat === 'field') return FIELDS[d.cid.slice(2)].chips.map(t => ({ t, h: chunkHTML(t, c => kwShort(c, tap)) }));
+const rows = fxLong(d.fx, d.star);
+if (!rows.length) return [{ t: plainLine(d), h: chunkHTML(plainLine(d), esc), plain: true }];
+return rows.map(([w, x]) => { const t = w ? `{${w}}：${x}` : x; return { t, h: chunkHTML(t, c => kwLong(c, tap)) }; });
+}
+const sentChunks = t => t.replace(/：/g, '：\n').split(/ |\n/).filter(Boolean);
+function chunkHTML(t, f) {
+const out = []; let buf = '';
+for (const ch of t) { if (ch === ' ') { if (buf) out.push(buf); out.push(' '); buf = ''; } else { buf += ch; if (ch === '：') { out.push(buf); buf = ''; } } }
+if (buf) out.push(buf);
+return out.map(c => c === ' ' ? ' ' : `<span class="cw">${f(c)}</span>`).join('');
+}
+function faceFs(S) {
+const sents = S.map(x => sentChunks(x.t).map(c => textW(c.replace(/[{}]/g, '')) + (c.match(/\{/g) || []).length * .5));
+for (let fs = 9; fs > 4.5; fs -= .25) {
+let lines = 0, ok = true;
+for (const cs of sents) {
+let x = 0; lines++;
+for (const w of cs) { const px = w * fs; if (px > 64) { ok = false; break; } const need = x ? x + .4 * fs + px : px; if (need > 64) { lines++; x = px; } else x = need; }
+if (!ok) break;
+}
+if (ok && lines * 1.2 * fs <= 21.5) return fs;
+}
+return 4.5;
+}
 function cardFace(cid, cls, opt = {}) {
 const d = cardDef(cid), dmg = cardDmg(d, opt.cook), lines = cardChips(d).slice(0, 2);
 const ck = d.meter ? meterIcon(d, opt.cook, opt.ice) : '', w = 64;   // 紙の字の幅（cqw・ふちの絵の紙の内側）。11/19 しょーくん「カードが切れてる」：実機の字はテストより太いので70→64・黄色いことばは1つ4つめる。焼き加減・大きさは右上へ（11/19 しょーくん「文字が見えない」）
-const txt = lines.length ? lines.map(t => `<span class="ln" style="font-size:${fitFs(t, w - 4 * (t.match(KW_SHORT) || []).length)}cqw">${kwShort(t, opt.tap)}</span>`).join('')   // 黄色いことばは ふちの分だけ広いので、その分つめる（11/19「×2」が切れていた）
-: `<span class="ln plain">${esc(plainLine(d))}</span>`;
+const S = cardSents(d, opt.tap), txt = S.map(x => `<span class="sn${x.plain ? ' plain' : ''}">${x.h}</span>`).join('');   // 1つの文（折り返して2行まで・11/19）
 const cost = opt.cost != null ? `<span class="pc-cost${typeof opt.cost === 'string' ? ' txt' : ''}">${opt.cost}</span>` : '';
 return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}">
 <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
 <div class="pc-name"><span style="font-size:${nameFs(d.short)}cqw">${esc(d.short)}</span></div>${attrBar(d)}
-<div class="pc-text"><span class="pl">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
+<div class="pc-text"><span class="pl sents" style="font-size:${faceFs(S)}cqw">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
 ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
 </div>`;
 }
@@ -3321,12 +3354,10 @@ ${cook != null ? `${meterIcon(d, cook, opt.ice)}<i class="cook${d.grow ? ' am' :
 }
 function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook, tap: true }); }
 function cardInfo(cid) {
-const d = cardDef(cid);
-let rows = d.cat === 'field' ? FIELDS[d.cid.slice(2)].long : fxLong(d.fx, d.star);
-if (!rows.length) rows = [['', d.role === '主役' ? 'モンスターに味パワーをとどける' : plainLine(d)]];
-return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${rows.map(([t, x]) => t   // いつの札はスタート・アンカーだけ（11/19）。ないときは文を左はしから
-? `<b class="tg${t === 'スタート' || t === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${t}">${t}</b><p>${kwLong(x, true)}</p>`
-: `<p class="wide">${kwLong(x, true)}</p>`).join('')}</div></div>`;
+const d = cardDef(cid), words = [];
+for (const x of cardSents(d)) for (const m of x.t.matchAll(/\{([^}]+)\}|スタート|アンカー|サイコー|火力|焦げ|パン種|こね|温度|熟した実/g)) { const w = m[1] || m[0]; if (KW[w] && !words.includes(w)) words.push(w); }
+if (!words.length) return '';
+return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${words.map(w => `<b class="tg${w === 'スタート' || w === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${w}">${w}</b><p>${esc(KW[w])}</p>`).join('')}</div></div>`;
 }
 
 /* src/js/day-scene.js */
