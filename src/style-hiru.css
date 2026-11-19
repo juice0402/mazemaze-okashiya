@@ -176,7 +176,7 @@
 .cu.happy .cu-fig{animation:cuhop .5s ease-out 2,cubob 2.4s 1s ease-in-out infinite}
 @keyframes cubob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5%)}}
 @keyframes cuhop{0%,100%{transform:translateY(0)}40%{transform:translateY(-7%)}}
-/* 絵のお客さん（11/19 しょーくん「縦長になって変形してる」）：iPhone の Safari では、位置を決めた img の はば auto がつぶれて縦にのびる → はばも高さも決めた箱にして、絵は object-fit で縦横比のまま下まんなかに */
+/* 絵のお客さん（11/19 しょーくん「縦長になって変形してる」）：絵は箱より横に広い。アーティファクトの枠が入れる img{max-width:100%} で はばだけ箱にちぢんで縦にのびていた → はばも高さも決めた箱にして、絵は object-fit で縦横比のまま下まんなかに */
 .cu-fig.art img{position:absolute;left:-40%;bottom:0;width:180%;height:100%;max-width:none;object-fit:contain;object-position:50% 100%}
 .cu-fig i{position:absolute;display:block}
 .cu-torso{left:8%;right:8%;bottom:0;height:40%;border-radius:48% 48% 0 0 / 70% 70% 0 0;background:var(--shirt);border:2px solid rgba(40,20,10,.55);border-bottom:0}
