@@ -37,6 +37,7 @@
 | tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL）。parts＝UI のシートを部品ごとに切る・--strict＝ほぼ純な緑だけ抜く（ミントなど緑っぽい絵） | |
 | tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
+| tools/play.py | 夜の自動プレイ点検（11/19）：本物のドラッグとタップで、えらんだビルドの夜を9ラウンド通しで遊び（買う・まぜる・うる・入れかえ・会話・はやおくり連打・バトル中の読みなおし→つづきから）、JS のエラー・止まり・字の undefined／NaN・部品のたまりを集める。`python3 -I tools/play.py . <フォルダ> cookie,kone,taisaku,candy,fruitcake,jam [日] [たね] [はやさ]`（1ビルド2分ほど） | |
 | tools/mado.py | 昼のお店の窓の型を作る道具（11/18 昼のチャット・H-021）：bg-day から3つの窓のガラスだけの型 bg-day-mado と、それをぼかした光 bg-day-mado-glow を作る（Python・PIL） |
 | .ignore | 検索（ripgrep）から index.html・assets/ を外す（1行が大きすぎるため） | |
 | src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |

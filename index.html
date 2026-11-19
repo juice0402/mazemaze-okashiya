@@ -3803,9 +3803,10 @@ ev.push(e, ...pet);
 }
 return { ev, total, burnt, board, heat, call, kone, fert, basket };
 }
+const canPlace = () => N.shop.some(c => c && cardDef(c).cat !== 'field' && !payNg(1, cardDef(c).cost));
 function omotenashi() {
 if (busy || N.stage !== 'shop') return;
-if (!N.board.some(Boolean)) return toast('調理台にカードを置いてから おもてなししよう');
+if (!N.board.some(Boolean) && canPlace()) return toast('調理台にカードを置いてから おもてなししよう');   // 置けるカードがないとき（コイン0で調理台が空）は、空のままでも進める（11/19 点検：買う→うるをくり返すと先へ進めなくなっていた）
 if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
 const res = resolveRound(), q = quota(N.round, S.day);
 busy = true; unsel(); hideKw(); tipEv('bake'); tipClear();
