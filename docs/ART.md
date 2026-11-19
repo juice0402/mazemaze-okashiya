@@ -51,6 +51,10 @@
 - ★3：クッキー以外の形の「○○タワー」（サブレ・カステラ・ショコラ・ドロップ・ゼリー・シュー）と、ちがう形どうしの★3（いまはコードで描いた仮の絵）
 - キャラ：あとで水の飴細工職人と草のパティシエ・ほかの食材モンスター
 
+| ui-gingham・ui-gingham-hem・ui-gingham-tab（ギンガムの布の地〔敷きつめる〕・布のへりとステッチ〔9分割・まんなかは抜け〕・材料だなの右のつまみ「›」） | A | Codex | 2026-11-19 | art-irai `requests/okashi/ui-gingham.md`（PR #159）・もとの PNG は art-irai の art/okashi-ui-gingham の out/okashi/ | 共通の部品 .gingham（style.css）・つまみは昼の .mtray::before |
+| fx-cutin-honoka・fx-cutin-minamo・fx-cutin-wakaba（スペシャルのカットインの帯：炎・水・若葉） | A | Codex | 2026-11-19 | art-irai `requests/okashi/fx-cutin.md`（PR #160） | night-ui.js の cutIn（.ci-band.art） |
+| ui-badge・ui-tag-gold・ui-nametag・ui-hangsign・ui-empty-round・ui-empty-sq（数のバッジ・とくべつの金の札・名札・つるした看板の札・空きのしるし 丸と四角） | A | Codex | 2026-11-19 | art-irai `requests/okashi/ui-misc3.md`（PR #158） | 昼の画面（材料だなの数・とくべつ・陳列の名前と看板・オーブンと陳列の空き）＝昼のチャットが自分の CSS に入れる |
+
 ## 音
 | 名前 | 分類 | 道具 | 作った日 | 出どころ | 使う所 |
 | --- | --- | --- | --- | --- | --- |

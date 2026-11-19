@@ -632,8 +632,8 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .sh-price{top:auto;bottom:calc(100% + 11px)}
 
 /* 共通の部品：ギンガムの布（11/18 H-010 の7。前の夜の手札の布。朝の倉庫などで class="gingham" をつけて使う） */
-.gingham{position:relative;border-radius:14px;background:repeating-linear-gradient(0deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),repeating-linear-gradient(90deg,rgba(232,96,122,.16) 0 12px,transparent 12px 24px),linear-gradient(#5a3022,#4a2618);box-shadow:inset 0 0 0 4px rgba(42,20,10,.35),inset 0 0 0 5px rgba(255,236,210,.4),inset 0 6px 14px rgba(0,0,0,.4)}
-.gingham::after{content:"";position:absolute;inset:7px;border-radius:10px;border:1.5px dashed rgba(255,236,210,.35);pointer-events:none}
+.gingham{position:relative;isolation:isolate;border-radius:14px;background:linear-gradient(rgba(58,24,14,.52),rgba(58,24,14,.52)),var(--ui-gingham) 0 0/46px 46px repeat;box-shadow:inset 0 6px 14px rgba(0,0,0,.35)}   /* 描き下ろしの布（ui-gingham・11/19）。上にのる字が読めるよう少し暗くする */
+.gingham::after{content:"";position:absolute;inset:0;z-index:-1;border:10px solid transparent;border-image:var(--ui-gingham-hem) 28/10px stretch;pointer-events:none}   /* 布のへりとステッチ（ui-gingham-hem・まんなかは抜けている）。中の字や札は へりの上に出る（isolation で布の中だけの重なり） */
 
 /* ==== UI の絵（11/18 art-irai ui-buttons・ui-buttons2・ui-panels・Codex で描き下ろし）====
    ボタンの絵は border-image の9分割：上下はまんなかで2つに切り（49%）、左右のはし（飾り）はそのまま、まんなかだけ横にのびる。
@@ -877,3 +877,6 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .pc-text span.sn{display:block;font-size:inherit;font-weight:900;line-height:1.2;color:#4a2414;white-space:normal;overflow:visible;-webkit-line-clamp:unset;line-break:strict;text-align:left}
 .pc-text span.sn.plain{font-weight:700;color:#9a7458}
 .pc-text span.cw{display:inline-block;font-size:inherit;white-space:nowrap;overflow:visible;-webkit-line-clamp:unset;color:inherit;font-weight:inherit;line-height:inherit}
+/* スペシャルのカットインの帯（fx-cutin-<シェフ>・11/19 描き下ろし）：横長の絵の右よりの所（いちばん動きのある所）を大きく。金のふちは絵にあるので、コードのふちはやめて光だけ */
+.ci-band.art{background-color:transparent;background-size:cover;background-position:72% 50%;background-repeat:no-repeat;box-shadow:0 0 46px rgba(255,190,110,.7)}
+.ci-band.art .ci-lines{opacity:.45}

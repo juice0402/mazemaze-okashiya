@@ -281,7 +281,8 @@ function cutIn(cid, sub) {
   const d = cardDef(cid), h = heroPick('battle'), ms = T(1500);
   const el = document.createElement('div');
   el.className = 'cutin'; el.style.setProperty('--cd', ms + 'ms');
-  el.innerHTML = `<i class="ci-flash"></i><div class="ci-band"><i class="ci-lines"></i><div class="ci-in">
+  const band = ART['fx-cutin-' + chefArt()];   // 描き下ろしの帯（11/19・シェフごと：炎・水・若葉）
+  el.innerHTML = `<i class="ci-flash"></i><div class="ci-band${band ? ' art' : ''}"${band ? ` style="background-image:url('${band}')"` : ''}><i class="ci-lines"></i><div class="ci-in">
     <img class="ci-hero${h.flip ? ' flip' : ''}" src="${h.src}" alt="">
     <div class="ci-card pc k-s s3">${artImg(cid)}<i class="pc-shine"></i><i class="pc-gl"></i></div>
     <p class="ci-title"><small>${sub}</small><span>${esc(d.short)}</span></p></div></div>`;
