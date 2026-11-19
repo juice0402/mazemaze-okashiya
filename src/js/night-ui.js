@@ -174,12 +174,12 @@ function showEvent(e, run, q) {
   }
   if (e.type === 'grow') {   // みなもの大作が育つ（11/19）：場のマスの上に温度の札 → 大作のタイルが左から順にきらっ（+大きさ・完成！・固まった）
     const fs = document.querySelector('.fslot'), H = heatOf(), cold = e.heat <= 1;
-    chipPop(fs, { b: H.names[e.heat], s: cold ? '固まる' : `大きさ+${GROW[e.heat]}`, c: e.heat <= 2 ? 'mint' : 'gold' }); heroPose('field', 1000);   // 飴の台に手をかざす
+    chipPop(fs, { b: H.names[e.heat], s: cold ? '冷えた' : `大きさ+${GROW[e.heat]}`, c: e.heat <= 2 ? 'mint' : 'gold' }); heroPose('field', 1000);   // 飴の台に手をかざす
     const t0 = 420, gap = 260, done = e.list.filter(x => x.to >= SIZE_MAX && x.from < SIZE_MAX);
     e.list.forEach((x, n) => setTimeout(() => {
       const card = updTile(x.i, x.cid, x.to, !!x.ice), slot = card && card.parentNode;
       if (card) { replay(card, x.ice ? 'freeze' : 'sear'); if (!x.ice) sparkBurst(card, 6, 'up', .6); }
-      floatAt(slot, x.ice ? (x.ice === 'on' ? '固まった' : '固まったまま') : x.melt && x.to === x.from ? 'とけた' : x.to >= SIZE_MAX ? '完成！' : `${x.melt ? 'とけた・' : ''}大きさ+${x.to - x.from}`, x.ice ? 'ice' : x.to >= SIZE_MAX ? 'best' : 'cookup');
+      floatAt(slot, x.ice ? (x.ice === 'on' ? '冷えた！' : '冷えたまま') : x.melt && x.to === x.from ? 'とけた' : x.to >= SIZE_MAX ? '完成！' : `${x.melt ? 'とけた・' : ''}大きさ+${x.to - x.from}`, x.ice ? 'ice' : x.to >= SIZE_MAX ? 'best' : 'cookup');
     }, T(t0 + n * gap)));
     let t = t0 + e.list.length * gap + 400;
     if (done.length) { setTimeout(() => cutIn(done[0].cid, '大作 完成！'), T(t)); t += 1500; }

@@ -871,3 +871,4 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* カードの効果の字は、属性の【】に合わせて左そろえ（11/19 しょーくん）。帯は .pc-attr の left 13.5%・紙は 11% なので、そのぶん内へ */
 .pc:not(.tile):not(.ci-card) .pc-text{justify-content:flex-start;padding-left:3.5cqw}
 .pc:not(.tile):not(.ci-card) .pc-text span.ln{text-align:left}
+.cinfo .ci-fx p.wide{grid-column:1/-1}

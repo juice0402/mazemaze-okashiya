@@ -88,7 +88,8 @@ function cardBig(cid, cook) { return cardFace(cid, 'huge', { cook, tap: true });
 function cardInfo(cid) {
   const d = cardDef(cid);
   let rows = d.cat === 'field' ? FIELDS[d.cid.slice(2)].long : fxLong(d.fx, d.star);
-  if (!rows.length) rows = [['発動時', d.role === '主役' ? 'モンスターに味パワーをとどける' : plainLine(d)]];
-  return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${rows.map(([t, x]) =>
-    `<b class="tg${t === 'スタート' || t === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${t}">${t}</b><p>${kwLong(x, true)}</p>`).join('')}</div></div>`;
+  if (!rows.length) rows = [['', d.role === '主役' ? 'モンスターに味パワーをとどける' : plainLine(d)]];
+  return `<div class="cinfo k-${d.kind}"><div class="ci-fx">${rows.map(([t, x]) => t   // いつの札はスタート・アンカーだけ（11/19）。ないときは文を左はしから
+    ? `<b class="tg${t === 'スタート' || t === 'アンカー' ? ' pos' : ''}" data-act="kw" data-kw="${t}">${t}</b><p>${kwLong(x, true)}</p>`
+    : `<p class="wide">${kwLong(x, true)}</p>`).join('')}</div></div>`;
 }
