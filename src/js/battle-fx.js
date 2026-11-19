@@ -250,14 +250,33 @@ function aquaHTML() {
   const r = prng(41); let e = '';
   for (let k = 0; k < 18; k++) e += `<i class="aq-p${k % 3 ? '' : ' c'}" style="--x:${(2 + r() * 96).toFixed(1)}%;--d:${(3.4 + r() * 2.8).toFixed(2)}s;--k:${r().toFixed(2)};--sx:${((r() - .5) * 60).toFixed(0)}px;--s:${(.6 + r() * .9).toFixed(2)}"></i>`;
   for (let k = 0; k < 4; k++) e += `<i class="aq-st" style="--x:${(6 + k * 25 + r() * 8).toFixed(1)}%;--d:${(3.8 + r() * 1.8).toFixed(2)}s;--k:${r().toFixed(2)}"></i>`;
-  return (aquaCache = `<span class="aqua" aria-hidden="true"><i class="aq-frost"></i><i class="aq-warm"></i>${e}</span>`);
+  /* 描き下ろしの雪の結晶・飴の泡・霜のすみ（11/19 しょーくん「みなものエフェクトって、描きおろしてる？」→ えらぶ質問で描き下ろし）。絵がないときはコードの形のまま */
+  const art = ART['fx-snow'] && ART['fx-bubble'] && ART['fx-frost'];
+  const sty = art ? ` style="--fxsnow:url('${ART['fx-snow']}');--fxbub:url('${ART['fx-bubble']}');--fxfrost:url('${ART['fx-frost']}')"` : '';
+  const fc = art ? '<i class="aq-fc tl"></i><i class="aq-fc tr"></i><i class="aq-fc bl"></i><i class="aq-fc br"></i>' : '';
+  return (aquaCache = `<span class="aqua${art ? ' art' : ''}" aria-hidden="true"${sty}><i class="aq-frost">${fc}</i><i class="aq-warm"></i>${e}</span>`);
+}
+/* 冷えた瞬間に飛ぶ氷のかけら（fx-iceshard） */
+function aquaShards(c, n) {
+  if (!ART['fx-iceshard'] || !document.body.animate) return;
+  const L = fxLayer();
+  for (let k = 0; k < n; k++) {
+    const s = new Image(); s.src = ART['fx-iceshard']; s.className = 'aq-shard'; s.alt = '';
+    const w = 16 + Math.random() * 16; s.style.width = w + 'px';
+    s.style.left = c.x + (Math.random() - .5) * c.w * .5 + 'px'; s.style.top = c.y + (Math.random() - .5) * 40 + 'px';
+    L.appendChild(s);
+    const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 110, r0 = Math.random() * 360, ms = T(620 + Math.random() * 360);
+    s.animate([{ transform: `translate(-50%,-50%) rotate(${r0}deg) scale(.4)`, opacity: 0 }, { transform: `translate(-50%,-50%) rotate(${r0 + 40}deg) scale(1)`, opacity: 1, offset: .15 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d + 40}px)) rotate(${r0 + 200}deg) scale(.7)`, opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.15,.8,.35,1)', fill: 'forwards' });
+    setTimeout(() => s.remove(), ms + 30);
+  }
 }
 /* 温度が変わったとき、舞台ぜんたいで：冷えた＝霜がぱっと広がって氷のかけら（ひえひえになったら ピキーン！）・温まった＝はちみつ色の光と湯気・泡がふわっ */
 function aquaTempFx(h, was) {
   const st = $('stage'); if (!st || REDUCED) return;
   const r = st.getBoundingClientRect(), c = { x: r.left + r.width / 2, y: r.top + r.height * .55, w: r.width * .8 };
   if (h < was) {
-    replay(st, 'aqfreeze'); sparkBurst(c, 22, 'all', 2);
+    replay(st, 'aqfreeze'); sparkBurst(c, 22, 'all', 2); aquaShards(c, h === 1 ? 10 : 6);
     if (h === 1) {
       const b = document.createElement('b'); b.className = 'zudon pikin'; b.textContent = 'ピキーン！';
       b.style.left = c.x + 'px'; b.style.top = r.top + r.height * .3 + 'px'; fxLayer().appendChild(b); setTimeout(() => b.remove(), 900);

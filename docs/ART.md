@@ -40,7 +40,7 @@
 
 - ストックの置き場（11/18 夜）：まだゲームで使っていない絵（11/19 にみなもの分も、わかばのカード・戦闘ポーズ・デフォルメも assets/art へ。いまは立ち絵のストック〔3人に9ずつ〕・背景2）は assets/art-stock/ に置く。ビルドは assets/art だけを埋めこむので、index.html が重くならない。使うときに assets/art へ git mv する
 ## 依頼中（11/18）
-- 依頼中（11/19 12時）：minamo-fx（みなもの夜の空気：雪の結晶・飴の泡・氷のかけら・霜のすみ）。雑貨屋と H-033 の絵は入った
+- 依頼中：なし（11/19 12時半。minamo-fx・雑貨屋・H-033 の絵も入った）
 - 11/18 17時10分 司令塔（art-irai PR #68・game-art-rule.md）：okashi の依頼中は4つまで・@codex は2本まで並べてよい（issue #3 にコメントを2つ別々に・それぞれ「@codex AGENTS.md の決まりで、次の依頼書だけ描いて、カギで送って PR を作って：requests/okashi/<名前1>.md・requests/okashi/<名前2>.md」・2つのコメントで同じ依頼書を書かない）。パスを書かないと依頼中をぜんぶ見る（多くて3つ）。GPT の利用上限が減ってきたら司令塔に教える（2つにもどす）
 - 依頼中の取りこみ：なし
 - 待ち：なし（11/19 1時。次に頼む絵は、遊んでからの感想と、4人目・5人目の設定が来てから）
@@ -140,3 +140,4 @@
 | good-tatekanban・showcase・hana・cushion・lamp・garland・plant／tool-oven・sand・doll・bell（雑貨屋のグッズ7・べんり道具4） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-goods1.md`・`hiru-goods2.md`（PR #149・#152）・`prep_art.py parts … 128 --strict` | 雑貨屋の一覧の左 40px（mGoodIco・H-027 の残り） |
 | ui-book・ui-mada・ui-sold・fx-bird・fx-butterfly（レシピ帳の本・まだのお菓子のふた・売れた！の札・窓の外の小鳥とちょうちょ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-ui1.md`（PR #150）・`parts … 240` | H-033 の入口（昼のチャットのコード）。字はコード |
 | ui-garland（お祭りの日の旗・横にくりかえす） | A | Codex | 2026-11-19 | art-irai `requests/okashi/hiru-garland.md`（PR #151）・`parts … 640`（ひもは左右のはしの同じ高さ＝つながる） | H-033：お祭りの日の舞台の上（.dstage.ev-matsuri.has-garland） |
+| fx-snow・fx-bubble・fx-iceshard・fx-frost（みなもの夜の空気：雪の結晶・飴の泡・氷のかけら・霜のすみ） | A | Codex | 2026-11-19 | art-irai `requests/okashi/minamo-fx.md`（PR #155）・4つのます目で切って、緑のすけは明るさで作りなおした（白くすける絵の決まり）・上限320 | battle-fx.js の aquaHTML（.aqua.art の雪・泡・4すみの霜 .aq-fc）・aquaShards（冷えた瞬間のかけら） |

@@ -459,6 +459,14 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .aq-frost{opacity:0;transition:opacity .8s;background:radial-gradient(ellipse 76% 70% at 50% 46%,transparent 48%,rgba(200,238,255,.5) 76%,rgba(242,252,255,.95)),linear-gradient(rgba(170,225,255,.16),rgba(170,225,255,.16));box-shadow:inset 0 0 26px 8px rgba(232,250,255,.8)}
 .aq-warm{opacity:0;transition:opacity .8s;background:radial-gradient(120% 62% at 50% 106%,rgba(255,186,90,.5),rgba(255,150,60,.18) 45%,transparent 72%)}
 .stage[data-t="1"] .aq-frost{opacity:.95}.stage[data-t="2"] .aq-frost{opacity:.35}
+/* 描き下ろしの霜・雪・泡（.aqua.art・battle-fx.js の aquaHTML・11/19）：4すみに霜の絵（左右上下は反転）・まわりの白いもやはうすく */
+.aqua.art .aq-frost{background:radial-gradient(ellipse 80% 74% at 50% 46%,transparent 58%,rgba(220,245,255,.32));box-shadow:inset 0 0 16px 3px rgba(232,250,255,.45)}
+.aq-fc{position:absolute;width:40%;aspect-ratio:320/300;background:var(--fxfrost) 0 0/100% 100% no-repeat}
+.aq-fc.tl{left:0;top:0}.aq-fc.tr{right:0;top:0;transform:scaleX(-1)}.aq-fc.bl{left:0;bottom:0;transform:scaleY(-1)}.aq-fc.br{right:0;bottom:0;transform:scale(-1)}
+.aqua.art .aq-p.c{clip-path:none;background:var(--fxsnow) center/contain no-repeat;width:calc(22px * var(--s));height:calc(22px * var(--s))}
+.aqua.art .aq-p:not(.c){background:radial-gradient(circle,#fff 0 30%,rgba(230,248,255,.6) 55%,transparent 72%);box-shadow:none}
+.stage:is([data-t="3"],[data-t="4"]) .aqua.art .aq-p{background:var(--fxbub) center/contain no-repeat;width:calc(20px * var(--s));height:calc(20px * var(--s))}
+.aq-shard{position:absolute;height:auto;pointer-events:none;filter:drop-shadow(0 0 4px rgba(200,240,255,.8))}
 .stage[data-t="3"] .aq-warm{opacity:.3}.stage[data-t="4"] .aq-warm{opacity:1}
 /* つぶ：冷たいときは雪と氷のきらきらがふる（.c＝4つの角の氷のきらめき）・温かいときは飴のしずくの泡がのぼる */
 .aq-p{position:absolute;left:var(--x);top:-4%;width:calc(8px * var(--s));height:calc(8px * var(--s));border-radius:50%;background:#fff;box-shadow:0 0 8px 3px rgba(180,236,255,.9);opacity:0;
