@@ -19,7 +19,7 @@ function dragInit(root) {
       dragBegin(D);
     }
     e.preventDefault();
-    dragMove(D, e.clientX, e.clientY);
+    dragMove(D, e.clientX, e.clientY);   // 位置をおぼえるだけ。描くのは1こまに1回（dragFrame）
   }, { passive: false });
   addEventListener('pointerup', e => {
     const D = DRAG; if (!D || e.pointerId !== D.id) return;
@@ -37,9 +37,10 @@ function dragBegin(D) {
   D.cid = p.where === 'field' ? 'b:' + N.field : cardAt(p).cid;
   D.w = Math.max(r.width, 78); D.h = D.w * 1.4;
   D.home = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  /* 外の箱は位置だけ（transform の translate3d・GPU で動かすだけで描きなおさない）、中の箱に大きさ・影・カード（11/19 しょーくん「戦闘のカード操作が重いとストレス」） */
   const g = document.createElement('div');
-  g.className = 'dragghost'; g.innerHTML = cardMini(D.cid, { cook: p.where === 'field' ? 0 : cardAt(p).cook }); g.style.width = D.w + 'px';
-  document.body.appendChild(g); D.g = g;
+  g.className = 'dragghost'; g.innerHTML = `<div class="dg-in" style="width:${D.w}px">${cardMini(D.cid, { cook: p.where === 'field' ? 0 : cardAt(p).cook })}</div>`;
+  document.body.appendChild(g); D.g = g; D.gi = g.firstChild;
   const tip = document.createElement('div');
   tip.className = 'dragtip'; document.body.appendChild(tip); D.tip = tip;
   /* 札の置き場（11/18 しょーくん「上に出るとショップのカードやコインが見えない」）：指がショップ（舞台）の上なら下のボタンの所、
@@ -55,6 +56,8 @@ function dragBegin(D) {
     if (P) z.classList.add(P.kind === 'mix' ? (P.ng ? 'cant' : 'can') : P.kind === 'sell' ? 'sellok' : P.kind === 'move' && P.swap ? 'swap' : 'put');
     return { z, q, P };
   });
+  /* 行き先の四角は、つかんだときに1回だけはかる（動かすたびに elementFromPoint でさがすと重い）。かさなるときは小さいほう＝内がわ */
+  for (const o of D.zones) { const r = o.z.getBoundingClientRect(); o.r = r; o.a = r.width * r.height; }
   const v = sellValue(cardDef(D.cid)), sv = $('sellv');
   const tn = cardDef(D.cid).tane;   // パン種は0コイン（無料の枠ももどらない）
   if (sv) { sv.textContent = v ? `コイン+${v}` : tn ? '（0コイン）' : '（無料の枠がもどる）'; sv.previousElementSibling.textContent = v || tn ? 'はなすと うる' : 'はなすと もどす'; }
@@ -66,14 +69,18 @@ function dragBegin(D) {
 
 function dragMove(D, x, y) {
   D.x = x; D.y = y;
-  /* 位置は translate・大きさは scale（指の所を中心に小さくなるだけ。transform に translate を書くと scale で位置までずれる） */
-  D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`;   // まっすぐ持つ（11/17 しょーくん）
+  if (!D.raf) D.raf = requestAnimationFrame(() => { D.raf = 0; if (D.g) dragFrame(D); });
+}
+function dragFrame(D) {
+  const x = D.x, y = D.y;
+  /* 位置は外の箱の translate3d・大きさは中の箱の scale（指の所を中心に小さくなるだけ） */
+  D.g.style.transform = `translate3d(${x - D.w / 2}px,${y - D.h * 0.8}px,0)`;   // まっすぐ持つ（11/17 しょーくん）
   const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
-  if (k !== D.k) { D.k = k; D.g.style.scale = k; }
+  if (k !== D.k) { D.k = k; D.gi.style.scale = k; }
   const dock = y > D.stageB + 12 ? 'up' : y < D.stageB - 12 ? 'down' : D.dock || (y > D.stageB ? 'up' : 'down');   // さかい目でゆれないように
   if (dock !== D.dock) { D.dock = dock; D.tip.style.top = (dock === 'up' ? D.upY : D.downY) + 'px'; }
-  const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');
-  const Z = D.zones.find(o => o.z === z && o.P) || null;
+  let Z = null;
+  for (const o of D.zones) if (o.P && x >= o.r.left && x <= o.r.right && y >= o.r.top && y <= o.r.bottom && (!Z || o.a < Z.a)) Z = o;
   if (Z === D.over) return;
   if (D.over) D.over.z.classList.remove('over');
   D.over = Z; if (Z) Z.z.classList.add('over');
@@ -101,17 +108,20 @@ function tipHTML(cid, P) {
 }
 
 function dragFinish(D) {
+  if (D.raf) { cancelAnimationFrame(D.raf); D.raf = 0; }
+  if (D.x != null) dragFrame(D);   // はなした所で行き先を決める（まだ描いていない最後の動きもふくめる）
   const Z = D.over;
   dragEnd = Date.now();
   if (!Z || !Z.P) {   // 行き先がなければ、もとの場所へもどる
     const g = D.g; D.g = null; dragClean(D);
     if (g && D.x != null && g.animate) {
-      g.animate([{ translate: g.style.translate, scale: String(D.k) }, { translate: `${D.home.x - D.w / 2}px ${D.home.y - D.h * 0.8}px`, scale: '1', opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
+      g.firstChild.style.scale = 1;
+      g.animate([{ transform: g.style.transform }, { transform: `translate3d(${D.home.x - D.w / 2}px,${D.home.y - D.h * 0.8}px,0)`, opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
       setTimeout(() => g.remove(), 170);
     } else if (g) g.remove();
     return;
   }
-  const gr = D.g.getBoundingClientRect();
+  const gr = D.gi.getBoundingClientRect();
   const from = [{ x: gr.left + gr.width / 2, y: gr.top + gr.height / 2, w: D.w * D.k }, cardSpot(Z.q)];
   dragClean(D);
   if (dropCard(D.p, Z.q, from) && Z.P.kind === 'buy') {
@@ -121,6 +131,7 @@ function dragFinish(D) {
 }
 
 function dragClean(D) {
+  if (D.raf) { cancelAnimationFrame(D.raf); D.raf = 0; }
   if (D.g) D.g.remove();
   if (D.tip) D.tip.remove();
   D.el.classList.remove('lifted');

@@ -365,7 +365,8 @@ dd.gold{color:var(--gold);font-size:17px;font-weight:700}
 /* ドラッグ：つかんだカード（ghost）・行き先の光（put・swap・can・cant・over）・上の札（dragtip）・下の「ここで うる」 */
 [data-drag]{touch-action:none;-webkit-touch-callout:none}
 [data-drag] img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
-.dragghost{position:fixed;left:0;top:0;z-index:45;aspect-ratio:5/7;pointer-events:none;will-change:transform;transform-origin:50% 80%;transition:scale .14s ease-out;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5))}
+.dragghost{position:fixed;left:0;top:0;z-index:45;pointer-events:none;will-change:transform;contain:layout style}
+.dg-in{aspect-ratio:5/7;transform-origin:50% 80%;transition:scale .14s ease-out;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5))}
 .dragghost .pc{width:100%;height:100%}
 .dragghost.hot .pc{box-shadow:0 0 0 3px #8fe0c0,0 0 20px 7px rgba(111,199,168,.75)}
 .lifted .pc{opacity:.28}
@@ -515,7 +516,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,rgba(255,196,120,.2),transp
 .bignum{color:#ffe08a}
 #score{display:inline-block}
 #score.tick{animation:scoretick .32s cubic-bezier(.2,1.6,.4,1)}
-@keyframes scoretick{0%{transform:scale(1.45);color:#fff}100%{transform:scale(1)}}
+@keyframes scoretick{0%{transform:scale(1.45)}100%{transform:scale(1)}}
 /* 焼き：調理台の下から炎がゆらっと上がる */
 .tiles{position:relative}
 .tiles::after{content:"";position:absolute;left:4px;right:4px;bottom:2px;height:70%;z-index:3;border-radius:0 0 10px 10px;pointer-events:none;opacity:0;

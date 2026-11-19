@@ -68,7 +68,12 @@ function countUp(el, from, to, ms, f = fmt) {
   if (!el) return;
   if (REDUCED || ms < 60 || from === to) { el.textContent = f(to); return; }
   const t0 = performance.now();
-  const tick = now => { const t = Math.min(1, (now - t0) / ms), v = from + (to - from) * (1 - Math.pow(1 - t, 3)); el.textContent = f(Math.floor(v)); if (t < 1) requestAnimationFrame(tick); };
+  let last = 0;   // 11/19 書きかえは30こま/秒まで・同じ字なら書かない（字を変えるたびに舞台ぜんぶの計算がはしる）
+  const tick = now => {
+    const t = Math.min(1, (now - t0) / ms);
+    if (t >= 1 || now - last >= 32) { last = now; const s = f(Math.floor(from + (to - from) * (1 - Math.pow(1 - t, 3)))); if (el.textContent !== s) el.textContent = s; }
+    if (t < 1) requestAnimationFrame(tick);
+  };
   requestAnimationFrame(tick);
 }
 /* バトルの一撃：ほのかの手から火の玉（火の粉の尾）→ モンスターに当たってぐにゃっ・光の輪と火花 → 大きな数字
@@ -364,7 +369,7 @@ function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="
 let heroT = 0;
 function heroFor(k, ms) {
   const el = $('chef'); if (!el) return;
-  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); delete el.dataset.pose; };
+  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); delete el.dataset.pose; const st = $('stage'); if (st) delete st.dataset.pose; };
   set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
 }
 /* ほのかの戦闘ポーズ（11/18 しょーくん「チャージや攻撃必殺技とか、いつまで見てても飽きない戦闘シーンにしたい」）
@@ -389,6 +394,7 @@ function heroPose(p, ms) {
   const [n, alt] = POSE[p], h = mi ? { src: mi, flip: false, n: six[p] } : chefArt() === 'honoka' && ART[n] ? { src: ART[n], flip: false, n } : heroPick(alt);
   if (el.getAttribute('src') !== h.src) el.src = h.src;
   el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); el.dataset.pose = p;
+  const st = $('stage'); if (st) st.dataset.pose = p;   // 影と足もとの光は #stage の data-pose で（:has を使わない＝軽い・11/19）
   clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
 }
 /* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯が光る） */
@@ -496,8 +502,8 @@ function renderNight() {
   const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
     <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0" style="${ART['bg-night'] ? `--bgimg:url('${ART['bg-night']}');` : ''}${heroVars(hp.n, hp.flip)}">${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
-      <i class="chef-sh"></i><i class="mon-sh"></i>${heroImg(hk)}
-      <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">
+      <i class="chef-sh"></i>${heroImg(hk)}
+      <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
       <span class="ov-hm" aria-label="昼のハート ${dayHearts()}こ">昼のハート <i>♥︎</i>×${dayHearts()} <b>味パワー×${Math.round(heartMul() * 100) / 100}</b></span>

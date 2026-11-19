@@ -320,7 +320,8 @@ background:repeating-conic-gradient(rgba(var(--ray),.95) 0 5deg,rgba(var(--ray),
 @keyframes quake{0%,100%{transform:translate(0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
 [data-drag]{touch-action:none;-webkit-touch-callout:none}
 [data-drag] img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
-.dragghost{position:fixed;left:0;top:0;z-index:45;aspect-ratio:5/7;pointer-events:none;will-change:transform;transform-origin:50% 80%;transition:scale .14s ease-out;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5))}
+.dragghost{position:fixed;left:0;top:0;z-index:45;pointer-events:none;will-change:transform;contain:layout style}
+.dg-in{aspect-ratio:5/7;transform-origin:50% 80%;transition:scale .14s ease-out;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5))}
 .dragghost .pc{width:100%;height:100%}
 .dragghost.hot .pc{box-shadow:0 0 0 3px #8fe0c0,0 0 20px 7px rgba(111,199,168,.75)}
 .lifted .pc{opacity:.28}
@@ -438,7 +439,7 @@ filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
 .bignum{color:#ffe08a}
 #score{display:inline-block}
 #score.tick{animation:scoretick .32s cubic-bezier(.2,1.6,.4,1)}
-@keyframes scoretick{0%{transform:scale(1.45);color:#fff}100%{transform:scale(1)}}
+@keyframes scoretick{0%{transform:scale(1.45)}100%{transform:scale(1)}}
 .tiles{position:relative}
 .tiles::after{content:"";position:absolute;left:4px;right:4px;bottom:2px;height:70%;z-index:3;border-radius:0 0 10px 10px;pointer-events:none;opacity:0;
 background:radial-gradient(10% 70% at 8% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 80% at 25% 100%,rgba(255,120,40,.85),transparent 70%),radial-gradient(10% 70% at 42% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 85% at 59% 100%,rgba(255,120,40,.85),transparent 70%),radial-gradient(10% 70% at 76% 100%,rgba(255,200,80,.9),transparent 70%),radial-gradient(10% 80% at 93% 100%,rgba(255,120,40,.85),transparent 70%);
@@ -720,8 +721,7 @@ filter:drop-shadow(0 3px 3px rgba(0,0,0,.5));animation:dchop 1.7s ease-in-out in
 background:radial-gradient(calc(var(--ch) * .23) calc(var(--ch) * .034) at calc(var(--fx, .45) * 100%) 50%,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);
 transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
 .mon-sh{right:5.5%;width:26%;bottom:calc(22% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
-.stage:has(.mon.flee) .mon-sh{opacity:0}
-.night:not(:has(.mon.hi)) .mon-sh{display:none}
+.mon.flee~.mon-sh{opacity:0}
 .night .ov-heat{bottom:calc(max(12px,5.5%) + 3px);left:30%;right:30%;justify-content:center;z-index:9}
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 .night .ov-top>span{max-width:calc(50% - 32px);white-space:nowrap}
@@ -929,19 +929,21 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .chef[data-pose=field]{translate:6% 1%;scale:1.03 .97}
 .chef[data-pose=win]{translate:0 -6%;scale:1.04}
 .chef[data-pose=burnt]{translate:-6% 0;rotate:-4deg}
-.stage:has(#chef[data-pose=charge]) .chef-sh{translate:-3% 0}.stage:has(#chef[data-pose=atk1]) .chef-sh{translate:9% 0}
-.stage:has(#chef[data-pose=atk2]) .chef-sh{translate:14% 0}.stage:has(#chef[data-pose=atk3]) .chef-sh{translate:18% 0;scale:1.06 1}
-.stage:has(#chef[data-pose=special]) .chef-sh{translate:20% 0;scale:1.12 1}.stage:has(#chef[data-pose=support]) .chef-sh{translate:5% 0}
-.stage:has(#chef[data-pose=heatup]) .chef-sh{translate:7% 0}.stage:has(#chef[data-pose=heatdown]) .chef-sh{translate:-5% 0}
-.stage:has(#chef[data-pose=field]) .chef-sh{translate:6% 0}.stage:has(#chef[data-pose=burnt]) .chef-sh{translate:-6% 0}
-.stage:has(#chef[data-pose=win]) .chef-sh{scale:.85 .8;opacity:.8}
-.stage:has(#chef[data-pose=charge]) .glow,.stage:has(#chef[data-pose=special]) .glow{opacity:1}
+.stage[data-pose=charge] .chef-sh{translate:-3% 0}.stage[data-pose=atk1] .chef-sh{translate:9% 0}
+.stage[data-pose=atk2] .chef-sh{translate:14% 0}.stage[data-pose=atk3] .chef-sh{translate:18% 0;scale:1.06 1}
+.stage[data-pose=special] .chef-sh{translate:20% 0;scale:1.12 1}.stage[data-pose=support] .chef-sh{translate:5% 0}
+.stage[data-pose=heatup] .chef-sh{translate:7% 0}.stage[data-pose=heatdown] .chef-sh{translate:-5% 0}
+.stage[data-pose=field] .chef-sh{translate:6% 0}.stage[data-pose=burnt] .chef-sh{translate:-6% 0}
+.stage[data-pose=win] .chef-sh{scale:.85 .8;opacity:.8}
+.stage[data-pose=charge] .glow,.stage[data-pose=special] .glow{opacity:1}
 .quota{position:relative}
 .qbar i{transition:width .5s cubic-bezier(.2,.9,.3,1)}
 .qgain{position:absolute;bottom:60%;z-index:6;font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#ffe08a;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;white-space:nowrap;pointer-events:none;animation:qgain 1.1s ease-out forwards}
 @keyframes qgain{0%{opacity:0;transform:translate(-50%,6px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1;transform:translate(-50%,-8px) scale(1)}100%{opacity:0;transform:translate(-50%,-16px)}}
-.quota.gain .qbar{animation:qflash .5s ease-out}
-@keyframes qflash{30%{filter:brightness(1.6) saturate(1.3)}}
+.qbar{position:relative}
+.qbar::after{content:"";position:absolute;inset:3px 9px;border-radius:4px;background:rgba(255,244,200,.85);opacity:0;pointer-events:none}
+.quota.gain .qbar::after{animation:qflash .5s ease-out}
+@keyframes qflash{30%{opacity:.55}}
 .at-ame{background:linear-gradient(#a8ecff,#4cb6dc);color:#0c3a4a;text-shadow:0 .5cqw 0 rgba(240,252,255,.5)}
 .at-temp{background:linear-gradient(#7fc8ff,#2a7ad8)}
 .ck.am::before{border-radius:50%;transform:none}
@@ -3910,7 +3912,12 @@ function countUp(el, from, to, ms, f = fmt) {
 if (!el) return;
 if (REDUCED || ms < 60 || from === to) { el.textContent = f(to); return; }
 const t0 = performance.now();
-const tick = now => { const t = Math.min(1, (now - t0) / ms), v = from + (to - from) * (1 - Math.pow(1 - t, 3)); el.textContent = f(Math.floor(v)); if (t < 1) requestAnimationFrame(tick); };
+let last = 0;   // 11/19 書きかえは30こま/秒まで・同じ字なら書かない（字を変えるたびに舞台ぜんぶの計算がはしる）
+const tick = now => {
+const t = Math.min(1, (now - t0) / ms);
+if (t >= 1 || now - last >= 32) { last = now; const s = f(Math.floor(from + (to - from) * (1 - Math.pow(1 - t, 3)))); if (el.textContent !== s) el.textContent = s; }
+if (t < 1) requestAnimationFrame(tick);
+};
 requestAnimationFrame(tick);
 }
 function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（battle-fx.js の flyHub）。あればそれがモンスターへ飛ぶ（なければ ほのかの手から火の玉）
@@ -4175,7 +4182,7 @@ function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="
 let heroT = 0;
 function heroFor(k, ms) {
 const el = $('chef'); if (!el) return;
-const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); delete el.dataset.pose; };
+const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); delete el.dataset.pose; const st = $('stage'); if (st) delete st.dataset.pose; };
 set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
 }
 const POSE = {
@@ -4196,6 +4203,7 @@ const six = POSE_SIX[chefArt()], mi = six && ART[six[p]];
 const [n, alt] = POSE[p], h = mi ? { src: mi, flip: false, n: six[p] } : chefArt() === 'honoka' && ART[n] ? { src: ART[n], flip: false, n } : heroPick(alt);
 if (el.getAttribute('src') !== h.src) el.src = h.src;
 el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); el.dataset.pose = p;
+const st = $('stage'); if (st) st.dataset.pose = p;   // 影と足もとの光は #stage の data-pose で（:has を使わない＝軽い・11/19）
 clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
 }
 function qGain(dmg, run, q) {
@@ -4293,8 +4301,8 @@ const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundE
 const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
 $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
 <div class="stage${ART['bg-night'] ? ' hasbg' : ''}" id="stage" data-z="0" style="${ART['bg-night'] ? `--bgimg:url('${ART['bg-night']}');` : ''}${heroVars(hp.n, hp.flip)}">${ART['bg-night'] ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
-<i class="chef-sh"></i><i class="mon-sh"></i>${heroImg(hk)}
-<img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">
+<i class="chef-sh"></i>${heroImg(hk)}
+<img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
 ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}${F ? `　<em>${F.name}</em>` : ''}</span><span class="score">味パワー <b id="score">${fmt(N.score)}</b></span></div>
 <span class="ov-hm" aria-label="昼のハート ${dayHearts()}こ">昼のハート <i>♥︎</i>×${dayHearts()} <b>味パワー×${Math.round(heartMul() * 100) / 100}</b></span>
@@ -4733,7 +4741,7 @@ if (busy || N.stage !== 'shop') { DRAG = null; return; }
 dragBegin(D);
 }
 e.preventDefault();
-dragMove(D, e.clientX, e.clientY);
+dragMove(D, e.clientX, e.clientY);   // 位置をおぼえるだけ。描くのは1こまに1回（dragFrame）
 }, { passive: false });
 addEventListener('pointerup', e => {
 const D = DRAG; if (!D || e.pointerId !== D.id) return;
@@ -4751,8 +4759,8 @@ D.cid = p.where === 'field' ? 'b:' + N.field : cardAt(p).cid;
 D.w = Math.max(r.width, 78); D.h = D.w * 1.4;
 D.home = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 const g = document.createElement('div');
-g.className = 'dragghost'; g.innerHTML = cardMini(D.cid, { cook: p.where === 'field' ? 0 : cardAt(p).cook }); g.style.width = D.w + 'px';
-document.body.appendChild(g); D.g = g;
+g.className = 'dragghost'; g.innerHTML = `<div class="dg-in" style="width:${D.w}px">${cardMini(D.cid, { cook: p.where === 'field' ? 0 : cardAt(p).cook })}</div>`;
+document.body.appendChild(g); D.g = g; D.gi = g.firstChild;
 const tip = document.createElement('div');
 tip.className = 'dragtip'; document.body.appendChild(tip); D.tip = tip;
 const rb = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect().bottom; };
@@ -4765,6 +4773,7 @@ const q = { where: z.dataset.w, i: +z.dataset.i }, P = dropPlan(p, q);
 if (P) z.classList.add(P.kind === 'mix' ? (P.ng ? 'cant' : 'can') : P.kind === 'sell' ? 'sellok' : P.kind === 'move' && P.swap ? 'swap' : 'put');
 return { z, q, P };
 });
+for (const o of D.zones) { const r = o.z.getBoundingClientRect(); o.r = r; o.a = r.width * r.height; }
 const v = sellValue(cardDef(D.cid)), sv = $('sellv');
 const tn = cardDef(D.cid).tane;   // パン種は0コイン（無料の枠ももどらない）
 if (sv) { sv.textContent = v ? `コイン+${v}` : tn ? '（0コイン）' : '（無料の枠がもどる）'; sv.previousElementSibling.textContent = v || tn ? 'はなすと うる' : 'はなすと もどす'; }
@@ -4774,13 +4783,17 @@ D.over = undefined;
 }
 function dragMove(D, x, y) {
 D.x = x; D.y = y;
-D.g.style.translate = `${x - D.w / 2}px ${y - D.h * 0.8}px`;   // まっすぐ持つ（11/17 しょーくん）
+if (!D.raf) D.raf = requestAnimationFrame(() => { D.raf = 0; if (D.g) dragFrame(D); });
+}
+function dragFrame(D) {
+const x = D.x, y = D.y;
+D.g.style.transform = `translate3d(${x - D.w / 2}px,${y - D.h * 0.8}px,0)`;   // まっすぐ持つ（11/17 しょーくん）
 const k = D.tiles && y > D.tiles.top - 30 && y < D.tiles.bottom + 30 ? D.small : 1.06;
-if (k !== D.k) { D.k = k; D.g.style.scale = k; }
+if (k !== D.k) { D.k = k; D.gi.style.scale = k; }
 const dock = y > D.stageB + 12 ? 'up' : y < D.stageB - 12 ? 'down' : D.dock || (y > D.stageB ? 'up' : 'down');   // さかい目でゆれないように
 if (dock !== D.dock) { D.dock = dock; D.tip.style.top = (dock === 'up' ? D.upY : D.downY) + 'px'; }
-const hit = document.elementFromPoint(x, y), z = hit && hit.closest('[data-drop]');
-const Z = D.zones.find(o => o.z === z && o.P) || null;
+let Z = null;
+for (const o of D.zones) if (o.P && x >= o.r.left && x <= o.r.right && y >= o.r.top && y <= o.r.bottom && (!Z || o.a < Z.a)) Z = o;
 if (Z === D.over) return;
 if (D.over) D.over.z.classList.remove('over');
 D.over = Z; if (Z) Z.z.classList.add('over');
@@ -4805,17 +4818,20 @@ const t = !P ? (d.cat === 'field' ? '左の「場」へ' : mixRule(d))
 return `<span class="dt-card">${cardMini(cid)}</span><div class="dt-body"><p class="dt-main">${esc(d.short)}</p><p class="dt-sub">${t}</p></div>`;
 }
 function dragFinish(D) {
+if (D.raf) { cancelAnimationFrame(D.raf); D.raf = 0; }
+if (D.x != null) dragFrame(D);   // はなした所で行き先を決める（まだ描いていない最後の動きもふくめる）
 const Z = D.over;
 dragEnd = Date.now();
 if (!Z || !Z.P) {   // 行き先がなければ、もとの場所へもどる
 const g = D.g; D.g = null; dragClean(D);
 if (g && D.x != null && g.animate) {
-g.animate([{ translate: g.style.translate, scale: String(D.k) }, { translate: `${D.home.x - D.w / 2}px ${D.home.y - D.h * 0.8}px`, scale: '1', opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
+g.firstChild.style.scale = 1;
+g.animate([{ transform: g.style.transform }, { transform: `translate3d(${D.home.x - D.w / 2}px,${D.home.y - D.h * 0.8}px,0)`, opacity: .4 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
 setTimeout(() => g.remove(), 170);
 } else if (g) g.remove();
 return;
 }
-const gr = D.g.getBoundingClientRect();
+const gr = D.gi.getBoundingClientRect();
 const from = [{ x: gr.left + gr.width / 2, y: gr.top + gr.height / 2, w: D.w * D.k }, cardSpot(Z.q)];
 dragClean(D);
 if (dropCard(D.p, Z.q, from) && Z.P.kind === 'buy') {
@@ -4824,6 +4840,7 @@ if (t) replay(t, 'born');
 }
 }
 function dragClean(D) {
+if (D.raf) { cancelAnimationFrame(D.raf); D.raf = 0; }
 if (D.g) D.g.remove();
 if (D.tip) D.tip.remove();
 D.el.classList.remove('lifted');
