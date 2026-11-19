@@ -54,7 +54,11 @@ const nameFs = t => Math.min(9.4, Math.floor(66 / textW(t) * 10) / 10);
    pc-shine＝絵の窓の上・pc-gl＝ふちの上（いちばん最後に置いて、前の .pc::after と同じ重なり） */
 const shineI = d => d.star > 1 ? '<i class="pc-shine"></i>' : '';
 const glossI = d => d.star > 1 ? '<i class="pc-gl"></i>' : '';
-function powBadge(dmg) { const t = fmt(Math.floor(dmg)); return `<b class="pc-pow l${Math.min(t.length, 5)}">${t}</b>`; }
+/* 味パワーの紋章：炎はほのかだけ。みなも・わかばは描き下ろしの紋章 ui-pow-<シェフ>（届くまでは pw-code のコードの丸）（11/19 しょーくん） */
+function powBadge(dmg) {
+  const t = fmt(Math.floor(dmg)), c = chefArt(), pw = c === 'honoka' ? '' : ` pw-${c}${ART['ui-pow-' + c] ? '' : ' pw-code'}`;
+  return `<b class="pc-pow l${Math.min(t.length, 5)}${pw}">${t}</b>`;
+}
 /* カードの形（mini と huge は同じ形で大きさだけちがう）。紙は1つの効果を1行で、上から大事な2つまで */
 function cardFace(cid, cls, opt = {}) {
   const d = cardDef(cid), dmg = cardDmg(d, opt.cook), lines = cardChips(d).slice(0, 2);
