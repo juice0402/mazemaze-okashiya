@@ -149,7 +149,12 @@
 .ds-sign{position:absolute;left:50%;top:46%;transform:translateX(-50%);z-index:1;white-space:nowrap;text-align:center;font-size:clamp(9px,4cqh,13px);font-weight:700;color:#3a1c08;background:linear-gradient(#fff6e0,#f6dcae);border:2px solid #5a3418;border-radius:6px;padding:2px 8px;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 /* 絵のときは、bg-day（16:9・下にそろえて cover）のドアの上にかける：くさりの上が絵の縦18%・はばは絵の横14%（板は札の下半分＝絵の縦27〜36%のガラスの所）。
    絵の大きさ＝横 max(100cqw, 177.78cqh)・縦 max(100cqh, 56.25cqw)。字の大きさも札のはばに合わせる（11/18 18:11 しょーくん「営業中の看板おかしい」＝板がカウンターのうしろにかくれていた） */
-.ds-sign.on-art{--sw:calc(.14 * max(100cqw, 177.78cqh));top:calc(100cqh - .82 * max(100cqh, 56.25cqw));width:var(--sw);font-size:calc(var(--sw) * .135)}
+.ds-sign.on-art{--sw:calc(.125 * max(100cqw, 177.78cqh));top:calc(100cqh - .83 * max(100cqh, 56.25cqw));width:var(--sw);font-size:calc(var(--sw) * .125)}
+/* 11/19 しょーくん「はめ込みがズレてた・字が雰囲気と合ってない」：
+   ① 札の皮（style.css の padding:36.8%）は % が舞台のはばでとられて、札が縦にのびていた → 高さは絵と同じ縦横比（231/320）・すき間は札のはばから
+   ② はばを絵の横12.5%（ドアのガラスと同じくらい）・くさりの上をドアのガラスの上のふち（絵の縦17%）へ
+   ③ 字はプロローグの看板と同じ「彫りこみ」（ロゴの字 mz-logo・こげ茶・下に明るいふち・上に暗いふち） */
+.ds-sign.on-art{box-sizing:border-box;height:calc(var(--sw) * .7219);padding:calc(var(--sw) * .372) calc(var(--sw) * .07) calc(var(--sw) * .03);line-height:1;font-family:"mz-logo",var(--disp);font-weight:400;letter-spacing:.02em;color:#5c2f12;-webkit-text-stroke:0;text-shadow:0 .07em 0 rgba(255,232,190,.55),0 -.05em 0 rgba(30,10,0,.55)}
 .ds-lamp{left:calc(50% - 7%);top:0;width:14%;height:12%;border-radius:0 0 50% 50% / 0 0 100% 100%;background:linear-gradient(#f4c24e,#d98a2a);border:2px solid #7a4a1c;border-top:0}
 .ds-counter{position:absolute;left:0;right:0;bottom:0;height:15%;z-index:3;background:linear-gradient(#d8a06a,#a8693a 35%,#7a4a26);border-top:4px solid var(--brass);box-shadow:0 -3px 8px rgba(60,30,10,.35)}
 /* 時間（開店から閉店まで）と評判のびん（flow.js の jarHTML をそのまま小さく） */
@@ -171,7 +176,8 @@
 .cu.happy .cu-fig{animation:cuhop .5s ease-out 2,cubob 2.4s 1s ease-in-out infinite}
 @keyframes cubob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5%)}}
 @keyframes cuhop{0%,100%{transform:translateY(0)}40%{transform:translateY(-7%)}}
-.cu-fig.art img{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%)}
+/* 絵のお客さん（11/19 しょーくん「縦長になって変形してる」）：iPhone の Safari では、位置を決めた img の はば auto がつぶれて縦にのびる → はばも高さも決めた箱にして、絵は object-fit で縦横比のまま下まんなかに */
+.cu-fig.art img{position:absolute;left:-40%;bottom:0;width:180%;height:100%;max-width:none;object-fit:contain;object-position:50% 100%}
 .cu-fig i{position:absolute;display:block}
 .cu-torso{left:8%;right:8%;bottom:0;height:40%;border-radius:48% 48% 0 0 / 70% 70% 0 0;background:var(--shirt);border:2px solid rgba(40,20,10,.55);border-bottom:0}
 .cu-collar{left:34%;right:34%;top:-2%;height:36%;background:#fff;clip-path:polygon(0 0,100% 0,50% 100%)}
