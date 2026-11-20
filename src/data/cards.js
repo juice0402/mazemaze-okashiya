@@ -221,7 +221,7 @@ const FIELDS = {
    heat＝特性のメーター（word＝ことば・of＝何の・names＝段の名前・start＝夜のはじめ・field＝場がないと効かない・cool＝ラウンドの終わりにさがる段）。art＝絵の名前の頭 */
 const CHEFS = {
   honoka: {
-    name: 'ほのか', job: '炎のシェフ', trait: '火力', art: 'honoka', heat: { word: '火力', of: '鉄板の', names: HEAT, start: 0, down: 1, field: 1 },
+    name: 'ほのか', job: '炎のシェフ', trait: '火力', art: 'honoka', heat: { word: '火力', of: '', names: HEAT, start: 0, down: 1, field: 1 },
     common: ['m:bata', 'm:sato', 'm:tamago', 'm:choco', 'm:mitsu', 't:maki', 't:hiokoshi', 't:mizu', 't:yakigote', 't:yobirin'],   // ほのか共通
   },
   minamo: {
@@ -523,7 +523,7 @@ function fxLong(fx, star = 1) {
   if (fx.scare) p.push(['', `右2枚の {実}の効果×${fx.scare}`]);
   if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚`]);
   if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
-  if (fx.heat) { const H = heatOf(); if (!H.none) p.push(['', `${H.of} {${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }
+  if (fx.heat) { const H = heatOf(); if (!H.none) p.push(['', `${H.of ? H.of + ' ' : ''}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }   // ほのかは「火力+1段」（11/21：火力は鉄板がなくても上がる＝「鉄板の」をつけない）
   if (fx.call) p.push(['', binNight() ? '次のショップに {熟した実}が出る' : '次のショップに フィールドが出る']);
   if (fx.bitter && !fx.noburn) p.push(['', '焦げると ★2の 焦げクッキーになる']);
   if (fx.spd) p.push(['', fx.taisaku ? `大きくなる量 ${fx.spd > 0 ? '+' : '−'}${Math.abs(fx.spd)}` : `{焼き加減}が ${Math.abs(fx.spd)}段${fx.spd > 0 ? '多く' : '少なく'}進む`]);
