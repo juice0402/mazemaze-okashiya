@@ -620,9 +620,9 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .sh-top .sh-roll.sh-roll.pill{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;
   font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;padding:0 9px;gap:5px}   /* 入れかえも ラウンド・コインと同じ札の絵（ui-label）＝見た目の高さもそろう（11/20 しょーくん「リロールが大きく見える」） */
 /* ショップのお金はみんな同じ（11/20 しょーくん「コインの大きさ・お金の字の色とフォントをショップ内で統一」）：コインの絵 15px・数は Dela Gothic One 15px・金の字にこげ茶のふち。たりないときは赤 */
-.sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:18px;height:18px;flex:none}   /* コインの絵と数字の高さをそろえる（11/20 しょーくん「コインの高さと数字の高さが合っていない」：コインの絵はまわりが すけているので、箱 18px で見える高さが 数字（17px）とそろう） */
+.sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:14px;height:14px;flex:none}   /* コインの絵と数字の高さをそろえる（11/20 しょーくん「コインの高さと数字の高さが合っていない」：コインの絵はまわりが すけているので、箱 14px で見える高さが 数字（15px）とそろう・札のふちにかからない大きさ） */
 .sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#ffd25a;-webkit-text-stroke:3px #3a1c08;paint-order:stroke fill;text-shadow:none;letter-spacing:0}
-.sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-size:17px}
+.sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-size:15px}
 .sh-price.sh-price.ng,.sh-roll.sh-roll:disabled small{color:#ff6a50}
 .sh-roll.sh-roll small{gap:3px;margin-left:0}
 .night .shopov.many .sh-top .kone-n{display:none}   /* 1ラウンド目（無料の5まい）は こね・ジャムはまだ0 */
@@ -665,5 +665,6 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .sh-top{left:10px;right:10px}.night .sh-top .sh-r{gap:4px}.night .sh-top .sh-coin.sh-coin{gap:4px}
 .night .stage .ov-top{left:10px;right:10px}   /* ラウンドの札はショップとバトルで同じ所 */
 /* コインの絵と数字の上下（11/20 しょーくん「数字が少し下でコインが少し上」）：Dela Gothic One の数字は字の箱の中で少し下にのるので、コインの絵を下げて まんなかをそろえる */
-.sh-top .sh-coin i,.sh-roll .cn{translate:0 1px}
-.sh-price i{translate:0 2px}   /* はかって：札の中は 数字が1px・値札は2px 下だった */
+.sh-top .sh-coin i,.sh-roll .cn{translate:0 .75px}
+.sh-top .sh-coin b,.sh-roll.sh-roll small{translate:0 -.75px}
+.sh-price i{translate:0 1.25px}   /* 字が下にのるぶん、コインも下げる（はかった：札はコイン .75px 下・数字 .75px 上〔札のまんなかにそろう〕・値札はコイン 1.25px 下） */   /* はかって：札の中は 数字が1px・値札は2px 下だった */
