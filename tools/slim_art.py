@@ -46,6 +46,7 @@ def main():
         todo.append((name, ext, p))
     if check:
         print('まだ軽くしていない絵', len(todo), ' '.join(n for n, _, _ in todo))
+        center_note()
         return
     before = after = 0
     for name, ext, p in todo:
@@ -63,6 +64,18 @@ def main():
     with open(TABLE, 'w', encoding='utf-8') as fh:
         json.dump(dict(sorted(table.items())), fh, ensure_ascii=False, indent=0)
     print(f'{len(todo)}まい {before / 1e6:.2f}MB → {after / 1e6:.2f}MB')
+    center_note()
+
+
+def center_note():
+    """カードの絵が まんなかにあるか（11/20・となりの絵のはしを消すと片がわだけ余白が残る）。くわしくは tools/center_art.py"""
+    sys.dont_write_bytecode = True
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from center_art import report, card_names
+    rows = report(card_names())
+    if rows:
+        print('まんなかにない絵（python3 -I tools/center_art.py fix <名前…> で直す）:')
+        print('\n'.join('  ' + r for r in rows))
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@
 - もとの PNG は main に入れない（11/18〜。毎回のダウンロードを軽くするため）。新しい絵のもとは art-irai の PR・枝にあるので、作業場所の /tmp に取ってきて使い、下の表に出どころ（依頼書と PR）を書く
 - 11/18 までのもとの PNG（下の表の `assets/art/raw/…`）は、枝 `art-raw` にある。1まいだけ取り出す：`gh api -H 'Accept: application/vnd.github.raw' "repos/juice0402/mazemaze-okashiya/contents/assets/art/raw/<名前>.png?ref=art-raw" > /tmp/<名前>.png`（枝ごと取ってこない）
 - `python3 tools/prep_art.py one|three <もとの PNG> <名前…> <上限>` で緑を抜いて `assets/art/<名前>.webp` に。ビルドが名前→絵の表（ART）にして埋めこむ。カードは `card-<材料>`・お菓子は `candy-<形>-<もう1つの材料>`（なければ `candy-<形>`）・★3 は `special-<形>-tower`・モンスターは `mon-<id>`
+- シートの絵で、となりの絵のはしを手で消したら `python3 -I tools/center_art.py`（片がわだけ余白が残ると、カードの中で絵がずれる・11/20）。出た絵は `fix <名前…>` で置きなおす
 - 取りこんだら `python3 -I tools/slim_art.py`（11/19・軽くした記録 assets/slim.json に入る。prep_art.py が同じ強さで保存するので、ほとんどは記録だけ）。art-stock から assets/art へ出した絵にもかける（ビルドが「まだ軽くしていない絵」で知らせる）
 
 ## 一覧（A＝AI で言葉から作った絵・C＝コードで描いた絵）

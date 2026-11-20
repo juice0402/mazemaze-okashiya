@@ -36,6 +36,7 @@
 | src/data/hiru.js | 朝と昼の数字（昼のチャット）：朝昼の素材 HIRU_MATS・レシピ表 HIRU_RECIPES・モンスター素材のことば MON_WORD・お菓子 candyOf・棚 kanbanSlot（看板の枠はまんなか）・昼のお客さん custCount/custPlan・すきな味 CUST_LIKES・グッズ GOODS・評判のびん REP_JAR |・常連さん（11/19 PR #22）：REG_STEPS（段ごとに [その日から, その種類のハートの合計, 条件]）・REG_TRIP・regTrip・custPlan の fix（常連さんの席） |
 | assets/art/ | ハイグラの絵（webp）。ビルドが名前→dataURL の表 ART にして埋めこむ。もとの PNG は main に置かない（11/18 までの分は枝 art-raw・取り出し方は docs/ART.md）。一覧は docs/ART.md | |
 | tools/prep_art.py | Codex の絵の緑を抜いて切り、webp にする（Python・PIL）。parts＝UI のシートを部品ごとに切る・--strict＝ほぼ純な緑だけ抜く（ミントなど緑っぽい絵） | |
+| tools/center_art.py | カードの絵が まんなかにあるかの点検（11/20）：`python3 -I tools/center_art.py` でカードに出る絵（card-・candy-・special-・burnt-・field-・jam-・sweet-）のずれ（横3%・たて5%）と、ふちの細い切れはし（となりの絵のはし）を出す。`fix <名前…>` で切れはしを消して余白6pxで置きなおす（slim.json も直す）。slim_art.py も最後にこの点検を出す | となりの絵のはしを手で消したら、かならず かける |
 | tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
 | tools/play.py | 夜の自動プレイ点検（11/19）：本物のドラッグとタップで、えらんだビルドの夜を9ラウンド通しで遊び（買う・まぜる・うる・入れかえ・会話・はやおくり連打・バトル中の読みなおし→つづきから）、JS のエラー・止まり・字の undefined／NaN・部品のたまりを集める。`python3 -I tools/play.py . <フォルダ> cookie,kone,taisaku,candy,fruitcake,jam [日] [たね] [はやさ]`（1ビルド2分ほど） | |
