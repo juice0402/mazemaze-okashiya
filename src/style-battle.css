@@ -153,7 +153,7 @@
 /* 鉄板の炎：マスの下のふちの手前で小さく（11/18 16時 しょーくん「カードが浮いてるみたい」「少し炎の演出を弱めて前に」）。.tiles の data-z（0＝場なし（種火）・1 弱火〜4 火力マックス）で燃え方が変わる */
 .night .quota{position:relative;z-index:8}   /* 11/20 とんだコインと +の数が ぶたいの下のふち（z 5〜7）にかくれないように。viewer（15）より下 */
 .tiles>:where(.tslot){z-index:1}
-.tiles{--fs:.3;--fo:.35;--go:.05}
+.tiles{--fs:.3;--fo:0;--go:.05}   /* 11/20 火のないときは炎を出さない（台の下からのぞいて切れて見えた） */
 .tiles[data-z="1"]{--fs:.5;--fo:.55;--go:.14}
 .tiles[data-z="2"]{--fs:.68;--fo:.68;--go:.24}
 .tiles[data-z="3"]{--fs:.85;--fo:.8;--go:.36}
@@ -164,7 +164,7 @@
   box-shadow:inset 0 0 0 2px rgba(255,150,70,.8),inset 0 0 20px 5px rgba(255,90,20,.65);animation:tglow 1.9s ease-in-out infinite}
 @keyframes tglow{0%,100%{opacity:.72}50%{opacity:1}}
 .tfire{position:absolute;inset:auto 0 0;height:32%;z-index:3;pointer-events:none;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
-.tf{position:absolute;bottom:-5px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
+.tf{position:absolute;bottom:1px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
   background:radial-gradient(46% 58% at 50% 82%,#fff7cc 0,#ffd34e 24%,#ff7a1e 52%,rgba(214,40,8,.6) 72%,transparent 88%);
   animation:tf var(--d) ease-in-out infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
 .tf.x{display:none}
@@ -334,9 +334,16 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .a-grow{--ac:#7fe0ff}
 /* 飴の台：温度で色が変わる（ひえひえ＝霜・ひんやり＝水色・あたたか＝はちみつ色・とろとろ＝湯気） */
 .tcold{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .5s;
-  background:radial-gradient(120% 90% at 50% 100%,rgba(150,215,255,.38),transparent 70%),repeating-linear-gradient(120deg,rgba(255,255,255,.08) 0 3px,transparent 3px 14px)}
-.tiles[data-t="1"] .tcold{opacity:1;background:radial-gradient(120% 90% at 50% 100%,rgba(200,236,255,.55),transparent 75%),repeating-linear-gradient(120deg,rgba(255,255,255,.2) 0 2px,transparent 2px 9px)}
-.tiles[data-t="2"] .tcold{opacity:.8}
+  background:radial-gradient(120% 90% at 50% 100%,rgba(150,215,255,.3),transparent 70%)}
+.tiles[data-t="1"] .tcold{opacity:1;background:radial-gradient(120% 90% at 50% 100%,rgba(200,236,255,.5),transparent 75%)}
+.tiles[data-t="2"] .tcold{opacity:.7}
+/* みなもの台の霧（11/20 しょーくん「雑な気がする・薄い冷却なら、本当に薄い冷却の霧みたいな薄白水色のレイヤーを重ねる」）：
+   カードの上に、下から うすい白水色の霧を1まい。ひえひえは少しこく・ひんやりは ごくうすく。ゆっくり横にただよう（transform だけ） */
+.tiles[data-t="1"] .tsteam::before,.tiles[data-t="2"] .tsteam::before{content:"";position:absolute;inset:0 -18%;pointer-events:none;
+  background:radial-gradient(42% 70% at 26% 100%,rgba(240,251,255,.55),transparent 72%),radial-gradient(40% 60% at 74% 100%,rgba(228,247,255,.5),transparent 72%),linear-gradient(to top,rgba(232,248,255,.5),rgba(232,248,255,.14) 55%,rgba(232,248,255,0));
+  animation:tmist 12s ease-in-out infinite alternate}
+.tiles[data-t="2"] .tsteam::before{opacity:.55}
+@keyframes tmist{from{transform:translateX(-7%)}to{transform:translateX(7%)}}
 .tiles[data-t="3"] .tcold{opacity:1;background:radial-gradient(120% 90% at 50% 100%,rgba(255,206,120,.3),transparent 70%)}
 .tiles[data-t="4"] .tcold{opacity:1;background:radial-gradient(120% 90% at 50% 100%,rgba(255,180,80,.42),transparent 72%)}
 .tsteam{position:absolute;inset:auto 0 0;height:60%;z-index:3;pointer-events:none;overflow:hidden}
@@ -448,7 +455,7 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 @keyframes leafp{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.5)}18%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(1)}}
 /* みなもの飴の台の霜と湯気（ui-frost・ui-steam・11/19 描き下ろし）：ひえひえは台の下のふちに霜、とろとろは湯気の絵が立ちのぼる */
 .tcold::after{content:"";position:absolute;inset:auto 0 -3px;height:30%;background:var(--ui-frost) center bottom/auto 100% repeat-x;opacity:0;transition:opacity .5s}
-.tiles[data-t="1"] .tcold::after{opacity:1}.tiles[data-t="2"] .tcold::after{opacity:.45}
+.tiles[data-t="1"] .tcold::after{opacity:.9}   /* 霜は ひえひえだけ（ひんやりは霧だけ・11/20） */
 .tiles[data-t="4"] .tst,.tiles[data-t="3"] .tst:nth-child(-n+4){width:30px;height:20px;border-radius:0;background:var(--ui-steam) center/contain no-repeat}
 /* おなかゲージ（11/20 ゼンゼロの形・night-ui.js の quotaHTML）：左に いまの合計（金の札 ui-chip-gold）・真ちゅうの帯（ui-quota）・
    半分と満タンに コイン（ui-coin）の印と その数。とどいたら コインが上へとんで、印は みどりの丸（ui-chip-mint）とチェックに。動くのは transform と opacity だけ */
@@ -461,7 +468,7 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .qmks{position:absolute;left:9px;right:9px;top:0;height:100%;pointer-events:none}
 .qmk{position:absolute;top:2px;width:24px;translate:-50% 0;z-index:2;display:flex;flex-direction:column;align-items:center}
 .qc{position:relative;display:block;width:22px;height:22px;background:var(--ui-coin) center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
-.qc em{position:absolute;right:-6px;bottom:-4px;font-style:normal;font-family:var(--disp);font-size:10px;line-height:1;color:#ffe08a;-webkit-text-stroke:2.5px #3a1408;paint-order:stroke fill}
+.qc em{position:absolute;left:50%;bottom:-2px;translate:-50% 0;font-style:normal;font-family:var(--disp);font-size:11px;line-height:1;color:#fff;-webkit-text-stroke:3px #6a2a00;paint-order:stroke fill;white-space:nowrap}   /* +1 はコインの上に重ねる・金の上でも読める白い字とこげ茶のふち（11/20 しょーくん） */
 .qmk small{margin-top:3px;font-family:var(--disp);font-size:9px;line-height:1;color:var(--milk);-webkit-text-stroke:2px #2a1408;paint-order:stroke fill;white-space:nowrap}
 .qmk.qok .qc{background:var(--ui-chip-mint) center/100% 100% no-repeat;border-radius:50%}
 .qmk.qok .qc em{display:none}
@@ -596,7 +603,8 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shcard .pc.tall .pc-name{top:93.1cqw;height:13.8cqw}
 .night .shcard .pc.tall .pc-attr{top:114.6cqw;height:8.3cqw}
 .night .shcard .pc.tall .pc-text{top:124.2cqw;bottom:11.2cqw;left:10%;right:9.5%;padding:0 1cqw;overflow:hidden}   /* 紙の中を少し広く（11/20 iPad の小さい画面で「サイコーの生地」が折れた） */
-.night .shcard .pc.tall .sn{line-height:1.13}
+.night .shcard .pc.tall .sn{line-height:1.13;letter-spacing:-.02em}
+.night .shcard .pc.tall .kw{padding:0}
 .pc-text .sn.cut{display:none}
 .pc-text .sn.clamp{overflow:hidden}
 .sh-br{flex-basis:100%;height:0;margin-top:-4px}   /* 5まいは 3と2の2段（ヒントで小さくなっても4まい並ばない） */
@@ -613,7 +621,9 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov:not(.many) .sh-cards{padding-top:28px}   /* 下の段の札のぶん（カードは はばで決まるので小さくならない） */
 .night .shopov.many .sh-top .kone-n{display:none}   /* 1ラウンド目（無料の5まい）は こね・ジャムはまだ0 */
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
-.sh-ttl.sh-free{pointer-events:none}   /* 無料のまいすうは ラウンドの札と同じ枠・同じ字（11/20 しょーくん「ラウンドの枠とそろえる」） */
+.sh-ttl.sh-free{pointer-events:none}
+.sh-ttl.sh-rd{min-width:88px;display:inline-flex;justify-content:center;align-items:center;gap:2px}
+.sh-ttl.sh-free b{margin:0;font-family:inherit;font-size:inherit;font-weight:inherit;line-height:inherit;color:rgb(244,194,78)}   /* 前の .sh-free b（20px）を消す＝ラウンドの札と同じ高さ */   /* 無料のまいすうは ラウンドの札と同じ枠・同じ字（11/20 しょーくん「ラウンドの枠とそろえる」） */
 
 /* ==== 大技の描き下ろし（11/20 fx-wall-*・battle-fx.js の fireWall と iceShatter）：絵は画面の下から（はばいっぱい）。動くのは transform と opacity だけ ==== */
 .fw-art{position:absolute;left:-3%;width:106%;bottom:0;transform-origin:50% 100%;will-change:transform}
