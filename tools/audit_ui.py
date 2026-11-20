@@ -16,6 +16,8 @@ args = sys.argv[1:]
 fonts = only = None
 if '--fonts' in args: k = args.index('--fonts'); fonts = pathlib.Path(args[k + 1]); del args[k:k + 2]
 if '--only' in args: k = args.index('--only'); only = set(args[k + 1].split(',')); del args[k:k + 2]
+WD = 390
+if '--w' in args: k = args.index('--w'); WD = int(args[k + 1]); del args[k:k + 2]   # 幅（11/21 iPad の画面を分けたとき 384）
 out = pathlib.Path(args[0]); out.mkdir(parents=True, exist_ok=True)
 HS = [int(a) for a in args[1:]] or [844]
 
@@ -144,7 +146,7 @@ tmp.write_text(html[:i] + "window.__ev = s => eval(s);\n" + html[i:])
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox', '--allow-file-access-from-files'])
     for H in HS:
-        page = b.new_context(viewport={'width': 390, 'height': H}, device_scale_factor=1, is_mobile=True, has_touch=True).new_page()
+        page = b.new_context(viewport={'width': WD, 'height': H}, device_scale_factor=1, is_mobile=True, has_touch=True).new_page()
         page.route(re.compile(r'https?://.*'), lambda r: r.abort())
         page.on('pageerror', lambda e, H=H: errs.append(f'{H}: {str(e)[:160]}'))
         page.goto('file://' + str(tmp), wait_until='domcontentloaded')

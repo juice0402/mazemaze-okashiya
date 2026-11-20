@@ -1390,9 +1390,9 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .opt-cr b{display:block;margin-bottom:2px;font-size:11.5px;color:#5a2410}
 .opt-cr p{margin:0}
 .opt-btn{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:30;padding:6px 14px;font-size:13px}
-.r-bar{flex:none;display:flex;align-items:center;gap:8px}
+.r-bar{flex:none;display:flex;align-items:stretch;gap:8px}
 .r-bar .big{flex:1;min-width:0}
-.r-bar .sub{flex:none;padding:12px 14px;font-size:14px}
+.r-bar .sub{flex:none;padding:12px 20px;font-size:14px}
 .mstage{position:relative;flex:1 1 0;min-height:150px;border-radius:14px;overflow:hidden;container-type:size;border:3px solid #24130a;box-shadow:inset 0 0 0 2px rgba(255,214,140,.5),0 4px 0 rgba(0,0,0,.4);background:var(--bgimg) 50% 50%/cover no-repeat,#e8c49a;--iw:max(100cqw,177.78cqh);--ih:max(100cqh,56.25cqw)}
 .mstage.noart{background:radial-gradient(40% 35% at 58% 38%,#ffb35a,transparent 70%),linear-gradient(#f3d6ae,#d9a878)}
 .m-oven{position:absolute;left:calc(50% + .08 * var(--iw));top:calc(50% - .08 * var(--ih));width:calc(.3 * var(--iw));height:calc(.4 * var(--ih));transform:translate(-50%,-50%);border-radius:50% 50% 14px 14px / 60% 60% 14px 14px;z-index:1}
@@ -5128,7 +5128,7 @@ numGrow(H, /^×/.test(String(c.b || '')));   // 数字が育つ：札がすい�
 if (b) sparkBurst({ x: b.x, y: b.y, w: 16 }, 4, 'all', .5);
 if (c.out != null) auraOut(e, e.out[c.out]);
 };
-if (!a || !b) return land();
+if (!a || !b || !a.w && !a.h) return land();   // 見えていないカード（大きさ0）からは飛ばさない：画面の左上に札が出ないように（11/21 総デバッグ）
 const p = { x: a.x, y: a.y - a.h * .3 }, ch = fxEl(`fchip c-${c.c}`, p, chipHTML(c));
 arcFly(ch, { x: 0, y: 0 }, { x: b.x - p.x, y: b.y - p.y }, T(420), 40, 1.25, .8, () => { ch.classList.add('gone'); setTimeout(() => ch.remove(), 240); land(); });
 }
@@ -5186,7 +5186,7 @@ H.num.classList.add('in', 'fin'); n.textContent = fmt(dmg); replay(H.num, 'bump'
 ringAt(n, 'r-gold');
 }
 function chipPop(at, c) {
-const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a) return;
+const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a || !a.w && !a.h) return;   // 見えていない所には出さない（11/21 総デバッグ：画面の左上に「右2枚へ」が出ていた）
 const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c));
 chipInside(ch);
 ch.style.setProperty('--pd', T(1000) + 'ms');

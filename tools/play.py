@@ -1,5 +1,6 @@
 """夜の自動プレイ点検（11/19 リーダー）：本物のドラッグとタップで、えらんだビルドの夜を9ラウンド遊び、エラー・止まり・おかしな表示を集める
 使い方：python3 -I tools/play.py . <出すフォルダ> <ビルド[,ビルド]> [日=20] [たね=1] [はやさ=2]
+  画面の大きさは W=390 H=674 python3 -I tools/play.py …（ふつうは 390×844）
   - 買う・まぜる・うごかす・うる（ドラッグ）・入れかえ・カードを大きく見る・ヒントをとじる・会話（1文ずつ／スキップ）・おもてなし！・次のラウンドへ・まとめへ
   - バトル中に はやおくりを連打・タイルをタップ、ラウンド3のバトル中にページを読みなおして「つづきから」（調理台とラウンドが前のままか）
   - 見るもの：JS のエラー・止まり（25秒〔バトル中40秒〕なにも変わらない）・画面の字の undefined／NaN・調理台5マス・コインと味パワーの数・dropPlan どおりに動いたか・部品の数（たまっていないか）
@@ -17,6 +18,8 @@ BUILDS = sys.argv[3].split(',')
 DAY = int(sys.argv[4]) if len(sys.argv) > 4 else 20
 SEED = int(sys.argv[5]) if len(sys.argv) > 5 else 1
 SPD = int(sys.argv[6]) if len(sys.argv) > 6 else 2
+import os
+VW, VH = int(os.environ.get('W', 390)), int(os.environ.get('H', 844))   # 画面の大きさ（11/21 しょーくんの画面 W=390 H=674・W=384 H=605）
 rnd = random.Random(SEED)
 
 html = (ROOT / 'index.html').read_text()
@@ -74,7 +77,7 @@ with sync_playwright() as p:
     b = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
     for build in BUILDS:
         errs, issues, log = [], [], []
-        ctx = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=1, is_mobile=True, has_touch=True)
+        ctx = b.new_context(viewport={'width': VW, 'height': VH}, device_scale_factor=1, is_mobile=True, has_touch=True)
         page = ctx.new_page()
         page.route(re.compile(r'https?://.*'), lambda r: r.abort())
         page.on('pageerror', lambda e: errs.append(('pageerror', str(e)[:300])))

@@ -460,7 +460,7 @@ function chipFly(e, c, H) {
     if (b) sparkBurst({ x: b.x, y: b.y, w: 16 }, 4, 'all', .5);
     if (c.out != null) auraOut(e, e.out[c.out]);
   };
-  if (!a || !b) return land();
+  if (!a || !b || !a.w && !a.h) return land();   // 見えていないカード（大きさ0）からは飛ばさない：画面の左上に札が出ないように（11/21 総デバッグ）
   const p = { x: a.x, y: a.y - a.h * .3 }, ch = fxEl(`fchip c-${c.c}`, p, chipHTML(c));
   arcFly(ch, { x: 0, y: 0 }, { x: b.x - p.x, y: b.y - p.y }, T(420), 40, 1.25, .8, () => { ch.classList.add('gone'); setTimeout(() => ch.remove(), 240); land(); });
 }
@@ -526,7 +526,7 @@ function hubFin(H, dmg) {
 }
 /* ほかのカードへの効果の札：タイル（か要素）の上にぽんと出て、上へ消える */
 function chipPop(at, c) {
-  const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a) return;
+  const a = typeof at === 'number' ? spot(at) : at ? spot(at) : null; if (!a || !a.w && !a.h) return;   // 見えていない所には出さない（11/21 総デバッグ：画面の左上に「右2枚へ」が出ていた）
   const ch = fxEl(`fchip pop c-${c.c}`, { x: a.x, y: a.y - a.h * .5 }, chipHTML(c));
   chipInside(ch);
   ch.style.setProperty('--pd', T(1000) + 'ms');

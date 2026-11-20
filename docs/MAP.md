@@ -39,8 +39,9 @@
 | tools/center_art.py | カードの絵が まんなかにあるかの点検（11/20）：`python3 -I tools/center_art.py` でカードに出る絵（card-・candy-・special-・burnt-・field-・jam-・sweet-）のずれ（横3%・たて5%）と、ふちの細い切れはし（となりの絵のはし）を出す。`fix <名前…>` で切れはしを消して余白6pxで置きなおす（slim.json も直す）。slim_art.py も最後にこの点検を出す | となりの絵のはしを手で消したら、かならず かける |
 | tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
-| tools/play.py | 夜の自動プレイ点検（11/19）：本物のドラッグとタップで、えらんだビルドの夜を9ラウンド通しで遊び（買う・まぜる・うる・入れかえ・会話・はやおくり連打・バトル中の読みなおし→つづきから）、JS のエラー・止まり・字の undefined／NaN・部品のたまりを集める。`python3 -I tools/play.py . <フォルダ> cookie,kone,taisaku,candy,fruitcake,jam [日] [たね] [はやさ]`（1ビルド2分ほど） | |
-| tools/audit_ui.py | 見た目の総点検（11/19）：`python3 -I tools/audit_ui.py <フォルダ> 844 600 --fonts <@fontsource の node_modules>`。26の場面で、絵を使わずに CSS でぬった面（css）・字の切れ（clip 横／たて・ellipsis）・字の上のかぶり（cover）を report.json に。フォントは本番と同じ Dela Gothic One・Zen Maru Gothic を npm の @fontsource で読む（ないと字の幅がちがう）。会話・ヒントの暗い幕や演出のかぶりはわざとなので、目で見てはずす |
+| tools/play.py | 夜の自動プレイ点検（11/19）：本物のドラッグとタップで、えらんだビルドの夜を9ラウンド通しで遊び（買う・まぜる・うる・入れかえ・会話・はやおくり連打・バトル中の読みなおし→つづきから）、JS のエラー・止まり・字の undefined／NaN・部品のたまりを集める。`python3 -I tools/play.py . <フォルダ> cookie,kone,taisaku,candy,fruitcake,jam [日] [たね] [はやさ]`（1ビルド2分ほど）。画面の大きさは `W=390 H=674`（ふつうは 390×844・11/21） | |
+| tools/days.py | 何日も続けて遊ぶ点検（11/21 総デバッグ）：タイトル → プロローグ → 朝（焼く・並べる・雑貨屋）→ 昼（はやおくり）→ 夜（ビルドを順番に・演出なしで計算・4日目から大満足にする）→ まとめ を何日も。ときどき読みなおして「つづきから」。JS のエラー・字の undefined／NaN・お金と倉庫・止まり・ビルドがひらく日・仲間が来た日を JSON に。`W=390 H=674 python3 -I tools/days.py . <フォルダ> [日数=22] [たね] > <フォルダ>/days.json`（22日で15分ほど） | |
+| tools/audit_ui.py | 見た目の総点検（11/19）：`python3 -I tools/audit_ui.py <フォルダ> 844 600 --fonts <@fontsource の node_modules>`（幅は `--w 384`・11/21）。26の場面で、絵を使わずに CSS でぬった面（css）・字の切れ（clip 横／たて・ellipsis）・字の上のかぶり（cover）を report.json に。フォントは本番と同じ Dela Gothic One・Zen Maru Gothic を npm の @fontsource で読む（ないと字の幅がちがう）。会話・ヒントの暗い幕や演出のかぶりはわざとなので、目で見てはずす |
 | tools/mado.py | 昼のお店の窓の型を作る道具（11/18 昼のチャット・H-021）：bg-day から3つの窓のガラスだけの型 bg-day-mado と、それをぼかした光 bg-day-mado-glow を作る（Python・PIL） |
 | .ignore | 検索（ripgrep）から index.html・assets/ を外す（1行が大きすぎるため） | |
 | src/js/art.js | ハイグラの絵を名前で引く hiArt・アイコン ICON_MAPS・お菓子の絵 CANDY_MAPS（名前の主役で形）・★3 specialCanvas・cardIconURL・人 personSprite（ほのか HONOKA）・モンスター MON_MAPS | |
