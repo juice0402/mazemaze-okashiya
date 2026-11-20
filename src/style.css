@@ -812,9 +812,9 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 /* ==== UI の絵 その9（11/18 夜 art-irai ui-cards）==== */
 /* カードのふち（ui-card-bronze／silver／gold／field・224×360・5:7）：のばさない（まるごと）。窓 9.8〜89.7%×11.4〜56.1%・リボン 58〜67%・紙 69〜94%。
    調理台のタイル（.pc.tile）とカットインはいままでのふち */
-.pc:not(.tile):not(.ci-card){background:var(--ui-card-bronze) center/100% 100% no-repeat;box-shadow:0 4px 8px rgba(0,0,0,.45)}
+.pc:not(.tile):not(.ci-card){background:var(--ui-card-bronze) center/100% 100% no-repeat;box-shadow:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}   /* 影は ふちの絵の形に（11/20 しょーくん「カードの背景にうっすら透明の枠」＝四角い box-shadow が見えていた） */
 .pc.s2:not(.tile):not(.ci-card){background-image:var(--ui-card-silver)}
-.pc.s3:not(.tile):not(.ci-card){background-image:var(--ui-card-gold);box-shadow:0 0 14px rgba(255,210,80,.85),0 4px 8px rgba(0,0,0,.45)}
+.pc.s3:not(.tile):not(.ci-card){background-image:var(--ui-card-gold);box-shadow:none;filter:drop-shadow(0 0 5px rgba(255,210,80,.85)) drop-shadow(0 3px 3px rgba(0,0,0,.45))}
 .pc.k-b:not(.tile):not(.ci-card){background-image:var(--ui-card-field)}
 .pc:not(.tile):not(.ci-card) .pc-win{left:9.8%;right:10.3%;top:11.4%;bottom:43.9%;border-radius:4.5cqw}
 .pc:not(.tile):not(.ci-card) .pc-name{left:13%;right:13%;top:58.2%;height:8.6%;padding:0 2cqw;background:none;clip-path:none}

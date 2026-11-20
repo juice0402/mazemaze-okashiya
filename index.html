@@ -653,9 +653,9 @@ background:linear-gradient(rgba(255,236,200,.55),rgba(255,236,200,0) 35%) paddin
 .m-baked.m-baked .mb-none{color:#f6e4c8;text-shadow:0 1px 0 rgba(30,12,4,.7)}
 .mt.mt,.mw.mw{background:none;box-shadow:none;border:2px solid transparent;border-radius:0;border-image:var(--ui-tile) 26 fill/9px stretch}
 .mo-slot.mo-slot{border:0;box-shadow:none;background:var(--ui-ovenslot) center/100% 100% no-repeat}
-.pc:not(.tile):not(.ci-card){background:var(--ui-card-bronze) center/100% 100% no-repeat;box-shadow:0 4px 8px rgba(0,0,0,.45)}
+.pc:not(.tile):not(.ci-card){background:var(--ui-card-bronze) center/100% 100% no-repeat;box-shadow:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
 .pc.s2:not(.tile):not(.ci-card){background-image:var(--ui-card-silver)}
-.pc.s3:not(.tile):not(.ci-card){background-image:var(--ui-card-gold);box-shadow:0 0 14px rgba(255,210,80,.85),0 4px 8px rgba(0,0,0,.45)}
+.pc.s3:not(.tile):not(.ci-card){background-image:var(--ui-card-gold);box-shadow:none;filter:drop-shadow(0 0 5px rgba(255,210,80,.85)) drop-shadow(0 3px 3px rgba(0,0,0,.45))}
 .pc.k-b:not(.tile):not(.ci-card){background-image:var(--ui-card-field)}
 .pc:not(.tile):not(.ci-card) .pc-win{left:9.8%;right:10.3%;top:11.4%;bottom:43.9%;border-radius:4.5cqw}
 .pc:not(.tile):not(.ci-card) .pc-name{left:13%;right:13%;top:58.2%;height:8.6%;padding:0 2cqw;background:none;clip-path:none}
@@ -1246,7 +1246,10 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .sh-top{position:absolute;top:calc(9px - var(--awn));left:13px;right:13px;height:30px;min-height:0;margin:0;padding:0;z-index:3;justify-content:space-between;gap:6px;pointer-events:none}
 .sh-top .sh-l,.sh-top .sh-r{display:flex;align-items:center;gap:6px;min-width:0;pointer-events:auto}
 .sh-top .sh-l,.sh-top .sh-r{position:relative}
-.sh-top .sh-coin,.sh-top .sh-roll{height:30px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0}
+.sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
+.sh-top .sh-roll{font-size:12px;gap:4px}
+.sh-top .sh-coin b{font-size:15px;line-height:1}
+.sh-top .sh-coin i{width:14px;height:14px}
 .night .shopov.many .sh-top .kone-n{display:none}
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .sh-ttl.sh-free{pointer-events:none}
