@@ -1247,9 +1247,12 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .sh-top .sh-l,.sh-top .sh-r{display:flex;align-items:center;gap:6px;min-width:0;pointer-events:auto}
 .sh-top .sh-l,.sh-top .sh-r{position:relative}
 .sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
-.sh-top .sh-roll{font-size:12px;gap:4px}
-.sh-top .sh-coin b{font-size:15px;line-height:1}
-.sh-top .sh-coin i{width:14px;height:14px}
+.sh-top .sh-roll.sh-roll.pill{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;
+font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;padding:0 9px;gap:5px}
+.sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:15px;height:15px;flex:none}
+.sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#ffd25a;-webkit-text-stroke:3px #3a1c08;paint-order:stroke fill;text-shadow:none;letter-spacing:0}
+.sh-price.sh-price.ng,.sh-roll.sh-roll:disabled small{color:#ff6a50}
+.sh-roll.sh-roll small{gap:3px;margin-left:0}
 .night .shopov.many .sh-top .kone-n{display:none}
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .sh-ttl.sh-free{pointer-events:none}
