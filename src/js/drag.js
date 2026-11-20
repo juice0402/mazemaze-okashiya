@@ -46,7 +46,7 @@ function dragBegin(D) {
   /* 札の置き場（11/18 しょーくん「上に出るとショップのカードやコインが見えない」）：指がショップ（舞台）の上なら下のボタンの所、
      調理台の上ならおなかの帯の所（舞台の下はし）。指の所や行き先をかくさない */
   const rb = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect().bottom; };
-  D.stageB = rb('#stage') || innerHeight / 2; D.upY = rb('.night .quota') || D.stageB; D.downY = rb('.night .bar') || innerHeight - 8; D.dock = null;
+  D.stageB = rb('#stage') || innerHeight / 2; D.upY = D.stageB; D.downY = rb('.night .bar') || innerHeight - 8; D.dock = null;
   D.el.classList.add('lifted');
   const sec = document.querySelector('.night');
   if (sec) { sec.classList.add('dragging'); if (p.where !== 'shop') sec.classList.add('drag-own'); }

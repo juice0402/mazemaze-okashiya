@@ -437,11 +437,12 @@ function heroPose(p, ms) {
   clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
 }
 /* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯が光る） */
-/* おなかゲージ（11/20 ゼンゼロの形）：左に いまの味の力の合計・真ちゅうの帯・半分（+1）と満タン（+3）にコインの印とその数。とどいたらコインがとれて チェックに変わる */
+/* おなかゲージ（11/20 ゼンゼロの形）：真ちゅうの帯・左はしの丸の下に いまの味の力の合計（さかいの数と同じ字）・半分（+1）と満タン（+3）にコインの印とその数。
+   とどいたらコインがとれて チェックに変わる。舞台の中の、ラウンドとビルドのゲージの下（11/20 しょーくん「舞台を縦にのばしたい」） */
 const QMK = [[.5, 1, 'm1'], [1, 3, 'm3']];
 function quotaHTML(q, run) {
   const mk = QMK.map(([f, c, k]) => `<b class="qmk ${k}${run >= q * f ? ' qok' : ''}" style="left:${f * 100}%"><i class="qc"><em>+${c}</em></i><small>${fmt(Math.ceil(q * f))}</small></b>`).join('');
-  return `<div class="quota"><div class="qnow"><b id="qtext">${fmt(run)}</b></div><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, run / q * 100)}%"></i></div><div class="qmks">${mk}</div></div></div>`;
+  return `<div class="quota"><div class="qwrap"><div class="qbar"><i id="qfill" style="width:${Math.min(100, run / q * 100)}%"></i></div><div class="qmks"><b class="qmk q0" style="left:0%"><i class="qc qd"></i><small id="qtext">${fmt(run)}</small></b>${mk}</div></div></div>`;
 }
 /* 左の数：前の数から いまの数へ かぞえ上げる（字だけ・はばは きまっている） */
 function qCount(from, to) {
@@ -590,8 +591,8 @@ function renderNight() {
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
       <div class="ov-heat${koneBadge() ? ' two' : ''}"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
+      ${quotaHTML(q, lastRun)}
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
-    ${quotaHTML(q, lastRun)}
     ${body}</section>`;
   setHeat(N.heat);
   for (const c of N.board) if (c) delete c.born;
