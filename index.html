@@ -778,7 +778,7 @@ transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
 .mon-sh{right:5.5%;width:26%;bottom:calc(22% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
 .mon.flee~.mon-sh{opacity:0}
 .night .stage .ov-top,.night .stage .ov-heat{top:9px;height:30px;align-items:center}
-.night .stage .ov-heat{bottom:auto;left:auto;right:12px;justify-content:flex-end;gap:4px;z-index:9}
+.night .stage .ov-heat{bottom:auto;left:auto;right:10px;justify-content:flex-end;gap:4px;z-index:9}
 .night .stage .ov-heat .heat-label{min-width:0;white-space:nowrap;font-size:10px;letter-spacing:-.02em}
 .night .stage .ov-heat .heat-bar{width:80px}
 .night .stage .ov-heat.two .heat-label{display:none}
@@ -1249,10 +1249,9 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .sh-top .kone-n{position:absolute;left:0;top:30px}
 .night .shopov:not(.many):has(.sh-top .kone-n) .sh-cards{padding-top:28px}
 .sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
-.sh-top .sh-rd,.sh-top .sh-coin.sh-coin,.sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:17px;padding-right:17px}
 .sh-top .sh-roll.sh-roll.pill{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;
 font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;padding:0 9px;gap:5px}
-.sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:13px;height:13px;flex:none}
+.sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:18px;height:18px;flex:none}
 .sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#ffd25a;-webkit-text-stroke:3px #3a1c08;paint-order:stroke fill;text-shadow:none;letter-spacing:0}
 .sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-size:17px}
 .sh-price.sh-price.ng,.sh-roll.sh-roll:disabled small{color:#ff6a50}
@@ -1282,6 +1281,12 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .fwall.leaf .fw-art.front{animation:fwgrow calc(var(--k) * 1.15s) calc(var(--k) * .12s) cubic-bezier(.2,.9,.3,1) both}
 @keyframes fwgrow{0%{transform:translateY(100%) scaleY(.5)}24%{transform:translateY(0) scaleY(1.06)}38%{transform:translateY(0) scaleY(.97) skewX(-1.5deg)}52%{transform:translateY(0) scaleY(1.02) skewX(1.5deg)}72%{transform:translateY(2%) scaleY(1);opacity:1}100%{transform:translateY(40%);opacity:0}}
 .shcard.poor::before,.shcard.nomix::before,.tslot.nomix::before{content:"";position:absolute;inset:0;z-index:4;border-radius:8%/5.7%;background:rgba(16,6,0,.46);pointer-events:none}
+.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:14px;padding-right:14px}
+@media (max-width:375px){.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:12px;padding-right:12px}}
+.night .sh-top{left:10px;right:10px}.night .sh-top .sh-r{gap:4px}.night .sh-top .sh-coin.sh-coin{gap:4px}
+.night .stage .ov-top{left:10px;right:10px}
+.sh-top .sh-coin i,.sh-roll .cn{translate:0 1px}
+.sh-price i{translate:0 2px}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}

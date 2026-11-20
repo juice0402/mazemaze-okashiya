@@ -61,7 +61,7 @@
 .mon.flee~.mon-sh{opacity:0}
 /* ビルドのゲージ（火力・温度・こね・びん）は右上（11/19 しょーくん「もともと味パワーがあった箇所に、ビルド別の特殊なゲージがあれば右上に」） */
 .night .stage .ov-top,.night .stage .ov-heat{top:9px;height:30px;align-items:center}   /* ラウンドの札とビルドのゲージは同じ高さ・同じまんなか（11/19 しょーくん「ラウンドの高さと揃うように」） */
-.night .stage .ov-heat{bottom:auto;left:auto;right:12px;justify-content:flex-end;gap:4px;z-index:9}
+.night .stage .ov-heat{bottom:auto;left:auto;right:10px;justify-content:flex-end;gap:4px;z-index:9}
 .night .stage .ov-heat .heat-label{min-width:0;white-space:nowrap;font-size:10px;letter-spacing:-.02em}
 .night .stage .ov-heat .heat-bar{width:80px}
 .night .stage .ov-heat.two .heat-label{display:none}   /* こね生地はメーターとこねの数の2つ：字を出すとまんなかのメダルにかかるので、火力は色だけ */
@@ -617,11 +617,10 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov:not(.many):has(.sh-top .kone-n) .sh-cards{padding-top:28px}
 /* 11/20 しょーくん「上まんなかのエンブレムは下まんなかへ・入れかえと所持金を横に並べて大きさを合わせる」：コインと入れかえは右に同じ高さで、こね・ジャムの数はラウンドのとなり */
 .sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
-.sh-top .sh-rd,.sh-top .sh-coin.sh-coin,.sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:17px;padding-right:17px}   /* 札の両はしの くい（びょう）を字がよける（11/20 しょーくん） */   /* 上の段の札はみんな同じ高さ（11/20 しょーくん「ラウンド・コイン・入れかえの高さをそろえる・今のコインくらい」） */
 .sh-top .sh-roll.sh-roll.pill{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;
   font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;padding:0 9px;gap:5px}   /* 入れかえも ラウンド・コインと同じ札の絵（ui-label）＝見た目の高さもそろう（11/20 しょーくん「リロールが大きく見える」） */
 /* ショップのお金はみんな同じ（11/20 しょーくん「コインの大きさ・お金の字の色とフォントをショップ内で統一」）：コインの絵 15px・数は Dela Gothic One 15px・金の字にこげ茶のふち。たりないときは赤 */
-.sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:13px;height:13px;flex:none}   /* コインの絵と数字の高さをそろえる（11/20 しょーくん「コインの高さと数字の高さが合っていない」：数字 17px の字の高さ ≒ 13px） */
+.sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:18px;height:18px;flex:none}   /* コインの絵と数字の高さをそろえる（11/20 しょーくん「コインの高さと数字の高さが合っていない」：コインの絵はまわりが すけているので、箱 18px で見える高さが 数字（17px）とそろう） */
 .sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-family:var(--disp);font-weight:400;font-size:15px;line-height:1;color:#ffd25a;-webkit-text-stroke:3px #3a1c08;paint-order:stroke fill;text-shadow:none;letter-spacing:0}
 .sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-size:17px}
 .sh-price.sh-price.ng,.sh-roll.sh-roll:disabled small{color:#ff6a50}
@@ -658,3 +657,13 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 /* 買えない・まぜられないカードは少し暗く（11/20 しょーくん「重くならない描写で」）：うすい黒の幕を1まい重ねるだけ（filter は使わない）。
    お金がたりないショップのカード .poor はショップを描くとき、まぜられないカード .nomix はカードをつかんだときに1回だけ（drag.js） */
 .shcard.poor::before,.shcard.nomix::before,.tslot.nomix::before{content:"";position:absolute;inset:0;z-index:4;border-radius:8%/5.7%;background:rgba(16,6,0,.46);pointer-events:none}
+
+/* 上の段の札の左右の余白（11/20 しょーくん「両はしの くいを字がよける」）：くいは札のはしから 4〜9px。字は 15px から（せまい画面は 13px）。
+   前の .sh-ttl.sh-rd・入れかえの皮（padding 9px）があとから書かれていて効いていなかったので、いちばん下で強く書く */
+.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:14px;padding-right:14px}
+@media (max-width:375px){.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:12px;padding-right:12px}}   /* いちばんせまい画面は少しつめる（それでも くいから4px はなれる） */
+.night .sh-top{left:10px;right:10px}.night .sh-top .sh-r{gap:4px}.night .sh-top .sh-coin.sh-coin{gap:4px}
+.night .stage .ov-top{left:10px;right:10px}   /* ラウンドの札はショップとバトルで同じ所 */
+/* コインの絵と数字の上下（11/20 しょーくん「数字が少し下でコインが少し上」）：Dela Gothic One の数字は字の箱の中で少し下にのるので、コインの絵を下げて まんなかをそろえる */
+.sh-top .sh-coin i,.sh-roll .cn{translate:0 1px}
+.sh-price i{translate:0 2px}   /* はかって：札の中は 数字が1px・値札は2px 下だった */
