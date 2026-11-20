@@ -48,12 +48,15 @@ const QUOTA = [450, 1500, 3800, 7500, 15000, 27000, 42000, 63000, 90000];
 /* ビルドごとのおなか（11/19 しょーくん「引きやビルドが悪ければ最後まで全然だめな感じで、うまく噛み合ったらラウンド9は完璧」）：
    おなか ＝ QUOTA ÷（bal[0] × bal[1]^(ラウンド−1)）を2けたに丸める。bal は cards.js の BUILDS（はじめの強さ・ラウンドごとの伸び）。
    ビルドごとに味パワーの伸び方がちがう（こね生地は序盤に強く後半ゆるやか・キャンディは後半に爆発）ので、おなかの方をそのシェフに合わせる（味パワーの計算と画面の数字はそのまま）。
-   合わせ方は tools/bot.mjs の SUM=1（ねらい：うまい人の満タンが ラウンド2で4人に1人・ラウンド9で半分・組めない人は最後まで3割にも届かない） */
+   合わせ方は tools/bot.mjs の SUM=1（ねらい：うまい人の満タンが ラウンド2で4人に1人・ラウンド9で半分・組めない人は最後まで3割にも届かない）
+   ラウンド1（11/20 しょーくん「どのビルドも一番最初は、引きが良ければコイン+1まで」「スタートやアンカーに★2を初手から置ければギリギリ+1」「昼の頑張りなし」）：
+   昼のハート0で ★2 をスタートかアンカーに置いた夜の まんなかの味パワー ＝ おなかの半分。式で合わないビルドは BUILDS の r1（ラウンド1のおなか）で決める。はかり方は tools/bot.mjs の R1=1 */
 const round2 = v => { const p = Math.pow(10, Math.max(0, Math.floor(Math.log10(v)) - 1)); return Math.round(v / p) * p; };
 function quota(r, day, build) {
   const q = QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
   let b = build; if (!b) try { b = N && N.build; } catch (e) { b = null; }
   const B = b && BUILDS[b] && BUILDS[b].bal;
+  if (r === 1 && b && BUILDS[b] && BUILDS[b].r1) return BUILDS[b].r1;
   return B ? round2(q / (B[0] * Math.pow(B[1], r - 1))) : q;
 }
 function nightHP(day, build) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day, build); return s; }

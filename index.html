@@ -2162,19 +2162,19 @@ bal: [1.14, 1.111], doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 
 },
 kone: {
 chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
-bal: [0.34, 1.268], doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
+bal: [0.34, 1.268], r1: 700, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
 },
 taisaku: {
 chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて まぜて育て、冷えたら本気。★3を冷やしたら最強',
-bal: [2.97, 1.123], doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
+bal: [2.97, 1.123], r1: 180, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
 chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。冷えるほど強い',
-bal: [1.15, 0.964], doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
+bal: [1.15, 0.964], r1: 270, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
 },
 fruitcake: {
 chef: 'wakaba', name: 'くだものケーキ', from: 11, mate: 'wakaba', pic: 'wakaba-battle', text: 'くだものを育てて、熟した実を★2のケーキにのせると★3',
-bal: [1.31, 1.037], doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
+bal: [1.31, 1.037], r1: 400, doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
 },
 jam: {
 chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。くだもの3つで★3のジャムが生まれる',
@@ -2472,6 +2472,7 @@ function quota(r, day, build) {
 const q = QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
 let b = build; if (!b) try { b = N && N.build; } catch (e) { b = null; }
 const B = b && BUILDS[b] && BUILDS[b].bal;
+if (r === 1 && b && BUILDS[b] && BUILDS[b].r1) return BUILDS[b].r1;
 return B ? round2(q / (B[0] * Math.pow(B[1], r - 1))) : q;
 }
 function nightHP(day, build) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day, build); return s; }

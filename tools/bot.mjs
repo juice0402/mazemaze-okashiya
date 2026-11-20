@@ -1,5 +1,6 @@
 // 夜のおもてなしのボット（数字合わせ用・11/19）：ゲームの src をそのまま読み、画面の関数は空にして、9ラウンドを何回も遊ぶ
 // node tools/bot.mjs [回数=60] [ビルド=ぜんぶ] [日=1]
+//   R1=1：ラウンド1だけ（★2 がスタートかアンカーにある夜の味パワーと、おなかの半分に届く割合）
 //   smart＝すこし賢い（まぜる・買う・入れかえを、その場の味パワーが上がる順に・並びも入れかえて一番いい形に）
 //   weak ＝ビルドを組めない人（買えるものを順に置くだけ・まぜるのは目の前でできるときだけ・並べかえない）
 // 出るもの：ラウンドごとの味パワー（smart の 25/50/75/90% と weak の 50/90%）と、いまの quota（world.js）で 半分・満タンに届いた割合
@@ -106,6 +107,10 @@ function sim(build, day, smart) {
   for (let r = 1; r <= ROUNDS; r++) {
     N.stage = 'shop';
     const tot = smart ? smartShop() : weakShop();
+    if (r === 1) {   // R1=1 用：★2 がスタートかアンカーにある（1）・まんなかだけ（2）・ない（0）
+      const idx = N.board.map((c, i) => c ? i : -1).filter(i => i >= 0), st = i => i >= 0 && N.board[i] ? cardDef(N.board[i].cid).star : 0;
+      out.s2 = (st(idx[0]) >= 2 || st(idx[idx.length - 1]) >= 2) ? 1 : N.board.some(c => c && cardDef(c.cid).star >= 2) ? 2 : 0;
+    }
     const res = resolveRound(); out.push(res.total);
     finishRound(res); if (r < ROUNDS) nextRound();
   }
@@ -124,6 +129,12 @@ for (const b of builds) {
   const sm = [], wk = [];
   const run = smart => { for (let t = 0; ; t++) { try { return vm.runInContext(`sim(${JSON.stringify(b)}, ${DAY}, ${smart})`, ctx); } catch (e) { const m = /^(\w+) is not defined/.exec(e.message); if (!m || t > 30) throw e; vm.runInContext(`${m[1]} = () => 0;`, ctx); console.log('（空にした：' + m[1] + '）'); } } };
   for (let k = 0; k < RUNS; k++) { sm.push(run(true)); wk.push(run(false)); }
+  if (process.env.R1) {   // R1=1：ラウンド1だけ（11/20 ねらい：昼のハート0で ★2 をスタートかアンカーに置いた夜の まんなか ≒ おなかの半分）
+    const q = vm.runInContext(`quota(1, ${DAY}, ${JSON.stringify(b)})`, ctx), e = sm.filter(x => x.s2 === 1).map(x => x[0]);
+    const hit = a => Math.round(a.filter(v => v >= q / 2).length / Math.max(1, a.length) * 100);
+    console.log(`${b.padEnd(9)} おなか ${q}（半分 ${q / 2}）｜ ★2がはしの夜 ${Math.round(e.length / sm.length * 100)}% 味パワー 25/50/75% ${[.25, .5, .75].map(p => f(pct(e, p))).join('/')} 半分に届く ${hit(e)}% ｜ 全部の夜 smart ${hit(sm.map(x => x[0]))}% weak ${hit(wk.map(x => x[0]))}%`);
+    continue;
+  }
   if (process.env.SUM) {   // 1行まとめ（SUM=1）：満タン率 r2・r5・r9 ｜ r9 の 25/50/90%（おなかの何倍）｜ weak r9 の 90%（何倍）｜ 夜の満足（ちょっと／満足／大満足 の%）
     const q9 = vm.runInContext(`quota(9, ${DAY})`, ctx), fr = (a, r) => Math.round(a.filter(x => x[r] >= vm.runInContext(`quota(${r + 1}, ${DAY})`, ctx)).length / a.length * 100);
     const r9 = sm.map(x => x[8]), belly = vm.runInContext(`nightHP(${DAY})`, ctx);
