@@ -665,6 +665,8 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .sh-top{left:10px;right:10px}.night .sh-top .sh-r{gap:4px}.night .sh-top .sh-coin.sh-coin{gap:4px}
 .night .stage .ov-top{left:10px;right:10px}   /* ラウンドの札はショップとバトルで同じ所 */
 /* コインの絵と数字の上下（11/20 しょーくん「数字が少し下でコインが少し上」）：Dela Gothic One の数字は字の箱の中で少し下にのるので、コインの絵を下げて まんなかをそろえる */
-.sh-top .sh-coin i,.sh-roll .cn{translate:0 .75px}
+.sh-top .sh-coin i{translate:0 .75px}
+.sh-roll.sh-roll .cn{translate:0 1.5px}   /* 入れかえのコインは数字といっしょに small の中（small ごと .75px 上がる）ので、そのぶん多く下げる */
 .sh-top .sh-coin b,.sh-roll.sh-roll small{translate:0 -.75px}
 .sh-price i{translate:0 1.25px}   /* 字が下にのるぶん、コインも下げる（はかった：札はコイン .75px 下・数字 .75px 上〔札のまんなかにそろう〕・値札はコイン 1.25px 下） */   /* はかって：札の中は 数字が1px・値札は2px 下だった */
+.sh-price.sh-price{padding:0 2px 4px 0}   /* 値札の紙の上下のまんなかに コインと数字をのせる（はかって 2px 下だった・11/20 しょーくん） */
