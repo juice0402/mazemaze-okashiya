@@ -26,9 +26,16 @@
 .dc.tmp{opacity:.95}
 /* ショップのあいだは、考えるほのかとモブがショップの下のすみに（カードと値札をかくさない） */
 .deco.shop .dc-chibi{height:20cqh}
-.deco.shop .m-tokage{left:auto;right:30%}
-.deco.shop .m-hiyoko{right:auto;left:22%}
 .deco.shop .m-kurage{display:none}
+.deco.shop .dc-mob.p1{left:auto;right:4px}
+.deco.shop .dc-mob.p2{left:auto;right:19%}
+.deco.shop .dc-mob.p4{left:auto;right:32%}
+.deco.shop .dc-mob.p3{right:auto;left:37%}
+/* 額縁の下の角の金具（ui-stage-frame の角だけ）を、ちびキャラとモブの前に もう1まい重ねる（11/20 しょーくん「ちびキャラは枠よりは前・下の金具よりは うしろ」）。
+   角は border-image と同じ大きさ（絵の74px→20px） */
+.dc-corner{position:absolute;bottom:0;width:20px;height:20px;background:var(--ui-stage-frame) no-repeat;background-size:calc(400px * 20 / 74) calc(759px * 20 / 74)}
+.dc-corner.bl{left:0;background-position:left bottom}
+.dc-corner.br{right:0;background-position:right bottom}
 /* みんなの反応：hop＝ふつうの一撃・jump＝大きな一撃と★3・scare＝モンスターがほえた */
 .deco.hop .dc{animation:dcjump .5s ease-out both;animation-delay:calc(var(--k,0) * 45ms)}
 .deco.jump .dc{animation:dcjump2 .8s cubic-bezier(.3,1.3,.5,1) both;animation-delay:calc(var(--k,0) * 55ms)}
@@ -156,7 +163,7 @@
   background:radial-gradient(75% 95% at 50% 100%,rgba(255,96,24,.9),rgba(190,36,8,.5) 50%,transparent 82%),linear-gradient(transparent 25%,rgba(255,70,16,.45));
   box-shadow:inset 0 0 0 2px rgba(255,150,70,.8),inset 0 0 20px 5px rgba(255,90,20,.65);animation:tglow 1.9s ease-in-out infinite}
 @keyframes tglow{0%,100%{opacity:.72}50%{opacity:1}}
-.tfire{position:absolute;inset:auto 0 0;height:32%;z-index:3;pointer-events:none;mix-blend-mode:screen;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
+.tfire{position:absolute;inset:auto 0 0;height:32%;z-index:3;pointer-events:none;transform-origin:50% 100%;transform:scaleY(var(--fs));opacity:var(--fo);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .4s}
 .tf{position:absolute;bottom:-5px;left:var(--x);width:var(--w);height:100%;margin-left:calc(var(--w) / -2);transform-origin:50% 100%;border-radius:50% 50% 42% 42% / 72% 72% 28% 28%;
   background:radial-gradient(46% 58% at 50% 82%,#fff7cc 0,#ffd34e 24%,#ff7a1e 52%,rgba(214,40,8,.6) 72%,transparent 88%);
   animation:tf var(--d) ease-in-out infinite;animation-delay:calc(var(--k) * var(--d) * -1)}
@@ -588,10 +595,10 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shcard .pc.tall .pc-win{top:18.2cqw;bottom:auto;height:71.6cqw}
 .night .shcard .pc.tall .pc-name{top:93.1cqw;height:13.8cqw}
 .night .shcard .pc.tall .pc-attr{top:114.6cqw;height:8.3cqw}
-.night .shcard .pc.tall .pc-text{top:124.2cqw;bottom:11.2cqw;overflow:hidden}
+.night .shcard .pc.tall .pc-text{top:124.2cqw;bottom:11.2cqw;left:10%;right:9.5%;padding:0 1cqw;overflow:hidden}   /* 紙の中を少し広く（11/20 iPad の小さい画面で「サイコーの生地」が折れた） */
+.night .shcard .pc.tall .sn{line-height:1.13}
 .pc-text .sn.cut{display:none}
-.pc-text .sn.clamp{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
-.pc-text.brk .cw{display:inline;white-space:normal;word-break:break-all}
+.pc-text .sn.clamp{overflow:hidden}
 .sh-br{flex-basis:100%;height:0;margin-top:-4px}   /* 5まいは 3と2の2段（ヒントで小さくなっても4まい並ばない） */
 /* ショップの上の段（11/20 しょーくん「ラウンドは左上固定・入れかえは右上固定」「無料も入れかえと同じ枠に」）：
    バトルの .ov-top と同じ所（舞台の上から9px・左右13px・高さ30px）に重ねる。左＝今のラウンド（.ov-top と同じ札と字）とこね・ジャムの数、右＝コインと入れかえ（1ラウンド目は「無料 3まい」の枠）。
@@ -606,8 +613,7 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov:not(.many) .sh-cards{padding-top:28px}   /* 下の段の札のぶん（カードは はばで決まるので小さくならない） */
 .night .shopov.many .sh-top .kone-n{display:none}   /* 1ラウンド目（無料の5まい）は こね・ジャムはまだ0 */
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
-.night .sh-top .sh-free{margin:0;padding:5px 12px;font-size:13px;font-weight:700;pointer-events:none}
-.night .sh-top .sh-free b{margin:0 2px;font-size:16px;line-height:1;color:var(--gold);text-shadow:0 1px 0 #2a170c}
+.sh-ttl.sh-free{pointer-events:none}   /* 無料のまいすうは ラウンドの札と同じ枠・同じ字（11/20 しょーくん「ラウンドの枠とそろえる」） */
 
 /* ==== 大技の描き下ろし（11/20 fx-wall-*・battle-fx.js の fireWall と iceShatter）：絵は画面の下から（はばいっぱい）。動くのは transform と opacity だけ ==== */
 .fw-art{position:absolute;left:-3%;width:106%;bottom:0;transform-origin:50% 100%;will-change:transform}

@@ -80,16 +80,16 @@ function chunkHTML(t, f) {
   return out.map(c => c === ' ' ? ' ' : `<span class="cw">${f(c)}</span>`).join('');
 }
 /* 紙の文の字の大きさ：紙の内側（幅64cqw・高さ21.5cqw）に、折り返して入る いちばん大きい字（9cqw まで）。黄色いことばは ふちの分だけ広く数える */
-function faceFs(S, H = 21.5) {   // H＝紙の字の高さ（cqw）。ショップのたて長のカードは 31
+function faceFs(S, H = 21.5, Wd = 64, LH = 1.2) {   // H＝紙の字の高さ・Wd＝はば（cqw）・LH＝行の高さ。ショップのたて長のカードは 31〜38・76・1.13
   const sents = S.map(x => sentChunks(x.t).map(c => textW(c.replace(/[{}]/g, '')) + (c.match(/\{/g) || []).length * .5));
   for (let fs = 9; fs > 4.5; fs -= .25) {
     let lines = 0, ok = true;
     for (const cs of sents) {
       let x = 0; lines++;
-      for (const w of cs) { const px = w * fs; if (px > 64) { ok = false; break; } const need = x ? x + .4 * fs + px : px; if (need > 64) { lines++; x = px; } else x = need; }
+      for (const w of cs) { const px = w * fs; if (px > Wd) { ok = false; break; } const need = x ? x + .4 * fs + px : px; if (need > Wd) { lines++; x = px; } else x = need; }
       if (!ok) break;
     }
-    if (ok && lines * 1.2 * fs <= H) return fs;
+    if (ok && lines * LH * fs <= H) return fs;
   }
   return 4.5;
 }
@@ -101,7 +101,7 @@ function cardFace(cid, cls, opt = {}) {
   return `<div class="pc ${cls} k-${d.kind} s${d.star}${dmg ? '' : ' np'}${opt.born ? ' born' : ''}${opt.tall ? ' tall' : ''}">
     <div class="pc-win"><div class="pc-art">${artImg(cid)}</div>${shineI(d)}</div>
     <div class="pc-name"><span style="font-size:${nameFs(d.short)}cqw">${esc(d.short)}</span></div>${attrBar(d)}
-    <div class="pc-text"><span class="pl sents" style="font-size:max(8px,${faceFs(S, opt.tall || 21.5)}cqw)">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
+    <div class="pc-text"><span class="pl sents" style="font-size:max(8px,${(opt.tall ? faceFs(S, opt.tall, 76, 1.13) : faceFs(S))}cqw)">${txt}</span></div>${ck ? `<span class="pc-ck">${ck}</span>` : ''}
     ${cost}${starGems(d)}${dmg ? powBadge(dmg) : ''}${glossI(d)}
   </div>`;
 }

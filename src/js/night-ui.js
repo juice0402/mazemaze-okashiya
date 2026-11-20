@@ -510,7 +510,7 @@ function barHTML() {
    カードはドラッグで調理台へ（かさねると買いながら まぜる）。調理台のカードをショップへ持ってくると うる */
 function shopHTML() {
   const r1 = N.round === 1, list = N.shop;
-  const head = r1 ? `<span class="pill sub sh-free" aria-label="無料 あと${N.picks}まい">無料 <b>${N.picks}</b>まい</span>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
+  const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
     : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
   const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
   return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
@@ -529,17 +529,17 @@ function shopFit() {
   const fit = () => {
     for (const t of sc.querySelectorAll('.pc-text')) {
       const sp = t.firstElementChild, ss = [...t.querySelectorAll('.sn')]; if (!sp) continue;
-      ss.forEach(e => e.classList.remove('cut')); t.classList.remove('brk');
-      if (sp.scrollWidth > t.clientWidth + 1) t.classList.add('brk');   // ことばの かたまりが紙のはばより長い（小さい画面）ときだけ、とちゅうで折る
+      ss.forEach(e => e.classList.remove('cut'));
       for (let k = ss.length - 1; k > 0 && sp.offsetHeight > t.clientHeight + 1; k--) ss[k].classList.add('cut');
-      const f = ss[0]; if (!f) continue;   // 1つの文でも入らない小さな画面は、入る行までで「…」
-      f.style.webkitLineClamp = ''; f.classList.remove('clamp');
-      if (sp.offsetHeight > t.clientHeight + 1) { f.classList.add('clamp'); f.style.webkitLineClamp = Math.max(1, Math.floor(t.clientHeight / (parseFloat(getComputedStyle(f).fontSize) * 1.2))); }
+      const f = ss[0]; if (!f) continue;   // 1つの文でも入らない小さな画面は、入る行まで
+      f.style.maxHeight = ''; f.classList.remove('clamp');
+      if (sp.offsetHeight > t.clientHeight + 1) { const cs = getComputedStyle(f), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2; f.classList.add('clamp'); f.style.maxHeight = Math.max(1, Math.floor(t.clientHeight / lh)) * lh + 'px'; }   // 入る行までで切る（ことばが2行に折れていても行で数える）
     }
   };
   fit();
   if (shopRO) shopRO.disconnect();   // ヒントが列の下をあけたとき・画面の大きさが変わったときも はかりなおす
   if (window.ResizeObserver) { shopRO = new ResizeObserver(fit); shopRO.observe(sc); }
+  if (document.fonts && document.fonts.status !== 'loaded') document.fonts.ready.then(() => sc.isConnected && fit());   // 字の読みこみのあとも はかりなおす
 }
 
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩・前の夜のビルドがえらばれている）。カードはシェフの絵・ビルドの名前・特性・代表のカード3まい・ひとこと */

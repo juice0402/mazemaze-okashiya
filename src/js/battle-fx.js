@@ -122,6 +122,7 @@ function auraOut(e, o) {
 
 /* ---------- 3. 舞台の賑やかし ---------- */
 /* [絵の名前, 絵がまだないときの仮の絵, 置き場所のクラス]。絵は Codex（art-irai の requests/okashi/mobs-chibi.md） */
+const MOB_RANK = ['mob-hitsuji', 'mob-slime', 'mob-tokage', 'mob-hiyoko'];   // 大きい順（ショップの立ち位置）
 const DECO_MOBS = [
   ['mob-slime', 'mon-slime', 'm-slime'], ['mob-hitsuji', 'mon-hitsuji', 'm-hitsuji'],
   ['mob-tokage', null, 'm-tokage'], ['mob-hiyoko', null, 'm-hiyoko'], ['mob-kurage', null, 'm-kurage'],
@@ -153,15 +154,20 @@ function grassSVG() {
 function decoHTML(mode) {
   /* 今夜のお客さん（とその仮の絵の子）は、応援のモブからはずす（H-016） */
   const g = N && MONSTERS[N.mon];
-  const mobs = DECO_MOBS.filter(([n]) => !g || (n !== 'mob-' + g.id && n !== g.alt)).map(([n, alt, cls], k) => {
+  /* ショップのあいだの立ち位置（11/20 しょーくん「いちばん大きな子は右はし＝ほのかの対面・その横に次の子・小さな子は まんなかより少し左」）：
+     地面の子を大きい順に p1（右はし）・p2（その横）・p4（そのまた横・4人いるとき）・いちばん小さい子は p3（まんなかの少し左） */
+  const list = DECO_MOBS.filter(([n]) => !g || (n !== 'mob-' + g.id && n !== g.alt));
+  const ground = list.map(([n]) => n).filter(n => n !== 'mob-kurage').sort((x, y) => MOB_RANK.indexOf(x) - MOB_RANK.indexOf(y));
+  const slot = n => { const i = ground.indexOf(n); return i < 0 ? '' : i === ground.length - 1 && i > 0 ? ' p3' : ' p' + [1, 2, 4][i]; };
+  const mobs = list.map(([n, alt, cls], k) => {
     const src = ART[n] || (alt && ART[alt]);
-    return src ? `<img class="dc dc-mob ${cls}${ART[n] ? '' : ' tmp'}" style="--k:${k}" src="${src}" alt="">` : '';
+    return src ? `<img class="dc dc-mob ${cls}${slot(n)}${ART[n] ? '' : ' tmp'}" style="--k:${k}" src="${src}" alt="">` : '';
   }).join('');
   const pose = mode === 'shop' ? 'think' : mode === 'win' ? 'cheer' : 'sit';
   return `<div class="deco ${mode}" id="deco" aria-hidden="true">
     <i class="dc-ledge"></i>${grassSVG()}
     <i class="dc-frame"></i><i class="dc-medal"></i>
-    <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}</div>`;
+    <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}<i class="dc-corner bl"></i><i class="dc-corner br"></i></div>`;
 }
 /* ほのかのデフォルメのポーズをしばらく変える（ms のあと、すわってにこにこへ） */
 let chibiT = 0;

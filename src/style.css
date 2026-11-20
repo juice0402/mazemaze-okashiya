@@ -1,3 +1,4 @@
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}   /* スマホが字を勝手に大きくしない（11/20） */
 /* 木造のおしゃれなお菓子屋さん（11/17 しょーくん「青は雰囲気とちがう」）：くるみ色の板・クリームの紙・いちご・ミント・キャラメル。
    夜・朝・昼はスマホ1画面に収める（.fit：絵がのびちぢみ、リストだけ中でスクロール）。お店という1つの世界なので明るいテーマに切りかえない */
 :root{
@@ -786,7 +787,7 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .cu-bub.cu-bub.think{border-image:var(--ui-think) 70 fill/21px stretch;padding:9px 14px 8px}
 .cu-bub.cu-bub.think::after{width:22px;height:20px;left:0;bottom:-19px;transform:scaleX(-1);background-image:var(--ui-think-tail)}
 /* ==== UI の絵 その7（11/18 夜 art-irai ui-flame）==== */
-/* 鉄板の炎（ui-flame-tall 97×240・-mid 196×240・-wide 240×233・黒い背景のまま）：.tfire の mix-blend-mode: screen で黒がぬける。ゆらすのは今までどおり tf のアニメ */
+/* 鉄板の炎（ui-flame-tall 97×240・-mid 196×240・-wide 240×233）：11/20 黒い背景を明るさで すけに変えた（しょーくん「下の左右の金具より下のレイヤーで炎が切れて見える」→ screen をやめて ふつうに重ねる）。ゆらすのは今までどおり tf のアニメ */
 .tiles .tf.tf{border-radius:0;background:var(--ui-flame-tall) center bottom/contain no-repeat}
 .tiles .tf.tf.x{background-image:var(--ui-flame-mid)}
 .tiles[data-z="4"] .tf.tf{background-image:var(--ui-flame-mid);filter:brightness(1.15)}
@@ -871,7 +872,7 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .pc-text span.pl.sents{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center;gap:.8cqw;line-height:1.2;overflow:visible;-webkit-line-clamp:unset}
 .pc-text span.sn{display:block;font-size:inherit;font-weight:900;line-height:1.2;color:#4a2414;white-space:normal;overflow:visible;-webkit-line-clamp:unset;line-break:strict;text-align:left}
 .pc-text span.sn.plain{font-weight:700;color:#9a7458}
-.pc-text span.cw{display:inline-block;font-size:inherit;white-space:nowrap;overflow:visible;-webkit-line-clamp:unset;color:inherit;font-weight:inherit;line-height:inherit}
+.pc-text span.cw{display:inline-block;max-width:100%;font-size:inherit;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;overflow:visible;-webkit-line-clamp:unset;color:inherit;font-weight:inherit;line-height:inherit}   /* ことばの とちゅうでは折らない（keep-all）。紙のはばより長い ことばだけ折る（anywhere・11/20 iPad で「サイコーの生地」が切れた） */
 /* スペシャルのカットインの帯（fx-cutin-<シェフ>・11/19 描き下ろし）：横長の絵の右よりの所（いちばん動きのある所）を大きく。金のふちは絵にあるので、コードのふちはやめて光だけ */
 .ci-band.art{background-color:transparent;background-size:cover;background-position:72% 50%;background-repeat:no-repeat;box-shadow:0 0 46px rgba(255,190,110,.7)}
 .ci-band.art .ci-lines{opacity:.45}
