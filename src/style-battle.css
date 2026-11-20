@@ -669,4 +669,4 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .sh-roll.sh-roll .cn{translate:0 1.5px}   /* 入れかえのコインは数字といっしょに small の中（small ごと .75px 上がる）ので、そのぶん多く下げる */
 .sh-top .sh-coin b,.sh-roll.sh-roll small{translate:0 -.75px}
 .sh-price i{translate:0 1.25px}   /* 字が下にのるぶん、コインも下げる（はかった：札はコイン .75px 下・数字 .75px 上〔札のまんなかにそろう〕・値札はコイン 1.25px 下） */   /* はかって：札の中は 数字が1px・値札は2px 下だった */
-.sh-price.sh-price{padding:0 2px 4px 0}   /* 値札の紙の上下のまんなかに コインと数字をのせる（はかって 2px 下だった・11/20 しょーくん） */
+.sh-price.sh-price{padding:0 2px 2px 0}   /* 値札の中身を少し上へ（前の 1px 0 から 1.5px 上・4px だと上すぎた・11/20 しょーくん） */
