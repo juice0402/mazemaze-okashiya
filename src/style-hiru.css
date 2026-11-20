@@ -77,7 +77,7 @@
 .mt-n{position:absolute;right:-5px;top:-6px;min-width:19px;height:19px;border-radius:10px;padding:0 4px;font-style:normal;font-size:11px;font-weight:700;line-height:19px;text-align:center;color:#fff;background:var(--strawberry);border:1.5px solid #fff}
 /* モンスター素材のマス（.mmat）も、皮はほかの .mt と同じ木のマス。印は「とくべつ」の金のリボン（.mt-pr.sp）だけ（11/19 リーダーのお願い1） */
 /* 名前は1行。長い名前（7〜8文字）は字の高さはそのまま、横だけちぢめてマスに入れる（--n＝文字の数・morning.js の mTile） */
-.mt-nm{display:inline-block;max-width:none;overflow:visible;transform:scaleX(min(1,calc(5.5 / var(--n,1))));transform-origin:50% 50%}
+.mt-nm{display:inline-block;max-width:none;overflow:visible;line-height:13px;transform:scaleX(min(1,calc(5 / var(--n,1))));transform-origin:50% 50%}
 .mt-pr{white-space:nowrap;font-size:10px;font-weight:700;line-height:15px;color:#6b2e0e;background:#ffe9a8;border:1.5px solid #8a4a1c;border-radius:4px;padding:0 5px;box-shadow:0 1.5px 0 rgba(0,0,0,.3)}
 .mt.poor{opacity:.55}
 .mt.poor .mt-pr{color:#5a4a3a;background:#d9d0c4;border-color:#7a6a5a}
@@ -109,7 +109,7 @@
 .mw{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;background:linear-gradient(#fffaf0,#f4e0c0);border:2px solid #3a1c08;border-radius:10px;box-shadow:0 3px 0 #2a140a;touch-action:none;user-select:none;cursor:grab}
 /* 天板のお菓子の名前は2行まで（11/19：「ミルクキ…」「ぷるぷる…」と短く切れて、どれかわかりにくかった） */
 .mw .hico{width:36px;height:36px}
-.mw-nm{max-width:100%;min-height:2.2em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:9.5px;font-weight:700;line-height:1.1;letter-spacing:-.03em;text-align:center;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}   /* 折るのは <wbr>（mNmBr）の所だけ */
+.mw-nm{max-width:100%;min-height:2.4em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:9.5px;font-weight:700;line-height:1.2;letter-spacing:-.03em;text-align:center;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}   /* 折るのは <wbr>（mNmBr）の所だけ */
 .mw-empty{flex:1;align-self:center;text-align:center;margin:0;font-size:12px;color:var(--milk-soft)}
 /* つかんで動かす */
 .mghost{position:fixed;z-index:50;margin:0;pointer-events:none;box-shadow:0 10px 18px rgba(0,0,0,.4);transition:none;animation:none}
@@ -479,6 +479,11 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .mt.poor .mt-pr{filter:grayscale(1) brightness(.9);color:#4a3a2c}
 /* とくべつ（ui-tag-gold・金のリボン）：モンスター素材の印 */
 .mt .mt-pr.sp{border-width:2px 9px 3px;border-image:var(--ui-tag-gold) 18 46 22 46 fill/2px 9px 3px stretch;padding:0;font-size:9.5px;color:#5a3404;filter:none}
+/* 11/20 リーダーのお願い（とくべつが見切れる・Android のアプリは字が8pxより小さくならない）：
+   金のリボンも名前も、マスの木のふちの内がわ（約50px）に入れる。字は 8.5px・字のすき間をつめて4文字32px（8px になっても34px）・リボンは50pxまで。名前は5文字の幅（50px）まで横にちぢめる */
+.mt .mt-pr.sp{max-width:50px;box-sizing:border-box;font-size:8.5px;letter-spacing:-.5px;overflow:hidden}
+.mt{padding:3px 1px 5px}
+.mt .hico{width:32px;height:32px}   /* マスの高さを 79px にして、材料だなの横スクロールの箱（中の高さ80px）に入れる（前は 86px で上が切れていた） */
 /* 材料だな・天板のつまみ「›」（ui-gingham-tab）：まだ横にあるときだけ */
 .mtray.more::before,.md-wait.more::before{content:'';top:50%;bottom:auto;right:4px;width:20px;height:44px;margin-top:2px;transform:translateY(-50%);background:var(--ui-gingham-tab) center/100% 100% no-repeat;border-radius:0;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
 /* 「材料だな」「天板」の見出し：ギンガムのへりの上にのるので、こげ茶の木の札（ui-label）にのせる */
