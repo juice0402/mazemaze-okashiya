@@ -2111,7 +2111,7 @@ o: 'ほのかがまぜて作ったお菓子。朝にはレシピとしてお店�
 s: 'ほのか特製のスペシャル。ひと口で、お店じゅうが元気になる。',
 u: 'ふたつの道具をひとつにした、ほのかの工夫。',
 };
-const HEAT = ['', '弱火', '中火', '強火', '火力マックス'];
+const HEAT = ['火なし', '弱火', '中火', '強火', '火力マックス'];
 const HEAT_MAX = 4;
 const COOK_MAX = 9;
 const cookMul = c => c >= COOK_MAX ? 5 : 1 + c / 3;
@@ -2123,10 +2123,10 @@ const sizeMul = (c, fx) => c >= SIZE_MAX ? fx.done || 5 : 1 + c / 3;   // 完成
 const COLD_MUL = [1, 1.5, 1.25, 1, 1];
 const PETIT_DMG = 10;
 const FIELDS = {
-teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['中火で焼く'], long: [['', '{火力}が中火になって、生地を焼く']] },
-ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['強火で焼く', 'サイコーの生地 ×1.5'], long: [['', '{火力}が強火になって、生地を焼く'], ['', '{サイコー}の生地×1.5']] },
-menbo:     { name: '力のめん棒', start: 3, kone: 2, alt: 'field-ishigama', chips: ['強火で焼く', 'こねると 2回分'], long: [['', '{火力}が強火になって、生地を焼く'], ['', '1回{こね}ると 2回分']] },
-karumenbo: { name: '軽量めん棒', start: 2, tane: 1, alt: 'field-teppan', chips: ['中火で焼く', 'こねると パン種+1こ'], long: [['', '{火力}が中火になって、生地を焼く'], ['', '{こね}ると {パン種}が1こ多く生まれる']] },
+teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['火力が 中火より下がらない'], long: [['', '{火力}が 中火より下がらない']] },
+ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['火力が 強火より下がらない', 'サイコーの生地 ×1.5'], long: [['', '{火力}が 強火より下がらない'], ['', '{サイコー}の生地×1.5']] },
+menbo:     { name: '力のめん棒', start: 3, kone: 2, alt: 'field-ishigama', chips: ['火力が 強火より下がらない', 'こねると 2回分'], long: [['', '{火力}が 強火より下がらない'], ['', '1回{こね}ると 2回分']] },
+karumenbo: { name: '軽量めん棒', start: 2, tane: 1, alt: 'field-teppan', chips: ['火力が 中火より下がらない', 'こねると パン種+1こ'], long: [['', '{火力}が 中火より下がらない'], ['', '{こね}ると {パン種}が1こ多く生まれる']] },
 oonabe: { name: '飴の大鍋', start: 4, chips: ['とろとろにする'], long: [['', '飴の{温度}が とろとろ になる']] },
 kobo:   { name: 'ガラスの工房', start: 3, slow: 1, chips: ['あたたかにする', '冷めにくい'], long: [['', '飴の{温度}が あたたか になる'], ['', '2ラウンドに1回しか冷めない']] },
 dairiseki: { name: '大理石の台', start: 2, chain0: 1, chips: ['ひんやりにする', 'れんさが 1から始まる'], long: [['', '飴の{温度}が ひんやり になる'], ['', '{れんさ}が1から始まる']] },
@@ -2138,7 +2138,7 @@ oobin:   { name: '大きなびん', fixed: 1, alt: 'card-ookibin', chips: ['実�
 };
 const CHEFS = {
 honoka: {
-name: 'ほのか', job: '炎のシェフ', trait: '火力', art: 'honoka', heat: { word: '火力', of: '鉄板の', names: HEAT, start: 2, field: 1 },
+name: 'ほのか', job: '炎のシェフ', trait: '火力', art: 'honoka', heat: { word: '火力', of: '鉄板の', names: HEAT, start: 0, down: 1, field: 1 },
 common: ['m:bata', 'm:sato', 'm:tamago', 'm:choco', 'm:mitsu', 't:maki', 't:hiokoshi', 't:mizu', 't:yakigote', 't:yobirin'],   // ほのか共通
 },
 minamo: {
@@ -2416,7 +2416,7 @@ const KW = {   // 11/19 しょーくん「長くても2行」：説明の吹き�
 サイコー: '焼き加減9。味パワー×5。もう一度焼かれると焦げる',
 焦げ: 'サイコーの生地が もう一度焼かれると焦げて、弱くなる',
 焼き加減: '生地の焼け具合（0〜9）。焼けるほど強い（9で×5）',
-火力: '鉄板の強さ。バトル開始時に、生地が火力の分だけ焼ける',
+火力: '火の強さ。バトル開始時に、生地が火力の分だけ焼ける。火力のカードがないと1ずつ弱まる',
 場: 'いちばん左の、フィールドのカードを置く所',
 温度: '飴の温度。ラウンドの終わりに1段冷める（道具で上げ下げ）',
 大作: 'あたたかいうちに まぜて育て、冷えたら本気',
@@ -3692,7 +3692,7 @@ S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage
 save(); renderNight();
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
-function nightPrep() { N.heat = heatOf().start; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
+function nightPrep() { N.heat = heatOf().start; N.heatUsed = false; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
 function nightTalk() {
 if (talking()) return;
 if (N.stage === 'arrive') talk(STORY.evening(S.today), () => { N.stage = 'shop'; dealAnim = true; save(); renderNight(); });
@@ -3766,7 +3766,7 @@ if (ng) return toast(ng);
 if (d.cat === 'field') {
 if (fixedField()) return toast('今夜の場は大きなびん（入れかえられない）');
 if (N.field) toast('フィールドを入れかえた');
-N.field = cid.slice(2); if (FIELDS[N.field].start) N.heat = FIELDS[N.field].start;   // わかばの肥料は温度も火力も変えない
+N.field = cid.slice(2); if (FIELDS[N.field].start) N.heat = heatOf().field ? Math.max(N.heat, FIELDS[N.field].start) : FIELDS[N.field].start;   // ほのかは鉄板・石窯の火より弱ければ その火に（11/20）・みなもは飴の温度がそれに・わかばの肥料は変えない
 } else {
 const at = to && to.where === 'board' ? to.i : freeSlot();
 if (at < 0) return toast(BOARD_FULL);
@@ -3941,10 +3941,11 @@ const heartMul = () => 1 + HEART_UP * dayHearts();
 function resolveRound() {
 const F = N.field ? FIELDS[N.field] : null, ev = [];
 const board = N.board.map(c => c && Object.assign({ cid: c.cid, cook: c.cook }, c.ice ? { ice: 1 } : {}, c.plus ? { plus: c.plus } : {}));
-let heat = N.heat, burnt = 0, call = false, fert = false, basket = 0;
+let heat = N.heat, burnt = 0, call = false, fert = false, basket = 0, heatUsed = false;
+const Hc = heatOf(), floor = heatFloor();   // ほのかは場の鉄板・石窯の火より下がらない（11/20）
 const stop = () => board.some(c => c && cardDef(c.cid).fx.stop);
 const burn = (i, r) => { if (r.burnt) { board[i] = { cid: r.cid }; burnt++; } };
-if (F) {
+if ((F || Hc.field) && heat > 0) {
 const list = [], safeAll = stop();
 const stopAt = board.findIndex(c => c && cardDef(c.cid).fx.stop);
 board.forEach((c, i) => {
@@ -4011,7 +4012,7 @@ e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j)), v: fx.doneRally
 }
 if (fx.nb) { const to = [i + 1, i + 2].filter(j => j < SLOTS && dmgAt(j)); if (to.length) e.out.push({ k: 'nb', to, v: fx.nb * sm }); }   // 右2枚の味パワー+（11/19 しょーくん・前は両どなり）
 if (fx.koneUp) { e.kone = [kone, kone + fx.koneUp]; kone += fx.koneUp; }
-if (fx.heat) { const h0 = heat; heat = Math.max(1, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
+if (fx.heat) { const h0 = heat; heatUsed = true; heat = Math.max(floor, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
 if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
 const o = board[i + 1], r = cookStep(o, fx.sear, stop() || cardDef(o.cid).fx.noburn);
 burn(i + 1, r); e.sear = { i: i + 1, ...r }; e.out.push({ k: 'sear', to: [i + 1] });
@@ -4096,7 +4097,7 @@ e.dmg = dmg;
 ev.push(e, ...pet);
 }
 }
-return { ev, total, burnt, board, heat, call, kone, fert, basket };
+return { ev, total, burnt, board, heat, call, kone, fert, basket, heatUsed };
 }
 const canPlace = () => N.shop.some(c => c && cardDef(c).cat !== 'field' && !payNg(1, cardDef(c).cost));
 function omotenashi() {
@@ -4122,7 +4123,7 @@ step();
 }
 function finishRound(res) {
 const q = quota(N.round, S.day), tier = tierOf(res.total, q), ok = tier === 2;
-N.board = res.board; N.heat = res.heat; N.kone = res.kone; if (res.call) N.call = true;
+N.board = res.board; N.heat = res.heat; N.heatUsed = !!res.heatUsed; N.kone = res.kone; if (res.call) N.call = true;
 if (res.fert) N.fert = true; if (res.basket) N.basket = (N.basket || 0) + res.basket;   // ひりょう・収穫かご（わかば）
 N.score += res.total; N.burnt += res.burnt;
 if (ok) N.met++;
@@ -4136,7 +4137,7 @@ if (N.stage !== 'roundEnd') return;
 tipEv('next');
 if (N.round >= ROUNDS) return endNight();
 N.coins += INCOME + TIER_COIN[N.last.tier != null ? N.last.tier : N.last.ok ? 2 : 0];
-const cooled = coolDown(), grown = fruitEnd();
+const cooled = coolDown(), grown = fruitEnd(); fireDown();
 N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
 rollShop(); save(); renderNight();
 if (cooled) coolFx(cooled);
@@ -4157,6 +4158,12 @@ c.cid = 'm:' + MATS[d.mats[0]].fruit + to; list.push({ i, from: d.stage, to, cid
 });
 if (steps) board.forEach(c => { if (c) { const d = cardDef(c.cid); if (d.fx.perGrow) c.plus = (c.plus || 0) + d.fx.perGrow * STAR_MUL[d.star] * steps; } });
 return list;
+}
+function heatFloor() { const F = N.field ? FIELDS[N.field] : null; return heatOf().field ? (F && F.start) || 0 : 1; }
+function fireDown() {
+const H = heatOf(), used = N.heatUsed; N.heatUsed = false;
+if (!H.down || used) return;
+N.heat = Math.max(heatFloor(), N.heat - H.down);
 }
 function coolDown() {
 const H = heatOf(), F = N.field ? FIELDS[N.field] : null;
@@ -4185,14 +4192,14 @@ save(); renderNight();
 const ORD = ['①', '②', '③', '④', '⑤'];
 function setHeat(h) {
 const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
-const H = heatOf(), on = !H.field || N.field;   // みなもの飴の温度（11/19）は、場がなくても効く
+const H = heatOf();   // ほのかの火力も みなもの飴の温度も、場がなくても効く（11/20 ほのかも）
 if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
 [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
-lab.textContent = H.names[h];   // 場がないときは字の色だけ灰色（h0）。「（場なし）」は右上に収まらないのでやめた（11/19・場のマスは調理台で見える）
-lab.className = 'heat-label h' + (on ? h : 0);
+lab.textContent = H.names[h];   // ほのかの0は「火なし」（字は灰色の h0）
+lab.className = 'heat-label h' + h;
 if (H.cool) { const st = $('stage'); if (st) st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる
-const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
-heatFx(N.field ? h : 0);   // 鉄板の炎（battle-fx.js）
+const st = $('stage'); if (st) st.dataset.z = h;
+heatFx(h);   // 調理台の下の炎（battle-fx.js・火なしのときは出ない）
 }
 function updTile(i, cid, cook, ice) {
 const slot = document.querySelector(`.tslot[data-w="board"][data-i="${i}"]`); if (!slot) return null;
@@ -4689,7 +4696,7 @@ body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood
 } else {
 const shop = N.stage === 'shop';
 const H = heatOf();
-body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.field ? N.heat : 0}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.heat}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
 `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
 <div class="bar">${barHTML()}</div>
 ${viewerHTML()}`;

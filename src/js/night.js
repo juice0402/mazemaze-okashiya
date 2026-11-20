@@ -4,7 +4,8 @@
    買ったカードは調理台へ（手札はない・11/18）。調理台がいっぱいなら、まぜるか先にうる。お金とコインはショップの中だけに出す（11/17 しょーくん「ゼンゼロのようにショップを挟む」）
    バトル：はじめに「焼き」（フィールドがあれば、鉄板の生地がいっせいに火力のぶん焼ける）→ 左から順に発動
    生地は場に残り、ラウンドをまたいで焼けていく（9でサイコー・サイコーのまま焼かれると焦げる）
-   鉄板の火力（N.heat 1〜4）はラウンドをまたいで残る。火力カードが発動すると変わり、次のラウンドの焼きに効く
+   ほのかの火力（N.heat 0〜4・はじめは0）はラウンドをまたいで残る。火力カードが発動すると変わり、次のラウンドの焼きに効く。
+   火力カードが1まいも発動しなかったラウンドの終わりに1さがる（fireDown）。場の鉄板・石窯の火（start）より下がらない（11/20 しょーくん）
    フィールドも仕入れから。買うと調理台の左の「場」に入る（1つだけ・置きかえOK）。ラウンド1だけ、5まいから3まい えらんで無料
    調理台5マス。画面は night-ui.js */
 const SLOTS = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, REROLL = 1;
@@ -51,7 +52,7 @@ function pickGo() {
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
 /* 今夜のビルドに合わせた夜のはじめ（11/19 わかば：飴ジャムの夜は場がいつも大きなびん・bin＝びんの中の実・jamN＝この夜に作ったジャムの数） */
-function nightPrep() { N.heat = heatOf().start; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
+function nightPrep() { N.heat = heatOf().start; N.heatUsed = false; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
 /* 来店とお礼の会話（会話の部品 talk.js・文は story.js）。会話がない日はすぐ次へ */
 function nightTalk() {
   if (talking()) return;
@@ -132,7 +133,7 @@ function buy(i, to) {
   if (d.cat === 'field') {
     if (fixedField()) return toast('今夜の場は大きなびん（入れかえられない）');
     if (N.field) toast('フィールドを入れかえた');
-    N.field = cid.slice(2); if (FIELDS[N.field].start) N.heat = FIELDS[N.field].start;   // わかばの肥料は温度も火力も変えない
+    N.field = cid.slice(2); if (FIELDS[N.field].start) N.heat = heatOf().field ? Math.max(N.heat, FIELDS[N.field].start) : FIELDS[N.field].start;   // ほのかは鉄板・石窯の火より弱ければ その火に（11/20）・みなもは飴の温度がそれに・わかばの肥料は変えない
   } else {
     const at = to && to.where === 'board' ? to.i : freeSlot();
     if (at < 0) return toast(BOARD_FULL);
@@ -332,11 +333,12 @@ const heartMul = () => 1 + HEART_UP * dayHearts();
 function resolveRound() {
   const F = N.field ? FIELDS[N.field] : null, ev = [];
   const board = N.board.map(c => c && Object.assign({ cid: c.cid, cook: c.cook }, c.ice ? { ice: 1 } : {}, c.plus ? { plus: c.plus } : {}));
-  let heat = N.heat, burnt = 0, call = false, fert = false, basket = 0;
+  let heat = N.heat, burnt = 0, call = false, fert = false, basket = 0, heatUsed = false;
+  const Hc = heatOf(), floor = heatFloor();   // ほのかは場の鉄板・石窯の火より下がらない（11/20）
   const stop = () => board.some(c => c && cardDef(c.cid).fx.stop);
   const burn = (i, r) => { if (r.burnt) { board[i] = { cid: r.cid }; burnt++; } };
-  // 1. 焼き：バトルのはじめに、鉄板の生地がいっせいに焼ける
-  if (F) {
+  // 1. 焼き：バトルのはじめに、生地が火力のぶん いっせいに焼ける（11/20 しょーくん：ほのかは場がなくても焼ける・火力0なら焼けない）
+  if ((F || Hc.field) && heat > 0) {
     const list = [], safeAll = stop();
     const stopAt = board.findIndex(c => c && cardDef(c.cid).fx.stop);
     board.forEach((c, i) => {
@@ -410,7 +412,7 @@ function resolveRound() {
       }
       if (fx.nb) { const to = [i + 1, i + 2].filter(j => j < SLOTS && dmgAt(j)); if (to.length) e.out.push({ k: 'nb', to, v: fx.nb * sm }); }   // 右2枚の味パワー+（11/19 しょーくん・前は両どなり）
       if (fx.koneUp) { e.kone = [kone, kone + fx.koneUp]; kone += fx.koneUp; }
-      if (fx.heat) { const h0 = heat; heat = Math.max(1, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
+      if (fx.heat) { const h0 = heat; heatUsed = true; heat = Math.max(floor, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
       if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
         const o = board[i + 1], r = cookStep(o, fx.sear, stop() || cardDef(o.cid).fx.noburn);
         burn(i + 1, r); e.sear = { i: i + 1, ...r }; e.out.push({ k: 'sear', to: [i + 1] });
@@ -496,7 +498,7 @@ function resolveRound() {
       ev.push(e, ...pet);
     }
   }
-  return { ev, total, burnt, board, heat, call, kone, fert, basket };
+  return { ev, total, burnt, board, heat, call, kone, fert, basket, heatUsed };
 }
 /* おもてなし！（11/18 名前を bake から omotenashi に：朝の morning.js の bake と同じ名前で、あとに読まれる朝のほうが勝ち、おもてなし！が動かなかった）：ショップがあがる → ラウンドの帯 → 焼き → 左から1枚ずつ（計算を見せる）→ 結果。時間は T()（はやおくりで半分） */
 /* 調理台に置けるカードが、いまショップで買えるか（フィールドは調理台のカードではないので数えない） */
@@ -524,7 +526,7 @@ function omotenashi() {
 }
 function finishRound(res) {
   const q = quota(N.round, S.day), tier = tierOf(res.total, q), ok = tier === 2;
-  N.board = res.board; N.heat = res.heat; N.kone = res.kone; if (res.call) N.call = true;
+  N.board = res.board; N.heat = res.heat; N.heatUsed = !!res.heatUsed; N.kone = res.kone; if (res.call) N.call = true;
   if (res.fert) N.fert = true; if (res.basket) N.basket = (N.basket || 0) + res.basket;   // ひりょう・収穫かご（わかば）
   N.score += res.total; N.burnt += res.burnt;
   if (ok) N.met++;
@@ -538,7 +540,7 @@ function nextRound() {
   tipEv('next');
   if (N.round >= ROUNDS) return endNight();
   N.coins += INCOME + TIER_COIN[N.last.tier != null ? N.last.tier : N.last.ok ? 2 : 0];
-  const cooled = coolDown(), grown = fruitEnd();
+  const cooled = coolDown(), grown = fruitEnd(); fireDown();
   N.round++; N.stage = 'shop'; unsel(); dealAnim = true;
   rollShop(); save(); renderNight();
   if (cooled) coolFx(cooled);
@@ -561,6 +563,15 @@ function fruitGrow(board, n, only) {
   });
   if (steps) board.forEach(c => { if (c) { const d = cardDef(c.cid); if (d.fx.perGrow) c.plus = (c.plus || 0) + d.fx.perGrow * STAR_MUL[d.star] * steps; } });
   return list;
+}
+/* 火力・温度の下限（11/20）：ほのかは場の鉄板・石窯の火（なければ0＝火なし）・みなもは1（ひえひえ） */
+function heatFloor() { const F = N.field ? FIELDS[N.field] : null; return heatOf().field ? (F && F.start) || 0 : 1; }
+/* ほのかの火は、火力のカードが1まいも発動しなかったラウンドの終わりに1さがる（11/20 しょーくん「何もしなければ下がっていく」）。
+   画面は次のバトルで火力のメーターが下がる（heatFx の heatdn と湯気） */
+function fireDown() {
+  const H = heatOf(), used = N.heatUsed; N.heatUsed = false;
+  if (!H.down || used) return;
+  N.heat = Math.max(heatFloor(), N.heat - H.down);
 }
 /* みなもの飴は、ラウンドの終わりに1段冷める（11/19 しょーくん）。ガラスの工房は2ラウンドに1回。冷めたら [前, あと] */
 function coolDown() {

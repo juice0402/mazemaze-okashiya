@@ -8,14 +8,14 @@ const ORD = ['①', '②', '③', '④', '⑤'];
 /* 鉄板の火力（1〜4）。フィールドがないと焼けないので、光らせない */
 function setHeat(h) {
   const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
-  const H = heatOf(), on = !H.field || N.field;   // みなもの飴の温度（11/19）は、場がなくても効く
+  const H = heatOf();   // ほのかの火力も みなもの飴の温度も、場がなくても効く（11/20 ほのかも）
   if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
   [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
-  lab.textContent = H.names[h];   // 場がないときは字の色だけ灰色（h0）。「（場なし）」は右上に収まらないのでやめた（11/19・場のマスは調理台で見える）
-  lab.className = 'heat-label h' + (on ? h : 0);
+  lab.textContent = H.names[h];   // ほのかの0は「火なし」（字は灰色の h0）
+  lab.className = 'heat-label h' + h;
   if (H.cool) { const st = $('stage'); if (st) st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる
-  const st = $('stage'); if (st) st.dataset.z = N.field ? h : 0;
-  heatFx(N.field ? h : 0);   // 鉄板の炎（battle-fx.js）
+  const st = $('stage'); if (st) st.dataset.z = h;
+  heatFx(h);   // 調理台の下の炎（battle-fx.js・火なしのときは出ない）
 }
 /* タイル1つを描きなおす（焼き加減・焦げ・大作の大きさと固まる） */
 function updTile(i, cid, cook, ice) {
@@ -577,7 +577,7 @@ function renderNight() {
   } else {
     const shop = N.stage === 'shop';
     const H = heatOf();
-    body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.field ? N.heat : 0}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+    body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.heat}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
         `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
