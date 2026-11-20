@@ -6,7 +6,7 @@
    辺は彫りの模様なので round でくり返す。ふちの太さ（border）は絵の木の太さ＝border-image の半分、内側の影は木の内側から。
    メダル ui-stage-medal は上のまんなかに重ねる別の部品 */
 .dc-frame{position:absolute;inset:0;border:10px solid transparent;border-image:var(--ui-stage-frame) 74/20px round;box-shadow:inset 0 0 14px 4px rgba(20,8,2,.45)}
-.dc-medal{position:absolute;left:50%;top:-1px;width:36px;aspect-ratio:150/157;translate:-50% 0;background:var(--ui-stage-medal) center/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.dc-medal{position:absolute;left:50%;bottom:-1px;width:36px;aspect-ratio:150/157;translate:-50% 0;background:var(--ui-stage-medal) center/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
 /* 舞台の手前の木の段と草（草はコードで描いた SVG） */
 .dc-ledge{position:absolute;left:0;right:0;bottom:0;height:max(12px,5.5cqh);
   background:repeating-linear-gradient(90deg,rgba(40,18,6,.2) 0 1px,transparent 1px 23px),linear-gradient(#9a6838,#6a4022 55%,#46280f);box-shadow:inset 0 2px 0 rgba(255,226,180,.45),0 -3px 6px rgba(0,0,0,.35)}
@@ -30,7 +30,7 @@
 .deco.shop .dc-mob.p1{left:auto;right:4px}
 .deco.shop .dc-mob.p2{left:auto;right:19%}
 .deco.shop .dc-mob.p4{left:auto;right:32%}
-.deco.shop .dc-mob.p3{right:auto;left:37%}
+.deco.shop .dc-mob.p3{right:auto;left:31%}
 /* 額縁の下の角の金具（ui-stage-frame の角だけ）を、ちびキャラとモブの前に もう1まい重ねる（11/20 しょーくん「ちびキャラは枠よりは前・下の金具よりは うしろ」）。
    角は border-image と同じ大きさ（絵の74px→20px） */
 .dc-corner{position:absolute;bottom:0;width:20px;height:20px;background:var(--ui-stage-frame) no-repeat;background-size:calc(400px * 20 / 74) calc(759px * 20 / 74)}
@@ -466,10 +466,10 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .qmk{position:absolute;top:2px;width:24px;translate:-50% 0;z-index:2;display:flex;flex-direction:column;align-items:center}
 .qc{position:relative;display:block;width:22px;height:22px;background:var(--ui-coin) center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
 .qc em{position:absolute;left:50%;top:50%;translate:-50% -50%;font-style:normal;font-family:var(--disp);font-size:11px;line-height:1;color:#fff;-webkit-text-stroke:3px #6a2a00;paint-order:stroke fill;white-space:nowrap}   /* +1 はコインのまんなか・金の上でも読める白い字とこげ茶のふち（11/20 しょーくん） */
-.qd{background:radial-gradient(circle at 44% 40%,#ffe9a0 0,#f4c64a 30%,#dca22a 52%,transparent 55%),var(--ui-coin) center/contain no-repeat}   /* 左はしの丸：コインと同じ金のふち（ui-coin）で、まんなかは金だけ（11/20 しょーくん「コインと同じ枠で統一感」） */
+.qd{background:var(--ui-coin-blank) center/contain no-repeat}   /* 左はしの丸：コインと同じ金のふちで、まんなかは金だけ（ui-coin-blank＝ui-coin の泡立て器を消した絵・11/20 しょーくん「コインと同じ枠で統一感」） */
 .qmk.q0.bump small{animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
 .qmk small{margin-top:3px;font-family:var(--disp);font-size:9px;line-height:1;color:var(--milk);-webkit-text-stroke:2px #2a1408;paint-order:stroke fill;white-space:nowrap}
-.qmk.qok .qc{background:radial-gradient(circle at 44% 40%,#c4f7b8 0,#5fd36a 30%,#2f9d48 52%,transparent 55%),var(--ui-coin) center/contain no-repeat}   /* とったら：同じ金のふちの中が みどり＋チェック（ふちの上下がそろう） */
+.qmk.qok .qc{background:var(--ui-coin-ok) center/contain no-repeat}   /* とったら：同じ金のふちの中が みどり（ui-coin-ok）＋チェック */
 .qmk.qok .qc em{display:none}
 .qmk.qok .qc::after{content:"";position:absolute;left:7.5px;top:4px;width:5px;height:10px;border:solid #fff;border-width:0 3px 3px 0;rotate:42deg;filter:drop-shadow(0 1px 0 rgba(16,58,44,.8))}
 .qmk.qok small{color:#c9f5cf}
@@ -613,11 +613,8 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .sh-top{position:absolute;top:calc(9px - var(--awn));left:13px;right:13px;height:30px;min-height:0;margin:0;padding:0;z-index:3;justify-content:space-between;gap:6px;pointer-events:none}
 .sh-top .sh-l,.sh-top .sh-r{display:flex;align-items:center;gap:6px;min-width:0;pointer-events:auto}
 .sh-top .sh-l,.sh-top .sh-r{position:relative}
-/* 2つめの札（コイン・こねとジャムの数）は、まんなかのメダルにかからないように、ラウンドと入れかえの下の段に */
-.sh-top .sh-coin{position:absolute;right:0;top:35px;margin-left:0}
-.sh-top .kone-n{position:absolute;left:0;top:35px}
-.sh-top .sh-r{flex-direction:row-reverse}
-.night .shopov:not(.many) .sh-cards{padding-top:28px}   /* 下の段の札のぶん（カードは はばで決まるので小さくならない） */
+/* 11/20 しょーくん「上まんなかのエンブレムは下まんなかへ・入れかえと所持金を横に並べて大きさを合わせる」：コインと入れかえは右に同じ高さで、こね・ジャムの数はラウンドのとなり */
+.sh-top .sh-coin,.sh-top .sh-roll{height:30px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0}
 .night .shopov.many .sh-top .kone-n{display:none}   /* 1ラウンド目（無料の5まい）は こね・ジャムはまだ0 */
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .sh-ttl.sh-free{pointer-events:none}

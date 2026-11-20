@@ -57,6 +57,7 @@
 
 | fx-burst-honoka・fx-burst-minamo・fx-burst-wakaba・fx-slash-honoka・fx-slash-minamo・fx-slash-wakaba（一撃の衝撃と斬撃：炎・水・花びら） | A | Codex | 2026-11-19 | art-irai `requests/okashi/fx-impact.md`（PR #163）・黒い背景は取りこむときに明るさで すけに変えた（#fxl の中では screen が効かない） | battle-fx.js の impactFx（一撃の瞬間） |
 | fx-wall-honoka-a・fx-wall-honoka-b・fx-wall-minamo・fx-crack-minamo・fx-shard-minamo-1〜6・fx-wall-wakaba-front・fx-wall-wakaba-back（大技の画面の下から：炎の壁2こま・氷の層とひびとかけら・若葉の前と奥） | A | Codex | 2026-11-20 | art-irai `requests/okashi/fx-wall-honoka.md`・`fx-wall-minamo.md`・`fx-wall-wakaba.md`（PR #167・#168・#166）・黒い背景は明るさで すけに（ほのか・みなも）・わかばは緑を --strict | battle-fx.js の fireWall・iceShatter |
+| ui-coin-blank・ui-coin-ok（おなかゲージの左はしの丸・とったチェックの下地） | A | Codex（ui-coin を Claude がコードで加工） | 2026-11-20 | ui-coin の まんなかの泡立て器を けして、なめらかな金（blank）・みどり（ok）でぬった（金のふちはそのまま） | night-ui.js の quotaHTML・style-battle.css の .qd・.qmk.qok .qc |
 
 ## 音
 | 名前 | 分類 | 道具 | 作った日 | 出どころ | 使う所 |

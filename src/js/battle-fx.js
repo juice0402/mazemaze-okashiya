@@ -166,8 +166,8 @@ function decoHTML(mode) {
   const pose = mode === 'shop' ? 'think' : mode === 'win' ? 'cheer' : 'sit';
   return `<div class="deco ${mode}" id="deco" aria-hidden="true">
     <i class="dc-ledge"></i>${grassSVG()}
-    <i class="dc-frame"></i><i class="dc-medal"></i>
-    <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}<i class="dc-corner bl"></i><i class="dc-corner br"></i></div>`;
+    <i class="dc-frame"></i>
+    <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}<i class="dc-corner bl"></i><i class="dc-corner br"></i><i class="dc-medal"></i></div>`;   // メダルは額縁の下まんなか（11/20・モブの前）
 }
 /* ほのかのデフォルメのポーズをしばらく変える（ms のあと、すわってにこにこへ） */
 let chibiT = 0;
