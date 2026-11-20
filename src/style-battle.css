@@ -64,6 +64,7 @@
 .night .stage .ov-heat{bottom:auto;left:auto;right:10px;justify-content:flex-end;gap:4px;z-index:9}
 .night .stage .ov-heat .heat-label{min-width:0;white-space:nowrap;font-size:10px;letter-spacing:-.02em}
 .night .stage .ov-heat .heat-bar{width:80px}
+.night .stage .ov-heat .heat-bar:last-child{margin-right:5px}   /* 四角いメーターが右はしのときは少し内がわへ（11/21 しょーくん「ビルドのゲージが枠に当たってる気がする・リロールの枠は絵が丸いからその差」）：丸い札（ラウンド・こね・ジャム）と同じくらい はなれて見える */
 .night .stage .ov-heat.two .heat-label{display:none}   /* こね生地はメーターとこねの数の2つ：字を出すとまんなかのメダルにかかるので、火力は色だけ */
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 /* 上のまんなかのメダルをよける：左右の札はメダルの手前まで（フィールドの名前は2行目） */
