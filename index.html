@@ -580,7 +580,7 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .night .ov-heat{left:22%;right:22%}
 .sh-coin i,.sh-price i,.sh-roll .cn{background:var(--ui-coin) center/contain no-repeat;box-shadow:none;border-radius:0}
 .sh-price{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 6px 3px 12px;border-image:var(--ui-price) 22 22 22 62 fill/3px 6px 3px 12px stretch;padding:1px 2px 0 0;color:#3a1c08}
-.sh-price.ng{background:none;color:#a03a2a}
+.sh-price.ng{background:none;color:#d01e10}
 .mixmark,.tslot.can::before{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:2px 7px;border-image:var(--ui-ribbon) 10 28 fill/2px 7px stretch;padding:0 2px;color:#103a2c}
 .tslot .ord{left:0;right:0;top:46%;z-index:1;width:auto;height:auto;transform:translateY(-50%);background:none;box-shadow:none;border-radius:0;font-size:min(24px,6.6vw);line-height:1;color:rgba(255,230,186,.30);text-shadow:0 -1px 0 rgba(16,6,2,.6),0 1px 0 rgba(255,236,200,.16);pointer-events:none}
 .fslot .ord{top:42%;color:rgba(255,214,130,.40);background:none}
@@ -1261,6 +1261,7 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .fwall.leaf .fw-art.back{animation:fwgrow calc(var(--k) * 1.25s) cubic-bezier(.2,.9,.3,1) both}
 .fwall.leaf .fw-art.front{animation:fwgrow calc(var(--k) * 1.15s) calc(var(--k) * .12s) cubic-bezier(.2,.9,.3,1) both}
 @keyframes fwgrow{0%{transform:translateY(100%) scaleY(.5)}24%{transform:translateY(0) scaleY(1.06)}38%{transform:translateY(0) scaleY(.97) skewX(-1.5deg)}52%{transform:translateY(0) scaleY(1.02) skewX(1.5deg)}72%{transform:translateY(2%) scaleY(1);opacity:1}100%{transform:translateY(40%);opacity:0}}
+.shcard.poor::before,.shcard.nomix::before,.tslot.nomix::before{content:"";position:absolute;inset:0;z-index:4;border-radius:8%/5.7%;background:rgba(16,6,0,.46);pointer-events:none}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -4608,7 +4609,7 @@ const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンド�
 return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
 <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
 <div class="sh-cards">${list.map((cid, i) => cid
-? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
+? `<button class="shcard${!r1 && N.coins < cardDef(cid).cost ? ' poor' : ''}" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
 : '<span class="shcard sold"></span>').map((h, i) => i === 3 ? '<i class="sh-br"></i>' + h : h).join('')}</div>
 <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
 }
@@ -5270,6 +5271,7 @@ if (sec) { sec.classList.add('dragging'); if (p.where !== 'shop') sec.classList.
 D.zones = [...document.querySelectorAll('[data-drop]')].map(z => {
 const q = { where: z.dataset.w, i: +z.dataset.i }, P = dropPlan(p, q);
 if (P) z.classList.add(P.kind === 'mix' ? (P.ng ? 'cant' : 'can') : P.kind === 'sell' ? 'sellok' : P.kind === 'move' && P.swap ? 'swap' : 'put');
+if ((!P || P.kind !== 'mix') && z !== D.el && (q.where === 'board' || q.where === 'shop') && z.querySelector('.pc')) z.classList.add('nomix');   // まぜられないカードは少し暗く（11/20 しょーくん）
 return { z, q, P };
 });
 for (const o of D.zones) { const r = o.z.getBoundingClientRect(); o.r = r; o.a = r.width * r.height; }
@@ -5344,7 +5346,7 @@ if (D.g) D.g.remove();
 if (D.tip) D.tip.remove();
 D.el.classList.remove('lifted');
 const sec = document.querySelector('.night'); if (sec) sec.classList.remove('dragging', 'drag-own');
-(D.zones || []).forEach(o => o.z.classList.remove('can', 'cant', 'put', 'swap', 'sellok', 'over'));
+(D.zones || []).forEach(o => o.z.classList.remove('can', 'cant', 'put', 'swap', 'sellok', 'over', 'nomix'));
 }
 
 /* src/js/tips.js */

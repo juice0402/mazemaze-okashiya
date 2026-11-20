@@ -50,10 +50,11 @@ function dragBegin(D) {
   D.el.classList.add('lifted');
   const sec = document.querySelector('.night');
   if (sec) { sec.classList.add('dragging'); if (p.where !== 'shop') sec.classList.add('drag-own'); }
-  /* 行き先を光らせる：put（置く・うごかす）・swap（入れかえ）・can（まぜる）・cant（まぜられるけど、お金や調理台の空きがたりない） */
+  /* 行き先を光らせる：put（置く・うごかす）・swap（入れかえ）・can（まぜる）・cant（まぜられるけど、お金や調理台の空きがたりない）・nomix（まぜられないカード＝少し暗く） */
   D.zones = [...document.querySelectorAll('[data-drop]')].map(z => {
     const q = { where: z.dataset.w, i: +z.dataset.i }, P = dropPlan(p, q);
     if (P) z.classList.add(P.kind === 'mix' ? (P.ng ? 'cant' : 'can') : P.kind === 'sell' ? 'sellok' : P.kind === 'move' && P.swap ? 'swap' : 'put');
+    if ((!P || P.kind !== 'mix') && z !== D.el && (q.where === 'board' || q.where === 'shop') && z.querySelector('.pc')) z.classList.add('nomix');   // まぜられないカードは少し暗く（11/20 しょーくん）
     return { z, q, P };
   });
   /* 行き先の四角は、つかんだときに1回だけはかる（動かすたびに elementFromPoint でさがすと重い）。かさなるときは小さいほう＝内がわ */
@@ -136,5 +137,5 @@ function dragClean(D) {
   if (D.tip) D.tip.remove();
   D.el.classList.remove('lifted');
   const sec = document.querySelector('.night'); if (sec) sec.classList.remove('dragging', 'drag-own');
-  (D.zones || []).forEach(o => o.z.classList.remove('can', 'cant', 'put', 'swap', 'sellok', 'over'));
+  (D.zones || []).forEach(o => o.z.classList.remove('can', 'cant', 'put', 'swap', 'sellok', 'over', 'nomix'));
 }

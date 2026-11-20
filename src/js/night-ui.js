@@ -516,7 +516,7 @@ function shopHTML() {
   return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
     <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
     <div class="sh-cards">${list.map((cid, i) => cid
-      ? `<button class="shcard" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
+      ? `<button class="shcard${!r1 && N.coins < cardDef(cid).cost ? ' poor' : ''}" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
       : '<span class="shcard sold"></span>').map((h, i) => i === 3 ? '<i class="sh-br"></i>' + h : h).join('')}</div>
     <div class="sh-sell"><b>はなすと うる</b><span id="sellv"></span></div></div>`;
 }

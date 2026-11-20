@@ -706,7 +706,7 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .sh-coin i,.sh-price i,.sh-roll .cn{background:var(--ui-coin) center/contain no-repeat;box-shadow:none;border-radius:0}
 /* 値札（ui-price・300×119）：左のとがった所と真ちゅうの穴はそのまま、右へのびる。字はこげ茶 */
 .sh-price{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 6px 3px 12px;border-image:var(--ui-price) 22 22 22 62 fill/3px 6px 3px 12px stretch;padding:1px 2px 0 0;color:#3a1c08}
-.sh-price.ng{background:none;color:#a03a2a}
+.sh-price.ng{background:none;color:#d01e10}   /* 11/20 しょーくん「お金がたりないときは値札の字を少し赤く」 */
 /* まぜの札（ui-ribbon・300×68・ミントのリボン）：左右の切りこみはそのまま。字は深緑 */
 .mixmark,.tslot.can::before{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:2px 7px;border-image:var(--ui-ribbon) 10 28 fill/2px 7px stretch;padding:0 2px;color:#103a2c}
 /* マスの番号と「場」（11/18 しょーくん「枠の中に馴染ませて」「カード置いたら隠れるように」）：空きマスのまんなかに、木に彫った字のように。カードがのると消える */
