@@ -1,5 +1,6 @@
 // 夜のおもてなしのボット（数字合わせ用・11/19）：ゲームの src をそのまま読み、画面の関数は空にして、9ラウンドを何回も遊ぶ
 // node tools/bot.mjs [回数=60] [ビルド=ぜんぶ] [日=1]
+//   IDEAL=1：夜の合計（ほぼ★3で固めた夜のまんなか＝理想の最終スコア）
 //   R1=1：ラウンド1だけ（★2 がスタートかアンカーにある夜の味パワーと、おなかの半分に届く割合）
 //   smart＝すこし賢い（まぜる・買う・入れかえを、その場の味パワーが上がる順に・並びも入れかえて一番いい形に）
 //   weak ＝ビルドを組めない人（買えるものを順に置くだけ・まぜるのは目の前でできるときだけ・並べかえない）
@@ -111,6 +112,7 @@ function sim(build, day, smart) {
       const idx = N.board.map((c, i) => c ? i : -1).filter(i => i >= 0), st = i => i >= 0 && N.board[i] ? cardDef(N.board[i].cid).star : 0;
       out.s2 = (st(idx[0]) >= 2 || st(idx[idx.length - 1]) >= 2) ? 1 : N.board.some(c => c && cardDef(c.cid).star >= 2) ? 2 : 0;
     }
+    if (r === ROUNDS) out.s3 = N.board.filter(c => c && cardDef(c.cid).star >= 3).length;   // IDEAL=1 用：最後のラウンドの★3の数
     const res = resolveRound(); out.push(res.total);
     finishRound(res); if (r < ROUNDS) nextRound();
   }
@@ -121,6 +123,7 @@ vm.runInContext(DRIVER, ctx, { filename: 'driver.js' });
 vm.runInContext(`HEARTS_ = ${HEARTS};`, ctx);
 if (process.env.TK) vm.runInContext(`TK_ = ${+process.env.TK};`, ctx);
 // BAL=kone:0.7:1.1,cookie:1:1.05 … で、ビルドの強さの曲線（BUILDS の bal）をためしに変える
+if (process.env.JS) vm.runInContext(process.env.JS, ctx);   // JS='MATS.candybin.fx.chainFin = 0.02' など：ためしに数字を変えてはかる（11/21 夜）
 if (process.env.BAL) for (const t of process.env.BAL.split(',')) { const [b, a, g] = t.split(':'); vm.runInContext(`BUILDS[${JSON.stringify(b)}].bal = [${+a}, ${+g}];`, ctx); }
 const builds = ONLY || ['cookie', 'kone', 'taisaku', 'candy', 'fruitcake', 'jam'];
 const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
@@ -133,6 +136,11 @@ for (const b of builds) {
     const q = vm.runInContext(`quota(1, ${DAY}, ${JSON.stringify(b)})`, ctx), e = sm.filter(x => x.s2 === 1).map(x => x[0]);
     const hit = a => Math.round(a.filter(v => v >= q / 2).length / Math.max(1, a.length) * 100);
     console.log(`${b.padEnd(9)} おなか ${q}（半分 ${q / 2}）｜ ★2がはしの夜 ${Math.round(e.length / sm.length * 100)}% 味パワー 25/50/75% ${[.25, .5, .75].map(p => f(pct(e, p))).join('/')} 半分に届く ${hit(e)}% ｜ 全部の夜 smart ${hit(sm.map(x => x[0]))}% weak ${hit(wk.map(x => x[0]))}%`);
+    continue;
+  }
+  if (process.env.IDEAL) {   // IDEAL=1（11/21 夜 しょーくん「昼を完璧に・ビルドも完璧に運用して、ほぼ★3で固めたときの最終スコアが どのビルドも50万くらい」）：夜の合計（9ラウンド）
+    const tot = x => x.reduce((u, v) => u + v, 0), all = sm.map(tot), s3 = sm.filter(x => x.s3 >= 4).map(tot), s3b = sm.filter(x => x.s3 >= 3).map(tot);
+    console.log(`${b.padEnd(9)} 夜の合計 smart 50/75/90/最大 ${[.5, .75, .9].map(p => f(pct(all, p))).join('/')}/${f(Math.max(...all))} ｜ ★3が4まい以上の夜 ${Math.round(s3.length / sm.length * 100)}% まんなか ${s3.length ? f(pct(s3, .5)) : '-'} ｜ 3まい以上 ${Math.round(s3b.length / sm.length * 100)}% まんなか ${s3b.length ? f(pct(s3b, .5)) : '-'} ｜ おなか ${f(vm.runInContext(`nightHP(${DAY})`, ctx))}`);
     continue;
   }
   if (process.env.SUM) {   // 1行まとめ（SUM=1）：満タン率 r2・r5・r9 ｜ r9 の 25/50/90%（おなかの何倍）｜ weak r9 の 90%（何倍）｜ 夜の満足（ちょっと／満足／大満足 の%）

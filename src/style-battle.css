@@ -267,7 +267,10 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 /* こね・れんさ・ジャムの数の札は、ラウンドの札と同じ字・同じまんなか（11/21 夜 しょーくん「ラウンド表記と同じく文字の大きさや中央揃えな点も揃えて」）：12px・太字・ミルク色・こげ茶のふち・数も同じ字 */
 .kone-n{flex:none;display:inline-flex;justify-content:center;align-items:center;gap:2px;font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;white-space:nowrap;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .kone-n b{font:inherit}   /* 数はラウンドの数と同じ金色（style.css の b） */
-.kone-n.bump b{display:inline-block;animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
+.kone-n.bump{animation:kbshake .5s ease-out}   /* こね・れんさ・ジャムが ふえたとき：札が ぷるっと揺れて、数が ぽんっと大きくなる（11/21 夜 しょーくん「少し揺れて増えた感じ」・transform だけ） */
+.kone-n.bump b{display:inline-block;animation:kbnum .5s cubic-bezier(.2,1.8,.4,1)}
+@keyframes kbshake{0%{transform:none}15%{transform:scale(1.16) rotate(-6deg)}35%{transform:scale(1.12) rotate(5deg)}55%{transform:scale(1.06) rotate(-3deg)}75%{transform:scale(1.02) rotate(1deg)}100%{transform:none}}
+@keyframes kbnum{0%{transform:none}30%{transform:scale(1.7) translateY(-1px)}100%{transform:none}}
 /* ---------- ほのかの戦闘ポーズ（night-ui.js の heroPose）：絵を切りかえて、translate・scale・rotate で動く。絵がまだないポーズは動きだけ ----------
    11/19 しょーくん「絵によって、影とキャラクターの距離がバラバラ」→ どのポーズも足は影の上（たての translate はなし・scale と rotate は足の線を中心に＝上の transform-origin）。
    影の横の大きさは足のひらき方（feet.js の sw）・影は横の translate と横の scale だけついていく */

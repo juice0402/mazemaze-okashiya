@@ -64,7 +64,8 @@
 | src/js/main.js | 画面の切りかえ render（prologue・morning・day・night・result）・タイトル・タップの表 ACTS（朝と昼のボタンは MORNING_ACTS・DAY_ACTS をまぜる）・つづきの用意 resume・boot（hot のつづき）・押したときの光 pressFx・夜/朝/昼/まとめの切りかえの幕 wipe（ギンガムのタイル・ぜんぶのせシップの pixWipe の形） | |
 
 ## みなも（11/19・大作の飴細工）
-- ビルドの特性（11/21 夜 しょーくん「パンビルドに火力は必要ない」「れんさ飴ビルドも温度は関係ない」）：cards.js の BUILDS の heat（off＝メーターを使わない・start＝夜のはじめの値〔見た目だけ〕）と drop（そのビルドのショップに出さない共通のカード）・heatOf が シェフの heat に重ねる。パン生地（d.pan）は焼かない・焦げない・焼き加減なし（night.js の焼き・cookMul・やきごて）
+- 数字合わせ（11/21 夜 しょーくん「昼を完璧に〔ハート30〕・ビルドも完璧に運用した 上手な夜の最終スコアが どのビルドも50万くらい」）：`IDEAL=1 HEARTS=30 node tools/bot.mjs 600 all 20`（大作は `TK=6`）の 夜の合計 90% が 45〜56万。むずかしさは `SUM=1 HEARTS=5 … 20`（満タン r2 2〜3割・r9 4〜5割）と `R1=1 HEARTS=0 … 1`（半分に届く5割すこし）。★2・★3でふえる倍率は cards.js の FIN_STAR（kone・done・chain・ripe・jam・sai）。`JS='…'` で数字をためしに変えてはかれる
+- ビルドの特性（11/21 夜 しょーくん「パンビルドに火力は必要ない」「れんさ飴ビルドも温度は関係ない」）：cards.js の BUILDS の heat（off＝メーターを使わない・start＝夜のはじめの値〔見た目だけ〕）と drop（そのビルドのショップに出さない共通のカード）・extra（そのビルドだけの道具：こね台・発酵かご／飴の糸・飴のわっか）・trait（ビルドえらびの特性）・heatOf が シェフの heat に重ねる。パン生地（d.pan）は焼かない・焦げない・焼き加減なし（night.js の焼き・cookMul・やきごて）
 - cards.js：飴の温度 TEMP・育つ数 GROW・SIZE_MAX・sizeMul（完成×5）／MATS の cat ame（amedai〜nobashi・fx の taisaku・done・doneRally・doneFin・grow）とみなもの素材5／TOOLS の yusen〜amebell／FIELDS の oonabe・kobo（slow）／CHEFS.minamo（heat＝word・of・names・start・cool。ほのかは field）・chefNow()・heatOf()／BUILDS.taisaku（mate＝仲間が来てから）／d.grow・d.meter（board の cook は生地の焼き加減・大作の大きさ。c.ice＝固まる）
 - night.js：growStep（バトル開始時に育つ・ev の type grow）・coolDown（ラウンドの終わりに冷める・nextRound）・mixResult（大作は大きいほう）
 - night-ui.js：setHeat（温度のことば）・showEvent の grow・HEROES・POSE_MINAMO・chefArt()。battle-fx.js：tempHTML・tempFx・coolFx・chibiName。cards-ui.js：sizeIcon・meterIcon。見た目は style-battle.css のいちばん下「みなもの夜」

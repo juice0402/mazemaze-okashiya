@@ -957,7 +957,10 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .pk-trial{flex:none;margin:0;text-align:center;font-size:10.5px;color:#fff0d8;text-shadow:0 1px 0 #2a170c}
 .kone-n{flex:none;display:inline-flex;justify-content:center;align-items:center;gap:2px;font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;white-space:nowrap;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .kone-n b{font:inherit}
-.kone-n.bump b{display:inline-block;animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
+.kone-n.bump{animation:kbshake .5s ease-out}
+.kone-n.bump b{display:inline-block;animation:kbnum .5s cubic-bezier(.2,1.8,.4,1)}
+@keyframes kbshake{0%{transform:none}15%{transform:scale(1.16) rotate(-6deg)}35%{transform:scale(1.12) rotate(5deg)}55%{transform:scale(1.06) rotate(-3deg)}75%{transform:scale(1.02) rotate(1deg)}100%{transform:none}}
+@keyframes kbnum{0%{transform:none}30%{transform:scale(1.7) translateY(-1px)}100%{transform:none}}
 .night .stage .chef[data-pose]:not([data-pose=stance]){animation:none}
 .chef[data-pose=charge]{translate:-3% 0;scale:.96 1.03}
 .chef[data-pose=atk1]{translate:9% 0}
@@ -2087,13 +2090,13 @@ komugi:   { cat: 'dough', name: 'フェアリー粉のクッキー生地', short
 dosshiri: { cat: 'dough', name: 'ゴーレム粉のどっしり生地', short: 'どっしり生地', taste: 'こくまろ', adj: 'どっしり', noun: 'クッキー', nr: 9, value: 25, col: '#a8743c', fx: { dmg: 60, spd: -1 } },
 hinoko:   { cat: 'dough', name: 'サラマンダーのひのこ生地', short: 'ひのこ生地', taste: 'こんがり', adj: 'ひのこ', noun: 'クッキー', nr: 9, value: 20, col: '#f0702a', fx: { dmg: 20, spd: 1 } },
 ichiban:  { cat: 'dough', name: 'いちばんのりクッキー生地', short: 'いちばん生地', taste: 'さくさく', adj: 'いちばん', noun: 'クッキー', nr: 9, value: 20, col: '#f6d36b', fx: { dmg: 30, lead: 2 } },
-shime:    { cat: 'dough', name: 'しめくくりクッキー生地', short: 'しめくくり生地', taste: 'さくさく', adj: 'しめの', noun: 'クッキー', nr: 9, value: 20, col: '#e8a0b0', fx: { dmg: 20, sai: 2 } },
+shime:    { cat: 'dough', name: 'しめくくりクッキー生地', short: 'しめくくり生地', taste: 'さくさく', adj: 'しめの', noun: 'クッキー', nr: 9, value: 20, col: '#e8a0b0', fx: { dmg: 20, sai: 1.4 } },
 horoniga: { cat: 'dough', name: 'ほろにがココア生地', short: 'ほろにが生地', taste: 'こんがり', adj: 'ほろにが', noun: 'クッキー', nr: 9, value: 20, col: '#6b3a1e', fx: { dmg: 30, bitter: 1 } },
 melonpan: { cat: 'dough', pan: 1, name: 'さくさく皮のメロンパン生地', short: 'メロンパン生地', nshort: 'メロン', taste: 'さくさく', adj: 'さくさく', noun: 'メロンパン', nr: 8.5, value: 20, col: '#f2cf6e', alt: 'candy-sable', fx: { dmg: 15, perKone: 3 } },
 creampan: { cat: 'dough', pan: 1, name: 'とろーりクリームパン', short: 'クリームパン', nshort: 'クリーム', taste: 'とろーり', adj: 'とろり', noun: 'クリームパン', nr: 8, value: 20, col: '#f6e0a8', alt: 'candy-puff', fx: { dmg: 10, tane2: 1 } },
 cinnamon: { cat: 'dough', pan: 1, name: 'うずまきシナモンロール', short: 'シナモンロール', taste: 'こくまろ', adj: 'くるくる', noun: 'ロール', nr: 9.5, value: 20, col: '#c98a4b', alt: 'candy-castella', fx: { dmg: 10, koneUp: 1 } },
 anpan:    { cat: 'dough', pan: 1, name: 'いちばんのりあんパン', short: 'いちばんあんパン', taste: 'あまい', adj: 'いちばん', noun: 'あんパン', nr: 9, value: 20, col: '#b8743c', alt: 'candy-brownie', fx: { dmg: 15, koneRally: 2 } },
-koronet:  { cat: 'dough', pan: 1, name: 'しめくくりチョココロネ', short: 'しめのコロネ', taste: 'とろーり', adj: 'しめの', noun: 'コロネ', nr: 10, value: 20, col: '#7a4424', alt: 'card-choco', fx: { dmg: 10, koneFin: 0.15 } },
+koronet:  { cat: 'dough', pan: 1, name: 'しめくくりチョココロネ', short: 'しめのコロネ', taste: 'とろーり', adj: 'しめの', noun: 'コロネ', nr: 10, value: 20, col: '#7a4424', alt: 'card-choco', fx: { dmg: 10, koneFin: 0.12 } },
 tanebin:  { cat: 'dough', pan: 1, name: 'パン種のびん', short: 'パン種のびん', taste: 'ふわふわ', adj: 'ふっくら', noun: 'パン', nr: 7.5, value: 15, col: '#f6ead0', alt: 'card-mizu', fx: { dmg: 5, taneSpawn: 1 } },
 panetane: { cat: 'dough', pan: 1, tane: 1, name: 'パン種', short: 'パン種', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'パン', nr: 7, value: 0, col: '#fff2dc', alt: 'card-komugi', fx: { dmg: 5 } },
 bata:   { cat: 'mat', name: 'ゴーゴーヤギのバター', short: 'ヤギバター', taste: 'こくまろ', adj: 'バター', noun: 'サブレ', nr: 2, value: 20, col: '#f6d36b', fx: { nb: 30 } },
@@ -2108,17 +2111,17 @@ minto:  { cat: 'mat', name: 'きらきらミント', short: 'きらきらミン�
 hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 40 } },
 karamel: { cat: 'mat', name: 'ひよこのほのおカラメル', short: 'ほのおカラメル', fushigi: true, taste: 'こんがり', adj: 'こんがり', noun: 'サブレ', nr: 2, value: 60, col: '#d9822b', alt: 'mob-hiyoko', fx: { fin: 2 } },
 kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 40, heat: -1 } },
-amedai:   { cat: 'ame', name: '飴細工の台', short: '飴細工の台', taste: 'あまい', adj: 'つやつや', noun: '飴細工', nr: 9, value: 20, col: '#bfe6f0', fx: { dmg: 40, taisaku: 1, done: 5 } },
-hakucho:  { cat: 'ame', name: 'あめの白鳥', short: 'あめの白鳥', taste: 'ひんやり', adj: 'すきとおる', noun: '白鳥', nr: 9.5, value: 20, col: '#e8f6ff', fx: { dmg: 30, taisaku: 1, done: 5, spd: 1 } },
-oshiro:   { cat: 'ame', name: 'あめのお城', short: 'あめのお城', taste: 'あまい', adj: 'きらめく', noun: 'お城', nr: 10, value: 25, col: '#c9d8ff', fx: { dmg: 80, taisaku: 1, done: 7.5, spd: -1 } },
-hanakago: { cat: 'ame', name: 'あめの花かご', short: 'あめの花かご', taste: 'さわやか', adj: 'はなやか', noun: '花かご', nr: 8.5, value: 20, col: '#ffd0e0', fx: { dmg: 20, doneRally: 30 } },
-tsuya:    { cat: 'ame', name: 'しあげのつや', short: 'しあげのつや', taste: 'とろーり', adj: 'しあげの', noun: 'つや飴', nr: 8, value: 20, col: '#fff0c0', fx: { dmg: 20, doneFin: 0.5 } },
-nobashi:  { cat: 'ame', name: 'のばし飴', short: 'のばし飴', taste: 'あまい', adj: 'のびのび', noun: 'のばし飴', nr: 7.5, value: 15, col: '#ffe8b0', fx: { dmg: 10, grow: 2 } },
+amedai:   { cat: 'ame', name: '飴細工の台', short: '飴細工の台', taste: 'あまい', adj: 'つやつや', noun: '飴細工', nr: 9, value: 20, col: '#bfe6f0', fx: { dmg: 55, taisaku: 1, done: 5 } },
+hakucho:  { cat: 'ame', name: 'あめの白鳥', short: 'あめの白鳥', taste: 'ひんやり', adj: 'すきとおる', noun: '白鳥', nr: 9.5, value: 20, col: '#e8f6ff', fx: { dmg: 40, taisaku: 1, done: 5, spd: 1 } },
+oshiro:   { cat: 'ame', name: 'あめのお城', short: 'あめのお城', taste: 'あまい', adj: 'きらめく', noun: 'お城', nr: 10, value: 25, col: '#c9d8ff', fx: { dmg: 110, taisaku: 1, done: 7.5, spd: -1 } },
+hanakago: { cat: 'ame', name: 'あめの花かご', short: 'あめの花かご', taste: 'さわやか', adj: 'はなやか', noun: '花かご', nr: 8.5, value: 20, col: '#ffd0e0', fx: { dmg: 25, doneRally: 40 } },
+tsuya:    { cat: 'ame', name: 'しあげのつや', short: 'しあげのつや', taste: 'とろーり', adj: 'しあげの', noun: 'つや飴', nr: 8, value: 20, col: '#fff0c0', fx: { dmg: 25, doneFin: 0.5 } },
+nobashi:  { cat: 'ame', name: 'のばし飴', short: 'のばし飴', taste: 'あまい', adj: 'のびのび', noun: 'のばし飴', nr: 7.5, value: 15, col: '#ffe8b0', fx: { dmg: 15, grow: 2 } },
 korodrop: { cat: 'candy', name: 'ころころドロップ', short: 'ころころドロップ', twin: 'ごろごろドロップ', taste: 'あまい', adj: 'ころころ', noun: 'ドロップ', nr: 9, value: 20, col: '#ffb8c8', fx: { dmg: 20, candy: 1, perChain: 10 } },
 hajike:   { cat: 'candy', name: 'はじけキャンディ', short: 'はじけキャンディ', twin: 'ぱちぱちはじけ飴', taste: 'しゅわしゅわ', adj: 'はじける', noun: 'はじけ飴', nr: 8.5, value: 20, col: '#ffe070', fx: { dmg: 10, candy: 1, petit: 2 } },
 peroc:    { cat: 'candy', name: 'つなぎペロキャン', short: 'つなぎペロキャン', twin: 'ダブルペロキャン', taste: 'あまい', adj: 'つなぎの', noun: 'ペロキャン', nr: 8, value: 20, col: '#c8e8ff', fx: { dmg: 20, candy: 1, link: 2 } },
 ichidrop: { cat: 'candy', name: 'いちばんドロップ', short: 'いちばんドロップ', twin: 'はじまりドロップ', taste: 'あまい', adj: 'いちばん', noun: 'ドロップ', nr: 9, value: 20, col: '#ffd0a0', fx: { dmg: 20, candy: 1, candyLead: 1.4 } },
-candybin: { cat: 'candy', name: 'キャンディのびん', short: 'キャンディのびん', twin: '大びんキャンディ', taste: 'あまい', adj: 'びんづめ', noun: 'びん飴', nr: 9.5, value: 20, col: '#f0e0ff', fx: { dmg: 10, candy: 1, chainFin: 0.04 } },
+candybin: { cat: 'candy', name: 'キャンディのびん', short: 'キャンディのびん', twin: '大びんキャンディ', taste: 'あまい', adj: 'びんづめ', noun: 'びん飴', nr: 9.5, value: 20, col: '#f0e0ff', fx: { dmg: 10, candy: 1, chainFin: 0.025 } },
 mintame:  { cat: 'candy', name: 'ひえひえミント飴', short: 'ひえひえミント飴', twin: 'こちこちミント飴', taste: 'さわやか', adj: 'ひえひえ', noun: 'ミント飴', nr: 8, value: 20, col: '#c8f4dc', fx: { dmg: 20, candy: 1, coldAgain: 1 } },
 shioame:  { cat: 'mat', name: 'うみヘビのしお飴', short: 'しお飴', taste: 'さわやか', adj: 'うみの', noun: 'しお飴', nr: 2, value: 20, col: '#eef6f8', fx: { nb: 30 } },
 korizato: { cat: 'mat', name: 'こおりウサギの氷砂糖', short: 'ウサギ氷砂糖', taste: 'ひんやり', adj: 'きらきら', noun: '氷砂糖', nr: 1, value: 15, col: '#dff4ff', fx: { next: 2 } },
@@ -2128,22 +2131,22 @@ mizuchi:  { cat: 'mat', name: 'あまミズチのシロップ', short: 'ミズ�
 sponge:    { cat: 'cake', name: 'ふんわりスポンジ生地', short: 'スポンジ生地', taste: 'ふわふわ', adj: 'ふわふわ', noun: 'ケーキ', nr: 9, value: 20, col: '#f6d890', fx: { dmg: 60 } },
 tart:      { cat: 'cake', name: 'さくさくタルト生地', short: 'タルト生地', taste: 'さくさく', adj: 'さくさく', noun: 'タルト', nr: 9.2, value: 20, col: '#e8b060', fx: { dmg: 50, tartFruit: 2 } },
 roll:      { cat: 'cake', name: 'くるくるロール生地', short: 'ロール生地', taste: 'ふわふわ', adj: 'くるくる', noun: 'ロール', nr: 8.8, value: 20, col: '#f8e0b0', fx: { dmg: 30, rollGrow: 1 } },
-deco:      { cat: 'cake', name: 'しめくくりデコ生地', short: 'しめのデコ生地', taste: 'とろーり', adj: 'しめの', noun: 'デコケーキ', nshort: 'デコ', nr: 9.6, value: 20, col: '#fff0e0', fx: { dmg: 30, ripeFin: 2 } },
+deco:      { cat: 'cake', name: 'しめくくりデコ生地', short: 'しめのデコ生地', taste: 'とろーり', adj: 'しめの', noun: 'デコケーキ', nshort: 'デコ', nr: 9.6, value: 20, col: '#fff0e0', fx: { dmg: 30, ripeFin: 1.4 } },
 chiffon:   { cat: 'cake', name: 'もりのシフォン生地', short: 'もりのシフォン', taste: 'ふわふわ', adj: 'もりの', noun: 'シフォン', nr: 9.4, value: 20, col: '#f4e4a8', fx: { dmg: 40, perGrow: 15 } },
 hachiroll: { cat: 'cake', name: 'はちみつロール', short: 'はちみつロール', taste: 'あまい', adj: 'はちみつ', noun: 'ロール', nr: 8.6, value: 20, col: '#f2b33a', fx: { dmg: 40, fruitAgain: 1 } },
 garabin:  { cat: 'jam', name: 'こもれびのガラスびん', short: 'ガラスのびん', taste: 'あまい', adj: 'すきとおる', noun: 'ジャム', nr: 9, value: 20, col: '#e8f4f0', fx: { dmg: 20, binNow: 100 } },
-ichijam:  { cat: 'jam', name: 'いちばんのりジャム', short: 'いちばんジャム', taste: 'あまい', adj: 'あさいち', noun: 'ジャム', nr: 9.2, value: 20, col: '#e04a5a', fx: { dmg: 20, jamLead: 3 } },
+ichijam:  { cat: 'jam', name: 'いちばんのりジャム', short: 'いちばんジャム', taste: 'あまい', adj: 'あさいち', noun: 'ジャム', nr: 9.2, value: 20, col: '#e04a5a', fx: { dmg: 20, jamLead: 1.8 } },
 shimejam: { cat: 'jam', name: 'しめくくりジャム', short: 'しめのジャム', taste: 'とろーり', adj: 'しめの', noun: 'ジャム', nr: 9.6, value: 20, col: '#f5a030', fx: { dmg: 20, jamFin: 1.5 } },
 torojam:  { cat: 'jam', name: 'とろとろジャム', short: 'とろとろジャム', taste: 'とろーり', adj: 'とろり', noun: 'ジャム', nr: 9.4, value: 20, col: '#d83a4a', fx: { dmg: 20, toro: 1 } },
-kirakira: { cat: 'jam', name: 'きらきら水あめ', short: 'きらきら水あめ', taste: 'あまい', adj: 'きらきら', noun: '水あめ', nr: 8.6, value: 15, col: '#f8f0c0', fx: { dmg: 10, shine: 3 } },
+kirakira: { cat: 'jam', name: 'きらきら水あめ', short: 'きらきら水あめ', taste: 'あまい', adj: 'きらきら', noun: '水あめ', nr: 8.6, value: 15, col: '#f8f0c0', fx: { dmg: 10, shine: 2 } },
 jamnabe:  { cat: 'jam', name: 'ジャムの大鍋', short: 'ジャムの大鍋', taste: 'あまい', adj: 'ぐつぐつ', noun: 'ジャム', nr: 8.8, value: 20, col: '#c84a2a', alt: 'field-jamnabe', fx: { dmg: 20, perJam: 120 } },
 };
 const FRUITS = {
 apple: { kana: 'りんご', name: 'こもれび木のりんご', taste: 'あまい', col: '#e8524a', st: [{ nb: 15 }, { nb: 40 }, { nb: 100 }] },
-berry: { kana: 'きいちご', name: 'もりクマのきいちご', taste: 'あまずっぱい', col: '#c8325a', st: [{ next: 1.25 }, { next: 1.5 }, { next: 2.5 }] },
+berry: { kana: 'きいちご', name: 'もりクマのきいちご', taste: 'あまずっぱい', col: '#c8325a', st: [{ next: 1.1 }, { next: 1.25 }, { next: 1.6 }] },   // 11/21 夜 最終スコアをそろえる（前は 1.25・1.5・2.5）
 peach: { kana: 'もも', name: 'ほっぺモモンガのもも', taste: 'とろーり', col: '#f8a0a0', st: [{ fin: 1.1 }, { fin: 1.3 }, { fin: 1.8 }] },
 mikan: { kana: 'みかん', name: 'おひさまリスのみかん', taste: 'さわやか', col: '#f59a2a', st: [{ rally: 15 }, { rally: 40 }, { rally: 100 }] },
-grape: { kana: 'ぶどう', name: 'ゆめみ鳥のぶどう', taste: 'あまい', col: '#8a4ab0', st: [{ soon: 1 }, { again: 1 }, { again: 2 }] },
+grape: { kana: 'ぶどう', name: 'ゆめみ鳥のぶどう', taste: 'あまい', col: '#8a4ab0', st: [{ soon: 1 }, { again: 1 }, { again: 1, nb: 40 }] },   // 11/21 夜（前は 熟した実で もう2回）
 };
 const FRUIT_IDS = Object.keys(FRUITS), RIPE = 2;
 for (const f of FRUIT_IDS) for (let s = 0; s <= RIPE; s++) {
@@ -2168,11 +2171,15 @@ hiokoshi: { name: 'ひだねサラマンダーの火種', short: '火種', mini:
 mizu:     { name: 'しずくクラゲの水', short: 'クラゲの水', mini: '水', role: '火力', fx: { heat: -2 } },
 yakigote: { name: 'サラマンダーのやきごて', short: 'やきごて', mini: 'こて', role: '火力', fx: { sear: 3 } },
 yobirin:  { name: 'かまど職人のよびりん', short: 'よびりん', mini: 'よびりん', role: '仕入れ', fx: { call: 1 } },
+konedai:  { name: 'ずっしりこね台', short: 'こね台', mini: 'こね台', role: 'こね', fx: { koneUp: 2 } },
+hakko:    { name: 'ふっくら発酵かご', short: '発酵かご', mini: 'かご', role: 'こね', fx: { koneUp: 1, next: 1.5 } },
 yusen:     { name: 'ゆせん鍋', short: 'ゆせん鍋', mini: 'ゆせん', role: '温度', fx: { heat: 1 } },
 pot:       { name: 'お湯のポット', short: 'お湯ポット', mini: 'ポット', role: '温度', fx: { heat: 2 } },
 korimizu:  { name: 'こおり水', short: 'こおり水', mini: 'こおり水', role: '温度', fx: { heat: -2 } },
 amebasami: { name: 'ガラスの飴ばさみ', short: '飴ばさみ', mini: 'はさみ', role: '支援', fx: { grow: 2, chainUp: 1 } },   // キャンディの夜は れんさ+1（れんさを切らない）
 amebell:   { name: '飴職人のベル', short: '職人のベル', mini: 'ベル', role: '仕入れ', fx: { call: 1 } },
+ameito:    { name: 'きらめく飴の糸', short: '飴の糸', mini: '糸', role: 'れんさ', fx: { chainUp: 2 } },
+amering:   { name: 'くるくる飴のわっか', short: '飴のわっか', mini: 'わっか', role: 'れんさ', fx: { chainUp: 1, again: 1 } },
 joro:     { name: '森のじょうろ', short: 'じょうろ', mini: 'じょうろ', role: '支援', fx: { water: 1 } },
 hiryo:    { name: 'ふかふかひりょう', short: 'ひりょう', mini: 'ひりょう', role: '支援', fx: { fert: 1 } },
 kakashi:  { name: 'にこにこかかし', short: 'かかし', mini: 'かかし', role: '支援', fx: { scare: 1.5 } },
@@ -2225,14 +2232,14 @@ const sizeMul = (c, fx) => c >= SIZE_MAX ? fx.done || 5 : 1 + c / 3;   // 完成
 const PETIT_DMG = 10;
 const FIELDS = {
 teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['火力が 中火より下がらない'], long: [['', '{火力}が 中火より下がらない']] },
-ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['火力が 強火より下がらない', 'サイコーの生地 ×1.5'], long: [['', '{火力}が 強火より下がらない'], ['', '{サイコー}の生地×1.5']] },
+ishigama: { name: 'ごうごう石窯', start: 3, best: 1.3, chips: ['火力が 強火より下がらない', 'サイコーの生地 ×1.3'], long: [['', '{火力}が 強火より下がらない'], ['', '{サイコー}の生地×1.3']] },
 menbo:     { name: '力のめん棒', kone: 2, alt: 'field-ishigama', chips: ['こねると 2回分'], long: [['', '1回{こね}ると 2回分']] },   // 11/21 夜 こね生地は火力なし
 karumenbo: { name: '軽量めん棒', tane: 1, alt: 'field-teppan', chips: ['こねると パン種+1こ'], long: [['', '{こね}ると {パン種}が1こ多く生まれる']] },
 oonabe: { name: '飴の大鍋', start: 4, chips: ['とろとろにする'], long: [['', '飴の{温度}が とろとろ になる']] },
 kobo:   { name: 'ガラスの工房', start: 3, slow: 1, chips: ['あたたかにする', '冷めにくい'], long: [['', '飴の{温度}が あたたか になる'], ['', '2ラウンドに1回しか冷めない']] },
 dairiseki: { name: '大理石の台', chain0: 1, chips: ['れんさが 1から始まる'], long: [['', '{れんさ}が1から始まる']] },   // 11/21 夜 キャンディは温度なし
 yatai:     { name: 'キャンディの屋台', petit: 1, chips: ['小さな飴 +1こ'], long: [['', '小さな飴を1こ多く飛ばす']] },
-nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 3, alt: 'field-hatake', chips: ['実が育つのは 2回に1回', '熟した実の 効果×3'], long: [['', '{くだもの}が育つのは 2ラウンドに1回'], ['', '{くだもの}の効果×2・{熟した実}は×3']] },
+nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 2.5, alt: 'field-hatake', chips: ['実が育つのは 2回に1回', '熟した実の 効果×2.5'], long: [['', '{くだもの}が育つのは 2ラウンドに1回'], ['', '{くだもの}の効果×2・{熟した実}は×2.5']] },
 suku:    { name: 'すくすく肥料', growAdd: 1, alt: 'card-hiryo', chips: ['実が 1ラウンド はやく熟す'], long: [['', '{くだもの}が1ラウンドに2段育つ']] },
 decodai: { name: 'デコレーション台', decoHits: [5, 10], decoRate: 0.1, alt: 'field-terrace', chips: ['ケーキが デコ5連撃', '実のケーキは 10連撃'], long: [['', 'ケーキの発動で デコの5連撃（実のケーキは10連撃）']] },
 oobin:   { name: '大きなびん', fixed: 1, alt: 'card-ookibin', chips: ['実を3つ 入れると ジャム'], long: [['', '{くだもの}を3つ入れると★3の{ジャム}が生まれる'], ['', 'ずっと場にある（うれない）']] },
@@ -2257,29 +2264,29 @@ const heatOf = () => { let b = 'cookie'; try { b = (N && N.build) || 'cookie'; }
 const BUILDS = {
 cookie: {
 chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text: '鉄板で生地を焼いて、サイコーをそろえる。アンカーで倍々',
-bal: [1.14, 1.111], doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
+bal: [1.13, 1.155], r1: 420, doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
 },
 kone: {
 chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
-trait: 'こね', heat: { off: 1, start: 0 }, drop: ['t:maki', 't:hiokoshi', 't:mizu', 't:yakigote'],   // 火力なし（パンは焼かない・焦げない）
-bal: [0.27, 1.37], r1: 700, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
+trait: 'こね', heat: { off: 1, start: 0 }, drop: ['t:maki', 't:hiokoshi', 't:mizu', 't:yakigote'], extra: ['t:konedai', 't:hakko'],   // 火力なし（パンは焼かない・焦げない）
+bal: [0.58, 1.51], r1: 620, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
 },
 taisaku: {
 chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて まぜて育て、冷えたら本気。★3を冷やしたら最強',
-bal: [2.97, 1.123], r1: 180, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
+bal: [2.97, 1.123], r1: 220, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
 chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
-trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'],   // 温度なし（見た目は ひんやり のまま変わらない）
-bal: [1.20, 0.915], r1: 370, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
+trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'], extra: ['t:ameito', 't:amering'],   // 温度なし（見た目は ひんやり のまま変わらない）
+bal: [1.10, 1.186], r1: 350, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
 },
 fruitcake: {
 chef: 'wakaba', name: 'くだものケーキ', from: 11, mate: 'wakaba', pic: 'wakaba-battle', text: 'くだものを育てて、熟した実を★2のケーキにのせると★3',
-bal: [1.31, 1.037], r1: 400, doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
+bal: [1.13, 1.235], r1: 400, doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
 },
 jam: {
 chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。くだもの3つで★3のジャムが生まれる',
-bal: [1.10, 1.070], doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
+bal: [1.64, 1.10], doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
 },
 };
 const candyNight = () => { try { return !!N && N.build === 'candy'; } catch (e) { return false; } };
@@ -2398,7 +2405,7 @@ const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
 if (fx.taisaku) p.push(`完成×${fx.done}`);
 if (fx.lead) p.push(`スタート：×${fx.lead}`);
 if (fx.candyLead) p.push(`スタート：キャンディ×${fx.candyLead}`);
-if (fx.sai) p.push(`アンカー：サイコー毎×${fx.sai + 0.5 * (star - 1)}`);
+if (fx.sai) p.push(`アンカー：サイコー毎×${fx.sai + FIN_STAR.sai * (star - 1)}`);
 if (fx.fin) p.push(`アンカー：合計×${fx.fin}`);
 if (fx.chainFin) p.push(`アンカー：れんさ毎 合計×+${chainFinOf(fx, star)}`);
 if (fx.doneFin) p.push(`アンカー：完成×+${doneFinOf(fx, star)}`);
@@ -2421,7 +2428,7 @@ if (fx.perKone) p.push(`こね毎に+${f(fx.perKone)}`);
 if (fx.perChain) p.push(`れんさ毎に+${f(fx.perChain)}`);
 if (fx.petit) p.push(`ちいさな飴${fx.petit}こ`);
 if (fx.link) p.push(`両どなり飴で れんさ+${fx.link}`);
-if (fx.coldAgain) p.push('ひんやりで2回');
+if (fx.coldAgain) p.push('2回発動');
 if (fx.next) p.push(`次の主役×${fx.next}`);
 if (fx.nb) p.push(`右2枚+${f(fx.nb)}`);
 if (fx.again) p.push(`右がもう${fx.again}回`);
@@ -2445,18 +2452,19 @@ if (fx.spd) p.push(fx.taisaku ? (fx.spd > 0 ? '育ちやすい' : '育ちにく�
 return p;
 }
 function fxText(fx, star = 1) { return fxList(fx, star).join('・'); }
-const koneFinOf = (fx, star = 1) => fx.koneFin + 0.25 * (star - 1);
-const doneFinOf = (fx, star = 1) => fx.doneFin + 0.25 * (star - 1);
-const chainFinOf = (fx, star = 1) => fx.chainFin + 0.125 * (star - 1);
-const ripeFinOf = (fx, star = 1) => fx.ripeFin + 0.5 * (star - 1);
-const jamFinOf = (fx, star = 1) => fx.jamFin + 0.25 * (star - 1);
+const FIN_STAR = { kone: 0.03, done: 0.25, chain: 0.01, ripe: 0.2, jam: 0.25, sai: 0.2 };   // 11/21 夜 しょーくん「上手な夜の最終スコアが どのビルドも50万くらい」（前は chain 0.125・ripe 0.5）
+const koneFinOf = (fx, star = 1) => fx.koneFin + FIN_STAR.kone * (star - 1);
+const doneFinOf = (fx, star = 1) => fx.doneFin + FIN_STAR.done * (star - 1);
+const chainFinOf = (fx, star = 1) => fx.chainFin + FIN_STAR.chain * (star - 1);
+const ripeFinOf = (fx, star = 1) => fx.ripeFin + FIN_STAR.ripe * (star - 1);
+const jamFinOf = (fx, star = 1) => fx.jamFin + FIN_STAR.jam * (star - 1);
 const pct = v => `${Math.round(v * 100)}%`;
 function fxLong(fx, star = 1) {
 const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
 if (fx.taisaku) p.push(['', `{完成}して 冷えたら 味パワー×${fx.done}`]);
 if (fx.lead) p.push(['スタート', `味パワー×${fx.lead}`]);
 if (fx.candyLead) p.push(['スタート', `キャンディ ぜんぶ×${fx.candyLead}`]);
-if (fx.sai) p.push(['アンカー', `{サイコー}の生地 1枚ごとに×${fx.sai + 0.5 * (star - 1)}`]);
+if (fx.sai) p.push(['アンカー', `{サイコー}の生地 1枚ごとに×${fx.sai + FIN_STAR.sai * (star - 1)}`]);
 if (fx.fin) p.push(['アンカー', `味パワーの 合計×${fx.fin}`]);
 if (fx.chainFin) p.push(['アンカー', `{れんさ}1につき 合計+${pct(chainFinOf(fx, star))}`]);
 if (fx.doneFin) p.push(['アンカー', `{完成}1つにつき 合計+${pct(doneFinOf(fx, star))}`]);
@@ -2481,7 +2489,7 @@ if (fx.perKone) p.push(['', `{こね}1回 につき+${f(fx.perKone)}`]);
 if (fx.perChain) p.push(['', `{れんさ}1 につき+${f(fx.perChain)}`]);
 if (fx.petit) p.push(['', `小さな飴を ${fx.petit}こ飛ばす`]);
 if (fx.link) p.push(['', `両どなりが キャンディなら {れんさ}+${fx.link}`]);
-if (fx.coldAgain) p.push(['', 'ひんやり以下なら もう1回発動']);
+if (fx.coldAgain) p.push(['', 'もう1回発動する']);   // 11/21 夜〜 キャンディは温度なし（前は ひんやり以下なら）
 if (fx.next) p.push(['', `次の主役の 味パワー×${fx.next}`]);
 if (fx.nb) p.push(['', `右2枚の 味パワー+${f(fx.nb)}`]);
 if (fx.again) p.push(['', `右を もう${fx.again}回発動`]);
@@ -2574,7 +2582,9 @@ const q = QUOTA[Math.max(0, Math.min(QUOTA.length - 1, r - 1))];
 let b = build; if (!b) try { b = N && N.build; } catch (e) { b = null; }
 const B = b && BUILDS[b] && BUILDS[b].bal;
 if (r === 1 && b && BUILDS[b] && BUILDS[b].r1) return BUILDS[b].r1;
-return B ? round2(q / (B[0] * Math.pow(B[1], r - 1))) : q;
+if (!B) return q;
+const v = round2(q / (B[0] * Math.pow(B[1], r - 1)));
+return r > 1 ? Math.max(v, quota(r - 1, day, b)) : v;   // おなかは 前のラウンドより小さくしない（11/21 夜 こね生地は後半の伸びがゆるやかで、bal の式だと r9 が r8 より小さくなった）
 }
 function nightHP(day, build) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day, build); return s; }
 const CUSTOMERS = [
@@ -4124,7 +4134,8 @@ return true;
 function poolList() {
 const B = curBuild(), C = CHEFS[B.chef], L = [];
 for (const cid of B.doughs) L.push([cid, 3]);
-for (const cid of C.common) if (!(B.drop || []).includes(cid)) L.push([cid, 2]);   // drop＝そのビルドで使わない共通のカード（11/21 夜 こね生地の火力・キャンディの温度）
+for (const cid of C.common) if (!(B.drop || []).includes(cid)) L.push([cid, 2]);
+for (const cid of B.extra || []) L.push([cid, 2]);   // extra＝そのビルドだけの道具（11/21 夜 こね台・発酵かご／飴の糸・飴のわっか）   // drop＝そのビルドで使わない共通のカード（11/21 夜 こね生地の火力・キャンディの温度）
 for (const id of B.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
 const dr = MONSTERS[N.mon].drop;
 if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
@@ -4388,7 +4399,7 @@ const fieldMul = d => !F || !F.fruitMul ? 1 : d.stage === RIPE && F.ripeMul ? F.
 const fxAt = j => { const d = cardDef(board[j].cid); return d.fruit ? scaleFx(d.fx, fieldMul(d) * Math.max(scareOf(j - 1), scareOf(j - 2))) : d.fx; };   // かかしは右2枚の実に効く（11/19 しょーくん「左から順に計算するので右2枚に」）   // kone＝こねた回数（バトル中もシナモンロールでふえる）・panRally＝いちばんあんパンの「パン生地ぜんぶ+」
 const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
 for (const i of idx) {
-const cold = cardDef(board[i].cid).fx.coldAgain && heat <= 2 ? 1 : 0;   // ひえひえミント飴：ひんやり以下なら もう1回
+const cold = cardDef(board[i].cid).fx.coldAgain ? 1 : 0;   // ひえひえミント飴：もう1回（11/21 夜〜 温度なし）
 const fa = cardDef(board[i].cid).fx.fruitAgain && isFruit(i + 1) ? 1 : 0;   // はちみつロール：右どなりがくだものなら もう1回
 const times = 1 + Math.min(3, extra[i]) + cold + fa;
 for (let t = 0; t < times; t++) {
@@ -4461,7 +4472,7 @@ const sh = board[i - 1] && cardDef(board[i - 1].cid).fx.shine; if (sh) { base *=
 }
 if (fx.lead && i === first) { base *= fx.lead; e.lead = true; parts.push(['×', fx.lead, 'スタート']); }
 if (fx.sai && i === last) {
-const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n);
+const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + FIN_STAR.sai * (d.star - 1), n);
 base *= v; e.sai = n; if (n) parts.push(['×', v, `サイコー${n}枚`, best.filter(j => j !== i)]);
 }
 if (fx.ripeFin && i === last) {   // しめのデコ生地：熟した実1つにつき×
@@ -4674,7 +4685,7 @@ const jamBadge = () => binNight() ? `<span class="kone-n jam-n" aria-label="作�
 function binFx(made) {
 const fs = document.querySelector('.fslot');
 if (!made) { floatAt(fs, 'びんに入れた', 'cookup'); heroFor('joy', 700); return; }
-floatAt(fs, 'ジャム！', 'best'); heroPose('support', 900);
+floatAt(fs, 'ジャム！', 'best'); heroPose('support', 900); document.querySelectorAll('.jam-n').forEach(el => replay(el, 'bump'));   // 右上・ショップの上の「ジャム」も ぷるっと（11/21 夜）
 const k = N.board.findIndex(c => c && c.cid === made), t = tslot(k); if (t) floatAt(t, 'ジャムができた', 'best');
 setTimeout(() => cutIn(made, 'ジャムができた！'), 200);
 }

@@ -92,7 +92,7 @@ const jamBadge = () => binNight() ? `<span class="kone-n jam-n" aria-label="作�
 function binFx(made) {
   const fs = document.querySelector('.fslot');
   if (!made) { floatAt(fs, 'びんに入れた', 'cookup'); heroFor('joy', 700); return; }
-  floatAt(fs, 'ジャム！', 'best'); heroPose('support', 900);
+  floatAt(fs, 'ジャム！', 'best'); heroPose('support', 900); document.querySelectorAll('.jam-n').forEach(el => replay(el, 'bump'));   // 右上・ショップの上の「ジャム」も ぷるっと（11/21 夜）
   const k = N.board.findIndex(c => c && c.cid === made), t = tslot(k); if (t) floatAt(t, 'ジャムができた', 'best');
   setTimeout(() => cutIn(made, 'ジャムができた！'), 200);
 }

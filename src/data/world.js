@@ -57,7 +57,9 @@ function quota(r, day, build) {
   let b = build; if (!b) try { b = N && N.build; } catch (e) { b = null; }
   const B = b && BUILDS[b] && BUILDS[b].bal;
   if (r === 1 && b && BUILDS[b] && BUILDS[b].r1) return BUILDS[b].r1;
-  return B ? round2(q / (B[0] * Math.pow(B[1], r - 1))) : q;
+  if (!B) return q;
+  const v = round2(q / (B[0] * Math.pow(B[1], r - 1)));
+  return r > 1 ? Math.max(v, quota(r - 1, day, b)) : v;   // おなかは 前のラウンドより小さくしない（11/21 夜 こね生地は後半の伸びがゆるやかで、bal の式だと r9 が r8 より小さくなった）
 }
 function nightHP(day, build) { let s = 0; for (let r = 1; r <= ROUNDS; r++) s += quota(r, day, build); return s; }
 

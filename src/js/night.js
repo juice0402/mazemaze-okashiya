@@ -79,7 +79,8 @@ function nightOk(n) {
 function poolList() {
   const B = curBuild(), C = CHEFS[B.chef], L = [];
   for (const cid of B.doughs) L.push([cid, 3]);
-  for (const cid of C.common) if (!(B.drop || []).includes(cid)) L.push([cid, 2]);   // drop＝そのビルドで使わない共通のカード（11/21 夜 こね生地の火力・キャンディの温度）
+  for (const cid of C.common) if (!(B.drop || []).includes(cid)) L.push([cid, 2]);
+  for (const cid of B.extra || []) L.push([cid, 2]);   // extra＝そのビルドだけの道具（11/21 夜 こね台・発酵かご／飴の糸・飴のわっか）   // drop＝そのビルドで使わない共通のカード（11/21 夜 こね生地の火力・キャンディの温度）
   for (const id of B.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
   const dr = MONSTERS[N.mon].drop;
   if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
@@ -379,7 +380,7 @@ function resolveRound() {
      e.out＝このカードから飛ばす [{k, to, v}]（to はマスの番号の列・'heat'・'score'）。parts の4つめ＝かかった元のマス */
   const dmgAt = j => board[j] && cardDef(board[j].cid).fx.dmg;
   for (const i of idx) {
-    const cold = cardDef(board[i].cid).fx.coldAgain && heat <= 2 ? 1 : 0;   // ひえひえミント飴：ひんやり以下なら もう1回
+    const cold = cardDef(board[i].cid).fx.coldAgain ? 1 : 0;   // ひえひえミント飴：もう1回（11/21 夜〜 温度なし）
     const fa = cardDef(board[i].cid).fx.fruitAgain && isFruit(i + 1) ? 1 : 0;   // はちみつロール：右どなりがくだものなら もう1回
     const times = 1 + Math.min(3, extra[i]) + cold + fa;
     for (let t = 0; t < times; t++) {
@@ -453,7 +454,7 @@ function resolveRound() {
         }
         if (fx.lead && i === first) { base *= fx.lead; e.lead = true; parts.push(['×', fx.lead, 'スタート']); }
         if (fx.sai && i === last) {
-          const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + 0.5 * (d.star - 1), n);
+          const best = idx.filter(j => cardDef(board[j].cid).dough && board[j].cook >= COOK_MAX), n = best.length, v = Math.pow(fx.sai + FIN_STAR.sai * (d.star - 1), n);
           base *= v; e.sai = n; if (n) parts.push(['×', v, `サイコー${n}枚`, best.filter(j => j !== i)]);
         }
         if (fx.ripeFin && i === last) {   // しめのデコ生地：熟した実1つにつき×
