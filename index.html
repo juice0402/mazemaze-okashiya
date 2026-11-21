@@ -1896,6 +1896,7 @@ const SE_SRC = {"bake":"assets/se/bake.mp3?v=02d4bf45","burnt":"assets/se/burnt.
 const KOE_SRC = {"hono-achaa":"assets/koe/hono-achaa.mp3?v=54c1fb65","hono-ei":"assets/koe/hono-ei.mp3?v=8c03cd95","hono-sei":"assets/koe/hono-sei.mp3?v=d26f62ad","hono-sore":"assets/koe/hono-sore.mp3?v=0849c005","hono-taa":"assets/koe/hono-taa.mp3?v=eb5858e0","hono-tou":"assets/koe/hono-tou.mp3?v=84df7f17","hono-uun":"assets/koe/hono-uun.mp3?v=7e825f28","hono-ya":"assets/koe/hono-ya.mp3?v=6ebcdbd9","hono-yatta":"assets/koe/hono-yatta.mp3?v=e4208f87","hono-yoshi":"assets/koe/hono-yoshi.mp3?v=ccd88f8c","mina-fu":"assets/koe/mina-fu.mp3?v=a7920e10","mina-fun":"assets/koe/mina-fun.mp3?v=7a05a897","mina-ha":"assets/koe/mina-ha.mp3?v=7cf9388a","mina-n":"assets/koe/mina-n.mp3?v=c12020e8","mina-soko":"assets/koe/mina-soko.mp3?v=47f47ac7","mina-uun":"assets/koe/mina-uun.mp3?v=a5a74ca8","mina-yoshi":"assets/koe/mina-yoshi.mp3?v=b271118c","waka-eei":"assets/koe/waka-eei.mp3?v=c8d71112","waka-ei":"assets/koe/waka-ei.mp3?v=a368f68d","waka-hoi":"assets/koe/waka-hoi.mp3?v=81aa9968","waka-maa":"assets/koe/waka-maa.mp3?v=ab206bd2","waka-sore":"assets/koe/waka-sore.mp3?v=46195338","waka-ufufu":"assets/koe/waka-ufufu.mp3?v=e6eb9e20","waka-uun":"assets/koe/waka-uun.mp3?v=9a7c77d2"};
 const SND_PACK = null;
 const ART_PACK = null;
+const ART_PACK2 = null;
 const TRIAL = false;
 /* src/js/core.js */
 
@@ -1909,6 +1910,13 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
 const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
 function artBlobs(done) {
+if (typeof ART_PACK2 !== 'undefined' && ART_PACK2 && !artBlobs.pk2) {   // 朝昼の絵のまとめ（11/21）：起動は待たせず裏で読む。届いたら いまの画面を描きなおす
+artBlobs.pk2 = 1;
+fetch(ART_PACK2.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
+for (const [k, [o, l, t]] of Object.entries(ART_PACK2.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
+if (typeof S !== 'undefined' && S && ['morning', 'day', 'result'].includes(S.phase) && typeof render === 'function' && !(typeof talking === 'function' && talking())) render();
+}).catch(() => {});
+}
 if (typeof ART_PACK !== 'undefined' && ART_PACK && !artBlobs.pk) {
 artBlobs.pk = 1; let go = false;
 const next = () => { if (go) return; go = true; artBlobs(done); };

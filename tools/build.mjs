@@ -28,6 +28,7 @@ for (const f of readdirSync(artDir).sort()) {
 // 効果音と掛け声（11/19 H-034 昼のチャット）：assets/se・assets/koe → SE_SRC・KOE_SRC（BGM と同じ形・遊ぶ人は assets/se/・アーティファクトは se/）
 const SND_SRC = sub => { const T = {}; try { for (const f of readdirSync(join(root, 'assets', sub)).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) T[m[1]] = `__${sub.toUpperCase()}DIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets', sub, f))).digest('hex').slice(0, 8); } } catch (e) { /* ない */ } return T; };
 const SE_SRC = SND_SRC('se'), KOE_SRC = SND_SRC('koe');
+const PACK2 = /^(cust-|sweet-|deco-|fc-)/;   // ためしのページで2つめのまとめに入れる絵（tools/art_files.mjs も同じ）
 const BIG_BGM = 400000;   // これより大きい曲は、ためしのページでも まとめ（snd-pack.mp3）に入れない（tools/art_files.mjs も同じ数）
 const BGM_SRC = {}; try { for (const f of readdirSync(join(root, 'assets/bgm')).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) BGM_SRC[m[1]] = `__BGMDIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets/bgm', f))).digest('hex').slice(0, 8); } } catch (e) { /* 曲がない */ }
 // 小さくする（11/18 軽量化）：遊ぶ人の index.html には、コメントと行の頭の空白を入れない（src はそのまま読みやすく）
@@ -35,11 +36,11 @@ const BGM_SRC = {}; try { for (const f of readdirSync(join(root, 'assets/bgm')).
 const minCss = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '\n').replace(/\n+/g, '\n').trim();
 const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').replace(/^[ \t]*\/\/.*$/gm, '').replace(/^[ \t]+/gm, '').replace(/\n{2,}/g, '\n');
 // TRIAL：ためしのページ（--artifact）だけ true（こね生地などを日にちを待たずに ためせる）。遊ぶ人の index.html は false
-const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst BGM_SRC = " + JSON.stringify(BGM_SRC) + ";\nconst BGM_BIG = {};\nconst SE_SRC = " + JSON.stringify(SE_SRC) + ";\nconst KOE_SRC = " + JSON.stringify(KOE_SRC) + ";\nconst SND_PACK = __SNDPACK__;\nconst ART_PACK = __ARTPACK__;\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
+const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst BGM_SRC = " + JSON.stringify(BGM_SRC) + ";\nconst BGM_BIG = {};\nconst SE_SRC = " + JSON.stringify(SE_SRC) + ";\nconst KOE_SRC = " + JSON.stringify(KOE_SRC) + ";\nconst SND_PACK = __SNDPACK__;\nconst ART_PACK = __ARTPACK__;\nconst ART_PACK2 = __ARTPACK2__;\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
 // 絵の場所：遊ぶ人の index.html は assets/art/・アーティファクトは絵をページと同じ所に出す（files を短くするため・tools/art_files.mjs）
 const fragOf = (trial, dir = 'assets/art/') => rd('src/shell.html')
   .replace('<!--STYLE-->', () => '<style>\n' + FONTS + minCss(STYLES.map(rd).join('\n')) + '</style>')
-  .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial).replace('__SNDPACK__', 'null').replace('__ARTPACK__', 'null').replaceAll('__ARTDIR__', dir).replaceAll('__BGMDIR__', dir ? 'assets/bgm/' : 'bgm/').replaceAll('__SEDIR__', dir ? 'assets/se/' : 'se/').replaceAll('__KOEDIR__', dir ? 'assets/koe/' : 'koe/') + '\n</script>');
+  .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial).replace('__SNDPACK__', 'null').replace('__ARTPACK__', 'null').replace('__ARTPACK2__', 'null').replaceAll('__ARTDIR__', dir).replaceAll('__BGMDIR__', dir ? 'assets/bgm/' : 'bgm/').replaceAll('__SEDIR__', dir ? 'assets/se/' : 'se/').replaceAll('__KOEDIR__', dir ? 'assets/koe/' : 'koe/') + '\n</script>');
 const frag = fragOf('false');
 
 const cut = frag.indexOf('<div id="app">');
@@ -94,7 +95,14 @@ if (ai > 0 && process.argv[ai + 1]) {
     aitems[k] = [aoff, b.length, f.endsWith('.png') ? 'image/png' : 'image/webp']; aparts.push(b); aoff += b.length;
   }
   const apack = Buffer.concat(aparts); writeFileSync(join(dir, 'art-pack.webp'), apack);
-  const aj = js.replace(/const (BGM_SRC|SE_SRC|KOE_SRC) = \{[^\n]*\};/g, 'const $1 = {};').replace('const BGM_BIG = {};', () => 'const BGM_BIG = ' + JSON.stringify(bigBgm) + ';').replace('__SNDPACK__', () => JSON.stringify({ url: 'snd-pack.mp3?v=' + h8(pack), items })).replace('__ARTPACK__', () => JSON.stringify({ url: 'art-pack.webp?v=' + h8(apack), items: aitems })).replace('__TRIAL__', 'true').replaceAll('__ARTDIR__', '').replaceAll('__BGMDIR__', 'bgm/').replaceAll('__SEDIR__', 'se/').replaceAll('__KOEDIR__', 'koe/').replace(/\.(webp|png|mp3)\?v=[0-9a-f]{8}"/g, '.$1"');
+  /* 朝昼の絵（cust-*・sweet-*・deco-*・fc-* の約190まい）も2つめのまとめ art-pack2.webp に（11/21：ファイルが 512 をこえた）。こちらは起動を待たせずに裏で読む（core.js の artBlobs） */
+  const bparts = [], bitems = {}; let boff = 0;
+  for (const k of Object.keys(ART).filter(k => PACK2.test(k)).sort()) {
+    const f = ART[k].replace('__ARTDIR__', '').replace(/\?v=.*$/, ''), b = readFileSync(join(artDir, f));
+    bitems[k] = [boff, b.length, f.endsWith('.png') ? 'image/png' : 'image/webp']; bparts.push(b); boff += b.length;
+  }
+  const bpack = Buffer.concat(bparts); writeFileSync(join(dir, 'art-pack2.webp'), bpack);
+  const aj = js.replace(/const (BGM_SRC|SE_SRC|KOE_SRC) = \{[^\n]*\};/g, 'const $1 = {};').replace('const BGM_BIG = {};', () => 'const BGM_BIG = ' + JSON.stringify(bigBgm) + ';').replace('__SNDPACK__', () => JSON.stringify({ url: 'snd-pack.mp3?v=' + h8(pack), items })).replace('__ARTPACK__', () => JSON.stringify({ url: 'art-pack.webp?v=' + h8(apack), items: aitems })).replace('__ARTPACK2__', () => JSON.stringify({ url: 'art-pack2.webp?v=' + h8(bpack), items: bitems })).replace('__TRIAL__', 'true').replaceAll('__ARTDIR__', '').replaceAll('__BGMDIR__', 'bgm/').replaceAll('__SEDIR__', 'se/').replaceAll('__KOEDIR__', 'koe/').replace(/\.(webp|png|mp3)\?v=[0-9a-f]{8}"/g, '.$1"');
   writeFileSync(join(dir, 'app.css'), css); writeFileSync(join(dir, 'app.js'), aj);
   const af = rd('src/shell.html').replace('<!--STYLE-->', `<link rel="stylesheet" href="app.css?v=${h8(css)}">`).replace('<!--SCRIPT-->', `<script src="app.js?v=${h8(aj)}"></script>`);
   writeFileSync(out, af); console.log('artifact', af.length, 'app.js', aj.length, 'app.css', css.length);

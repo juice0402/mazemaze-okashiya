@@ -15,6 +15,13 @@ const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduc
 const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
 function artBlobs(done) {
   /* ためしのページ（アーティファクト）は、ui-*・fx-* の絵が1つのファイル art-pack.webp（11/19・1つの版に511ファイルまで）。先に読んで、1まいずつ blob の URL にする */
+  if (typeof ART_PACK2 !== 'undefined' && ART_PACK2 && !artBlobs.pk2) {   // 朝昼の絵のまとめ（11/21）：起動は待たせず裏で読む。届いたら いまの画面を描きなおす
+    artBlobs.pk2 = 1;
+    fetch(ART_PACK2.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
+      for (const [k, [o, l, t]] of Object.entries(ART_PACK2.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
+      if (typeof S !== 'undefined' && S && ['morning', 'day', 'result'].includes(S.phase) && typeof render === 'function' && !(typeof talking === 'function' && talking())) render();
+    }).catch(() => {});
+  }
   if (typeof ART_PACK !== 'undefined' && ART_PACK && !artBlobs.pk) {
     artBlobs.pk = 1; let go = false;
     const next = () => { if (go) return; go = true; artBlobs(done); };

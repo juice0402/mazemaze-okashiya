@@ -13,7 +13,7 @@
 
 ## ビルド
 - `node tools/build.mjs` → `index.html`（CSS は STYLES の順・JS は ORDER の順）（遊ぶ人が開く1ファイル。自動で作る・手で直さない・コミットはする）
-- アーティファクトは1つの版に511ファイルまで（11/19）：音はぜんぶ snd-pack.mp3、ui-*・fx-* の絵は art-pack.webp に1つにまとめて出す（build.mjs が SND_PACK・ART_PACK の表を入れ、sound.js・core.js の artBlobs が blob の URL に切り分ける）。遊ぶ人の index.html は今までどおり1こずつ。art_files.mjs は ui-*・fx-*・音が変わったら art-pack.webp・snd-pack.mp3 を出す
+- アーティファクトは1つの版に511ファイルまで（11/19）：音はぜんぶ snd-pack.mp3（大きい曲は bgm/ のまま）、ui-*・fx-* の絵は art-pack.webp（起動のとき待つ）、cust-*・sweet-*・deco-*・fc-* は art-pack2.webp（11/21・裏で読んで、届いたら朝昼の画面を描きなおす）に まとめて出す（build.mjs が SND_PACK・ART_PACK の表を入れ、sound.js・core.js の artBlobs が blob の URL に切り分ける）。遊ぶ人の index.html は今までどおり1こずつ。art_files.mjs は ui-*・fx-*・音が変わったら art-pack.webp・snd-pack.mp3 を出す
 - `node tools/build.mjs --artifact <フォルダ>/okashi.html` → アーティファクト用も書く（11/19〜 ページは小さな骨・CSS と JS は同じフォルダの app.css・app.js。新しい会話は出しなおす前に今のページをぜんぶ読む決まりで、0.5MB のページは読みきれなかったため）。アーティファクトだけ `TRIAL = true`（こね生地などを日にちを待たずに ためせる。遊ぶ人の index.html は false）
 - JS は下の順に1つの `(() => { ... })()` にまとめる（どのファイルの名前も同じ場所で見える）。**同じ名前の関数・変数を2つのファイルで作らない**（あとのファイルが勝って、前のが消える。11/18 朝の bake と夜の bake がかぶった）。昼のチャットは m・d などで始める名前に
 - index.html では、CSS のコメントと空白・JS の1行まるごとのコメントと行の頭の空白を消す（src はそのまま）。だから src の文字列やテンプレートの中で、行を `//` や `/*` で始めない
