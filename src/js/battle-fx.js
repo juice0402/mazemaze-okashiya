@@ -606,7 +606,8 @@ function nightWarm(build) {
       else if (/^(candy|special|jam|burnt)-/.test(k)) keys.push(k);   // まぜてできる★2・★3の絵
     }
     const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
-    if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy');
+    if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy', 'mon-' + mon.id + '-sad');
+    keys.push('bg-night-' + chef);   // シェフごとの夜の背景（11/21・絵があるときだけ）
     const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
