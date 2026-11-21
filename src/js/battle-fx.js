@@ -211,6 +211,7 @@ function vineHTML() {
 }
 function sproutFx(t, ripe) {
   if (!t) return;
+  if (ripe && typeof koeMore === 'function') koeMore('show', true);   // 熟したわぁ（1ラウンドに1回）
   const u = ART[ripe ? 'fx-sprout-bloom' : 'fx-sprout'] || ART['fx-sprout'], e = document.createElement('i');
   e.className = 'fx-sprout' + (u ? '' : ' code'); e.innerHTML = u ? `<img src="${u}" alt="">` : '<b></b><b></b><b></b><b></b>';
   t.appendChild(e); setTimeout(() => e.remove(), 1500);
@@ -293,6 +294,7 @@ function aquaTempFx(h, was) {
   if (h < was) {
     replay(st, 'aqfreeze'); sparkBurst(c, 22, 'all', 2); aquaShards(c, h === 1 ? 10 : 6);
     if (h === 1) {
+      if (typeof koeMore === 'function') koeMore('show', true);   // 冷えた。
       const b = document.createElement('b'); b.className = 'zudon pikin'; b.textContent = 'ピキーン！';
       b.style.left = c.x + 'px'; b.style.top = r.top + r.height * .3 + 'px'; fxLayer().appendChild(b); setTimeout(() => b.remove(), 900);
     }
@@ -642,7 +644,7 @@ function nightWarm(build) {
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
       ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
-      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef]].filter(Boolean).forEach(n => seLoad('koe', n).catch(() => {}));
+      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef], ...Object.values(KOE_MORE).map(o => o[chef])].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
       seLoad('bgm', 'jg-manzoku').catch(() => {});
     }
     if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく

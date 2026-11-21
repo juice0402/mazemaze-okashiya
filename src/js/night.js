@@ -531,7 +531,7 @@ function finishRound(res) {
   N.score += res.total; N.burnt += res.burnt;
   if (ok) N.met++;
   N.last = { round: N.round, total: res.total, q, ok, tier };
-  if (tier === 2) setTimeout(() => sePlay('manzoku'), T(700));   // まんぞく！のハンコ（11/19 H-034・ハンコが押される .7s に合わせる）
+  if (tier === 2) { setTimeout(() => sePlay('manzoku'), T(700)); setTimeout(() => koeMore('full'), T(1150)); }   // おなか満タン：ハンコのあとに やったね！など（11/21）   // まんぞく！のハンコ（11/19 H-034・ハンコが押される .7s に合わせる）
   N.stage = 'roundEnd'; busy = false; fighting = false; resultAnim = true;
   save(); renderNight();
 }

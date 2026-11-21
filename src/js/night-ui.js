@@ -42,12 +42,28 @@ function thinkArm() {
     thinkAt = S.day + ':' + N.round; koePlay(KOE_THINK[chefArt()]);
   }, THINK_MS);
 }
+/* 場面の声（11/21 しょーくん「大作ができたときの ほのか『できた！』みなも『完成。』わかば『できた』とか色々」・えらぶ質問で4つ）：
+   star3＝★3ができた（カットイン）・full＝ラウンドでおなか満タン・sp＝必殺技の一撃・show＝ビルドの見せ場（焦げた・冷えた・熟した＝1ラウンドに1回）。
+   音のファイルがないときは鳴らさない（koe-irai の kakegoe-night2 から えらんで assets/koe へ） */
+const KOE_MORE = {
+  star3: { honoka: 'hono-dekita', minamo: 'mina-kansei', wakaba: 'waka-dekita' },
+  full: { honoka: 'hono-yattane', minamo: 'mina-joudeki', wakaba: 'waka-iikao' },
+  sp: { honoka: 'hono-ikke', minamo: 'mina-korede', wakaba: 'waka-soree' },
+  show: { honoka: 'hono-achi', minamo: 'mina-hieta', wakaba: 'waka-jukushita' },
+};
+const koeHas = id => !!id && typeof KOE_SRC !== 'undefined' && !!KOE_SRC[id];
+function koeMore(k, perRound) {
+  const id = (KOE_MORE[k] || {})[chefArt()]; if (!koeHas(id)) return false;
+  if (perRound) { const key = S.day + ':' + (N ? N.round : 0) + ':' + k; if (koeMore.last === key) return false; koeMore.last = key; }
+  koePlay(id); return true;
+}
 function atkKoe(pose) {
+  if (pose === 'special' && koeMore('sp')) return;   // 必殺技は「いっけー！」など
   const L = KOE_ATK[chefArt()]; if (!L || (pose === 'atk1' && Math.random() > .34)) return;
   const C = L.filter(n => n !== atkKoe.last), n = C[Math.floor(Math.random() * C.length)];   // すぐ前と同じ声は続けない（飽きにくく）
   atkKoe.last = n; koePlay(n);
 }
-function burntFx(slot) { sePlay('burnt'); replay($('smoke'), 'on'); heroPose('burnt', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
+function burntFx(slot) { sePlay('burnt'); replay($('smoke'), 'on'); heroPose('burnt', 1100); koeMore('show', true); if (slot) floatAt(slot, '焦げた', 'koge'); }
 function floatAt(el, text, cls = '') {
   if (!el) return;
   const f = document.createElement('span');
@@ -303,6 +319,7 @@ const fmtMul = v => Math.round(v * 100) / 100;
 /* ★3 のカットイン：ななめの金の帯に、ほのかが左から・カードが右から・名前を大きく。かかる時間（ms）を返す */
 function cutIn(cid, sub) {
   const d = cardDef(cid), h = heroPick('battle'), ms = T(1500);
+  setTimeout(() => koeMore('star3'), T(260));   // ★3ができた！（できた！・完成。・できた）
   const el = document.createElement('div');
   el.className = 'cutin'; el.style.setProperty('--cd', ms + 'ms');
   const band = ART['fx-cutin-' + chefArt()];   // 描き下ろしの帯（11/19・シェフごと：炎・水・若葉）

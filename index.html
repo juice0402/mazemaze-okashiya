@@ -4470,7 +4470,7 @@ if (res.fert) N.fert = true; if (res.basket) N.basket = (N.basket || 0) + res.ba
 N.score += res.total; N.burnt += res.burnt;
 if (ok) N.met++;
 N.last = { round: N.round, total: res.total, q, ok, tier };
-if (tier === 2) setTimeout(() => sePlay('manzoku'), T(700));   // まんぞく！のハンコ（11/19 H-034・ハンコが押される .7s に合わせる）
+if (tier === 2) { setTimeout(() => sePlay('manzoku'), T(700)); setTimeout(() => koeMore('full'), T(1150)); }   // おなか満タン：ハンコのあとに やったね！など（11/21）   // まんぞく！のハンコ（11/19 H-034・ハンコが押される .7s に合わせる）
 N.stage = 'roundEnd'; busy = false; fighting = false; resultAnim = true;
 save(); renderNight();
 }
@@ -4564,12 +4564,25 @@ if (busy || talking() || N.view || document.querySelector('.night.dragging')) { 
 thinkAt = S.day + ':' + N.round; koePlay(KOE_THINK[chefArt()]);
 }, THINK_MS);
 }
+const KOE_MORE = {
+star3: { honoka: 'hono-dekita', minamo: 'mina-kansei', wakaba: 'waka-dekita' },
+full: { honoka: 'hono-yattane', minamo: 'mina-joudeki', wakaba: 'waka-iikao' },
+sp: { honoka: 'hono-ikke', minamo: 'mina-korede', wakaba: 'waka-soree' },
+show: { honoka: 'hono-achi', minamo: 'mina-hieta', wakaba: 'waka-jukushita' },
+};
+const koeHas = id => !!id && typeof KOE_SRC !== 'undefined' && !!KOE_SRC[id];
+function koeMore(k, perRound) {
+const id = (KOE_MORE[k] || {})[chefArt()]; if (!koeHas(id)) return false;
+if (perRound) { const key = S.day + ':' + (N ? N.round : 0) + ':' + k; if (koeMore.last === key) return false; koeMore.last = key; }
+koePlay(id); return true;
+}
 function atkKoe(pose) {
+if (pose === 'special' && koeMore('sp')) return;   // 必殺技は「いっけー！」など
 const L = KOE_ATK[chefArt()]; if (!L || (pose === 'atk1' && Math.random() > .34)) return;
 const C = L.filter(n => n !== atkKoe.last), n = C[Math.floor(Math.random() * C.length)];   // すぐ前と同じ声は続けない（飽きにくく）
 atkKoe.last = n; koePlay(n);
 }
-function burntFx(slot) { sePlay('burnt'); replay($('smoke'), 'on'); heroPose('burnt', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
+function burntFx(slot) { sePlay('burnt'); replay($('smoke'), 'on'); heroPose('burnt', 1100); koeMore('show', true); if (slot) floatAt(slot, '焦げた', 'koge'); }
 function floatAt(el, text, cls = '') {
 if (!el) return;
 const f = document.createElement('span');
@@ -4797,6 +4810,7 @@ const cookStage = c => (c || 0) >= COOK_MAX ? 3 : (c || 0) >= 6 ? 2 : (c || 0) >
 const fmtMul = v => Math.round(v * 100) / 100;
 function cutIn(cid, sub) {
 const d = cardDef(cid), h = heroPick('battle'), ms = T(1500);
+setTimeout(() => koeMore('star3'), T(260));   // ★3ができた！（できた！・完成。・できた）
 const el = document.createElement('div');
 el.className = 'cutin'; el.style.setProperty('--cd', ms + 'ms');
 const band = ART['fx-cutin-' + chefArt()];   // 描き下ろしの帯（11/19・シェフごと：炎・水・若葉）
@@ -5274,6 +5288,7 @@ return (vineCache = `<span class="tvine" aria-hidden="true">${v}</span>`);
 }
 function sproutFx(t, ripe) {
 if (!t) return;
+if (ripe && typeof koeMore === 'function') koeMore('show', true);   // 熟したわぁ（1ラウンドに1回）
 const u = ART[ripe ? 'fx-sprout-bloom' : 'fx-sprout'] || ART['fx-sprout'], e = document.createElement('i');
 e.className = 'fx-sprout' + (u ? '' : ' code'); e.innerHTML = u ? `<img src="${u}" alt="">` : '<b></b><b></b><b></b><b></b>';
 t.appendChild(e); setTimeout(() => e.remove(), 1500);
@@ -5345,6 +5360,7 @@ const r = st.getBoundingClientRect(), c = { x: r.left + r.width / 2, y: r.top + 
 if (h < was) {
 replay(st, 'aqfreeze'); sparkBurst(c, 22, 'all', 2); aquaShards(c, h === 1 ? 10 : 6);
 if (h === 1) {
+if (typeof koeMore === 'function') koeMore('show', true);   // 冷えた。
 const b = document.createElement('b'); b.className = 'zudon pikin'; b.textContent = 'ピキーン！';
 b.style.left = c.x + 'px'; b.style.top = r.top + r.height * .3 + 'px'; fxLayer().appendChild(b); setTimeout(() => b.remove(), 900);
 }
@@ -5654,7 +5670,7 @@ const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map
 nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
 if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
 ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
-[...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef]].filter(Boolean).forEach(n => seLoad('koe', n).catch(() => {}));
+[...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef], ...Object.values(KOE_MORE).map(o => o[chef])].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
 seLoad('bgm', 'jg-manzoku').catch(() => {});
 }
 if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
