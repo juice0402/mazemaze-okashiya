@@ -1,6 +1,6 @@
 """見た目の確かめ：index.html をスマホの大きさで開いて、えらんだ場面を撮り、横に並べた1まいにする（トークンの節約：撮るのは1まいだけ）
 使い方：python3 -I tools/shot.py <出す PNG> [場面…] [--h 高さ]
-  場面：title・prologue・evening・shop・board・battle・panel・end・morning・day・result、または js:<ゲームの中で動かす JS>
+  場面：title・prologue・evening・shop・board・battle・panel・end・morning・day・result、または js:<ゲームの中で動かす JS>（js@<ミリ秒>:… でまつ時間を変える）
   例：python3 -I tools/shot.py /tmp/a.png shop board panel --h 667
 ふつうは index.html を作りなおしてから（node tools/build.mjs）。Google Fonts は読まないので、文字は代わりの書体になる
 """
@@ -49,7 +49,7 @@ with sync_playwright() as p:
     page.wait_for_function('typeof window.__ev === "function"', polling=100)
     page.wait_for_timeout(600)
     for st in steps:
-        code, wait = (st[3:], 900) if st.startswith('js:') else PRE[st]
+        code, wait = (st[3:], 900) if st.startswith('js:') else (st.split(':', 1)[1], int(st[3:st.index(':')])) if st.startswith('js@') else PRE[st]   # js@5000:… ＝5秒まって撮る（11/21 夜）
         try: page.evaluate(f'() => window.__ev({json.dumps("(() => { " + code + "; return 0; })()")})')
         except Exception as e: errs.append(f'{st}: {str(e)[:200]}')
         page.wait_for_timeout(wait)

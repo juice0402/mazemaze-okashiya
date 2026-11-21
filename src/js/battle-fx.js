@@ -619,6 +619,7 @@ function petitFx(e, run, q) {
   const a = spot(e.i), b = spot($('mon'));
   const land = () => {
     monReact('hit'); if (b) { dmgNum(e.dmg, '', b); sparkBurst({ x: b.x, y: b.y, w: 12 }, 8, 'all', .8); }
+    if (e.chain != null && typeof setChain === 'function') setChain(e.chain);   // 右上の れんさ（11/21 夜）
     if (e.chain >= 2) chainPop(e.chain);
     scoreTick(e.dmg, run, q);
   };

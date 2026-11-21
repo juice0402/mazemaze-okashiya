@@ -683,8 +683,6 @@ background:linear-gradient(rgba(255,236,200,.55),rgba(255,236,200,0) 35%) paddin
 .ci-fx .tg{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-koge) 49% 13% 49% 13% fill/11px 12px stretch;padding:0 2px;color:#fff1d8}
 .ci-fx .tg.pos{background:none;box-shadow:none;border-image-source:var(--ui-chip-gold);border-image-slice:49% 18% 49% 18% fill;color:#3a1c08}
 .kone-n.kone-n{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;padding:2px 12px;color:var(--milk)}
-.kone-n.kone-n small{color:var(--milk-soft)}
-.kone-n.kone-n b{color:var(--gold);text-shadow:0 1px 0 #2a170c}
 .buff.buff{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 7px 4px 13px;border-image:var(--ui-buff-gold) 49% 11% 49% 20% fill/9px 9px 9px 17px stretch;padding:0 1px;color:#3a1c08;filter:drop-shadow(0 0 4px var(--bc))}
 .buff.b-next,.buff.b-clead{border-image-source:var(--ui-buff-pink);color:#5a1028}
 .buff.b-again{border-image-source:var(--ui-buff-ember);color:#3a1204}
@@ -779,7 +777,7 @@ transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
 .night .stage .ov-heat .heat-label{min-width:0;white-space:nowrap;font-size:10px;letter-spacing:-.02em}
 .night .stage .ov-heat .heat-bar{width:80px}
 .night .stage .ov-heat .heat-bar:last-child{margin-right:5px}
-.night .stage .ov-heat.two .heat-label{display:none}
+.night .stage .ov-heat.only{right:10px}
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 .night .ov-top>span{max-width:calc(50% - 32px);white-space:nowrap}
 .night .ov-top>span:first-child{line-height:1.25}
@@ -957,9 +955,8 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .pk-text{font-size:11.5px;line-height:1.4;color:#4a2814}
 .pk-on{position:absolute;right:-10px;top:-14px;padding:2px 8px;border-radius:999px;font-style:normal;font-size:11px;font-weight:900;color:#fff;background:#d8503a;box-shadow:0 0 0 2px #fff4e0,0 2px 0 rgba(0,0,0,.35)}
 .pk-trial{flex:none;margin:0;text-align:center;font-size:10.5px;color:#fff0d8;text-shadow:0 1px 0 #2a170c}
-.kone-n{flex:none;display:inline-flex;align-items:baseline;gap:3px;padding:1px 9px;border-radius:999px;background:linear-gradient(#fff6e2,#f0d9b0);box-shadow:0 0 0 1.5px #7a4e1c,0 2px 0 rgba(0,0,0,.35);color:#5a3418;font-weight:900;text-shadow:none}
-.kone-n small{font-size:10px;color:#7a5a4a}
-.kone-n b{font-family:var(--disp);font-weight:400;font-size:15px;color:#c2541c;font-variant-numeric:tabular-nums}
+.kone-n{flex:none;display:inline-flex;justify-content:center;align-items:center;gap:2px;font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;white-space:nowrap;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
+.kone-n b{font:inherit}
 .kone-n.bump b{display:inline-block;animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
 .night .stage .chef[data-pose]:not([data-pose=stance]){animation:none}
 .chef[data-pose=charge]{translate:-3% 0;scale:.96 1.03}
@@ -1252,7 +1249,7 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov:not(.many) .sh-cards{align-content:flex-start;padding-top:42px}
 .night .shopov:not(.many) .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 2px) / 1.68),150px)}
 .night .shopov:not(.many):has(.sh-top .kone-n) .sh-cards{padding-top:60px}
-.sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
+.sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span,.night .stage .ov-heat .kone-n{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
 .sh-top .sh-roll.sh-roll.pill{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;
 font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;padding:0 9px;gap:5px}
 .sh-top .sh-coin i,.sh-price i,.sh-roll .cn{width:14px;height:14px;flex:none}
@@ -1287,8 +1284,8 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .fwall.leaf .fw-art.front{animation:fwgrow calc(var(--k) * 1.15s) calc(var(--k) * .12s) cubic-bezier(.2,.9,.3,1) both}
 @keyframes fwgrow{0%{transform:translateY(100%) scaleY(.5)}24%{transform:translateY(0) scaleY(1.06)}38%{transform:translateY(0) scaleY(.97) skewX(-1.5deg)}52%{transform:translateY(0) scaleY(1.02) skewX(1.5deg)}72%{transform:translateY(2%) scaleY(1);opacity:1}100%{transform:translateY(40%);opacity:0}}
 .shcard.poor::before,.shcard.nomix::before,.tslot.nomix::before{content:"";position:absolute;inset:0;z-index:4;border-radius:8%/5.7%;background:rgba(16,6,0,.46);pointer-events:none}
-.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:14px;padding-right:14px}
-@media (max-width:375px){.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:12px;padding-right:12px}}
+.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span,.night .kone-n.kone-n{padding-left:14px;padding-right:14px}
+@media (max-width:375px){.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span,.night .kone-n.kone-n{padding-left:12px;padding-right:12px}}
 .night .sh-top{left:10px;right:10px}.night .sh-top .sh-r{gap:4px}.night .sh-top .sh-coin.sh-coin{gap:4px}
 .night .stage .ov-top{left:10px;right:10px}
 .sh-top .sh-coin i{translate:0 .75px}
@@ -2225,17 +2222,16 @@ const GROW = [0, 0, 1, 2, 3];
 const SIZE_MAX = 9;
 const SOFT_MUL = 0.3;   // 固まる前（あたたか・とろとろ）の大作は味パワー3割（11/19 しょーくん：ひえひえで固めると本気）
 const sizeMul = (c, fx) => c >= SIZE_MAX ? fx.done || 5 : 1 + c / 3;   // 完成は ほのかのサイコーと同じ×5（11/19 ボットで火力クッキーに近づけた・仮）
-const COLD_MUL = [1, 1.5, 1.25, 1, 1];
 const PETIT_DMG = 10;
 const FIELDS = {
 teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['火力が 中火より下がらない'], long: [['', '{火力}が 中火より下がらない']] },
 ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['火力が 強火より下がらない', 'サイコーの生地 ×1.5'], long: [['', '{火力}が 強火より下がらない'], ['', '{サイコー}の生地×1.5']] },
-menbo:     { name: '力のめん棒', start: 3, kone: 2, alt: 'field-ishigama', chips: ['火力が 強火より下がらない', 'こねると 2回分'], long: [['', '{火力}が 強火より下がらない'], ['', '1回{こね}ると 2回分']] },
-karumenbo: { name: '軽量めん棒', start: 2, tane: 1, alt: 'field-teppan', chips: ['火力が 中火より下がらない', 'こねると パン種+1こ'], long: [['', '{火力}が 中火より下がらない'], ['', '{こね}ると {パン種}が1こ多く生まれる']] },
+menbo:     { name: '力のめん棒', kone: 2, alt: 'field-ishigama', chips: ['こねると 2回分'], long: [['', '1回{こね}ると 2回分']] },   // 11/21 夜 こね生地は火力なし
+karumenbo: { name: '軽量めん棒', tane: 1, alt: 'field-teppan', chips: ['こねると パン種+1こ'], long: [['', '{こね}ると {パン種}が1こ多く生まれる']] },
 oonabe: { name: '飴の大鍋', start: 4, chips: ['とろとろにする'], long: [['', '飴の{温度}が とろとろ になる']] },
 kobo:   { name: 'ガラスの工房', start: 3, slow: 1, chips: ['あたたかにする', '冷めにくい'], long: [['', '飴の{温度}が あたたか になる'], ['', '2ラウンドに1回しか冷めない']] },
-dairiseki: { name: '大理石の台', start: 2, chain0: 1, chips: ['ひんやりにする', 'れんさが 1から始まる'], long: [['', '飴の{温度}が ひんやり になる'], ['', '{れんさ}が1から始まる']] },
-yatai:     { name: 'キャンディの屋台', start: 2, petit: 1, chips: ['ひんやりにする', '小さな飴 +1こ'], long: [['', '飴の{温度}が ひんやり になる'], ['', '小さな飴を1こ多く飛ばす']] },
+dairiseki: { name: '大理石の台', chain0: 1, chips: ['れんさが 1から始まる'], long: [['', '{れんさ}が1から始まる']] },   // 11/21 夜 キャンディは温度なし
+yatai:     { name: 'キャンディの屋台', petit: 1, chips: ['小さな飴 +1こ'], long: [['', '小さな飴を1こ多く飛ばす']] },
 nobi:    { name: 'のびのび肥料', slowGrow: 1, fruitMul: 2, ripeMul: 3, alt: 'field-hatake', chips: ['実が育つのは 2回に1回', '熟した実の 効果×3'], long: [['', '{くだもの}が育つのは 2ラウンドに1回'], ['', '{くだもの}の効果×2・{熟した実}は×3']] },
 suku:    { name: 'すくすく肥料', growAdd: 1, alt: 'card-hiryo', chips: ['実が 1ラウンド はやく熟す'], long: [['', '{くだもの}が1ラウンドに2段育つ']] },
 decodai: { name: 'デコレーション台', decoHits: [5, 10], decoRate: 0.1, alt: 'field-terrace', chips: ['ケーキが デコ5連撃', '実のケーキは 10連撃'], long: [['', 'ケーキの発動で デコの5連撃（実のケーキは10連撃）']] },
@@ -2256,7 +2252,8 @@ common: ['m:apple0', 'm:berry0', 'm:peach0', 'm:mikan0', 'm:grape0', 't:joro', '
 },
 };
 function chefNow() { try { return CHEFS[BUILDS[(N && N.build) || 'cookie'].chef] || CHEFS.honoka; } catch (e) { return CHEFS.honoka; } }
-const heatOf = () => chefNow().heat;
+const HEAT_B = {};
+const heatOf = () => { let b = 'cookie'; try { b = (N && N.build) || 'cookie'; } catch (e) {} const B = BUILDS[b]; if (!B || !B.heat) return chefNow().heat; return HEAT_B[b] || (HEAT_B[b] = Object.assign({}, chefNow().heat, { down: 0, cool: 0, field: 0 }, B.heat)); };
 const BUILDS = {
 cookie: {
 chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text: '鉄板で生地を焼いて、サイコーをそろえる。アンカーで倍々',
@@ -2264,15 +2261,17 @@ bal: [1.14, 1.111], doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 
 },
 kone: {
 chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
-bal: [0.34, 1.268], r1: 700, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
+trait: 'こね', heat: { off: 1, start: 0 }, drop: ['t:maki', 't:hiokoshi', 't:mizu', 't:yakigote'],   // 火力なし（パンは焼かない・焦げない）
+bal: [0.27, 1.37], r1: 700, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
 },
 taisaku: {
 chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて まぜて育て、冷えたら本気。★3を冷やしたら最強',
 bal: [2.97, 1.123], r1: 180, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
-chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。冷えるほど強い',
-bal: [1.15, 0.964], r1: 270, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
+chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
+trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'],   // 温度なし（見た目は ひんやり のまま変わらない）
+bal: [1.20, 0.915], r1: 370, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
 },
 fruitcake: {
 chef: 'wakaba', name: 'くだものケーキ', from: 11, mate: 'wakaba', pic: 'wakaba-battle', text: 'くだものを育てて、熟した実を★2のケーキにのせると★3',
@@ -2363,7 +2362,7 @@ else if (k === 'k') { const n = +id; d = { kind: 'k', cat: 'burnt', star: n, nam
 else if (k === 'o') { const r = recipeOf(id); d = { kind: 'o', cat: foodCat(r.mats), star: 2, name: r.name, fx: pairFx(r), mats: r.mats, cost: 6 }; }
 else if (k === 's') {
 const [r1, r2] = id.split('|').map(recipeOf), mats = [...r1.mats, ...r2.mats], cat = foodCat(mats);
-const fx = mergeFx(pairFx(r1), pairFx(r2)); if (cat === 'dough') fx.noburn = 1;
+const fx = mergeFx(pairFx(r1), pairFx(r2)); if (cat === 'dough' && !mats.some(m => MATS[m].pan)) fx.noburn = 1;   // パンは焼かないので「焦げない」もつけない（11/21 夜）
 d = { kind: 's', cat, star: 3, name: cat === 'ame' || cat === 'candy' || cat === 'jam' ? ameSpecialName(r1, r2) : specialName(r1, r2), fx, mats, keys: [r1.key, r2.key], cost: 0 };
 }
 else if (k === 'u') { const [a, b] = id.split('+'); d = { kind: 't', cat: 'tool', role: TOOLS[a].role, star: 2, name: toolSetName(a, b), fx: mergeFx(TOOLS[a].fx, TOOLS[b].fx), mats: [], parts: [a, b], cost: 0 }; }
@@ -2373,11 +2372,11 @@ d.role = d.role || ROLE[d.cat] || '';
 d.food = d.cat === 'dough' || d.cat === 'mat';
 d.dough = d.cat === 'dough';
 d.grow = d.cat === 'ame' && !!d.fx.taisaku;                        // みなもの大作（バトル開始時に、飴の温度で大きさが育つ）
-d.candy = d.cat === 'candy';                                      // みなものキャンディ（れんさ・冷えるほど強い）
+d.candy = d.cat === 'candy';                                      // みなものキャンディ（れんさ）
 d.fruit = d.cat === 'fruit';                                      // わかばのくだもの（ラウンドの終わりに育つ・stage＝0 花・1 青い実・2 熟した実）
 if (d.fruit) d.stage = MATS[d.mats[0]].stage;
-d.meter = d.dough || d.grow;                                       // 調理台で数字を持つ（生地＝焼き加減・大作＝大きさ。どちらも board の cook）
-d.pan = d.dough && d.mats.some(m => MATS[m].pan);                 // パン生地（パン生地どうしをまぜると「こねる」）
+d.pan = d.dough && d.mats.some(m => MATS[m].pan);                 // パン生地（パン生地どうしをまぜると「こねる」・11/21 夜〜 焼かない）
+d.meter = (d.dough && !d.pan) || d.grow;                          // 調理台で数字を持つ（生地＝焼き加減・大作＝大きさ。どちらも board の cook）
 d.tane = d.mats.length > 0 && d.mats.every(m => MATS[m].tane);    // パン種だけでできたカード（うっても0コイン）
 d.short = d.short || d.name;
 DEFS.set(cid, d);
@@ -2439,7 +2438,7 @@ if (fx.fert) p.push('実ぜんぶ もう1段');
 if (fx.scare) p.push(`右2枚の実×${fx.scare}`);
 if (fx.basket) p.push(`次に実が${fx.basket}枚`);
 if (fx.soon) p.push('育つと右がもう1回');
-if (fx.heat) p.push(`${heatOf().word}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
+if (fx.heat && !heatOf().off) p.push(`${heatOf().word}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
 if (fx.call) p.push(binNight() ? '熟した実を呼ぶ' : 'フィールドを呼ぶ');
 if (fx.bitter && !fx.noburn) p.push('焦げると★2');
 if (fx.spd) p.push(fx.taisaku ? (fx.spd > 0 ? '育ちやすい' : '育ちにくい') : fx.spd > 0 ? '焼けやすい' : '焼けにくい');
@@ -2499,11 +2498,11 @@ if (fx.fert) p.push(['', 'ラウンドの終わりに {実}がぜんぶ 1段育�
 if (fx.scare) p.push(['', `右2枚の {実}の効果×${fx.scare}`]);
 if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚`]);
 if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
-if (fx.heat) { const H = heatOf(); if (!H.none) p.push(['', `${H.of ? H.of + ' ' : ''}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }   // ほのかは「火力+1段」（11/21：火力は鉄板がなくても上がる＝「鉄板の」をつけない）
+if (fx.heat) { const H = heatOf(); if (!H.none && !H.off) p.push(['', `${H.of ? H.of + ' ' : ''}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }   // ほのかは「火力+1段」（11/21：火力は鉄板がなくても上がる＝「鉄板の」をつけない）
 if (fx.call) p.push(['', binNight() ? '次のショップに {熟した実}が出る' : '次のショップに フィールドが出る']);
 if (fx.bitter && !fx.noburn) p.push(['', '焦げると ★2の 焦げクッキーになる']);
 if (fx.spd) p.push(['', fx.taisaku ? `大きくなる量 ${fx.spd > 0 ? '+' : '−'}${Math.abs(fx.spd)}` : `{焼き加減}が ${Math.abs(fx.spd)}段${fx.spd > 0 ? '多く' : '少なく'}進む`]);
-if (fx.candy && !p.length) p.push(['', '{れんさ}+1（冷えるほど 強い）']);   // キャンディのきまり（れんさ・冷えるほど強い）は、ほかの効果がないカードだけに書く（ことばの説明にもある）
+if (fx.candy && !p.length) p.push(['', '{れんさ}+1']);   // キャンディのきまり（れんさ）は、ほかの効果がないカードだけに書く（ことばの説明にもある）
 return p;
 }
 const KW = {   // 11/19 しょーくん「長くても2行」：説明の吹き出しで2行（40字くらい）まで
@@ -2528,7 +2527,7 @@ const KW = {   // 11/19 しょーくん「長くても2行」：説明の吹き�
 大きさ: '大作の育ちぐあい（0〜9）。9で完成',
 完成: '大きさ9の大作。冷えたら本気（それまで×0.3）',
 固まる: '飴が冷えて、大作が本気になること（それまで×0.3）',
-れんさ: 'キャンディが続けて発動した数（冷えるほど強い）。素材や道具で0にもどる',
+れんさ: 'キャンディが続けて発動した数。素材や道具で0にもどる',
 ちいさなキャンディ: '小さな飴（1こ味パワー10）。れんさに数える',
 くだもの: 'わかばの素材。ラウンドの終わりに 花→青い実→熟した実 と育つ',
 実: 'わかばの くだもの。ラウンドの終わりに 花→青い実→熟した実 と育つ',
@@ -4125,7 +4124,7 @@ return true;
 function poolList() {
 const B = curBuild(), C = CHEFS[B.chef], L = [];
 for (const cid of B.doughs) L.push([cid, 3]);
-for (const cid of C.common) L.push([cid, 2]);
+for (const cid of C.common) if (!(B.drop || []).includes(cid)) L.push([cid, 2]);   // drop＝そのビルドで使わない共通のカード（11/21 夜 こね生地の火力・キャンディの温度）
 for (const id of B.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
 const dr = MONSTERS[N.mon].drop;
 if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
@@ -4176,7 +4175,7 @@ if (ng) return toast(ng);
 if (d.cat === 'field') {
 if (fixedField()) return toast('今夜の場は大きなびん（入れかえられない）');
 if (N.field) toast('フィールドを入れかえた');
-N.field = cid.slice(2); if (FIELDS[N.field].start) N.heat = heatOf().field ? Math.max(N.heat, FIELDS[N.field].start) : FIELDS[N.field].start;   // ほのかは鉄板・石窯の火より弱ければ その火に（11/20）・みなもは飴の温度がそれに・わかばの肥料は変えない
+N.field = cid.slice(2); if (FIELDS[N.field].start && !heatOf().off) N.heat = heatOf().field ? Math.max(N.heat, FIELDS[N.field].start) : FIELDS[N.field].start;   // ほのかは鉄板・石窯の火より弱ければ その火に（11/20）・みなもは飴の温度がそれに・わかばの肥料は変えない
 } else {
 const at = to && to.where === 'board' ? to.i : freeSlot();
 if (at < 0) return toast(BOARD_FULL);
@@ -4265,7 +4264,7 @@ function mixNg(P) { return P.to.i < 0 ? BOARD_FULL : P.cold ? AME_COLD : payNg(P
 const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && mixable(cardDef(cid), cardDef(x.cid)) && !((cardDef(cid).grow || cardDef(x.cid).grow) && N.heat < AME_SOFT));   // 冷えているときの大作は「まぜ」を出さない（11/19）
 function mixRule(d) {
 if (d.cat === 'field') return fixedField() && d.cid === 'b:' + N.field ? 'くだものを入れて、3つでジャム' : 'フィールドは まぜられない';
-if (d.star >= 3) return d.cat === 'dough' ? '★3は完成。焦げない・もう まぜられない' : '★3は完成。もう まぜられない';
+if (d.star >= 3) return d.cat === 'dough' && !d.pan ? '★3は完成。焦げない・もう まぜられない' : '★3は完成。もう まぜられない';
 if (d.grow && N.heat < AME_SOFT) return AME_COLD;
 if (d.fruit) return binNight() ? '場の大きなびんへ（3つでジャム）' : d.stage === RIPE ? '★2のケーキにはなすと★3' : 'まぜずに育てる（熟すと★2のケーキへ）';   // わかば（11/19）
 const C = chefNow(), main = ['ame', 'candy', 'cake', 'jam'].includes(d.cat) ? CAT_NAME[d.cat] : candyNight() ? 'キャンディ' : binNight() ? 'ジャム' : C === CHEFS.minamo ? '飴細工' : C === CHEFS.wakaba ? 'ケーキ' : '生地';
@@ -4359,7 +4358,7 @@ if ((F || Hc.field) && heat > 0) {
 const list = [], safeAll = stop();
 const stopAt = board.findIndex(c => c && cardDef(c.cid).fx.stop);
 board.forEach((c, i) => {
-if (!c) return; const d = cardDef(c.cid); if (!d.dough) return;
+if (!c) return; const d = cardDef(c.cid); if (!d.dough || d.pan) return;   // パンは焼かない（11/21 夜）
 const r = cookStep(c, heat + (d.fx.spd || 0), safeAll || d.fx.noburn);
 burn(i, r); list.push({ i, ...r });
 });
@@ -4422,8 +4421,8 @@ e.out.push({ k: 'rally', to: idx.filter(j => j > i && dmgAt(j)), v: fx.doneRally
 }
 if (fx.nb) { const to = [i + 1, i + 2].filter(j => j < SLOTS && dmgAt(j)); if (to.length) e.out.push({ k: 'nb', to, v: fx.nb * sm }); }   // 右2枚の味パワー+（11/19 しょーくん・前は両どなり）
 if (fx.koneUp) { e.kone = [kone, kone + fx.koneUp]; kone += fx.koneUp; }
-if (fx.heat) { const h0 = heat; heatUsed = true; heat = Math.max(floor, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
-if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
+if (fx.heat && !Hc.off) { const h0 = heat; heatUsed = true; heat = Math.max(floor, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
+if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough && !cardDef(board[i + 1].cid).pan) {
 const o = board[i + 1], r = cookStep(o, fx.sear, stop() || cardDef(o.cid).fx.noburn);
 burn(i + 1, r); e.sear = { i: i + 1, ...r }; e.out.push({ k: 'sear', to: [i + 1] });
 }
@@ -4444,7 +4443,7 @@ if (fx.perChain && chain) { const v = fx.perChain * sm * chain; base += v; parts
 if (c.plus) { base += c.plus; parts.push(['+', c.plus, '育った実']); }   // もりのシフォン
 if (fx.binNow && N.bin.length) { const v = fx.binNow * sm * N.bin.length; base += v; parts.push(['+', v, `びんの実${N.bin.length}`]); }
 if (fx.perJam && N.jamN) { const v = fx.perJam * sm * N.jamN; base += v; parts.push(['+', v, `ジャム${N.jamN}`]); }
-if (d.dough) {
+if (d.dough && !d.pan) {
 const cm = cookMul(c.cook || 0); base *= cm; if (cm !== 1) parts.push(['×', cm, '焼き加減']);
 if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
 }
@@ -4452,8 +4451,7 @@ if (d.grow) {
 const gm = sizeMul(c.cook || 0, fx); base *= gm; if (gm !== 1) parts.push(['×', gm, c.cook >= SIZE_MAX ? '完成' : '大きさ']);
 if (!c.ice) { base *= SOFT_MUL; parts.push(['×', SOFT_MUL, 'やわらかい']); }   // 固まる前は3割（11/19 しょーくん「凍らせないと効果を発揮できない」・えらぶ質問で3割）
 }
-if (d.candy) {   // キャンディは冷えるほど強い・いちばんドロップ
-const cm = COLD_MUL[heat] || 1; if (cm !== 1) { base *= cm; parts.push(['×', cm, heatOf().names[heat]]); }
+if (d.candy) {   // キャンディのいちばんドロップ（11/21 夜〜 温度で強さは変わらない）
 if (candyMul !== 1) { base *= candyMul; parts.push(['×', candyMul, 'いちばん', [first]]); }
 }
 if (d.cat === 'cake' && fx.tartFruit && (isFruit(i - 1) || isFruit(i + 1))) { base *= fx.tartFruit; parts.push(['×', fx.tartFruit, 'となりの実']); }   // わかば①：タルト（となりが実）
@@ -4486,9 +4484,9 @@ e.base = fx.dmg * sm; e.parts = parts;
 }
 if (fx.next) { pend *= fx.next; e.next = fx.next; pendEv.push(e); }
 total += dmg;
-const pet = [];   // はじけキャンディ：ちいさなキャンディが1こずつ飛ぶ（れんさ+1ずつ・冷えるほど強い・いちばんドロップも効く）
+const pet = [];   // はじけキャンディ：ちいさなキャンディが1こずつ飛ぶ（れんさ+1ずつ・いちばんドロップも効く）
 if (fx.petit) {
-const n = fx.petit + petitN, pm = (COLD_MUL[heat] || 1) * candyMul;
+const n = fx.petit + petitN, pm = candyMul;
 for (let k = 0; k < n; k++) { chain++; const pd = Math.min(DMG_CAP, Math.floor(PETIT_DMG * sm * pm * HM)); total += pd; pet.push({ type: 'petit', i, cid: c.cid, k, n, dmg: pd, chain }); }
 }
 if (d.cat === 'cake' && dmg > 0 && F && F.decoHits) {   // デコレーション台：そのケーキの1割が5連撃（熟した実の★3は10連撃）・11/19 しょーくん
@@ -4517,7 +4515,7 @@ if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${
 const res = resolveRound(), q = quota(N.round, S.day);
 busy = true; unsel(); hideKw(); tipEv('bake'); tipClear();
 shopOut(() => {
-fighting = true; renderNight();
+fighting = true; chainNow = (N.field && FIELDS[N.field].chain0) || 0; renderNight();   // 右上の れんさ はラウンドのはじめから数える
 battleIntro(q, () => {
 let k = 0, run = 0;
 const step = () => {
@@ -4601,14 +4599,16 @@ save(); renderNight();
 
 const ORD = ['①', '②', '③', '④', '⑤'];
 function setHeat(h) {
-const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
+const bar = $('heatBar'), lab = $('heatLabel'), st = $('stage'); if (!st) return;
 const H = heatOf();   // ほのかの火力も みなもの飴の温度も、場がなくても効く（11/20 ほのかも）
 if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
+if (bar && !H.off) {   // こね生地・ちいさなキャンディ（11/21 夜）はメーターなし（右上は こね・れんさ の数だけ）
 [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
 lab.textContent = H.names[h];   // ほのかの0は「火なし」（字は灰色の h0）
 lab.className = 'heat-label h' + h;
-if (H.cool) { const st = $('stage'); if (st) st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる
-const st = $('stage'); if (st) st.dataset.z = h;
+}
+if (chefArt() === 'minamo') { st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる（キャンディの夜は ひんやり のまま）
+st.dataset.z = h;
 heatFx(h);   // 調理台の下の炎（battle-fx.js・火なしのときは出ない）
 }
 function updTile(i, cid, cook, ice) {
@@ -4659,7 +4659,10 @@ el.appendChild(f); setTimeout(() => f.remove(), 1000);
 }
 function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 const koneOn = () => N && N.build === 'kone';
-const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}"><small>こね</small><b>${N.kone}</b></span>` : '';
+const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}">こね <b>${N.kone}</b></span>` : '';   // 字はラウンドの札と同じ（11/21 夜 しょーくん「ラウンド表記と同じく文字の大きさや中央揃えも」）
+let chainNow = 0;
+const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
+function setChain(n) { if (n === chainNow) return; chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
 function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
 const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
@@ -4667,7 +4670,7 @@ setKone(N.kone); heroFor('joy', 900);
 document.querySelectorAll('.tslot .pc.born').forEach(c => floatAt(c.parentNode, 'パン種', 'best'));
 if (!born) toast('調理台がいっぱいで、パン種は生まれなかった');
 }
-const jamBadge = () => binNight() ? `<span class="kone-n jam-n" aria-label="作ったジャム ${N.jamN}"><small>ジャム</small><b>${N.jamN}</b></span>` : '';
+const jamBadge = () => binNight() ? `<span class="kone-n jam-n" aria-label="作ったジャム ${N.jamN}">ジャム <b>${N.jamN}</b></span>` : '';
 function binFx(made) {
 const fs = document.querySelector('.fslot');
 if (!made) { floatAt(fs, 'びんに入れた', 'cookup'); heroFor('joy', 700); return; }
@@ -4837,6 +4840,7 @@ return t0 + e.list.length * gap + 500;
 }
 const d = cardDef(e.cid), slot = tslot(e.i), card = slot && slot.querySelector('.pc');
 if (slot) slot.classList.add('now', 'done');
+if (candyNight()) { if (e.chain != null) setChain(e.chain); else if (e.chainBreak) setChain(0); }   // 右上の れんさ（11/21 夜）
 if (e.chain >= 2) chainPop(e.chain);   // 2れんさから大きく（11/19 しょーくん）
 else if (e.chainBreak >= 2) floatAt(slot, 'れんさ おわり', 'ice');
 if (e.again) takeBuff(e.i, e.i - 1, 'again');
@@ -5171,7 +5175,7 @@ const list = openBuilds().map(id => {
 const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;
 return `<button class="pk-card${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
 <span class="pk-pic">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(C.trait)}</span>
+<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(B.trait || C.trait)}</span>
 <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
 <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
 }).join('');
@@ -5195,7 +5199,8 @@ body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood
 } else {
 const shop = N.stage === 'shop';
 const H = heatOf();
-body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.heat}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+const ca = chefArt();
+body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? N.heat : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
 `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
 <div class="bar">${barHTML()}</div>
 ${viewerHTML()}`;
@@ -5208,7 +5213,7 @@ $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-c
 <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
 ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
-<div class="ov-heat${koneBadge() ? ' two' : ''}"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
+<div class="ov-heat${heatOf().off ? ' only' : ''}">${heatOf().off ? '' : `<span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>`}${koneBadge()}${chainBadge()}${jamBadge()}</div>
 ${quotaHTML(q, lastRun)}
 ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
 ${body}</section>`;
@@ -5761,6 +5766,7 @@ function petitFx(e, run, q) {
 const a = spot(e.i), b = spot($('mon'));
 const land = () => {
 monReact('hit'); if (b) { dmgNum(e.dmg, '', b); sparkBurst({ x: b.x, y: b.y, w: 12 }, 8, 'all', .8); }
+if (e.chain != null && typeof setChain === 'function') setChain(e.chain);   // 右上の れんさ（11/21 夜）
 if (e.chain >= 2) chainPop(e.chain);
 scoreTick(e.dmg, run, q);
 };

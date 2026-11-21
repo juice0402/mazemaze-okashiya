@@ -7,14 +7,16 @@ const ORD = ['①', '②', '③', '④', '⑤'];
 /* ---------- 演出 ---------- */
 /* 鉄板の火力（1〜4）。フィールドがないと焼けないので、光らせない */
 function setHeat(h) {
-  const bar = $('heatBar'), lab = $('heatLabel'); if (!bar) return;
+  const bar = $('heatBar'), lab = $('heatLabel'), st = $('stage'); if (!st) return;
   const H = heatOf();   // ほのかの火力も みなもの飴の温度も、場がなくても効く（11/20 ほのかも）
   if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
-  [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
-  lab.textContent = H.names[h];   // ほのかの0は「火なし」（字は灰色の h0）
-  lab.className = 'heat-label h' + h;
-  if (H.cool) { const st = $('stage'); if (st) st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる
-  const st = $('stage'); if (st) st.dataset.z = h;
+  if (bar && !H.off) {   // こね生地・ちいさなキャンディ（11/21 夜）はメーターなし（右上は こね・れんさ の数だけ）
+    [...bar.children].forEach((c, i) => { c.className = i < h ? 'on h' + (i + 1) : ''; });
+    lab.textContent = H.names[h];   // ほのかの0は「火なし」（字は灰色の h0）
+    lab.className = 'heat-label h' + h;
+  }
+  if (chefArt() === 'minamo') { st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる（キャンディの夜は ひんやり のまま）
+  st.dataset.z = h;
   heatFx(h);   // 調理台の下の炎（battle-fx.js・火なしのときは出ない）
 }
 /* タイル1つを描きなおす（焼き加減・焦げ・大作の大きさと固まる） */
@@ -73,7 +75,11 @@ function floatAt(el, text, cls = '') {
 function replay(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 /* ---------- こね生地（11/18）：こねた回数の札（ショップの上と、バトル中は火力のメーターのとなり）・こねたときの演出 ---------- */
 const koneOn = () => N && N.build === 'kone';
-const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}"><small>こね</small><b>${N.kone}</b></span>` : '';
+const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}">こね <b>${N.kone}</b></span>` : '';   // 字はラウンドの札と同じ（11/21 夜 しょーくん「ラウンド表記と同じく文字の大きさや中央揃えも」）
+/* ちいさなキャンディ（11/21 夜 しょーくん「温度ゲージがあった所に れんさの回数」）：バトル中の れんさ（ラウンドのはじめは場の chain0・キャンディの発動で のびて、素材や道具で0） */
+let chainNow = 0;
+const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
+function setChain(n) { if (n === chainNow) return; chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
 function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
   const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
@@ -82,7 +88,7 @@ function kneadFx(i, add, born) {
   if (!born) toast('調理台がいっぱいで、パン種は生まれなかった');
 }
 /* ---------- わかば（11/19）：ジャムの数の札・大きなびんに入れた／ジャムができた・ラウンドの終わりに くだものが育った ---------- */
-const jamBadge = () => binNight() ? `<span class="kone-n jam-n" aria-label="作ったジャム ${N.jamN}"><small>ジャム</small><b>${N.jamN}</b></span>` : '';
+const jamBadge = () => binNight() ? `<span class="kone-n jam-n" aria-label="作ったジャム ${N.jamN}">ジャム <b>${N.jamN}</b></span>` : '';
 function binFx(made) {
   const fs = document.querySelector('.fslot');
   if (!made) { floatAt(fs, 'びんに入れた', 'cookup'); heroFor('joy', 700); return; }
@@ -272,6 +278,7 @@ function showEvent(e, run, q) {
   }
   const d = cardDef(e.cid), slot = tslot(e.i), card = slot && slot.querySelector('.pc');
   if (slot) slot.classList.add('now', 'done');
+  if (candyNight()) { if (e.chain != null) setChain(e.chain); else if (e.chainBreak) setChain(0); }   // 右上の れんさ（11/21 夜）
   if (e.chain >= 2) chainPop(e.chain);   // 2れんさから大きく（11/19 しょーくん）
   else if (e.chainBreak >= 2) floatAt(slot, 'れんさ おわり', 'ice');
   if (e.again) takeBuff(e.i, e.i - 1, 'again');
@@ -657,7 +664,7 @@ function pickHTML() {
     const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;
     return `<button class="pk-card${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
       <span class="pk-pic">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(C.trait)}</span>
+      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(B.trait || C.trait)}</span>
       <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
       <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
@@ -683,7 +690,8 @@ function renderNight() {
   } else {
     const shop = N.stage === 'shop';
     const H = heatOf();
-    body = `<div class="tiles" data-chef="${chefArt()}" data-z="${H.cool || H.none ? 0 : N.heat}" data-t="${H.cool ? N.heat : 0}">${H.cool ? tempHTML() : H.none ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+    const ca = chefArt();
+    body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? N.heat : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
         `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
@@ -696,7 +704,7 @@ function renderNight() {
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
-      <div class="ov-heat${koneBadge() ? ' two' : ''}"><span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>${koneBadge()}${jamBadge()}</div>
+      <div class="ov-heat${heatOf().off ? ' only' : ''}">${heatOf().off ? '' : `<span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>`}${koneBadge()}${chainBadge()}${jamBadge()}</div>
       ${quotaHTML(q, lastRun)}
       ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
     ${body}</section>`;

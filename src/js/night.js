@@ -79,7 +79,7 @@ function nightOk(n) {
 function poolList() {
   const B = curBuild(), C = CHEFS[B.chef], L = [];
   for (const cid of B.doughs) L.push([cid, 3]);
-  for (const cid of C.common) L.push([cid, 2]);
+  for (const cid of C.common) if (!(B.drop || []).includes(cid)) L.push([cid, 2]);   // drop＝そのビルドで使わない共通のカード（11/21 夜 こね生地の火力・キャンディの温度）
   for (const id of B.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
   const dr = MONSTERS[N.mon].drop;
   if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
@@ -133,7 +133,7 @@ function buy(i, to) {
   if (d.cat === 'field') {
     if (fixedField()) return toast('今夜の場は大きなびん（入れかえられない）');
     if (N.field) toast('フィールドを入れかえた');
-    N.field = cid.slice(2); if (FIELDS[N.field].start) N.heat = heatOf().field ? Math.max(N.heat, FIELDS[N.field].start) : FIELDS[N.field].start;   // ほのかは鉄板・石窯の火より弱ければ その火に（11/20）・みなもは飴の温度がそれに・わかばの肥料は変えない
+    N.field = cid.slice(2); if (FIELDS[N.field].start && !heatOf().off) N.heat = heatOf().field ? Math.max(N.heat, FIELDS[N.field].start) : FIELDS[N.field].start;   // ほのかは鉄板・石窯の火より弱ければ その火に（11/20）・みなもは飴の温度がそれに・わかばの肥料は変えない
   } else {
     const at = to && to.where === 'board' ? to.i : freeSlot();
     if (at < 0) return toast(BOARD_FULL);
@@ -235,7 +235,7 @@ const mixesWithBoard = (cid, skip) => N.board.some((x, i) => x && i !== skip && 
 /* まぜられる相手の決まり（ドラッグの案内・大きく見る画面） */
 function mixRule(d) {
   if (d.cat === 'field') return fixedField() && d.cid === 'b:' + N.field ? 'くだものを入れて、3つでジャム' : 'フィールドは まぜられない';
-  if (d.star >= 3) return d.cat === 'dough' ? '★3は完成。焦げない・もう まぜられない' : '★3は完成。もう まぜられない';
+  if (d.star >= 3) return d.cat === 'dough' && !d.pan ? '★3は完成。焦げない・もう まぜられない' : '★3は完成。もう まぜられない';
   if (d.grow && N.heat < AME_SOFT) return AME_COLD;
   if (d.fruit) return binNight() ? '場の大きなびんへ（3つでジャム）' : d.stage === RIPE ? '★2のケーキにはなすと★3' : 'まぜずに育てる（熟すと★2のケーキへ）';   // わかば（11/19）
   const C = chefNow(), main = ['ame', 'candy', 'cake', 'jam'].includes(d.cat) ? CAT_NAME[d.cat] : candyNight() ? 'キャンディ' : binNight() ? 'ジャム' : C === CHEFS.minamo ? '飴細工' : C === CHEFS.wakaba ? 'ケーキ' : '生地';
@@ -342,7 +342,7 @@ function resolveRound() {
     const list = [], safeAll = stop();
     const stopAt = board.findIndex(c => c && cardDef(c.cid).fx.stop);
     board.forEach((c, i) => {
-      if (!c) return; const d = cardDef(c.cid); if (!d.dough) return;
+      if (!c) return; const d = cardDef(c.cid); if (!d.dough || d.pan) return;   // パンは焼かない（11/21 夜）
       const r = cookStep(c, heat + (d.fx.spd || 0), safeAll || d.fx.noburn);
       burn(i, r); list.push({ i, ...r });
     });
@@ -412,8 +412,8 @@ function resolveRound() {
       }
       if (fx.nb) { const to = [i + 1, i + 2].filter(j => j < SLOTS && dmgAt(j)); if (to.length) e.out.push({ k: 'nb', to, v: fx.nb * sm }); }   // 右2枚の味パワー+（11/19 しょーくん・前は両どなり）
       if (fx.koneUp) { e.kone = [kone, kone + fx.koneUp]; kone += fx.koneUp; }
-      if (fx.heat) { const h0 = heat; heatUsed = true; heat = Math.max(floor, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
-      if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough) {
+      if (fx.heat && !Hc.off) { const h0 = heat; heatUsed = true; heat = Math.max(floor, Math.min(HEAT_MAX, heat + fx.heat)); e.heat = [h0, heat]; e.out.push({ k: 'heat', to: 'heat' }); }
+      if (fx.sear && board[i + 1] && cardDef(board[i + 1].cid).dough && !cardDef(board[i + 1].cid).pan) {
         const o = board[i + 1], r = cookStep(o, fx.sear, stop() || cardDef(o.cid).fx.noburn);
         burn(i + 1, r); e.sear = { i: i + 1, ...r }; e.out.push({ k: 'sear', to: [i + 1] });
       }
@@ -435,7 +435,7 @@ function resolveRound() {
         if (c.plus) { base += c.plus; parts.push(['+', c.plus, '育った実']); }   // もりのシフォン
         if (fx.binNow && N.bin.length) { const v = fx.binNow * sm * N.bin.length; base += v; parts.push(['+', v, `びんの実${N.bin.length}`]); }
         if (fx.perJam && N.jamN) { const v = fx.perJam * sm * N.jamN; base += v; parts.push(['+', v, `ジャム${N.jamN}`]); }
-        if (d.dough) {
+        if (d.dough && !d.pan) {
           const cm = cookMul(c.cook || 0); base *= cm; if (cm !== 1) parts.push(['×', cm, '焼き加減']);
           if (F && F.best && c.cook >= COOK_MAX) { base *= F.best; parts.push(['×', F.best, 'フィールド']); }
         }
@@ -443,8 +443,7 @@ function resolveRound() {
           const gm = sizeMul(c.cook || 0, fx); base *= gm; if (gm !== 1) parts.push(['×', gm, c.cook >= SIZE_MAX ? '完成' : '大きさ']);
           if (!c.ice) { base *= SOFT_MUL; parts.push(['×', SOFT_MUL, 'やわらかい']); }   // 固まる前は3割（11/19 しょーくん「凍らせないと効果を発揮できない」・えらぶ質問で3割）
         }
-        if (d.candy) {   // キャンディは冷えるほど強い・いちばんドロップ
-          const cm = COLD_MUL[heat] || 1; if (cm !== 1) { base *= cm; parts.push(['×', cm, heatOf().names[heat]]); }
+        if (d.candy) {   // キャンディのいちばんドロップ（11/21 夜〜 温度で強さは変わらない）
           if (candyMul !== 1) { base *= candyMul; parts.push(['×', candyMul, 'いちばん', [first]]); }
         }
         if (d.cat === 'cake' && fx.tartFruit && (isFruit(i - 1) || isFruit(i + 1))) { base *= fx.tartFruit; parts.push(['×', fx.tartFruit, 'となりの実']); }   // わかば①：タルト（となりが実）
@@ -477,9 +476,9 @@ function resolveRound() {
       }
       if (fx.next) { pend *= fx.next; e.next = fx.next; pendEv.push(e); }
       total += dmg;
-      const pet = [];   // はじけキャンディ：ちいさなキャンディが1こずつ飛ぶ（れんさ+1ずつ・冷えるほど強い・いちばんドロップも効く）
+      const pet = [];   // はじけキャンディ：ちいさなキャンディが1こずつ飛ぶ（れんさ+1ずつ・いちばんドロップも効く）
       if (fx.petit) {
-        const n = fx.petit + petitN, pm = (COLD_MUL[heat] || 1) * candyMul;
+        const n = fx.petit + petitN, pm = candyMul;
         for (let k = 0; k < n; k++) { chain++; const pd = Math.min(DMG_CAP, Math.floor(PETIT_DMG * sm * pm * HM)); total += pd; pet.push({ type: 'petit', i, cid: c.cid, k, n, dmg: pd, chain }); }
       }
       if (d.cat === 'cake' && dmg > 0 && F && F.decoHits) {   // デコレーション台：そのケーキの1割が5連撃（熟した実の★3は10連撃）・11/19 しょーくん
@@ -510,7 +509,7 @@ function omotenashi() {
   const res = resolveRound(), q = quota(N.round, S.day);
   busy = true; unsel(); hideKw(); tipEv('bake'); tipClear();
   shopOut(() => {
-    fighting = true; renderNight();
+    fighting = true; chainNow = (N.field && FIELDS[N.field].chain0) || 0; renderNight();   // 右上の れんさ はラウンドのはじめから数える
     battleIntro(q, () => {
       let k = 0, run = 0;
       const step = () => {

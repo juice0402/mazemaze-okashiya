@@ -54,7 +54,7 @@ const MATS = {
   tsuya:    { cat: 'ame', name: 'しあげのつや', short: 'しあげのつや', taste: 'とろーり', adj: 'しあげの', noun: 'つや飴', nr: 8, value: 20, col: '#fff0c0', fx: { dmg: 20, doneFin: 0.5 } },
   nobashi:  { cat: 'ame', name: 'のばし飴', short: 'のばし飴', taste: 'あまい', adj: 'のびのび', noun: 'のばし飴', nr: 7.5, value: 15, col: '#ffe8b0', fx: { dmg: 10, grow: 2 } },
   /* みなも②ちいさなキャンディ（11/19・名前は絵の依頼のとおり・数字はぽぽちの仮）。cat candy＝キャンディ（主役）。candy＝キャンディのしるし
-     （発動すると れんさ+1・冷えるほど強い：ひえひえ×1.5・ひんやり×1.25〔COLD_MUL・11/19 ボットで下げた〕。キャンディでないカードが発動すると れんさは0）
+     （発動すると れんさ+1〔11/21 夜〜 温度で強さは変わらない〕。キャンディでないカードが発動すると れんさは0）
      perChain＝れんさ1につき+・petit＝ちいさなキャンディを飛ばす数・link＝両どなりがキャンディなら れんさ+・candyLead＝スタート：キャンディぜんぶ×
      chainFin＝アンカー：合計×(1＋chainFin×れんさ)・coldAgain＝ひんやり以下なら もう1回。twin＝同じカードどうしの★2の名前 */
   korodrop: { cat: 'candy', name: 'ころころドロップ', short: 'ころころドロップ', twin: 'ごろごろドロップ', taste: 'あまい', adj: 'ころころ', noun: 'ドロップ', nr: 9, value: 20, col: '#ffb8c8', fx: { dmg: 20, candy: 1, perChain: 10 } },
@@ -189,8 +189,7 @@ const GROW = [0, 0, 1, 2, 3];
 const SIZE_MAX = 9;
 const SOFT_MUL = 0.3;   // 固まる前（あたたか・とろとろ）の大作は味パワー3割（11/19 しょーくん：ひえひえで固めると本気）
 const sizeMul = (c, fx) => c >= SIZE_MAX ? fx.done || 5 : 1 + c / 3;   // 完成は ほのかのサイコーと同じ×5（11/19 ボットで火力クッキーに近づけた・仮）
-/* キャンディは冷えるほど強い（11/19 しょーくん：ひえひえ×2・ひんやり×1.5 → 11/19 ボットで ×1.5・×1.25 に）。ちいさなキャンディは1こ味パワー10 */
-const COLD_MUL = [1, 1.5, 1.25, 1, 1];
+/* ちいさなキャンディは1こ味パワー10（11/21 夜〜 キャンディは温度で強さが変わらない＝前の COLD_MUL はなくした） */
 const PETIT_DMG = 10;
 
 /* フィールド：ショップにまざって出てくる。買うと調理台の左の「場」に入る。
@@ -199,14 +198,14 @@ const FIELDS = {
   teppan:   { name: 'ほのかの鉄板', start: 2, chips: ['火力が 中火より下がらない'], long: [['', '{火力}が 中火より下がらない']] },
   ishigama: { name: 'ごうごう石窯', start: 3, best: 1.5, chips: ['火力が 強火より下がらない', 'サイコーの生地 ×1.5'], long: [['', '{火力}が 強火より下がらない'], ['', '{サイコー}の生地×1.5']] },
   /* こね生地のフィールド（11/18 名前はしょーくん・効果はぽぽちの仮）。kone＝1回こねると数える回数・tane＝こねると多く生まれるパン種。alt はカードの絵が届くまでの仮の絵 */
-  menbo:     { name: '力のめん棒', start: 3, kone: 2, alt: 'field-ishigama', chips: ['火力が 強火より下がらない', 'こねると 2回分'], long: [['', '{火力}が 強火より下がらない'], ['', '1回{こね}ると 2回分']] },
-  karumenbo: { name: '軽量めん棒', start: 2, tane: 1, alt: 'field-teppan', chips: ['火力が 中火より下がらない', 'こねると パン種+1こ'], long: [['', '{火力}が 中火より下がらない'], ['', '{こね}ると {パン種}が1こ多く生まれる']] },
+  menbo:     { name: '力のめん棒', kone: 2, alt: 'field-ishigama', chips: ['こねると 2回分'], long: [['', '1回{こね}ると 2回分']] },   // 11/21 夜 こね生地は火力なし
+  karumenbo: { name: '軽量めん棒', tane: 1, alt: 'field-teppan', chips: ['こねると パン種+1こ'], long: [['', '{こね}ると {パン種}が1こ多く生まれる']] },
   /* みなもの大作の飴細工のフィールド（11/19・ぽぽちの仮）。start＝置いたときの飴の温度・slow＝温度が2ラウンドに1回しかさがらない */
   oonabe: { name: '飴の大鍋', start: 4, chips: ['とろとろにする'], long: [['', '飴の{温度}が とろとろ になる']] },
   kobo:   { name: 'ガラスの工房', start: 3, slow: 1, chips: ['あたたかにする', '冷めにくい'], long: [['', '飴の{温度}が あたたか になる'], ['', '2ラウンドに1回しか冷めない']] },
   /* みなも②ちいさなキャンディのフィールド（11/19・ぽぽちの仮）。chain0＝ラウンドのはじめの れんさ・petit＝ちいさなキャンディが多い */
-  dairiseki: { name: '大理石の台', start: 2, chain0: 1, chips: ['ひんやりにする', 'れんさが 1から始まる'], long: [['', '飴の{温度}が ひんやり になる'], ['', '{れんさ}が1から始まる']] },
-  yatai:     { name: 'キャンディの屋台', start: 2, petit: 1, chips: ['ひんやりにする', '小さな飴 +1こ'], long: [['', '飴の{温度}が ひんやり になる'], ['', '小さな飴を1こ多く飛ばす']] },
+  dairiseki: { name: '大理石の台', chain0: 1, chips: ['れんさが 1から始まる'], long: [['', '{れんさ}が1から始まる']] },   // 11/21 夜 キャンディは温度なし
+  yatai:     { name: 'キャンディの屋台', petit: 1, chips: ['小さな飴 +1こ'], long: [['', '小さな飴を1こ多く飛ばす']] },
   /* わかば①くだものケーキのフィールド（11/19 しょーくん：のびのび肥料・すくすく肥料・ケーキの味パワーのデコ）。start がない＝温度も火力も変えない。alt は絵が届くまでの仮の絵
      slowGrow＝くだものが育つのは2ラウンドに1回・fruitMul＝くだものの効果×（ripeMul＝熟した実・11/19 しょーくん「成長しきったら3倍くらい」）・growAdd＝ラウンドの終わりに多く育つ段
      decoHits＝ケーキが発動すると、デコの連撃 [ふつうのケーキ, 熟した実をのせた★3] 回・decoRate＝1回の味パワー（そのケーキの1割・11/19 しょーくん「連続で大量にヒットする爽快感」） */
@@ -236,7 +235,10 @@ const CHEFS = {
 };
 /* 今夜のシェフ（夜の画面の外や、夜がまだないときは ほのか） */
 function chefNow() { try { return CHEFS[BUILDS[(N && N.build) || 'cookie'].chef] || CHEFS.honoka; } catch (e) { return CHEFS.honoka; } }
-const heatOf = () => chefNow().heat;
+/* ビルドの特性（11/21 夜 しょーくん「パンビルドに火力ゲージは必要ない・パン種とこね回数で手数を爆増させるビルド」「れんさ飴ビルドも温度は関係ない」・えらぶ質問で しくみごと なくす）：
+   BUILDS の heat があれば シェフの heat に重ねる。off＝そのビルドはメーターを使わない（右上はこね・れんさの数だけ・火力や温度のカードは出さない・変わらない） */
+const HEAT_B = {};
+const heatOf = () => { let b = 'cookie'; try { b = (N && N.build) || 'cookie'; } catch (e) {} const B = BUILDS[b]; if (!B || !B.heat) return chefNow().heat; return HEAT_B[b] || (HEAT_B[b] = Object.assign({}, chefNow().heat, { down: 0, cool: 0, field: 0 }, B.heat)); };
 /* ビルド（11/18 しょーくん）：夕方にシェフとビルドを1つえらぶ（使えるのが1つのうちは出さない）。主役6種（そのビルドだけ）＋シェフの共通＋フィールド2
    from＝使えるようになる日（11/18 しょーくん：こね生地は8日目から）。pic＝えらぶ画面の絵・show＝えらぶ画面に出すカード3まい・text＝ひとこと */
 const BUILDS = {
@@ -246,17 +248,19 @@ const BUILDS = {
   },
   kone: {
     chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
-    bal: [0.34, 1.268], r1: 700, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
+    trait: 'こね', heat: { off: 1, start: 0 }, drop: ['t:maki', 't:hiokoshi', 't:mizu', 't:yakigote'],   // 火力なし（パンは焼かない・焦げない）
+    bal: [0.27, 1.37], r1: 700, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
   },
   /* みなも①（11/19）：mate＝その仲間が来てから（昼の⑧で S.seen['mate:minamo']） */
   taisaku: {
     chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて まぜて育て、冷えたら本気。★3を冷やしたら最強',
     bal: [2.97, 1.123], r1: 180, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
   },
-  /* みなも②（11/19）：キャンディどうしの れんさ。冷えるほど強い（自然に冷めるのが味方） */
+  /* みなも②（11/19）：キャンディどうしの れんさ（11/21 夜〜 温度は関係ない） */
   candy: {
-    chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。冷えるほど強い',
-    bal: [1.15, 0.964], r1: 270, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
+    chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
+    trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'],   // 温度なし（見た目は ひんやり のまま変わらない）
+    bal: [1.20, 0.915], r1: 370, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
   },
   /* わかば①（11/19）：くだものを育てて、熟した実を★2のケーキにのせて★3。フィールドは3つ（11/19 しょーくん） */
   fruitcake: {
@@ -369,7 +373,7 @@ function cardDef(cid) {
   else if (k === 'o') { const r = recipeOf(id); d = { kind: 'o', cat: foodCat(r.mats), star: 2, name: r.name, fx: pairFx(r), mats: r.mats, cost: 6 }; }
   else if (k === 's') {
     const [r1, r2] = id.split('|').map(recipeOf), mats = [...r1.mats, ...r2.mats], cat = foodCat(mats);
-    const fx = mergeFx(pairFx(r1), pairFx(r2)); if (cat === 'dough') fx.noburn = 1;
+    const fx = mergeFx(pairFx(r1), pairFx(r2)); if (cat === 'dough' && !mats.some(m => MATS[m].pan)) fx.noburn = 1;   // パンは焼かないので「焦げない」もつけない（11/21 夜）
     d = { kind: 's', cat, star: 3, name: cat === 'ame' || cat === 'candy' || cat === 'jam' ? ameSpecialName(r1, r2) : specialName(r1, r2), fx, mats, keys: [r1.key, r2.key], cost: 0 };
   }
   else if (k === 'u') { const [a, b] = id.split('+'); d = { kind: 't', cat: 'tool', role: TOOLS[a].role, star: 2, name: toolSetName(a, b), fx: mergeFx(TOOLS[a].fx, TOOLS[b].fx), mats: [], parts: [a, b], cost: 0 }; }
@@ -379,11 +383,11 @@ function cardDef(cid) {
   d.food = d.cat === 'dough' || d.cat === 'mat';
   d.dough = d.cat === 'dough';
   d.grow = d.cat === 'ame' && !!d.fx.taisaku;                        // みなもの大作（バトル開始時に、飴の温度で大きさが育つ）
-  d.candy = d.cat === 'candy';                                      // みなものキャンディ（れんさ・冷えるほど強い）
+  d.candy = d.cat === 'candy';                                      // みなものキャンディ（れんさ）
   d.fruit = d.cat === 'fruit';                                      // わかばのくだもの（ラウンドの終わりに育つ・stage＝0 花・1 青い実・2 熟した実）
   if (d.fruit) d.stage = MATS[d.mats[0]].stage;
-  d.meter = d.dough || d.grow;                                       // 調理台で数字を持つ（生地＝焼き加減・大作＝大きさ。どちらも board の cook）
-  d.pan = d.dough && d.mats.some(m => MATS[m].pan);                 // パン生地（パン生地どうしをまぜると「こねる」）
+  d.pan = d.dough && d.mats.some(m => MATS[m].pan);                 // パン生地（パン生地どうしをまぜると「こねる」・11/21 夜〜 焼かない）
+  d.meter = (d.dough && !d.pan) || d.grow;                          // 調理台で数字を持つ（生地＝焼き加減・大作＝大きさ。どちらも board の cook）
   d.tane = d.mats.length > 0 && d.mats.every(m => MATS[m].tane);    // パン種だけでできたカード（うっても0コイン）
   d.short = d.short || d.name;
   DEFS.set(cid, d);
@@ -452,7 +456,7 @@ function fxList(fx, star = 1) {
   if (fx.scare) p.push(`右2枚の実×${fx.scare}`);
   if (fx.basket) p.push(`次に実が${fx.basket}枚`);
   if (fx.soon) p.push('育つと右がもう1回');
-  if (fx.heat) p.push(`${heatOf().word}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
+  if (fx.heat && !heatOf().off) p.push(`${heatOf().word}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
   if (fx.call) p.push(binNight() ? '熟した実を呼ぶ' : 'フィールドを呼ぶ');
   if (fx.bitter && !fx.noburn) p.push('焦げると★2');
   if (fx.spd) p.push(fx.taisaku ? (fx.spd > 0 ? '育ちやすい' : '育ちにくい') : fx.spd > 0 ? '焼けやすい' : '焼けにくい');
@@ -523,11 +527,11 @@ function fxLong(fx, star = 1) {
   if (fx.scare) p.push(['', `右2枚の {実}の効果×${fx.scare}`]);
   if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚`]);
   if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
-  if (fx.heat) { const H = heatOf(); if (!H.none) p.push(['', `${H.of ? H.of + ' ' : ''}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }   // ほのかは「火力+1段」（11/21：火力は鉄板がなくても上がる＝「鉄板の」をつけない）
+  if (fx.heat) { const H = heatOf(); if (!H.none && !H.off) p.push(['', `${H.of ? H.of + ' ' : ''}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }   // ほのかは「火力+1段」（11/21：火力は鉄板がなくても上がる＝「鉄板の」をつけない）
   if (fx.call) p.push(['', binNight() ? '次のショップに {熟した実}が出る' : '次のショップに フィールドが出る']);
   if (fx.bitter && !fx.noburn) p.push(['', '焦げると ★2の 焦げクッキーになる']);
   if (fx.spd) p.push(['', fx.taisaku ? `大きくなる量 ${fx.spd > 0 ? '+' : '−'}${Math.abs(fx.spd)}` : `{焼き加減}が ${Math.abs(fx.spd)}段${fx.spd > 0 ? '多く' : '少なく'}進む`]);
-  if (fx.candy && !p.length) p.push(['', '{れんさ}+1（冷えるほど 強い）']);   // キャンディのきまり（れんさ・冷えるほど強い）は、ほかの効果がないカードだけに書く（ことばの説明にもある）
+  if (fx.candy && !p.length) p.push(['', '{れんさ}+1']);   // キャンディのきまり（れんさ）は、ほかの効果がないカードだけに書く（ことばの説明にもある）
   return p;
 }
 /* ことばの説明（黄色いことばと、いつの札をタップすると出る） */
@@ -555,7 +559,7 @@ const KW = {   // 11/19 しょーくん「長くても2行」：説明の吹き�
   完成: '大きさ9の大作。冷えたら本気（それまで×0.3）',
   固まる: '飴が冷えて、大作が本気になること（それまで×0.3）',
   /* みなも②（11/19） */
-  れんさ: 'キャンディが続けて発動した数（冷えるほど強い）。素材や道具で0にもどる',
+  れんさ: 'キャンディが続けて発動した数。素材や道具で0にもどる',
   ちいさなキャンディ: '小さな飴（1こ味パワー10）。れんさに数える',
   /* わかば（11/19） */
   くだもの: 'わかばの素材。ラウンドの終わりに 花→青い実→熟した実 と育つ',

@@ -65,7 +65,7 @@
 .night .stage .ov-heat .heat-label{min-width:0;white-space:nowrap;font-size:10px;letter-spacing:-.02em}
 .night .stage .ov-heat .heat-bar{width:80px}
 .night .stage .ov-heat .heat-bar:last-child{margin-right:5px}   /* 四角いメーターが右はしのときは少し内がわへ（11/21 しょーくん「ビルドのゲージが枠に当たってる気がする・リロールの枠は絵が丸いからその差」）：丸い札（ラウンド・こね・ジャム）と同じくらい はなれて見える */
-.night .stage .ov-heat.two .heat-label{display:none}   /* こね生地はメーターとこねの数の2つ：字を出すとまんなかのメダルにかかるので、火力は色だけ */
+.night .stage .ov-heat.only{right:10px}   /* メーターのないビルド（こね生地・ちいさなキャンディ・11/21 夜）：右上はラウンドの札と同じ形の札だけ（右はし10px＝ラウンドの札の左はしと同じ）   /* こね生地はメーターとこねの数の2つ：字を出すとまんなかのメダルにかかるので、火力は色だけ */
 .night .ov-top{top:9px;left:13px;right:13px;z-index:9}
 /* 上のまんなかのメダルをよける：左右の札はメダルの手前まで（フィールドの名前は2行目） */
 .night .ov-top>span{max-width:calc(50% - 32px);white-space:nowrap}
@@ -264,9 +264,9 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .pk-on{position:absolute;right:-10px;top:-14px;padding:2px 8px;border-radius:999px;font-style:normal;font-size:11px;font-weight:900;color:#fff;background:#d8503a;box-shadow:0 0 0 2px #fff4e0,0 2px 0 rgba(0,0,0,.35)}
 .pk-trial{flex:none;margin:0;text-align:center;font-size:10.5px;color:#fff0d8;text-shadow:0 1px 0 #2a170c}
 /* こねた回数の札（こね生地・ショップの上と、バトル中は火力のメーターのとなり） */
-.kone-n{flex:none;display:inline-flex;align-items:baseline;gap:3px;padding:1px 9px;border-radius:999px;background:linear-gradient(#fff6e2,#f0d9b0);box-shadow:0 0 0 1.5px #7a4e1c,0 2px 0 rgba(0,0,0,.35);color:#5a3418;font-weight:900;text-shadow:none}
-.kone-n small{font-size:10px;color:#7a5a4a}
-.kone-n b{font-family:var(--disp);font-weight:400;font-size:15px;color:#c2541c;font-variant-numeric:tabular-nums}
+/* こね・れんさ・ジャムの数の札は、ラウンドの札と同じ字・同じまんなか（11/21 夜 しょーくん「ラウンド表記と同じく文字の大きさや中央揃えな点も揃えて」）：12px・太字・ミルク色・こげ茶のふち・数も同じ字 */
+.kone-n{flex:none;display:inline-flex;justify-content:center;align-items:center;gap:2px;font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;white-space:nowrap;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
+.kone-n b{font:inherit}   /* 数はラウンドの数と同じ金色（style.css の b） */
 .kone-n.bump b{display:inline-block;animation:numbump .3s cubic-bezier(.2,1.8,.4,1)}
 /* ---------- ほのかの戦闘ポーズ（night-ui.js の heroPose）：絵を切りかえて、translate・scale・rotate で動く。絵がまだないポーズは動きだけ ----------
    11/19 しょーくん「絵によって、影とキャラクターの距離がバラバラ」→ どのポーズも足は影の上（たての translate はなし・scale と rotate は足の線を中心に＝上の transform-origin）。
@@ -627,7 +627,7 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov:not(.many) .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 2px) / 1.68),150px)}
 .night .shopov:not(.many):has(.sh-top .kone-n) .sh-cards{padding-top:60px}
 /* 11/20 しょーくん「上まんなかのエンブレムは下まんなかへ・入れかえと所持金を横に並べて大きさを合わせる」：コインと入れかえは右に同じ高さで、こね・ジャムの数はラウンドのとなり */
-.sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
+.sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span,.night .stage .ov-heat .kone-n{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
 .sh-top .sh-roll.sh-roll.pill{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;
   font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;padding:0 9px;gap:5px}   /* 入れかえも ラウンド・コインと同じ札の絵（ui-label）＝見た目の高さもそろう（11/20 しょーくん「リロールが大きく見える」） */
 /* ショップのお金はみんな同じ（11/20 しょーくん「コインの大きさ・お金の字の色とフォントをショップ内で統一」）：コインの絵 15px・数は Dela Gothic One 15px・金の字にこげ茶のふち。たりないときは赤 */
@@ -673,8 +673,8 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 
 /* 上の段の札の左右の余白（11/20 しょーくん「両はしの くいを字がよける」）：くいは札のはしから 4〜9px。字は 15px から（せまい画面は 13px）。
    前の .sh-ttl.sh-rd・入れかえの皮（padding 9px）があとから書かれていて効いていなかったので、いちばん下で強く書く */
-.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:14px;padding-right:14px}
-@media (max-width:375px){.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span{padding-left:12px;padding-right:12px}}   /* いちばんせまい画面は少しつめる（それでも くいから4px はなれる） */
+.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span,.night .kone-n.kone-n{padding-left:14px;padding-right:14px}
+@media (max-width:375px){.night .sh-top .sh-ttl.sh-rd,.night .sh-top .sh-coin.sh-coin,.night .sh-top .sh-roll.sh-roll.pill,.night .stage .ov-top>span,.night .kone-n.kone-n{padding-left:12px;padding-right:12px}}   /* いちばんせまい画面は少しつめる（それでも くいから4px はなれる） */
 .night .sh-top{left:10px;right:10px}.night .sh-top .sh-r{gap:4px}.night .sh-top .sh-coin.sh-coin{gap:4px}
 .night .stage .ov-top{left:10px;right:10px}   /* ラウンドの札はショップとバトルで同じ所 */
 /* コインの絵と数字の上下（11/20 しょーくん「数字が少し下でコインが少し上」）：Dela Gothic One の数字は字の箱の中で少し下にのるので、コインの絵を下げて まんなかをそろえる */
