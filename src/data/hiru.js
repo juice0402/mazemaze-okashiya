@@ -86,6 +86,7 @@ const KATA_OF = {};
   ['ame', [['hachimitsu', 'hachimitsu'], ['hachimitsu', 'milk'], ['hachimitsu', 'ichigo'], ['mizuame', 'hachimitsu'], ['mizuame', 'milk'], ['mizuame', 'ichigo'], ['mizuame', 'mizuame'], ['herb', 'hachimitsu'], ['herb', 'mizuame']]],
   ['fuwa', [['hachimitsu', 'egg'], ['milk', 'ichigo'], ['egg', 'ichigo'], ['mizuame', 'egg'], ['herb', 'milk'], ['herb', 'egg']]],
 ].forEach(([k, L]) => L.forEach(([a, b]) => { KATA_OF[recipeKey(a, b)] = k; }));
+const KATA_ICON = { yaki: 'hachimitsu+mugi', hiya: 'milk+milk', ame: 'hachimitsu+hachimitsu', fuwa: 'egg+ichigo' };   // 相性帳のなかまの行の絵（そのなかまのお菓子1つ）
 const KATA_FORM = { mugi: 'yaki', ichigo: 'yaki', hachimitsu: 'fuwa', milk: 'hiya', egg: 'hiya', herb: 'hiya', mizuame: 'ame' };   // モンスター素材のお菓子は、もう1つの素材の形（クッキー・タルト・ケーキ…）で
 function candyKata(key) {
   const mats = String(key).split('+'), k = KATA_OF[recipeKey(mats[0], mats[1])];
