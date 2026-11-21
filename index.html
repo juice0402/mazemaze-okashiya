@@ -1804,7 +1804,19 @@ background:conic-gradient(from 135deg at 50% 0,#e8607a 0 90deg,transparent 0) 0 
 .dcase.dcase .dslot.empty:not(.kan)::after{left:12%;right:12%;top:14%;bottom:14%;background:var(--ui-empty-sq) center/contain no-repeat;opacity:.8}
 .dslot.empty{border:0;background:none}
 .dcase.dcase .d-nm.d-nm{border:solid transparent;border-width:2px 6px;border-radius:0;background:none;box-shadow:none;border-image:var(--ui-nametag) 30 30 fill/2px 6px stretch;padding:0 1px;color:#4a2414}
-.dslot .d-kl.d-kl,.md-case.md-case .dslot.kan .d-kl{width:44px;height:34px;padding:12px 0 0;border:0;border-radius:0;background:var(--ui-hangsign) center/100% 100% no-repeat;font-size:9.5px;line-height:18px;text-align:center;color:var(--milk);text-shadow:0 1px 0 rgba(40,16,4,.8)}</style>
+.dslot .d-kl.d-kl,.md-case.md-case .dslot.kan .d-kl{width:44px;height:34px;padding:12px 0 0;border:0;border-radius:0;background:var(--ui-hangsign) center/100% 100% no-repeat;font-size:9.5px;line-height:18px;text-align:center;color:var(--milk);text-shadow:0 1px 0 rgba(40,16,4,.8)}
+.ds-deco{position:absolute;z-index:1;--W:max(100cqw,177.78cqh);--H:max(100cqh,56.25cqw);width:auto;max-width:none;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 2px 2px rgba(42,20,8,.35))}
+.dd-mado{left:calc(50cqw - .145 * var(--W));bottom:calc(.532 * var(--H));height:calc(.12 * var(--H))}
+.dd-tenjo{left:calc(50cqw + .14 * var(--W));top:calc(100cqh - var(--H));height:calc(.2 * var(--H));filter:none}
+.dd-kabe{left:calc(50cqw - .11 * var(--W));bottom:calc(.62 * var(--H));height:calc(.11 * var(--H));filter:none}
+.dd-yuka{left:calc(50cqw + .16 * var(--W));bottom:calc(.15 * var(--H));height:calc(.18 * var(--H))}
+.dd-counter{left:calc(50cqw - .10 * var(--W));bottom:calc(.135 * var(--H));height:calc(.1 * var(--H));z-index:4}
+.ms-dth{display:grid;gap:1px;margin:6px 0 0;padding:5px 8px;border-radius:8px;background:rgba(58,28,8,.72);color:#fff2d8}
+.ms-dth.on{background:rgba(122,58,14,.85)}
+.mdt-nm{font-size:12.5px;font-weight:800}
+.mdt-nm em{font-style:normal;margin-left:6px;font-size:11px;color:var(--gold)}
+.mdt-fx{font-size:10.5px;line-height:1.35;opacity:.92}
+.ms-good.at{outline:2px solid var(--gold);outline-offset:-2px}</style>
 </head>
 <body>
 <div id="app">
@@ -2587,12 +2599,12 @@ return items[items.length - 1];
 function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
 const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + 1] : []);
 const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
-const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m)); };
+const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m) * decoLikeW(m)); };
 const away = regTrip() ? ['otona'] : [];   // 旅に出ている常連さんは、1まいめの見た目で来ない
 let prev = null;
 return Array.from({ length: n }, (_, i) => {
 if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: 1, like: fix.c === 'kodomo' && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルはいちごが大すき
-const c = first[i] || pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev && !(fix && i + 1 === fix.i && id === fix.c))); prev = c;
+const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), decoCustW); prev = c;   // かざりのテーマで来やすさが変わる（11/21）
 const all = custVariants(c), vs = away.includes(c) && all.length > 1 ? all.filter(x => x !== 1) : all;
 const fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
 used.add(c + vr);
@@ -2602,15 +2614,75 @@ return { c, vr, like: likeOf(c) };
 const GOODS = {
 tatekanban: { name: '立て看板', text: 'お客さんがふえる', price: [1600, 4000, 9000] },        // 1つ目から順に お客さん+1・+2・+3
 showcase:   { name: 'ショーケース', text: '棚のマスが3つふえる', price: [3000, 8000], add: 3 }, // いちばん多くて12マス
-kazari: [   // 見た目だけ
-{ id: 'hana', name: 'お花', price: 600 },
-{ id: 'cushion', name: 'クッション', price: 900 },
-{ id: 'lamp', name: 'ランプ', price: 1200 },
-{ id: 'garland', name: 'ガーランド', price: 1500 },
-{ id: 'plant', name: '観葉植物', price: 2000 },
-],
 };
 const SHELF_MAX = 12;
+const DECO_SPOTS = [['mado', '窓べ'], ['tenjo', '天井'], ['kabe', '壁'], ['yuka', '床'], ['counter', 'カウンター']];
+const DECO_TH = {
+kihon:  { name: 'はじめのかざり' },
+fairy:  { name: '妖精のお花畑', c: 'kodomo' },
+fuwa:   { name: 'ふわもこ', c: 'gakusei' },
+bouken: { name: '冒険者の山小屋', c: 'otona' },
+majo:   { name: '魔女のアンティーク', c: 'obaachan' },
+ame:    { name: '飴細工のきらきら', mats: ['mizuame'], mate: 'minamo' },
+herb:   { name: 'ハーブガーデン', mats: ['herb'], mate: 'wakaba' },
+pan:    { name: 'ほかほかベーカリー', mats: ['mugi'] },
+mon:    { name: 'モンスターのなかま', mon: 1 },
+};
+const DECO_FX = { cust: .25, like: .3, more3: 2, price3: 1.1, regMul5: 2 };
+const DECO_LIST = [
+[1, 'kihon', 'mado', 'お花', 600, 0, 'hana'], [2, 'kihon', 'mado', 'クッション', 900, 0, 'cushion'], [3, 'kihon', 'counter', 'ランプ', 1200, 0, 'lamp'],
+[4, 'kihon', 'tenjo', 'ガーランド', 1500, 0, 'garland'], [5, 'kihon', 'yuka', '観葉植物', 2000, 0, 'plant'],
+[11, 'fairy', 'mado', 'お花の鉢', 1500], [12, 'fairy', 'tenjo', 'お花のつる', 2500], [13, 'fairy', 'kabe', '押し花の額', 2000], [14, 'fairy', 'yuka', 'きのこのいす', 3500], [15, 'fairy', 'counter', '花びらのびん', 1800],
+[21, 'fuwa', 'mado', 'ねこのぬいぐるみ', 1500], [22, 'fuwa', 'tenjo', 'ポンポンかざり', 2500], [23, 'fuwa', 'kabe', '毛糸のタペストリー', 2000], [24, 'fuwa', 'yuka', 'ふわふわクッション', 3500], [25, 'fuwa', 'counter', '毛糸玉のかご', 1800],
+[31, 'bouken', 'mado', '望遠鏡', 1500], [32, 'bouken', 'tenjo', '鉄のランタン', 2500], [33, 'bouken', 'kabe', '宝の地図', 2000], [34, 'bouken', 'yuka', '木のたる', 3500], [35, 'bouken', 'counter', 'コンパス', 1800],
+[41, 'majo', 'mado', '薬のびん', 1500], [42, 'majo', 'tenjo', '星と月のモビール', 2500], [43, 'majo', 'kabe', 'ふり子時計', 2000], [44, 'majo', 'yuka', '魔女のほうき', 3500], [45, 'majo', 'counter', '水晶玉', 1800],
+[51, 'ame', 'mado', 'ガラスの白鳥', 2200], [52, 'ame', 'tenjo', 'しずくのモビール', 3800], [53, 'ame', 'kabe', 'ステンドグラス', 3000], [54, 'ame', 'yuka', '飴色の花びん', 5200], [55, 'ame', 'counter', 'キャンディポット', 2700],
+[61, 'herb', 'mado', 'ハーブの鉢', 2200], [62, 'herb', 'tenjo', 'ドライハーブ', 3800], [63, 'herb', 'kabe', 'スプーンかけ', 3000], [64, 'herb', 'yuka', '畑のかご', 5200], [65, 'herb', 'counter', 'ハーブティー', 2700],
+[71, 'pan', 'mado', 'パンのかご', 2200], [72, 'pan', 'tenjo', 'おなべかけ', 3800], [73, 'pan', 'kabe', '黒板メニュー', 3000], [74, 'pan', 'yuka', '小麦のふくろ', 5200], [75, 'pan', 'counter', 'ケーキスタンド', 2700],
+[81, 'mon', 'mado', 'スライムのぬいぐるみ', 4500, 'zeri'], [82, 'mon', 'tenjo', 'クラゲのモビール', 7500, 'kanten'], [83, 'mon', 'kabe', 'ひつじのリース', 6000, 'hoippu'],
+[84, 'mon', 'yuka', 'トカゲのクッション', 10500, 'hoshi'], [85, 'mon', 'counter', 'ひよこのランプ', 5400, 'karamel'],
+].map(([n, th, spot, name, price, need, id]) => ({ n, th, spot, name, price, need: need || null, id: id || `d-${th}-${spot}`, art: id ? 'good-' + id : `deco-${th}-${spot}` }));
+const decoById = id => DECO_LIST.find(d => d.id === id);
+function decoAt(spot) {
+const n = S.goods['at:' + spot];
+if (n === 0) return null;   // 0＝はずした
+const d = n && DECO_LIST.find(x => x.n === n && S.goods[x.id]);
+return d || DECO_LIST.find(x => x.th === 'kihon' && x.spot === spot && S.goods[x.id]) || null;
+}
+function decoPts() {
+const P = {};
+for (const [sp] of DECO_SPOTS) { const d = decoAt(sp); if (d && d.th !== 'kihon') P[d.th] = (P[d.th] || 0) + 1; }
+return P;
+}
+function decoOpen(d) {
+const T = DECO_TH[d.th];
+if (T.mate && !STORY.mate(T.mate)) return false;
+if (d.need && !seenMats().includes(d.need)) return false;
+return true;
+}
+function decoFxText(th) {
+const T = DECO_TH[th]; if (th === 'kihon') return ['見た目だけ', ''];
+if (T.c) { const c = (CUSTOMERS.find(x => x.id === T.c) || {}).name || ''; return [`${c}が来やすくなる`, '3つで2こ買いやすく・5つで常連さんと早く仲よし']; }
+if (T.mon) return ['モンスター素材のお菓子が、すきな味になりやすい', '3つで評判+1・5つで評判+2（その味で買ったとき）'];
+return [`${T.mats.map(m => HIRU_MATS[m].short).join('・')}のお菓子が、すきな味になりやすい`, '3つで値段+1割・5つで売り切れるとハート'];
+}
+const decoThOfCust = c => Object.keys(DECO_TH).find(k => DECO_TH[k].c === c);
+const decoHasMat = (th, key) => { const T = DECO_TH[th]; return T.mon ? candyOf(key).mats.some(isMonMat) : !!(T.mats && T.mats.some(m => candyHas(key, m))); };
+function decoCustW(c) { const th = decoThOfCust(c); return 1 + DECO_FX.cust * ((th && decoPts()[th]) || 0); }
+function decoLikeW(m) {
+const P = decoPts(); let w = 1;
+for (const th in P) { const T = DECO_TH[th]; if ((T.mats && T.mats.includes(m)) || (T.mon && isMonMat(m))) w *= 1 + DECO_FX.like * P[th]; }
+return w;
+}
+function decoMoreMul(c) { const th = decoThOfCust(c); return th && (decoPts()[th] || 0) >= 3 ? DECO_FX.more3 : 1; }
+function decoRegMul(c) { const th = decoThOfCust(c); return th && (decoPts()[th] || 0) >= 5 ? DECO_FX.regMul5 : 1; }
+function decoPrice(key) {
+const P = decoPts(); let mul = 1;
+for (const th of ['ame', 'herb', 'pan']) if ((P[th] || 0) >= 3 && decoHasMat(th, key)) mul = DECO_FX.price3;
+return Math.round(candyOf(key).price * mul);
+}
+function decoRepAdd(key) { const p = decoPts().mon || 0; return p >= 3 && decoHasMat('mon', key) ? (p >= 5 ? 2 : 1) : 0; }
+function decoSoldHeart(key) { const P = decoPts(); return ['ame', 'herb', 'pan'].some(th => (P[th] || 0) >= 5 && decoHasMat(th, key)); }
 const M_TOOLS = [
 { id: 'oven', name: 'おまかせオーブン', text: 'きのう焼いたお菓子を、ボタン1つでまとめて焼く（材料代はかかる）', price: 5000, by: 'minamo', after: 0 },
 { id: 'sand', name: '超はやおくりの砂時計', text: 'お昼を4倍の速さで進められる', price: 4000, by: 'minamo', after: 4 },
@@ -3615,7 +3687,7 @@ const mado = ART['bg-day-mado'], glow = ART['bg-day-mado-glow'];
 const m = mado ? `<i class="ds-mado ds-m1" style="--mado:url('${mado}')"></i><i class="ds-mado ds-m2" style="--mado:url('${mado}')"></i><i class="ds-mado ds-out" style="--mado:url('${mado}')"><i class="ds-rain"></i></i>` : '';   // ds-out＝窓の外の生きもの・雨（day.js の dAmbient）
 const gl = glow ? `<i class="ds-mado ds-glow" style="--mado:url('${glow}')"></i>` : '';
 const motes = DS_MOTES.map(([x, y, d, dl, s]) => `<i class="ds-mote" style="--x:${x}%;--y:${y}%;--d:${d}s;--dl:-${dl}s;--s:${s}"></i>`).join('');
-if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')">${m}<i class="ds-dusk"></i>${gl}${motes}<span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
+if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')">${m}${dDecoHTML(false)}<i class="ds-dusk"></i>${gl}${motes}<span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
 return `<div class="ds-bg" aria-hidden="true">
 <i class="ds-win"><i class="ds-tree a"></i><i class="ds-tree b"></i><i class="ds-pane"></i></i>
 <i class="ds-rack"><i class="ds-jar a"></i><i class="ds-jar b"></i><i class="ds-jar c"></i></i>
@@ -3623,6 +3695,13 @@ return `<div class="ds-bg" aria-hidden="true">
 <span class="ds-sign">${sign}</span>
 <i class="ds-lamp"></i><i class="ds-wains"></i>
 </div>`;
+}
+function dDecoHTML(front) {
+if (typeof decoAt !== 'function') return '';
+return DECO_SPOTS.map(([sp]) => sp).filter(sp => (sp === 'counter') === front).map(sp => {
+const d = decoAt(sp), u = d && ART[d.art];
+return u ? `<img class="ds-deco dd-${sp}" src="${u}" alt="" draggable="false">` : '';
+}).join('');
 }
 const D_PRE = new Map();
 function dPreload(names) {
@@ -3635,11 +3714,11 @@ if (im.decode) im.decode().catch(() => {});
 };
 if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 2000 }); else setTimeout(go, 300);
 }
-const D_PRE_DAY = () => ['bg-day', 'bg-day-mado', 'bg-day-mado-glow', 'ui-sign', 'ui-think', 'ui-think-tail', 'ui-bubble', 'ui-bubble-tail', 'ui-jar', ...CUSTOMERS.map(c => 'cust-' + c.id)];
+const D_PRE_DAY = () => ['bg-day', 'bg-day-mado', 'bg-day-mado-glow', 'ui-sign', 'ui-think', 'ui-think-tail', 'ui-bubble', 'ui-bubble-tail', 'ui-jar', ...CUSTOMERS.map(c => 'cust-' + c.id), ...DECO_SPOTS.map(([sp]) => { const d = decoAt(sp); return d && d.art; })];
 const D_PRE_MORNING = () => ['bg-morning', 'bg-zakka', 'ui-ovenslot', 'ui-tile', ...Object.keys(HIRU_MATS).map(m => 'mat-' + m)];
 function dayStageFront() {
 const bg = ART['bg-day'];
-return bg ? `<i class="ds-front" style="--bgimg:url('${bg}')"></i>` : '<i class="ds-counter"></i>';
+return bg ? `<i class="ds-front" style="--bgimg:url('${bg}')"></i>${dDecoHTML(true)}` : '<i class="ds-counter"></i>';
 }
 const custVariants = id => [1, ...[2, 3, 4, 5].filter(n => ART['cust-' + id + '-' + n])];
 function custHTML(id, face = '', vr = 1) {
@@ -5795,7 +5874,7 @@ function goodNext(id) {
 if (id.startsWith('t-')) { const t = M_TOOLS.find(x => 't-' + x.id === id); return t && mToolOpen(t.id) && !mToolHas(t.id) ? t.price : null; }
 if (id === 'tatekanban') { const lv = S.goods.tatekanban || 0; return lv < GOODS.tatekanban.price.length ? GOODS.tatekanban.price[lv] : null; }
 if (id === 'showcase') { const lv = S.goods.showcase || 0; return lv < GOODS.showcase.price.length && shelfMaxN() < SHELF_MAX ? GOODS.showcase.price[lv] : null; }
-const k = GOODS.kazari.find(x => x.id === id); return k && !S.goods[id] ? k.price : null;
+const d = decoById(id); return d && decoOpen(d) && !S.goods[id] ? d.price : null;   // お店のかざり（11/21・hiru.js の DECO_LIST）
 }
 function buyGood(id) {
 const p = goodNext(id); if (p == null || mBusy) return;
@@ -5804,7 +5883,7 @@ S.money -= p;
 if (id === 'showcase') { S.goods.showcase = (S.goods.showcase || 0) + 1; S.shelfMax = Math.min(SHELF_MAX, shelfMaxN() + GOODS.showcase.add); toast('棚のマスがふえた！'); }
 else if (id === 'tatekanban') { S.goods.tatekanban = (S.goods.tatekanban || 0) + 1; toast('立て看板を置いた！お客さんがふえるよ'); }
 else if (id.startsWith('t-')) { S.goods[id] = 1; toast((M_TOOLS.find(x => 't-' + x.id === id) || {}).name + 'が、お店にきた！'); }
-else { S.goods[id] = 1; toast('お店にかざった！'); }
+else { const d = decoById(id); S.goods[id] = 1; S.goods['at:' + d.spot] = d.n; toast(`${d.name}を、${mDecoSpot(d.spot)}にかざった！`); }
 save(); renderMorning(); mSe('buy');
 }
 function mCan(src) {
@@ -5958,13 +6037,13 @@ return `<section class="morning mdisp fit" id="msec">
 </section>`;
 }
 function zakkaHTML() {
-const body = `<div class="ms-goods">${['tatekanban', 'showcase', ...GOODS.kazari.map(k => k.id)].map(id => {
+const body = `<div class="ms-goods">${['tatekanban', 'showcase'].map(id => {
 const G = GOODS[id] || GOODS.kazari.find(k => k.id === id), p = goodNext(id);
 const lv = id === 'tatekanban' ? S.goods.tatekanban || 0 : id === 'showcase' ? S.goods.showcase || 0 : 0;
 const tx = GOODS[id] ? G.text : '見た目だけ';
 const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置けない' : 'かざった';
 return `<div class="ms-good${mGoodIco('good-' + id) ? ' hasico' : ''}">${mGoodIco('good-' + id)}<span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
-}).join('')}${mToolRows()}</div>`;
+}).join('')}${mToolRows()}${mDecoRows()}</div>`;
 const sbg = ART['bg-zakka'];
 return `<section class="morning mzakka fit" id="msec">
 <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
@@ -6000,6 +6079,31 @@ dPreload(v === 'display' ? D_PRE_DAY() : D_PRE_MORNING());   // つぎの画面�
 }
 function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 const mGoodIco = n => ART[n] ? `<img class="msg-ico" src="${ART[n]}" alt="">` : '';
+const mDecoSpot = sp => (DECO_SPOTS.find(x => x[0] === sp) || [])[1] || '';
+function mDecoRows() {
+const P = decoPts();
+let h = '<p class="ms-sec">お店のかざり<em>場所ごとに1つ・同じテーマを3つ・5つでセット効果</em></p>';
+for (const th of Object.keys(DECO_TH)) {
+const L = DECO_LIST.filter(d => d.th === th && (decoOpen(d) || S.goods[d.id])); if (!L.length) continue;
+const [t1, t2] = decoFxText(th), n = P[th] || 0;
+h += `<div class="ms-dth${n >= 3 ? ' on' : ''}"><span class="mdt-nm">${esc(DECO_TH[th].name)}${th === 'kihon' ? '' : `<em>${n}/5</em>`}</span><span class="mdt-fx">${esc(t1)}${t2 ? `<br>${esc(t2)}` : ''}</span></div>`;
+h += L.map(d => {
+const own = !!S.goods[d.id], at = decoAt(d.spot) === d, p = goodNext(d.id);
+const btn = at ? `<button class="sub" data-act="m-deco" data-id="${d.id}" data-off="1">はずす</button>`
+: own ? `<button class="sub" data-act="m-deco" data-id="${d.id}">かざる</button>`
+: p == null ? '<span class="msg-done">まだ</span>' : `<button class="sub" data-act="m-good" data-id="${d.id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`;
+const ico = mGoodIco(d.art);
+return `<div class="ms-good${ico ? ' hasico' : ''}${at ? ' at' : ''}">${ico}<span class="msg-nm">${esc(d.name)}<em>${mDecoSpot(d.spot)}</em></span><span class="msg-tx">${at ? 'かざってる' : own ? '持ってる' : ''}</span>${btn}</div>`;
+}).join('');
+}
+return h;
+}
+function mDeco(id, off) {
+const d = decoById(id); if (!d || !S.goods[id] || mBusy) return;
+S.goods['at:' + d.spot] = off ? 0 : d.n;
+if (!off) toast(`${d.name}を、${mDecoSpot(d.spot)}にかざった！`);
+save(); renderMorning(); mSe(off ? 'tap' : 'place');
+}
 function mToolRows() {
 const open = M_TOOLS.filter(t => mToolOpen(t.id)); if (!open.length) return '';
 return `<p class="ms-sec">べんり道具</p>` + open.map(t => {
@@ -6107,6 +6211,7 @@ const MORNING_ACTS = {
 'm-open': () => mOpen(),
 'm-shop': el => mView(el.dataset.o === '1' ? 'zakka' : 'kitchen'),   // 前の名前（tools/audit.py の m-shop）
 'm-good': el => buyGood(el.dataset.id),
+'m-deco': el => mDeco(el.dataset.id, el.dataset.off === '1'),
 'm-book': () => { if (!mBusy) mView('book'); },
 'm-auto': () => mAutoBake(),
 'm-arr': () => mAutoArrange(),
@@ -6377,22 +6482,24 @@ let s = null, love = false;
 if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
 else if (items.length && ((v.reg && v.reg !== 'koge') || Math.random() < OTHER_BUY)) s = pick(items);   // 常連さんの場面の日は、かならず何か買う
 if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
-const price = candyOf(s.key).price;
+const price = decoPrice(s.key);   // かざりのセット効果で値段+1割（11/21）
 s.n--; S.money += price; T.sales += price; T.served++;
 if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
-if (love) { S.rep++; T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + 1; }   // 常連さんの段は、種類ごとのハートの合計で
-const more = Math.random() < MORE_P ? (Math.random() < MORE3_P ? 2 : 1) : 0;   // たまに2こ・たまーに3こ（11/19 しょーくん）
+if (love) { S.rep += 1 + decoRepAdd(s.key); T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + decoRegMul(v.c); }   // 常連さんの段は、種類ごとのハートの合計で（かざり5つで2倍）
+dDecoSold(s);
+const more = Math.random() < MORE_P * decoMoreMul(v.c) ? (Math.random() < MORE3_P ? 2 : 1) : 0;   // たまに2こ・たまーに3こ（11/19 しょーくん）・かざり3つで2倍
 return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other'), more, got: [s.key] };
 }
 function dServeMore(v) {
 const T = S.today, items = S.shelf.filter(s => s.n > 0); if (!items.length) return null;
 const got = v.res.got || [], fresh = items.filter(s => !got.includes(s.key)), pool = fresh.length ? fresh : items;
-const liked = pool.filter(s => candyHas(s.key, v.like)), s = pick(liked.length ? liked : pool), price = candyOf(s.key).price;
-s.n--; S.money += price; T.sales += price;
+const liked = pool.filter(s => candyHas(s.key, v.like)), s = pick(liked.length ? liked : pool), price = decoPrice(s.key);
+s.n--; S.money += price; T.sales += price; dDecoSold(s);
 if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
 v.res.got = [...got, s.key];
 return { key: s.key, say: STORY.custSay(v.c, (v.mk || 0) >= 1 ? 'more3' : 'more') };
 }
+function dDecoSold(s) { if (s.n <= 0 && decoSoldHeart(s.key)) { S.rep++; S.today.hearts++; } }
 function closeDay(msg) {
 const R = S.dayRun; R.done = true; R.cur = null;
 clearTimeout(dayTick); dayTick = 0;

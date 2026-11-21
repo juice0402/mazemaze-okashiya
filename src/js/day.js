@@ -300,23 +300,26 @@ function serve(v) {
   if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
   else if (items.length && ((v.reg && v.reg !== 'koge') || Math.random() < OTHER_BUY)) s = pick(items);   // 常連さんの場面の日は、かならず何か買う
   if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
-  const price = candyOf(s.key).price;
+  const price = decoPrice(s.key);   // かざりのセット効果で値段+1割（11/21）
   s.n--; S.money += price; T.sales += price; T.served++;
   if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
-  if (love) { S.rep++; T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + 1; }   // 常連さんの段は、種類ごとのハートの合計で
-  const more = Math.random() < MORE_P ? (Math.random() < MORE3_P ? 2 : 1) : 0;   // たまに2こ・たまーに3こ（11/19 しょーくん）
+  if (love) { S.rep += 1 + decoRepAdd(s.key); T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + decoRegMul(v.c); }   // 常連さんの段は、種類ごとのハートの合計で（かざり5つで2倍）
+  dDecoSold(s);
+  const more = Math.random() < MORE_P * decoMoreMul(v.c) ? (Math.random() < MORE3_P ? 2 : 1) : 0;   // たまに2こ・たまーに3こ（11/19 しょーくん）・かざり3つで2倍
   return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other'), more, got: [s.key] };
 }
 /* もう1こ買う：まだ買っていないお菓子から（すきな味が先）。ハートは1人1つのまま（お金と売れ行きだけ）。棚にないときは買わずに帰る */
 function dServeMore(v) {
   const T = S.today, items = S.shelf.filter(s => s.n > 0); if (!items.length) return null;
   const got = v.res.got || [], fresh = items.filter(s => !got.includes(s.key)), pool = fresh.length ? fresh : items;
-  const liked = pool.filter(s => candyHas(s.key, v.like)), s = pick(liked.length ? liked : pool), price = candyOf(s.key).price;
-  s.n--; S.money += price; T.sales += price;
+  const liked = pool.filter(s => candyHas(s.key, v.like)), s = pick(liked.length ? liked : pool), price = decoPrice(s.key);
+  s.n--; S.money += price; T.sales += price; dDecoSold(s);
   if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   v.res.got = [...got, s.key];
   return { key: s.key, say: STORY.custSay(v.c, (v.mk || 0) >= 1 ? 'more3' : 'more') };
 }
+/* かざり5つのセット効果：そのお菓子が売り切れたらハート（11/21） */
+function dDecoSold(s) { if (s.n <= 0 && decoSoldHeart(s.key)) { S.rep++; S.today.hearts++; } }
 function closeDay(msg) {
   const R = S.dayRun; R.done = true; R.cur = null;
   clearTimeout(dayTick); dayTick = 0;
