@@ -1383,6 +1383,8 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .opt-cr{margin-top:4px;padding-top:10px;border-top:1.5px dashed rgba(90,52,24,.35);font-size:10.5px;line-height:1.5;color:#6a4428}
 .opt-cr b{display:block;margin-bottom:2px;font-size:11.5px;color:#5a2410}
 .opt-cr p{margin:0}
+.opt-cr p.en{margin-top:3px;word-break:normal}
+.opt-cr .url{overflow-wrap:anywhere;word-break:break-all}
 .opt-cr .nw{display:inline-block;white-space:nowrap}
 .opt-btn{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:30;padding:6px 14px;font-size:13px}
 .r-bar{flex:none;display:flex;align-items:stretch;gap:8px}
@@ -4267,7 +4269,7 @@ function nightEndSnd() {
 const m = S.today.mood, L = KOE_END[chefArt()] || [];
 setTimeout(() => sePlay('coin'), 650);
 if (m >= 3) { jgPlay('jg-manzoku'); if (L[0]) setTimeout(() => koePlay(L[0]), 400); }
-else if (m <= 1 && L[1]) setTimeout(() => koePlay(L[1]), 400);
+else if (m <= 1) { jgPlay('jg-dame'); if (L[1]) setTimeout(() => koePlay(L[1]), 400); }   // だめだったときのジングル（11/21 司令塔・音は昼のチャットの assets/bgm/jg-dame.mp3）
 }
 function endNight() {
 const M = MONSTERS[N.mon], belly = nightHP(S.day), mood = moodOf(N.score, belly), R = MOODS[mood];
@@ -7045,7 +7047,7 @@ const OPT_ROWS = [['bgm', 'BGM'], ['se', '効果音・声']];
 function optHTML() {
 const row = ([k, name]) => `<div class="opt-row"><span class="opt-nm">${name}</span><span class="opt-tabs">${[[1, 'オン'], [0, 'オフ']].map(([v, t]) => `<button class="tab${!!v === (S.opt[k] !== false) ? ' on' : ''}" data-act="optSet" data-k="${k}" data-v="${v}">${t}</button>`).join('')}</span></div>`;
 return `<div class="panel opt" data-act="noop"><button class="vclose" data-act="optX" aria-label="とじる">×</button><h3 class="opt-ttl">せってい</h3>${OPT_ROWS.map(row).join('')}
-<div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM<span class="nw">（Frank Wen・MIT ライセンス）</span></p></div></div>`;
+<div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM<span class="nw">（Frank Wen・MIT ライセンス）</span></p><p class="en">効果音："Oculus Audio Pack 01" by Oculus VR, LLC (<span class="url">https://developers.meta.com/vr/downloads/package/oculus-audio-pack-1/</span>), licensed under CC BY 4.0</p></div></div>`;
 }
 function optOpen() {
 let v = $('optv');

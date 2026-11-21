@@ -16,7 +16,7 @@ const OPT_ROWS = [['bgm', 'BGM'], ['se', '効果音・声']];
 function optHTML() {
   const row = ([k, name]) => `<div class="opt-row"><span class="opt-nm">${name}</span><span class="opt-tabs">${[[1, 'オン'], [0, 'オフ']].map(([v, t]) => `<button class="tab${!!v === (S.opt[k] !== false) ? ' on' : ''}" data-act="optSet" data-k="${k}" data-v="${v}">${t}</button>`).join('')}</span></div>`;
   return `<div class="panel opt" data-act="noop"><button class="vclose" data-act="optX" aria-label="とじる">×</button><h3 class="opt-ttl">せってい</h3>${OPT_ROWS.map(row).join('')}
-    <div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM<span class="nw">（Frank Wen・MIT ライセンス）</span></p></div></div>`;
+    <div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM<span class="nw">（Frank Wen・MIT ライセンス）</span></p><p class="en">効果音："Oculus Audio Pack 01" by Oculus VR, LLC (<span class="url">https://developers.meta.com/vr/downloads/package/oculus-audio-pack-1/</span>), licensed under CC BY 4.0</p></div></div>`;
 }
 function optOpen() {
   let v = $('optv');

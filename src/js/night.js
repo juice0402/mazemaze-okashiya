@@ -586,7 +586,7 @@ function nightEndSnd() {
   const m = S.today.mood, L = KOE_END[chefArt()] || [];
   setTimeout(() => sePlay('coin'), 650);
   if (m >= 3) { jgPlay('jg-manzoku'); if (L[0]) setTimeout(() => koePlay(L[0]), 400); }
-  else if (m <= 1 && L[1]) setTimeout(() => koePlay(L[1]), 400);
+  else if (m <= 1) { jgPlay('jg-dame'); if (L[1]) setTimeout(() => koePlay(L[1]), 400); }   // だめだったときのジングル（11/21 司令塔・音は昼のチャットの assets/bgm/jg-dame.mp3）
 }
 function endNight() {
   const M = MONSTERS[N.mon], belly = nightHP(S.day), mood = moodOf(N.score, belly), R = MOODS[mood];
