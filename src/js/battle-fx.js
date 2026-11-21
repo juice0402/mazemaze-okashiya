@@ -611,7 +611,7 @@ function nightWarm(build) {
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
       ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
-      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || [])].forEach(n => seLoad('koe', n).catch(() => {}));
+      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef]].filter(Boolean).forEach(n => seLoad('koe', n).catch(() => {}));
       seLoad('bgm', 'jg-manzoku').catch(() => {});
     }
   } catch (e) { /* 先読みは できなくても遊べる */ }

@@ -742,14 +742,12 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 #tipb{padding:7px 24px 8px 12px}
 #tipb .tip-x{right:5px;top:5px}
 #tipb::before,.cu-bub.cu-bub::after{content:"";position:absolute;width:18px;height:13.5px;margin:0;border:0;background:var(--ui-bubble-tail) center/100% 100% no-repeat}
-#tipb::before{left:-14px;bottom:11px;transform:rotate(90deg)}   /* 左のほのかを指す */
+/* しっぽの根もとは、枠の線（いちばん外の約1.3px）の上だけに重ねる。しっぽの線が枠の内がわへ入らず、すみのピンにもかからない（11/21 しょーくん「ツノが少し枠に被ってる」）
+   回した 18×13.5 の箱は、見た目 13.5×18。根もと（絵の上の辺）は右へ：left＋15.75px が根もと */
+#tipb::before{left:-17.5px;bottom:14px;transform:rotate(90deg)}   /* 左のほのかを指す */
 #tipb::after{content:none}
-#tipb.down::before{left:50%;bottom:-12px;margin-left:-9px;transform:none}
 .cu-bub.cu-bub{padding:4px 11px 4px 8px}
-.cu-bub.cu-bub::after{left:10px;bottom:-12px;transform:none}
-/* ヒントの指（ui-finger・160×176）：指先は左上のすみ（tips.js の at が指先を目あての所に） */
-.tipf{width:44px;height:48px;transform-origin:2px 2px;background:var(--ui-finger) center/contain no-repeat}
-.tipf-ring{left:2px;top:2px}
+.cu-bub.cu-bub::after{left:12px;bottom:-15.2px;transform:none}   /* 根もとは枠の線の上だけ（#tipb と同じ） */
 /* ==== UI の絵 その5（11/18 art-irai ui-chips・ui-day）==== */
 /* 計算の札（ui-chip-*・240×84〔こげ茶は 240×64〕）：左右の丸いはしを9分割の角に・まんなかが横にのびる。字はコード。style-battle.css より強く */
 .fchip.fchip{background:none;box-shadow:none;border-radius:0;border:1px solid transparent;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill / 19px 20px stretch;padding:3px 14px 4px;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}

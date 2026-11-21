@@ -231,25 +231,15 @@
 
 @media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.fchip.pop{animation-duration:.01s}.tiles .pc.tile.dough .pc-win::after{animation:none}}
 
-/* ---------- 夜のヒント（tips.js）：ほのかの吹き出し .tipb と指 .tipf。ずっと動くのは指の transform と opacity だけ ---------- */
+/* ---------- 夜のヒント（tips.js）：ほのかの吹き出し .tipb（指とうしろの暗さは 11/21 にやめた） ---------- */
 .tipb{position:fixed;left:0;top:0;z-index:44;max-width:240px;padding:7px 24px 8px 11px;border-radius:13px;background:var(--cream);color:var(--ink);border:2px solid #5a3418;box-shadow:0 3px 0 rgba(42,20,8,.45),0 8px 18px rgba(0,0,0,.35);font-size:min(12.5px,3.25vw);font-weight:700;line-height:1.5;cursor:pointer;transform-origin:0 100%;-webkit-tap-highlight-color:transparent}
 .tipb p{margin:0;white-space:nowrap}
 .tipb .kw{color:#8a3c00}
 .tipb::before,.tipb::after{content:"";position:absolute;left:-11px;bottom:9px;border:7px solid transparent;border-right:11px solid #5a3418;border-left:0}
 .tipb::after{left:-7px;bottom:10px;border-width:6px 9px 6px 0;border-right-color:var(--cream)}
-.tipb.down{transform-origin:50% 100%}
-.tipb.down::before{left:50%;bottom:-11px;margin-left:-7px;border:7px solid transparent;border-top:11px solid #5a3418;border-bottom:0}
-.tipb.down::after{left:50%;bottom:-7px;margin-left:-6px;border:6px solid transparent;border-top:9px solid var(--cream);border-bottom:0}
 .tip-x{position:absolute;right:5px;top:4px;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:11px;line-height:1;color:#fff;background:#8a5a34}
 .tipb.pop{animation:tippop .38s cubic-bezier(.3,1.45,.5,1) both}
 @keyframes tippop{from{opacity:0;transform:scale(.55) translateY(6px)}to{opacity:1;transform:none}}
-.tipf{position:fixed;left:0;top:0;z-index:44;width:40px;height:49px;pointer-events:none;transform-origin:19px 2px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));will-change:transform,opacity}
-.tipf svg{display:block;width:100%;height:100%}
-.tipf-ring{position:absolute;left:19px;top:2px;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(255,190,90,.7);opacity:0}
-.night.dragging~.tipf{display:none}
-.tipd{position:fixed;inset:0;z-index:43;pointer-events:none;background:linear-gradient(rgba(20,8,2,.1),rgba(20,8,2,.26) 45%,rgba(20,8,2,.42));animation:tipdIn .3s ease-out}
-@keyframes tipdIn{from{opacity:0}}
-.night.dragging~.tipd{display:none}   /* 夜のヒントのうしろを少し暗く（tips.js の tipDim・11/19）。つかんでいるあいだは消す */
 
 /* ---------- 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩）：ショップと同じ日よけの板に、ビルドのカード（紙のパネルの絵 ui-panel）を並べる ---------- */
 .pickov{position:absolute;inset:6px;z-index:7;display:flex;flex-direction:column;gap:6px;padding:2px 10px max(72px,21%);border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch;animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}

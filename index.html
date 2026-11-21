@@ -606,13 +606,10 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 #tipb{padding:7px 24px 8px 12px}
 #tipb .tip-x{right:5px;top:5px}
 #tipb::before,.cu-bub.cu-bub::after{content:"";position:absolute;width:18px;height:13.5px;margin:0;border:0;background:var(--ui-bubble-tail) center/100% 100% no-repeat}
-#tipb::before{left:-14px;bottom:11px;transform:rotate(90deg)}
+#tipb::before{left:-17.5px;bottom:14px;transform:rotate(90deg)}
 #tipb::after{content:none}
-#tipb.down::before{left:50%;bottom:-12px;margin-left:-9px;transform:none}
 .cu-bub.cu-bub{padding:4px 11px 4px 8px}
-.cu-bub.cu-bub::after{left:10px;bottom:-12px;transform:none}
-.tipf{width:44px;height:48px;transform-origin:2px 2px;background:var(--ui-finger) center/contain no-repeat}
-.tipf-ring{left:2px;top:2px}
+.cu-bub.cu-bub::after{left:12px;bottom:-15.2px;transform:none}
 .fchip.fchip{background:none;box-shadow:none;border-radius:0;border:1px solid transparent;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill / 19px 20px stretch;padding:3px 14px 4px;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
 .fchip.c-ember{border-image-source:var(--ui-chip-ember)}
 .fchip.c-pink{border-image-source:var(--ui-chip-pink)}
@@ -936,19 +933,9 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .tipb .kw{color:#8a3c00}
 .tipb::before,.tipb::after{content:"";position:absolute;left:-11px;bottom:9px;border:7px solid transparent;border-right:11px solid #5a3418;border-left:0}
 .tipb::after{left:-7px;bottom:10px;border-width:6px 9px 6px 0;border-right-color:var(--cream)}
-.tipb.down{transform-origin:50% 100%}
-.tipb.down::before{left:50%;bottom:-11px;margin-left:-7px;border:7px solid transparent;border-top:11px solid #5a3418;border-bottom:0}
-.tipb.down::after{left:50%;bottom:-7px;margin-left:-6px;border:6px solid transparent;border-top:9px solid var(--cream);border-bottom:0}
 .tip-x{position:absolute;right:5px;top:4px;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:11px;line-height:1;color:#fff;background:#8a5a34}
 .tipb.pop{animation:tippop .38s cubic-bezier(.3,1.45,.5,1) both}
 @keyframes tippop{from{opacity:0;transform:scale(.55) translateY(6px)}to{opacity:1;transform:none}}
-.tipf{position:fixed;left:0;top:0;z-index:44;width:40px;height:49px;pointer-events:none;transform-origin:19px 2px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));will-change:transform,opacity}
-.tipf svg{display:block;width:100%;height:100%}
-.tipf-ring{position:absolute;left:19px;top:2px;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(255,190,90,.7);opacity:0}
-.night.dragging~.tipf{display:none}
-.tipd{position:fixed;inset:0;z-index:43;pointer-events:none;background:linear-gradient(rgba(20,8,2,.1),rgba(20,8,2,.26) 45%,rgba(20,8,2,.42));animation:tipdIn .3s ease-out}
-@keyframes tipdIn{from{opacity:0}}
-.night.dragging~.tipd{display:none}
 .pickov{position:absolute;inset:6px;z-index:7;display:flex;flex-direction:column;gap:6px;padding:2px 10px max(72px,21%);border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch;animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
 .stage:has(.pickov) .ov-top,.stage:has(.pickov) .ov-heat{visibility:hidden}
 .stage:has(.pickov) .dc-chibi{display:none}
@@ -1372,6 +1359,7 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .panel.end .end-mood b{color:#b8441e}
 .tk-win{background:none;box-shadow:none;border:18px solid transparent;border-radius:0;border-image:var(--ui-window) 42 fill/18px stretch;padding:4px 2px 2px;color:#3a2318}
 .tk-text{text-shadow:none}
+.tk-win:not(.nar) .tk-text{padding-top:9px}
 .tk-win.nar .tk-text{color:#7a5a4a}
 .tk-next{right:2px;bottom:0;border-top-color:#c4415a}
 .tk-name{left:-4px;top:-34px;background:none;box-shadow:none;border:2px solid transparent;border-radius:0;border-image:var(--ui-nameplate) 49% 21% fill/auto stretch;padding:4px 30px 6px;text-shadow:0 1px 0 rgba(90,14,8,.85)}
@@ -4222,6 +4210,20 @@ return slot.querySelector('.pc');
 }
 const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore'], minamo: ['mina-ha', 'mina-fu'], wakaba: ['waka-sore', 'waka-ei'] };
 const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-uun'] };   // 11/21 昼の PR #25：あらあら（waka-araara）をなくしたので、だめだった声は うーん
+const KOE_THINK = { honoka: 'hono-uun', minamo: 'mina-uun', wakaba: 'waka-uun' };
+const THINK_MS = 8000;
+let thinkT = 0, thinkAt = '';
+function thinkArm() {
+clearTimeout(thinkT);
+if (!N || N.stage !== 'shop' || fighting) return;
+const last = thinkAt.split(':'), ok = +last[0] !== S.day || N.round - +last[1] >= 2;
+if (!ok) return;
+thinkT = setTimeout(function go() {
+if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting) return;
+if (busy || talking() || N.view || document.querySelector('.night.dragging')) { thinkT = setTimeout(go, 3000); return; }
+thinkAt = S.day + ':' + N.round; koePlay(KOE_THINK[chefArt()]);
+}, THINK_MS);
+}
 function atkKoe(pose) {
 const L = KOE_ATK[chefArt()]; if (!L || (pose === 'atk1' && Math.random() > .34)) return;
 koePlay(L[Math.floor(Math.random() * L.length)]);
@@ -4743,6 +4745,7 @@ if (resultAnim && N.stage === 'roundEnd') { resultAnim = false; const r = docume
 if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
 if (N.stage === 'shop' && !fighting) shopFit();
 tipSync();   // 夜のヒント（tips.js）
+thinkArm();   // 考えている声
 }
 
 /* src/js/battle-fx.js */
@@ -5279,7 +5282,7 @@ const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map
 nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
 if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
 ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
-[...(KOE_ATK[chef] || []), ...(KOE_END[chef] || [])].forEach(n => seLoad('koe', n).catch(() => {}));
+[...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef]].filter(Boolean).forEach(n => seLoad('koe', n).catch(() => {}));
 seLoad('bgm', 'jg-manzoku').catch(() => {});
 }
 } catch (e) { /* 先読みは できなくても遊べる */ }
@@ -5415,65 +5418,29 @@ const sec = document.querySelector('.night'); if (sec) sec.classList.remove('dra
 /* src/js/tips.js */
 
 const TIP_GAP = 700;   // 画面が落ち着いてから出す（ショップのカードが配られるあいだは待つ）
-const TIP_TOOLS = d => d.cat === 'tool' && (d.fx.heat || d.fx.sear);
-const TIP_PLACE = d => !!(d.fx.lead || d.fx.sai || d.fx.fin || d.fx.rally);
 const TIPS = [
 { id: 'shop1', at: 'shop', on: ['buy', 'mix'], text: ['カードを 下の調理台へ ドラッグ！', '今夜は 3まい 無料だよ'],
-when: () => N.round === 1 && !N.field && !N.board.some(Boolean) && tipBuy() >= 0,
-hand: () => [tipShopEl(tipBuy()), tipSlotEl(freeSlot())] },
-{ id: 'field', at: 'shop', on: ['buy', 'mix', 'bake'], text: ['フィールドは {場}へ 置こう', '{場}があると、生地が焼けるんだ'],
-when: () => !N.field && tipField() >= 0, hand: () => [tipShopEl(tipField()), document.querySelector('.fslot')] },
+when: () => N.round === 1 && !N.field && !N.board.some(Boolean) && tipBuy() >= 0 },
 { id: 'bake', at: 'shop', on: ['bake'], text: ['準備ができたら', 'おもてなし！を おしてね'],
-when: () => N.board.some(Boolean) && (N.round > 1 || N.picks === 0 || !N.shop.some(Boolean)), hand: () => [document.querySelector('.bake')] },
-{ id: 'goal', at: 'roundEnd', on: ['next'], text: ['味パワーが おなかをこえたら まんぞく！', '9ラウンドの合計で お礼が決まるよ'],
-when: () => true, hand: () => null },
+when: () => N.board.some(Boolean) && (N.round > 1 || N.picks === 0 || !N.shop.some(Boolean)) },
 { id: 'mix', at: 'shop', on: ['mix'], text: ['まぜ の札がついたカードは', 'かさねると まぜまぜ！★が上がるよ'],
-when: () => !!tipMix(), hand: () => { const m = tipMix(); return m && [tipEl(m[0]), tipEl(m[1])]; } },
-{ id: 'reroll', at: 'shop', on: ['reroll', 'buy', 'mix', 'bake'], text: ['ここからは コインで買うよ', '入れかえで 新しいカードも出せる'],
-when: () => N.round >= 2 && N.coins >= REROLL, hand: () => [document.querySelector('.sh-roll')] },
-{ id: 'full', at: 'shop', on: ['sell', 'mix'], text: ['調理台が いっぱい！', 'まぜるか、ショップへ持っていって うろう'],
-when: () => N.board.every(Boolean) && N.shop.some(Boolean), hand: () => [tipSlotEl(0), document.querySelector('.sh-cards')] },
-{ id: 'cooked', at: 'shop', on: ['*'], text: ['生地が焼けてきた！', '{焼き加減}9で {サイコー}。焼きすぎ注意！'],
-when: () => tipBoard(c => cardDef(c.cid).dough && c.cook > 0) >= 0, hand: () => [tipSlotEl(tipBoard(c => cardDef(c.cid).dough && c.cook > 0))] },
-{ id: 'heat', at: 'shop', on: ['*'], text: ['まきや火種で {火力}が上がるよ', '火が強いと、生地が早く焼けるんだ'],
-when: () => tipAny(TIP_TOOLS), hand: () => [tipAnyEl(TIP_TOOLS)] },
-{ id: 'place', at: 'shop', on: ['*'], text: ['いちばん左が {スタート}、右が {アンカー}', '並べかえは、おもてなしの前に いつでも'],
-when: () => tipAny(TIP_PLACE), hand: () => [tipAnyEl(TIP_PLACE)] },
-{ id: 'fushigi', at: 'shop', on: ['*'], text: ['今夜のお客さんの ふしぎな素材！', 'ショップに出るのは、今夜だけだよ'],
-when: () => N.shop.indexOf('m:' + MONSTERS[N.mon].drop) >= 0, hand: () => [tipShopEl(N.shop.indexOf('m:' + MONSTERS[N.mon].drop))] },
-{ id: 'burnt', at: 'shop', on: ['*'], text: ['あっ、{焦げ}ちゃった…', '{焦げ}どうしを まぜると、すごいことに？'],
-when: () => tipBoard(c => cardDef(c.cid).cat === 'burnt') >= 0, hand: () => [tipSlotEl(tipBoard(c => cardDef(c.cid).cat === 'burnt'))] },
-{ id: 'view', at: 'shop', on: ['*'], text: ['カードを タップすると', 'くわしい効果が 見られるよ'],
-when: () => N.round >= 3 && N.shop.some(Boolean), hand: () => [tipShopEl(N.shop.findIndex(Boolean))] },
+when: () => !!tipMix() },
 ];
 let TIP = null, tipT = 0;
-const tipEl = p => p.where === 'shop' ? tipShopEl(p.i) : tipSlotEl(p.i);
-const tipShopEl = i => i >= 0 ? document.querySelector(`.shcard[data-i="${i}"]`) : null;
-const tipSlotEl = i => i >= 0 ? document.querySelector(`.tslot[data-w="board"][data-i="${i}"]`) : null;
-const tipBoard = f => N.board.findIndex(c => c && f(c));
 const tipOkPlan = (p, q, kind) => { const P = dropPlan(p, q); return !!P && P.kind === kind && !P.ng; };
 function tipBuy() {
 const j = freeSlot(); if (j < 0) return -1;
-const ok = i => N.shop[i] && cardDef(N.shop[i]).cat !== 'field' && tipOkPlan({ where: 'shop', i }, { where: 'board', i: j }, 'buy');
-const L = N.shop.map((c, i) => i).filter(ok);
-return L.find(i => cardDef(N.shop[i]).dough) ?? (L.length ? L[0] : -1);
+return N.shop.findIndex((c, i) => c && cardDef(c).cat !== 'field' && tipOkPlan({ where: 'shop', i }, { where: 'board', i: j }, 'buy'));
 }
-function tipField() { return N.shop.findIndex((c, i) => c && cardDef(c).cat === 'field' && tipOkPlan({ where: 'shop', i }, { where: 'field', i: 0 }, 'buy')); }
 function tipMix() {
 for (let i = 0; i < N.shop.length; i++) for (let j = 0; j < SLOTS; j++)
-if (N.shop[i] && N.board[j] && tipOkPlan({ where: 'shop', i }, { where: 'board', i: j }, 'mix')) return [{ where: 'shop', i }, { where: 'board', i: j }];
+if (N.shop[i] && N.board[j] && tipOkPlan({ where: 'shop', i }, { where: 'board', i: j }, 'mix')) return true;
 for (let i = 0; i < SLOTS; i++) for (let j = 0; j < SLOTS; j++)
-if (i !== j && N.board[i] && N.board[j] && tipOkPlan({ where: 'board', i }, { where: 'board', i: j }, 'mix')) return [{ where: 'board', i }, { where: 'board', i: j }];
-return null;
-}
-const tipAny = f => N.shop.some(c => c && f(cardDef(c))) || N.board.some(c => c && f(cardDef(c.cid)));
-function tipAnyEl(f) {
-const i = N.shop.findIndex(c => c && f(cardDef(c)));
-return i >= 0 ? tipShopEl(i) : tipSlotEl(tipBoard(c => f(cardDef(c.cid))));
+if (i !== j && N.board[i] && N.board[j] && tipOkPlan({ where: 'board', i }, { where: 'board', i: j }, 'mix')) return true;
+return false;
 }
 const tipLines = t => (typeof STORY === 'object' && STORY.tips && STORY.tips[t.id]) || t.text;
 const tipNow = () => S.phase === 'night' && N && !busy && !fighting && !talking();
-const HONOKA_TIPS = ['field', 'cooked', 'heat', 'burnt'];
 function tipSync() {
 clearTimeout(tipT);
 if (TIP && (S.phase !== 'night' || !N || TIP.t.at !== N.stage || !TIP.t.when())) TIP = null;
@@ -5482,7 +5449,7 @@ tipT = setTimeout(tipNext, TIP_GAP);
 }
 function tipNext() {
 if (TIP || !tipNow() || N.view) return;
-const t = TIPS.find(t => !S.seen['t:' + t.id] && t.at === N.stage && (chefArt() === 'honoka' || !HONOKA_TIPS.includes(t.id)) && t.when());
+const t = TIPS.find(t => !S.seen['t:' + t.id] && t.at === N.stage && t.when());
 if (!t) return;
 TIP = { t, fresh: true };
 S.seen['t:' + t.id] = 1; save();
@@ -5492,11 +5459,7 @@ function tipEv(kind) {
 if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
 }
 function tipClose() { TIP = null; tipClear(); }
-function tipClear() { for (const id of ['tipb', 'tipf', 'tipd']) { const el = $(id); if (el) el.remove(); } const sc = document.querySelector('.shopov .sh-cards'); if (sc) sc.style.paddingBottom = ''; }
-function tipDim(scr, before) {
-const d = document.createElement('div'); d.id = 'tipd'; d.className = 'tipd';
-scr.insertBefore(d, before);
-}
+function tipClear() { const el = $('tipb'); if (el) el.remove(); const sc = document.querySelector('.shopov .sh-cards'); if (sc) sc.style.paddingBottom = ''; }
 function tipRoom(b) {
 const sc = document.querySelector('.shopov .sh-cards'); if (!sc) return;
 sc.style.paddingBottom = '';
@@ -5505,7 +5468,6 @@ const top = parseFloat(b.style.top), left = parseFloat(b.style.left), right = le
 if (top < cr.bottom - 2 && right > cr.left && left < cr.right) sc.style.paddingBottom = Math.round(cr.bottom - top + 14) + 'px';
 }
 const tipKw = s => s.replace(/\{([^}]+)\}/g, '<b class="kw">$1</b>');
-const tipMid = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
 function tipDraw() {
 tipClear();
 const scr = $('screen'), st = $('stage');
@@ -5522,37 +5484,8 @@ const left = has ? base.left + ch.offsetLeft + ch.offsetWidth - 4 : sr.left + 10
 b.style.left = Math.round(left) + 'px';
 b.style.maxWidth = Math.round(Math.max(150, sr.right - left - 8)) + 'px';
 b.style.top = Math.round(Math.max(sr.top + 6, foot - b.offsetHeight)) + 'px';   // 幅が決まってから高さで合わせなおす
-const box = document.querySelector('.vbox.result');
-if (box) {
-const r = box.getBoundingClientRect(), W = scr.getBoundingClientRect();
-b.classList.add('down'); b.style.maxWidth = Math.round(W.width - 16) + 'px';
-b.style.left = Math.round(Math.max(W.left + 8, Math.min(W.right - 8 - b.offsetWidth, r.left + r.width / 2 - b.offsetWidth / 2))) + 'px';
-b.style.top = Math.round(Math.max(6, r.top - b.offsetHeight - 14)) + 'px';
-}
-else tipRoom(b);
+tipRoom(b);
 TIP.fresh = false;
-const h = TIP.t.hand();
-tipDim(scr, b);
-if (!h || !h[0] || (h.length > 1 && !h[1])) return;
-const f = document.createElement('div');
-f.id = 'tipf'; f.className = 'tipf';
-f.innerHTML = '<i class="tipf-ring"></i>';   // 指は描き下ろしの絵（ui-finger・左上を指す。指先は左上のすみ）
-scr.appendChild(f);
-const A = tipMid(h[0]), B = h[1] ? tipMid(h[1]) : null;
-const at = (p, k) => `translate(${Math.round(p.x - 2)}px, ${Math.round(p.y - 2)}px) scale(${k})`;
-const ring = f.firstElementChild;
-if (REDUCED || !f.animate) { f.style.transform = at(B || A, 1); return; }
-if (B) {
-f.animate([
-{ transform: at(A, 1), opacity: 0 }, { transform: at(A, 1), opacity: 1, offset: .12 }, { transform: at(A, .86), opacity: 1, offset: .24 },
-{ transform: at(B, .86), opacity: 1, offset: .66 }, { transform: at(B, 1), opacity: 1, offset: .76 }, { transform: at(B, 1), opacity: 0 },
-], { duration: 2100, iterations: Infinity, easing: 'ease-in-out' });
-ring.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 0, transform: 'scale(.4)', offset: .18 }, { opacity: .9, transform: 'scale(1)', offset: .26 },
-{ opacity: .9, transform: 'scale(1)', offset: .66 }, { opacity: 0, transform: 'scale(1.4)', offset: .78 }, { opacity: 0, transform: 'scale(1.4)' }], { duration: 2100, iterations: Infinity });
-} else {
-f.animate([{ transform: at(A, 1) }, { transform: at(A, .84), offset: .3 }, { transform: at(A, 1), offset: .5 }, { transform: at(A, 1) }], { duration: 1300, iterations: Infinity, easing: 'ease-in-out' });
-ring.animate([{ opacity: 0, transform: 'scale(.3)' }, { opacity: .95, transform: 'scale(.5)', offset: .3 }, { opacity: 0, transform: 'scale(1.7)', offset: .85 }, { opacity: 0, transform: 'scale(1.7)' }], { duration: 1300, iterations: Infinity });
-}
 }
 addEventListener('resize', () => { if (TIP) requestAnimationFrame(tipDraw); });
 

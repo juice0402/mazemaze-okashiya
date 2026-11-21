@@ -26,6 +26,22 @@ function updTile(i, cid, cook, ice) {
 /* 掛け声（11/19 H-034・声は koe-irai・11/21〜 Gemini TTS：ほのか Leda・みなも Despina・わかば Achernar）：大きい攻撃（★2・★3・必殺技）はいつも・★1 は3回に1回くらい。大満足・だめだったときは night.js の nightEndSnd */
 const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore'], minamo: ['mina-ha', 'mina-fu'], wakaba: ['waka-sore', 'waka-ei'] };
 const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-uun'] };   // 11/21 昼の PR #25：あらあら（waka-araara）をなくしたので、だめだった声は うーん
+/* 考えている声「んー」（11/21 しょーくん「んーは夜のショップの考えているシーンに使うの」・waka-maa は使わない）：
+   ショップで しばらく何もしないと1回。毎ラウンドだとうるさいので、鳴ったら次のラウンドは休む */
+const KOE_THINK = { honoka: 'hono-uun', minamo: 'mina-uun', wakaba: 'waka-uun' };
+const THINK_MS = 8000;
+let thinkT = 0, thinkAt = '';
+function thinkArm() {
+  clearTimeout(thinkT);
+  if (!N || N.stage !== 'shop' || fighting) return;
+  const last = thinkAt.split(':'), ok = +last[0] !== S.day || N.round - +last[1] >= 2;
+  if (!ok) return;
+  thinkT = setTimeout(function go() {
+    if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting) return;
+    if (busy || talking() || N.view || document.querySelector('.night.dragging')) { thinkT = setTimeout(go, 3000); return; }
+    thinkAt = S.day + ':' + N.round; koePlay(KOE_THINK[chefArt()]);
+  }, THINK_MS);
+}
 function atkKoe(pose) {
   const L = KOE_ATK[chefArt()]; if (!L || (pose === 'atk1' && Math.random() > .34)) return;
   koePlay(L[Math.floor(Math.random() * L.length)]);
@@ -614,4 +630,5 @@ function renderNight() {
   if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
   if (N.stage === 'shop' && !fighting) shopFit();
   tipSync();   // 夜のヒント（tips.js）
+  thinkArm();   // 考えている声
 }

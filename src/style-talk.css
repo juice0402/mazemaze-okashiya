@@ -92,6 +92,7 @@
 /* 会話の窓と名前の札（色ちがいの人は札の色を回す） */
 .tk-win{background:none;box-shadow:none;border:18px solid transparent;border-radius:0;border-image:var(--ui-window) 42 fill/18px stretch;padding:4px 2px 2px;color:#3a2318}
 .tk-text{text-shadow:none}
+.tk-win:not(.nar) .tk-text{padding-top:9px}   /* 名前の札の下から（11/21 しょーくん「札にかぶる・もう少し下げて」） */
 .tk-win.nar .tk-text{color:#7a5a4a}
 .tk-next{right:2px;bottom:0;border-top-color:#c4415a}
 .tk-name{left:-4px;top:-34px;background:none;box-shadow:none;border:2px solid transparent;border-radius:0;border-image:var(--ui-nameplate) 49% 21% fill/auto stretch;padding:4px 30px 6px;text-shadow:0 1px 0 rgba(90,14,8,.85)}
