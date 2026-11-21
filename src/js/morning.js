@@ -365,7 +365,7 @@ function kitchenHTML(M) {
   const baked = M.baked.map(b => `<span class="mb-item">${candyIcon(b.key)}</span>`).join('');
   return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
     <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-      <span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${fcChipHTML()}${spent}</span>
+      <span class="m-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span>${fcChipHTML()}${spent}</span>
       <div class="m-tools">${mAutoBakeOk() ? `<button class="pill sub" data-act="m-auto"${mBusy ? ' disabled' : ''}>きのうと同じに焼く</button>` : ''}<button class="round m-bookb" data-act="m-book" aria-label="レシピ帳">${ART['ui-book'] ? `<img class="m-bookimg" src="${ART['ui-book']}" alt="">` : M_BOOK_SVG}</button></div>
       <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
       <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
@@ -408,7 +408,7 @@ function zakkaHTML() {
       <div class="ms-top"><span class="ms-ttl">雑貨屋</span></div>
       ${body}
     </div></div>
-    <div class="mz-foot gingham"><span class="mz-wallet">お財布 <b>${fmt(S.money)}</b>円</span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
+    <div class="mz-foot gingham"><span class="mz-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span></span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
     <div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
   </section>`;
 }

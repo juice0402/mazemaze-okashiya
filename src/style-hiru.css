@@ -548,10 +548,9 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 
 /* ---------- あしたの予報（11/21）：朝のキッチンの札 .m-fc（お財布の下）と、1日のまとめの札 .fc-card（ui-forecast の紙） ---------- */
 /* お財布の枠の中の予報（11/21 しょーくん「アイコンの高さや文字の高さがあってない」）：お財布の絵（style.css の .m-wallet::before＝1.35em・vertical-align:middle・上下 -3px）と同じ大きさ・同じそろえ方。字は お財布 と同じ 11px のまま同じ行に */
-.m-fc{display:inline;margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
-.m-fc .fc-like{display:inline}
-.m-fc .fc-ic,.m-fc .hico{display:inline-block;width:1.35em;height:1.35em;max-width:none;margin:-3px 2px -3px 0;vertical-align:middle;object-fit:contain;position:relative;top:-1.5px}
-.mstage .m-wallet.m-wallet::before{position:relative;top:-1.5px}   /* お財布の絵も字のまんなかへ（測ると絵が字より1.3〜1.8px下だった） */
+.m-fc{display:flex;align-items:center;gap:2px;margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
+.m-fc .fc-like{display:flex;align-items:center;gap:2px}
+.m-fc .fc-ic,.m-fc .hico{display:block;flex:none;width:1.35em;height:1.35em;max-width:none;object-fit:contain}
 .fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
 .fc-face.none{background:#e9d4b0}
 .fc-card{position:relative;display:grid;gap:3px;justify-items:start;padding:22px 18px 14px;min-width:180px;background:var(--ui-forecast,#fff4dc) center/100% 100% no-repeat;color:#4a2f1f;font-size:12px;line-height:1.3}
@@ -580,3 +579,10 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 /* 商品を並べるの上のヒント：左の相性帳のボタンにかからないように（11/21 測った：360幅でボタンとのすき間が1.5px・おまかせとは重なっていた → おまかせは天板の札の右へ） */
 .md-room .md-tip{max-width:calc(100% - 92px);padding-left:12px;padding-right:12px;text-wrap:balance;line-height:1.3}
 .md-wait .md-autob.md-autob{top:-.5px;right:10px;height:20px;min-height:0;line-height:18px;padding:0 10px;font-size:10px}
+/* お財布の並び（11/21 しょーくん「下揃えじゃなくて真ん中揃えの方がいい」）：お財布の絵・「お財布」・数・「円」・予報を、たてのまんなかでそろえる（字の下の線ではなく）。
+   お財布の絵は style.css の .m-wallet::before（inline-block・上下 -3px）→ ここでは flex の1つとして、まんなか */
+.m-wallet.m-wallet,.mz-wallet.mz-wallet{display:inline-flex;align-items:center}
+.m-wallet.m-wallet{box-sizing:border-box;min-height:29px}   /* 高さは前と同じ（レシピ帳のボタンとまんなかをそろえてある） */
+.m-wallet.m-wallet::before,.mz-wallet.mz-wallet::before{flex:none;margin-top:0;margin-bottom:0}
+.m-wallet b{margin:0 2px 0 4px;line-height:1}
+.mz-wallet b{line-height:1;margin:0 3px 0 4px}
