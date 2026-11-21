@@ -252,24 +252,26 @@ function dRegDue() {
   if (S.day <= 1 || S.seen.scDay === S.day || dMateDue()) return null;   // 仲間が来る日・物語の場面の日はなし
   const g = c => S.seen['rg:' + c] || 0, gd = c => S.seen['rgd:' + c] || 0, h = c => S.seen['rh:' + c] || 0, trip = regTrip();
   if (trip && S.day >= gd('otona') + REG_TRIP && g('obaachan') >= 3 && gd('obaachan') < S.day) return { c: 'otona', duo: 'obaachan', reg: 'pair' };
-  const ok = Object.keys(REG_STEPS).filter(c => {
-    const st = REG_STEPS[c][g(c)]; if (!st || gd(c) >= S.day || (c === 'otona' && trip)) return false;
+  const ok = Object.keys(REG_STEPS).filter(k => {
+    const st = REG_STEPS[k][g(k)], w = regWho(k); if (!st || gd(k) >= S.day || (k === 'otona' && trip) || !custOpen(w.c)) return false;
     const [day, hearts, need] = st;
-    if (S.day < day || h(c) < hearts) return false;
+    if (S.day < day || h(w.c) < hearts) return false;   // ハートはお客さんの種類ごと（新しい常連さん2人は同じ種類のハートを見る）
     if (need === 'minamo' && !STORY.mate('minamo')) return false;
     if (need === 'trip' && !(trip && gd('otona') < S.day)) return false;
+    if (need && need.startsWith('after:')) { const a = need.slice(6); if (!g(a) || gd(a) >= S.day) return false; }   // 1人目の段1のあと（同じ日はなし）
     return true;
   });
   if (!ok.length) return null;
-  const c = pick(ok);
-  return { c, reg: c + ':' + g(c) };
+  const k = pick(ok), w = regWho(k);
+  return { c: w.c, vr: w.vr, reg: k + ':' + g(k) };
 }
+const regKey = v => v.reg === 'pair' ? 'otona' : v.reg === 'koge' ? 'gakusei' : v.reg.split(':')[0];   // 場面の常連さん（名前は STORY.reg[regKey].name）
 const dRegLines = reg => reg === 'pair' ? STORY.regPair : reg === 'koge' ? STORY.regKoge : (() => { const [c, k] = reg.split(':'); return ((STORY.reg[c] || {}).st || [])[+k]; })();
 function dRegRun(v) {
   const L = dRegLines(v.reg);
   if (!L || !L.length) { v.sc = 2; return; }
   dScene = v; v.sc = 1; dSkip = Infinity;   // お店のひとことの割りこみを止める
-  const nm = { [STORY.reg[v.c].name]: 'dBub', ...(v.duo ? { [STORY.reg[v.duo].name]: 'dBub2' } : {}) };
+  const nm = { [STORY.reg[regKey(v)].name]: 'dBub', ...(v.duo ? { [STORY.reg[v.duo].name]: 'dBub2' } : {}) };
   let i = 0;
   const step = () => {
     if (dScene !== v || S.phase !== 'day') return;

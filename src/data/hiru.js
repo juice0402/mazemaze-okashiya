@@ -93,7 +93,20 @@ const CUST_LIKES = {
   gakusei: ['milk', 'ichigo', 'minto', 'hoshi'],
   otona: ['mugi', 'egg', 'herb', 'hoippu', 'karamel'],
   obaachan: ['hachimitsu', 'egg', 'mizuame', 'kanten'],
+  elf: ['hachimitsu', 'herb', 'minto', 'kanten'],
+  vamp: ['ichigo', 'mizuame', 'niji', 'hoippu'],
+  tanuki: ['mugi', 'egg', 'hoshi', 'karamel'],
 };
+/* 新しいお客さん（11/21 しょーくん「常連さん大量に増やす」→ えらぶ質問で新しい種族3つ）：名前と、絵がないときの仮の色。world.js の CUSTOMERS のうしろに足す
+   その日から来る（CUST_DAY）・絵 cust-<id> が来てから（それまでは来ない）。見た目3人：1・2 は常連さん（REG_WHO）・3 はふつう。設定は claude/okashi-story.md */
+const CUST_NEW = [
+  { id: 'elf', name: 'エルフのうたうたい', h: 19, skin: '#f7dcc4', hair: '#e8d08a', shirt: '#8fc3e8', arm: '#6fa6cf', pants: '#e9dcc4' },
+  { id: 'vamp', name: '吸血鬼のお嬢さま', h: 18, skin: '#f4e6ea', hair: '#e8b8c8', shirt: '#2a1d24', arm: '#3a2630', pants: '#b8243c' },
+  { id: 'tanuki', name: '行商のたぬき', h: 17, skin: '#a8784e', hair: '#5a3c24', shirt: '#d9822b', arm: '#b8691f', pants: '#6b4a2e' },
+];
+for (const c of CUST_NEW) if (!CUST[c.id]) { CUSTOMERS.push(c); CUST[c.id] = c; }
+const CUST_DAY = { elf: 4, vamp: 7, tanuki: 10 };
+const custOpen = c => S.day >= (CUST_DAY[c] || 0) && (!CUST_DAY[c] || !!ART['cust-' + c]);
 /* 常連さん（11/19・仮）：段ごとに [その日から, その種類のお客さんからのハートの合計, 条件]。条件 minamo＝みなもが仲間・trip＝ガルドが旅のあいだ（日にちは見ない）
    その日にあてはまる常連さんがいれば、その日はかならず来る（1日1場面・仲間が来る日と物語の場面の日はなし）。来るのは1まいめの見た目。セリフは story.js の STORY.reg */
 const REG_STEPS = {
@@ -101,7 +114,17 @@ const REG_STEPS = {
   gakusei:  [[3, 1], [6, 3], [9, 6], [12, 10]],
   otona:    [[2, 1], [5, 3], [9, 6]],
   obaachan: [[2, 1], [6, 3], [0, 6, 'trip']],
+  /* 11/21 新しい常連さん：はじめて来る日（CUST_DAY）に段1。2人目は1人目の段1のあと（after:<1人目>）。ハートはその種類のお客さんの合計 */
+  serena:   [[4, 0], [8, 3], [12, 6]],
+  pio:      [[6, 1, 'after:serena'], [10, 4], [14, 8]],
+  rozetta:  [[7, 0], [10, 3], [14, 6]],
+  gilbert:  [[9, 1, 'after:rozetta'], [13, 4], [16, 8]],
+  ponkichi: [[10, 0], [13, 3], [16, 6], [19, 9]],
+  ponta:    [[12, 1, 'after:ponkichi'], [15, 4], [18, 8]],
 };
+/* 常連さん → お客さんの種類と見た目（はじめの4人は種類の名前がそのまま常連さんの名前・見た目1） */
+const REG_WHO = { serena: ['elf', 1], pio: ['elf', 2], rozetta: ['vamp', 1], gilbert: ['vamp', 2], ponkichi: ['tanuki', 1], ponta: ['tanuki', 2] };
+const regWho = k => { const w = REG_WHO[k]; return w ? { c: w[0], vr: w[1] } : { c: k, vr: 1 }; };
 const REG_TRIP = 3;   // ガルドの旅：段3のあと、この日数は来ない（1まいめの見た目を出さない）。帰るのは、そのあとマーサの段3がすんでから
 const regTrip = () => (S.seen['rg:otona'] || 0) >= 3 && !S.seen['rg:pair'];
 function custCount() {
@@ -125,14 +148,14 @@ function wpick(items, w) {
 /* その日のお客さん（開店のときに決める）：[{ c: お客さんの id, like: すきな素材 }] */
 /* その日のお客さんの順番：同じ種類のお客さんは続けて来ない。見た目ちがいの絵（day-scene.js の custVariants）があれば、その日まだ来ていない見た目から（vr） */
 function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
-  const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + 1] : []);
+  const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + (fix.vr || 1)] : []);
   const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
   const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m) * decoLikeW(m)); };
   const away = regTrip() ? ['otona'] : [];   // 旅に出ている常連さんは、1まいめの見た目で来ない
   let prev = null;
   return Array.from({ length: n }, (_, i) => {
-    if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: 1, like: fix.c === 'kodomo' && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルはいちごが大すき
-    const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), decoCustW); prev = c;   // かざりのテーマで来やすさが変わる（11/21）
+    if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: fix.vr || 1, like: (fix.c === 'kodomo' || /^rozetta/.test(fix.reg)) && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルとロゼッタはいちごが大すき
+    const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => custOpen(id) && id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), decoCustW); prev = c;   // 新しいお客さんは CUST_DAY から   // かざりのテーマで来やすさが変わる（11/21）
     const all = custVariants(c), vs = away.includes(c) && all.length > 1 ? all.filter(x => x !== 1) : all;
     const fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
     used.add(c + vr);
