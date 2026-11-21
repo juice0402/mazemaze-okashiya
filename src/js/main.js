@@ -16,7 +16,7 @@ const OPT_ROWS = [['bgm', 'BGM'], ['se', '効果音・声']];
 function optHTML() {
   const row = ([k, name]) => `<div class="opt-row"><span class="opt-nm">${name}</span><span class="opt-tabs">${[[1, 'オン'], [0, 'オフ']].map(([v, t]) => `<button class="tab${!!v === (S.opt[k] !== false) ? ' on' : ''}" data-act="optSet" data-k="${k}" data-v="${v}">${t}</button>`).join('')}</span></div>`;
   return `<div class="panel opt" data-act="noop"><button class="vclose" data-act="optX" aria-label="とじる">×</button><h3 class="opt-ttl">せってい</h3>${OPT_ROWS.map(row).join('')}
-    <div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM（Frank Wen・MIT ライセンス）</p><p>音声合成：VOICEVOX:WhiteCUL、VOICEVOX:春日部つむぎ、VOICEVOX:冥鳴ひまり</p></div></div>`;
+    <div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM（Frank Wen・MIT ライセンス）</p></div></div>`;
 }
 function optOpen() {
   let v = $('optv');

@@ -23,9 +23,9 @@ function updTile(i, cid, cook, ice) {
   slot.innerHTML = `<i class="ord">${i + 1}</i>${cardTile(cid, { cook, ice })}`;
   return slot.querySelector('.pc');
 }
-/* 掛け声（11/19 H-034・声は koe-irai の VOICEVOX）：大きい攻撃（★2・★3・必殺技）はいつも・★1 は3回に1回くらい。大満足・だめだったときは night.js の nightEndSnd */
+/* 掛け声（11/19 H-034・声は koe-irai・11/21〜 Gemini TTS：ほのか Leda・みなも Despina・わかば Achernar）：大きい攻撃（★2・★3・必殺技）はいつも・★1 は3回に1回くらい。大満足・だめだったときは night.js の nightEndSnd */
 const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore'], minamo: ['mina-ha', 'mina-fu'], wakaba: ['waka-sore', 'waka-ei'] };
-const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-araara'] };
+const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-uun'] };   // 11/21 昼の PR #25：あらあら（waka-araara）をなくしたので、だめだった声は うーん
 function atkKoe(pose) {
   const L = KOE_ATK[chefArt()]; if (!L || (pose === 'atk1' && Math.random() > .34)) return;
   koePlay(L[Math.floor(Math.random() * L.length)]);

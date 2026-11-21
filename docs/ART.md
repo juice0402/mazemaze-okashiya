@@ -67,11 +67,11 @@
 | assets/bgm/yoru.mp3（夜のバトル・25.6秒・1ループ） | C・コードで作った曲 | tools/bgm/make_bgm.py（FluidSynth）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 司令塔（枝 shireitou/bgm） | 夜（夕方の会話・ショップ・バトル） |
 | assets/bgm/title.mp3・asa.mp3・matome.mp3（タイトル28.8秒・朝32秒・まとめ26.7秒・1ループ）と jg-hirameki・jg-manzoku・jg-nakama（ジングル・1回） | C・コードで作った曲 | tools/bgm/make_bgm_hiru.py（make_bgm.py の部品）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 昼のチャット（PR #20・H-034） | 曲はタイトルとプロローグ・朝・まとめ（sound.js の bgmName）・ジングルは se.js の jgPlay（新しいお菓子・大満足・仲間の来店） |
 | assets/se/*.mp3（効果音25こ：tap・wipe・card・buy・reroll・serve・hit・mult・star・manzoku・coin・fire・burnt と朝昼の pick・drop・bake・done・place・kanban・soroi・door・heart・sale・soldout・close） | C・コードで作った音 | tools/se/make_se.py（FluidR3_GM＋numpy） | 2026-11-19 | 昼のチャット（PR #20・H-034） | se.js の sePlay（夜は night.js・night-ui.js・battle-fx.js・main.js から） |
-| assets/koe/*.mp3（掛け声19こ：ほのか hono-・みなも mina-・わかば waka-） | 音声合成 | VOICEVOX（ほのか＝春日部つむぎ・みなも＝冥鳴ひまり・わかば＝WhiteCUL） | 2026-11-19 | 声の依頼箱 juice0402/koe-irai の out/okashi/kakegoe（PR #20） | se.js の koePlay（夜の攻撃・大満足・だめだったとき）。「うーん」の3つは koe-irai を直したら作りなおす。App Store の前に春日部つむぎ・WhiteCUL のくわしい規約を司令塔が読む |
+| assets/koe/*.mp3（掛け声17こ：ほのか hono-・みなも mina-・わかば waka-。11/21 わぁ hono-waa・あらあら waka-araara をなくした・みなもの mina-n は「ん」→「うん」） | 音声合成 | koe-irai・Gemini TTS:Leda・Despina・Achernar（gemini-3.8-flash-tts）＝ほのか Leda・みなも Despina・わかば Achernar（11/21〜。前は VOICEVOX） | 2026-11-21 | 声の依頼箱 juice0402/koe-irai の out/okashi/kakegoe-gemini（昼の PR #25・切り分けは tools/koe/） | se.js の koePlay（夜の攻撃・大満足・だめだったとき＝night-ui.js の KOE_ATK・KOE_END）と朝の mKoe |
 
 ### クレジット（クレジットの画面・ストアの説明に入れる）
 - 楽器の音：FluidR3_GM（Frank Wen・MIT ライセンス）
-- 音声合成：VOICEVOX:WhiteCUL、VOICEVOX:春日部つむぎ、VOICEVOX:冥鳴ひまり
+- 声（Gemini TTS）はクレジットの義務なし（11/21〜。VOICEVOX はもう使っていないので消した）
 - ゲームの中では、タイトルとまとめの画面の「せってい」の窓に出す（main.js の optHTML・11/19）
 | chibi-think・chibi-cheer・chibi-sit（ほのかのデフォルメ：考える・応援・すわってクッキー） | A | Codex | 2026-11-18 | art-irai `requests/okashi/honoka-chibi.md`（step1〜3）・もとの PNG `assets/art/raw/honoka-chibi_step1〜3.png` | 舞台の賑やかし（ショップ＝考える・バトル＝すわって・大きな一撃と勝ち＝応援） |
 | mob-slime・mob-hitsuji（スライム・くもひつじのデフォルメ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step1）・もとの PNG `assets/art/raw/mobs-chibi_step1.png` | 舞台の賑やかしのモブ |
