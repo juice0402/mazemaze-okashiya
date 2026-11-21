@@ -5,7 +5,7 @@
   python3 tools/prep_art.py two <もとの PNG> <名前1> <名前2> <上限>           … 横に2つ並んだ絵（モンスター）
   python3 tools/prep_art.py box <もとの PNG> <名前> <上限> <x0,y0,x1,y1>      … 決まった四角で切る（立ち絵のポーズちがいを、元の絵と同じ大きさ・位置に。ほのかは 162,4,830,1528・上限760）
   python3 tools/prep_art.py bg <もとの PNG> <名前>                             … 背景（緑は抜かない・16:9に切って横960）
-  python3 tools/prep_art.py parts <もとの PNG> <幅の上限> <名前1> <名前2> …   … UI のシート（緑で区切られた部品を、上の段から左→右の順に1つずつ。'-' は飛ばす）
+  python3 tools/prep_art.py parts <もとの PNG> <幅の上限> <名前1> <名前2> …   … UI のシート（緑で区切られた部品を、上の段から左→右の順に1つずつ。'-' は飛ばす）（くっついて数が合わないときは 名前のあとに --grid 3x3＝同じ大きさのマスで切る）
   どのモードも --strict をつけると、ほぼ純な緑だけ抜く（ミントのリボンなど、緑っぽい色が消えてしまう絵に）
   キャラが大きく出る絵（honoka*・minamo*・wakaba* の立ち絵・表情・戦闘ポーズ）は、上限 1520（＝もとの大きさ・11/19 H-032）。デフォルメ chibi は 320
 できた絵は assets/art/<名前>.webp。もとの PNG はリポジトリに入れない（作業場所の /tmp などに置いて使う。出どころは docs/ART.md に書く）。
@@ -100,6 +100,8 @@ if __name__ == '__main__':
         save(im.resize((960, 540), Image.LANCZOS), sys.argv[3])
     elif mode == 'parts':
         im = key_green(src); lim = int(sys.argv[3]); names = sys.argv[4:]
+        grid = None   # --grid 3x3：同じ大きさのマスで切る（11/21 夜 まぜた先の絵：上下の段のきらきらがつながって 9こが6こに切れた）
+        if '--grid' in names: i = names.index('--grid'); grid = tuple(int(v) for v in names[i + 1].split('x')); del names[i:i + 2]
         a = im.getchannel('A'); w, h = im.size; ap = a.load()
 
         def runs(flags, gap=6, small=12):
@@ -112,13 +114,26 @@ if __name__ == '__main__':
             return [r for r in out if r[1] - r[0] >= small]
 
         boxes = []
-        for y0, y1 in runs([any(ap[x, y] > 40 for x in range(0, w, 2)) for y in range(h)]):
-            for x0, x1 in runs([any(ap[x, y] > 40 for y in range(y0, y1 + 1, 2)) for x in range(w)]):
-                boxes.append((x0, y0, x1 + 1, y1 + 1))
+        if grid:
+            gc, gr = grid
+            boxes = [(w * c // gc, h * r // gr, w * (c + 1) // gc, h * (r + 1) // gr) for r in range(gr) for c in range(gc)]
+        else:
+            for y0, y1 in runs([any(ap[x, y] > 40 for x in range(0, w, 2)) for y in range(h)]):
+                for x0, x1 in runs([any(ap[x, y] > 40 for y in range(y0, y1 + 1, 2)) for x in range(w)]):
+                    boxes.append((x0, y0, x1 + 1, y1 + 1))
         print(len(boxes), 'parts')
+        if len(boxes) != len(names): print(f'注意：部品 {len(boxes)} こ・名前 {len(names)} こ（くっついた部品は --grid 3x3 で切りなおす）')
         for b, n in zip(boxes, names):
             if n == '-': continue
-            p = im.crop(b); bb = p.getbbox(); p = p.crop(bb) if bb else p
+            p = im.crop(b)
+            if grid:   # マスのふちにかかった となりの絵のはし（いちばん大きいかたまり以外）を消す
+                import numpy as np, scipy.ndimage as nd
+                A = np.array(p.getchannel('A')); lab, k = nd.label(nd.binary_dilation(A > 40, iterations=3))
+                if k > 1:
+                    big = 1 + int(np.argmax(nd.sum(np.ones_like(lab), lab, range(1, k + 1))))
+                    edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0, big}
+                    if edge: A[np.isin(lab, list(edge))] = 0; p.putalpha(Image.fromarray(A))
+            bb = p.getbbox(); p = p.crop(bb) if bb else p
             sc = min(1.0, lim / p.width)
             save(p.resize((round(p.width * sc), round(p.height * sc)), Image.LANCZOS) if sc < 1 else p, n)
     elif mode == 'one':
