@@ -83,7 +83,7 @@
 .mt.poor .mt-pr{color:#5a4a3a;background:#d9d0c4;border-color:#7a6a5a}
 .mt-pr.sp{color:#5a3404;background:linear-gradient(var(--brass-hi),var(--gold));border-color:var(--brass-lo)}
 .m-bar{flex:none;display:flex;gap:8px;padding-bottom:8px}
-.m-bar .sub{flex:none;padding:8px 16px}
+.m-bar .sub{flex:none;padding:8px 20px}   /* 木のボタンの両はしの くい に字がつかないように（11/21 リーダーの総デバッグ・まとめの「せってい」と同じ20px） */
 .m-bar .big{flex:1;width:auto}
 .morning.busy .mtray{opacity:.7}
 /* 作業台の天板：焼けたお菓子がならぶ（まだ棚ではない） */
