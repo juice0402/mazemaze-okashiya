@@ -614,5 +614,6 @@ function nightWarm(build) {
       [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef]].filter(Boolean).forEach(n => seLoad('koe', n).catch(() => {}));
       seLoad('bgm', 'jg-manzoku').catch(() => {});
     }
+    if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
   } catch (e) { /* 先読みは できなくても遊べる */ }
 }

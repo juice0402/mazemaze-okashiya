@@ -3,7 +3,7 @@
 // node tools/art_files.mjs                           … assets/art の絵ぜんぶ（はじめて出すとき・250ずつ区切る。app.css・app.js・bgm/・se/・koe/ は別に足す）
 // 使い方：node tools/build.mjs --artifact <ページのフォルダ>/okashi.html → Artifact の publish に file_path <ページのフォルダ>/okashi.html・
 //   root "/home/claude/mazemaze-okashiya/assets/art"（clone した場所の assets/art）・files に出てきた表をそのまま渡す。出さなかった絵は前のまま残る（消した絵は null で消す）
-import { readdirSync } from 'node:fs';
+import { readdirSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,6 +17,7 @@ if (since) {
   for (const l of out.split('\n')) {
     if (/^assets\/art\/(ui|fx)-[^/]+\.(webp|png)$/.test(l) && pageDir) map['art-pack.webp'] = { from: resolve(pageDir, 'art-pack.webp'), contentType: 'image/webp' };   // ui-*・fx-* は1つにまとめた art-pack.webp（11/19）
     else if (/^assets\/art\/[^/]+\.(webp|png)$/.test(l)) map[l.slice(11)] = l.slice(11);
+    else if (/^assets\/bgm\/[^/]+\.mp3$/.test(l) && statSync(join(root, l)).size > 400000) map[l.slice(7)] = { from: join(root, l), contentType: 'audio/mpeg' };   // 大きい曲（Lyria・11/21）は bgm/<名前>.mp3 のまま（build.mjs の BIG_BGM と同じ数）
     else if (/^assets\/(bgm|se|koe)\/[^/]+\.mp3$/.test(l) && pageDir) map['snd-pack.mp3'] = { from: resolve(pageDir, 'snd-pack.mp3'), contentType: 'audio/mpeg' };   // 曲・効果音・掛け声は1つにまとめた snd-pack.mp3（11/19・アーティファクトは511ファイルまで）
   }
   if (!pageDir) console.log('ページのフォルダがない（app.css・app.js が入らない）');

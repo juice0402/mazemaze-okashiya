@@ -51,13 +51,13 @@
 .night .stage .chef,.night .stage .chef-sh{--ch:min(59cqw,53cqh)}
 .night .stage .chef{left:1cqw;bottom:calc(12cqh - var(--fp, 0) * var(--ch));height:var(--ch);width:auto;max-height:none;max-width:none;transform-origin:50% calc(100% - var(--fp, 0) * 100%);transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
 .deco.battle .dc-chibi,.deco.win .dc-chibi,.stage:not(:has(.shopov)) .deco.shop .dc-chibi{display:none}   /* ちびほのかはショップのときだけ（来店の会話・お礼・結果は大きいほのか） */
-.night .stage .mon{bottom:22%}
+.night .stage .mon{bottom:14%}   /* 11/21 しょーくん「敵が上すぎる・同じ空間にいるように見えない」：22%→14%（シェフの足 12cqh と同じ床・少しだけ奥） */
 .night .stage .mon.hi{right:3%;width:31%;max-height:40%}   /* 大きいほのかとつりあう大きさ（11/18）・11/19 少し小さく・はなす */
 .chef-sh,.mon-sh{position:absolute;z-index:1;pointer-events:none}
 .chef-sh{left:1cqw;bottom:calc(12cqh - var(--ch) * .05);width:calc(var(--ch) * var(--ca, .8));height:calc(var(--ch) * .1);
   background:radial-gradient(calc(var(--ch) * var(--sw, .23)) calc(var(--ch) * .036) at calc(var(--fx, .45) * 100%) 50%,rgba(15,5,0,.6),rgba(15,5,0,.42) 55%,transparent);
   transition:translate .22s cubic-bezier(.2,.9,.3,1.25)}
-.mon-sh{right:5.5%;width:26%;bottom:calc(22% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
+.mon-sh{right:5.5%;width:26%;bottom:calc(14% - 2.2cqh);height:4.4cqh;background:radial-gradient(closest-side,rgba(15,5,0,.62),rgba(15,5,0,.4) 45%,transparent);transition:opacity .4s}
 .mon.flee~.mon-sh{opacity:0}
 /* ビルドのゲージ（火力・温度・こね・びん）は右上（11/19 しょーくん「もともと味パワーがあった箇所に、ビルド別の特殊なゲージがあれば右上に」） */
 .night .stage .ov-top,.night .stage .ov-heat{top:9px;height:30px;align-items:center}   /* ラウンドの札とビルドのゲージは同じ高さ・同じまんなか（11/19 しょーくん「ラウンドの高さと揃うように」） */

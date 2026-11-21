@@ -1,17 +1,39 @@
-/* ==== 音：BGM（11/19 司令塔の見本2曲・しょーくん「このまま採用できるレベル」） ====
-   - 曲は assets/bgm/（作り方は tools/bgm/README.md）。ビルドが名前→場所の表 BGM_SRC を入れる
+/* ==== 音：BGM（11/19 司令塔の見本2曲・11/21〜 昼と夜は Lyria の曲） ====
+   - 曲は assets/bgm/。ビルドが名前→場所の表 BGM_SRC を入れる
    - Web Audio のループで鳴らす（<audio loop> はつなぎ目でプツッとなることがある）
    - スマホはさわる前に鳴らせないので、はじめのタップのあとで鳴らしはじめる
-   - 昼の曲（hiru）：タイトル・プロローグ・朝・昼・まとめ／夜の曲（yoru）：夜（夕方の会話・ショップ・バトル） */
-const BGM_LOOP = { hiru: 38.4, yoru: 25.6, title: 28.8, asa: 32.0, matome: 26.6667 };   // 1ループの秒（hiru 100BPM・yoru 150BPM の16小節・title／asa／matome は 11/19 H-034 昼のチャット）
+   - タイトルとプロローグ＝title・朝＝asa・まとめ＝matome（コードで作った曲・11/19 H-034）
+   - 昼のお店＝hiru／hiru-2、夜＝yoru-<シェフ>（-2）（11/21 司令塔・koe-irai の Lyria:lyria-3.5 のループ版・しょーくん「音楽全て完璧すぎ」）。
+     2本ある曲は日ごとに交代（偶数の日が -2）。夜はその夜のシェフの曲（ほのか＝A・みなも＝C・わかば＝B）。わかばの2本めはつなぎ目があやしいので入れていない */
+const BGM_LOOP = {   // 1ループの秒（Lyria は manifest.json の loop.samples ÷ 44100）
+  title: 28.8, asa: 32.0, matome: 26.6667,
+  hiru: 2540164 / 44100, 'hiru-2': 2540165 / 44100,
+  'yoru-honoka': 2540159 / 44100, 'yoru-honoka-2': 2822399 / 44100,
+  'yoru-minamo': 4671514 / 44100, 'yoru-minamo-2': 2419195 / 44100,
+  'yoru-wakaba': 2419195 / 44100,
+};
 const BGM_VOL = 0.45;
 const BGM_FADE = 0.6;
-const bgm = { ctx: null, master: null, buf: {}, fail: {}, want: '', cur: '', src: null, gain: null };
+const bgm = { ctx: null, master: null, raw: {}, buf: {}, fail: {}, want: '', cur: '', src: null, gain: null };
+/* 曲の場所：ためしのページの大きい曲は BGM_BIG（まとめ snd-pack.mp3 に入れない・build.mjs）。BGM_SRC に入れないのは、se.js が BGM_SRC.hiru の場所から se/・koe/ をさがすため */
+const bgmUrl = n => BGM_SRC[n] || (typeof BGM_BIG !== 'undefined' && BGM_BIG[n]) || '';
 
-/* 曲えらび（11/19 H-034）：タイトルとプロローグ＝title・朝＝asa・昼＝hiru・夜＝yoru・まとめ＝matome。せっていで BGM を消したら ''（止める） */
+/* 2本ある曲は日ごとに交代 */
+const bgmTake = n => (S && S.day % 2 === 0 && bgmUrl(n + '-2')) ? n + '-2' : n;
+/* 夜の曲：その夜のシェフ（夕方にえらぶまでは きのうまでのビルド S.build） */
+function bgmNight(build) {
+  let c = 'honoka';
+  try { c = (CHEFS[BUILDS[build || (N && N.build) || S.build || 'cookie'].chef] || {}).art || 'honoka'; } catch (e) { /* ほのか */ }
+  return bgmTake('yoru-' + c);
+}
+/* 曲えらび：せっていで BGM を消したら ''（止める） */
 function bgmName() {
   if (!S || (S.opt && S.opt.bgm === false)) return '';
-  const ph = S.phase; return ph === 'night' ? 'yoru' : ph === 'morning' ? 'asa' : ph === 'day' ? 'hiru' : ph === 'result' ? 'matome' : 'title';
+  const ph = S.phase; return ph === 'night' ? bgmNight() : ph === 'morning' ? 'asa' : ph === 'day' ? bgmTake('hiru') : ph === 'result' ? 'matome' : 'title';
+}
+/* 次に鳴る曲（裏で先に読んでおく・code-rules の C）：朝 → 昼のお店・昼 → 夜 */
+function bgmNext() {
+  const ph = S && S.phase; return ph === 'morning' ? bgmTake('hiru') : ph === 'day' ? bgmNight(S.build) : '';
 }
 function bgmUnlock() {
   if (bgm.ctx) { if (bgm.ctx.state === 'suspended' && !document.hidden) bgm.ctx.resume(); return; }
@@ -21,26 +43,34 @@ function bgmUnlock() {
   if (bgm.ctx.state === 'suspended') bgm.ctx.resume();
   bgmSync();
 }
-/* 読みこめなかったら、10秒たつまで読みなおさない（11/19 点検：読めない所ではタップのたびに読みに行き、夜1回で179回になっていた） */
+/* ファイルを読む（まだ鳴らさない）。夜の曲は 0.6〜1.3MB あるので、前の場面のうちに読んでおく（battle-fx.js の nightWarm からも） */
+function bgmFetch(name) {
+  if (!name || !bgmUrl(name)) return null;
+  if (!bgm.raw[name]) bgm.raw[name] = fetch(bgmUrl(name)).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .catch(e => { delete bgm.raw[name]; throw e; });
+  return bgm.raw[name];
+}
+function bgmWarm(name) { const P = bgmFetch(name); if (P) P.catch(() => {}); }
+/* 読みこめなかったら、10秒たつまで読みなおさない（11/19 点検：読めない所ではタップのたびに読みに行き、夜1回で179回になっていた）。
+   ほどいた曲（1分で約20MB）は、いま鳴っている曲と、これから鳴らす曲だけ持つ */
 function bgmLoad(name, done) {
   if (bgm.buf[name]) return done(bgm.buf[name]);
-  if (!BGM_SRC[name]) return;   // ためしのページで、音のまとめ（snd-pack.mp3）をまだ読んでいる
+  if (!bgmUrl(name)) return;   // ためしのページで、音のまとめ（snd-pack.mp3）をまだ読んでいる
   if (bgm.buf[name] === 0) return;   // 読みこみ中
   if (Date.now() - (bgm.fail[name] || 0) < 10000) return;
   bgm.buf[name] = 0;
-  fetch(BGM_SRC[name]).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
-    .then(a => new Promise((ok, ng) => bgm.ctx.decodeAudioData(a, ok, ng)))
-    .then(b => { bgm.buf[name] = b; if (bgm.want === name) done(b); })
+  bgmFetch(name).then(a => new Promise((ok, ng) => bgm.ctx.decodeAudioData(a.slice(0), ok, ng)))
+    .then(b => { for (const k of Object.keys(bgm.buf)) if (k !== bgm.cur && k !== name && bgm.buf[k]) delete bgm.buf[k]; bgm.buf[name] = b; if (bgm.want === name) done(b); })
     .catch(() => { delete bgm.buf[name]; bgm.fail[name] = Date.now(); if (bgm.want === name) bgm.want = ''; });
 }
-/* mp3 の頭のすき間（エンコーダーの 1105 サンプル）が残っているブラウザでは、そこを外してループする */
+/* mp3 の頭のすき間（エンコーダーの 1105 サンプル・44.1kHz）が残っているブラウザ（Safari など）では、そこを外してループする。Chrome は外して読む */
 function bgmStart(name, b) {
   if (bgm.want !== name || bgm.cur === name) return;
   bgmFadeOut();
   const t = bgm.ctx.currentTime, L = BGM_LOOP[name] || b.duration;
   const src = bgm.ctx.createBufferSource(), g = bgm.ctx.createGain();
   src.buffer = b; src.loop = true;
-  const lead = b.duration - L > 0.02 ? 1105 / b.sampleRate : 0;
+  const lead = b.duration - L > 0.02 ? 1105 / 44100 : 0;
   src.loopStart = lead; src.loopEnd = Math.min(b.duration, lead + L);
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + BGM_FADE);
   src.connect(g); g.connect(bgm.master); src.start(t, lead);
@@ -55,7 +85,9 @@ function bgmFadeOut() {
 }
 /* 画面が変わったら呼ぶ（main.js の render とタップのあと）。同じ曲ならなにもしない */
 function bgmSync() {
-  if (!bgm.ctx || typeof BGM_SRC === 'undefined') return;
+  if (typeof BGM_SRC === 'undefined') return;
+  bgmWarm(bgmNext());
+  if (!bgm.ctx) return;
   const name = bgmName();
   if (!name) { bgm.want = ''; bgmFadeOut(); return; }
   if (bgm.want === name && (bgm.cur === name || bgm.buf[name] === 0)) return;
