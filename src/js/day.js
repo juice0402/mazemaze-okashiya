@@ -54,6 +54,28 @@ function dSoroiRibs(slots) {
   dSoroiLast = now;
   return out;
 }
+/* 昼のパズル（11/21・hiru.js の puzzleOf）：となりの相性の結び目（左か上のマスの中に置き、マスのさかいに出す）と、たての列のシリーズのリボン（列のいちばん上のマス）。
+   はじめて出たものだけ、ぽんと出る。売れたときは data-l・data-c で見つけて光らせる（showMore） */
+let dPzLast = new Set();
+function dPuzzleDeco(slots) {
+  const P = puzzleOf(slots), now = new Set(), out = {}, add = (i, h) => { out[i] = (out[i] || '') + h; };
+  for (const L of P.links) {
+    const k = L.i + '-' + L.j + ':' + L.p.id; now.add(k);
+    add(L.i, `<span class="d-aisho ${L.dir}${L.out ? ' out' : ''}${dPzLast.has(k) || REDUCED ? '' : ' pop'}" data-l="${L.i}-${L.j}" aria-label="相性：${esc(L.p.name)}"></span>`);
+  }
+  for (const x of P.series) {
+    const k = 'c' + x.c + ':' + x.kata; now.add(k);
+    add(x.c, `<span class="d-series${x.out ? ' out' : ''}${dPzLast.has(k) || REDUCED ? '' : ' pop'}" data-c="${x.c}" aria-label="シリーズ：${KATA[x.kata]}"><b>${KATA[x.kata]}</b></span>`);
+  }
+  dPzLast = now;
+  return out;
+}
+/* おそろいのリボンと、パズルの結び目・リボンを1つの表に（マスの番号 → 中に入れる HTML） */
+function dCaseDeco(slots) {
+  const a = dSoroiRibs(slots), b = dPuzzleDeco(slots), out = { ...a };
+  for (const k of Object.keys(b)) out[k] = (out[k] || '') + b[k];
+  return out;
+}
 /* 7文字より長い名前は字をつめる（11/19：商品を並べるの棚で「ミルクキャラメル」「はちみつクッキー」の最後が切れていた） */
 const dNmLong = nm => nm.length >= 7 ? ' dnl' : '';   // 「lg」はロゴの箱の名前なので使わない（11/19 しょーくん「文字数多いときの表示、絶対変」＝ロゴの箱の大きさがついていた）
 function slotHTML(o, idx, ks, pre, rib = '') {
@@ -63,7 +85,7 @@ function slotHTML(o, idx, ks, pre, rib = '') {
   return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm${dNmLong(c.name)}">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うり<br>きれ</span>' : ''}${rib}</${tag}>`;
 }
 function caseHTML(pre) {
-  const { slots, ks } = shelfSlots(), rib = dSoroiRibs(slots);
+  const { slots, ks } = shelfSlots(), rib = dCaseDeco(slots);
   return slots.map((o, i) => slotHTML(o, i, ks, pre, rib[i])).join('');
 }
 
@@ -213,7 +235,7 @@ function visitStep(R, dt) {
     if (R.lk && v.like) { R.lk[v.like] = (R.lk[v.like] || 0) + 1; const b = r.kind === 'love' ? R.got : R.miss; b[v.like] = (b[v.like] || 0) + 1; }   // ふり返り（dSum）
     setTimeout(() => { if (out) { mSe('soldout'); dSay(r.key === S.today.kanban ? 'kanban' : 'sold', nm, true); } else dSay(r.kind); }, 700);
   } else if (v.step === 2 && (v.mk || 0) < (v.res.more || 0) && v.t >= V_ASK + V_MORE * ((v.mk || 0) + 1)) {
-    const m = dServeMore(v);   // 「これもおいしそう！」もう1こ（11/19）
+    const m = dServeMore(v);   // 「これもおいしそう！」もう1こ（11/19）・相性の相手・シリーズの列（11/21）
     if (!m) { v.res.more = v.mk || 0; return; }
     v.mk = (v.mk || 0) + 1; v.last = m; save(); showMore(v, m, false); mSe('sale', { rate: 1.06 });
     if (dLeft(m.key) <= 0) setTimeout(() => { mSe('soldout'); dSay(m.key === S.today.kanban ? 'kanban' : 'sold', candyOf(m.key).name, true); }, 700);
@@ -308,17 +330,57 @@ function serve(v) {
   if (love) { S.rep += 1 + decoRepAdd(s.key); T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + decoRegMul(v.c); }   // 常連さんの段は、種類ごとのハートの合計で（かざり5つで2倍）
   dDecoSold(s);
   const more = Math.random() < MORE_P * decoMoreMul(v.c) ? (Math.random() < MORE3_P ? 2 : 1) : 0;   // たまに2こ・たまーに3こ（11/19 しょーくん）・かざり3つで2倍
-  return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other'), more, got: [s.key] };
+  /* 昼のパズル（11/21）：となりの相性があれば相手もいっしょに・シリーズの列なら同じ列からもう1こ → そのあとに、たまのもう1こ（ぜんぶで3こまで） */
+  const got = [s.key], ex = [];
+  if (dPairFor(s, got)) ex.push('pair');
+  if (dSeriesFor(s, got, v.like)) ex.push('series');
+  for (let k = 0; k < more && ex.length < 3; k++) ex.push('more');
+  return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other'), more: ex.length, ex, got };
 }
-/* もう1こ買う：まだ買っていないお菓子から（すきな味が先）。ハートは1人1つのまま（お金と売れ行きだけ）。棚にないときは買わずに帰る */
+/* 昼のパズル（11/21）：買ったお菓子 s のマスの、となりの相性の相手（まだあって、まだ買っていないもの）・シリーズの列のほかのお菓子 */
+function dSlotOf(s) { const { slots } = shelfSlots(); return { slots, i: slots.findIndex(o => o && o.s === s) }; }
+function dPairFor(s, got) {
+  const { slots, i } = dSlotOf(s); if (i < 0) return null;
+  for (const L of puzzleOf(slots).links) {
+    const j = L.i === i ? L.j : L.j === i ? L.i : -1; if (j < 0) continue;
+    const q = slots[j].s; if (q.n > 0 && !got.includes(q.key)) return { s: q, p: L.p, l: L.i + '-' + L.j };
+  }
+  return null;
+}
+function dSeriesFor(s, got, like) {
+  const { slots, i } = dSlotOf(s); if (i < 0) return null;
+  const c = i % SHELF_COLS, se = puzzleOf(slots).series.find(x => x.c === c); if (!se) return null;
+  const col = slots.filter((o, j) => o && j % SHELF_COLS === c && o.s.n > 0 && !got.includes(o.s.key)).map(o => o.s);
+  if (!col.length) return null;
+  const lk = col.filter(x => candyHas(x.key, like));
+  return { s: pick(lk.length ? lk : col), c };
+}
+/* もう1こ買う：v.res.ex の順に（pair＝相性の相手・series＝同じ列・more＝まだ買っていないお菓子からすきな味が先）。ハートは1人1つのまま（お金と売れ行きだけ）。
+   相手が売り切れていたら次へ。棚にないときは買わずに帰る */
 function dServeMore(v) {
-  const T = S.today, items = S.shelf.filter(s => s.n > 0); if (!items.length) return null;
-  const got = v.res.got || [], fresh = items.filter(s => !got.includes(s.key)), pool = fresh.length ? fresh : items;
-  const liked = pool.filter(s => candyHas(s.key, v.like)), s = pick(liked.length ? liked : pool), price = decoPrice(s.key);
+  const T = S.today, got = v.res.got || [], ex = v.res.ex || [];
+  const base = S.shelf.find(x => x.key === v.res.key) || S.shelf.find(x => got.includes(x.key));
+  let s = null, kind = 'more', tag = null;
+  while ((v.mk || 0) < ex.length && !s) {
+    kind = ex[v.mk || 0];
+    if (kind === 'pair') { const r = base && dPairFor(base, got); if (r) { s = r.s; tag = { l: r.l, p: r.p }; } }
+    else if (kind === 'series') { const r = base && dSeriesFor(base, got, v.like); if (r) { s = r.s; tag = { c: r.c }; } }
+    else {
+      const items = S.shelf.filter(x => x.n > 0); if (!items.length) return null;
+      const fresh = items.filter(x => !got.includes(x.key)), pool = fresh.length ? fresh : items, liked = pool.filter(x => candyHas(x.key, v.like));
+      s = pick(liked.length ? liked : pool);
+    }
+    if (!s) v.mk = (v.mk || 0) + 1;   // 相手がもうない：次の買い方へ
+  }
+  if (!s) return null;
+  const price = decoPrice(s.key);
   s.n--; S.money += price; T.sales += price; dDecoSold(s);
   if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   v.res.got = [...got, s.key];
-  return { key: s.key, say: STORY.custSay(v.c, (v.mk || 0) >= 1 ? 'more3' : 'more') };
+  if (kind === 'pair') { T.pairs = (T.pairs || 0) + 1; S.seen['ai:' + tag.p.id] = S.seen['ai:' + tag.p.id] || S.day; }
+  if (kind === 'series') T.series = (T.series || 0) + 1;
+  const say = kind === 'pair' ? pick(STORY.pairSay) : kind === 'series' ? pick(STORY.seriesSay) : STORY.custSay(v.c, (v.mk || 0) >= 1 ? 'more3' : 'more');
+  return { key: s.key, say, kind, ...(tag || {}) };
 }
 /* かざり5つのセット効果：そのお菓子が売り切れたらハート（11/21） */
 function dDecoSold(s) { if (s.n <= 0 && decoSoldHeart(s.key)) { S.rep++; S.today.hearts++; } }
@@ -490,6 +552,9 @@ function showMore(v, m, now) {
   if (now) { b.classList.add('show'); return; }
   void b.offsetWidth; b.classList.add('show');
   soldFx(m.key);
+  /* 相性の結び目・シリーズのリボンを光らせる（11/21） */
+  const cs = $('dCase'), el = cs && (m.l ? cs.querySelector(`.d-aisho[data-l="${m.l}"]`) : m.c != null ? cs.querySelector(`.d-series[data-c="${m.c}"]`) : null);
+  if (el) { el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
 }
 /* 棚を描きなおす：変わったマスだけ入れかえる（11/19：前は売れるたびに棚ぜんぶを作りなおしていた） */
 function dCaseUpdate() {

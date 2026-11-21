@@ -73,6 +73,63 @@ function soroiRows(slots) {
   return rows;
 }
 
+/* ---------- 昼のパズル（11/21 しょーくん「お昼を夜レベルに面白く」「陳列を楽しむパズルビルド」→ えらぶ質問で「となりの相性」「たての列のシリーズ」・相性は「2つセットで売れる」）
+   となりの相性：横か たてにとなりあう2マスのお菓子に、相性のいい素材の組み合わせ（AISHO）が入っていると、あいだに結び目（ui-aisho）。
+     どちらかを買ったお客さんは、相手のお菓子もいっしょに買う（day.js の dServeMore）。見つけた組み合わせは相性帳（S.seen の ai:<id>＝見つけた日）
+   たての列のシリーズ：たての列のマスがぜんぶ埋まって、ぜんぶ同じなかま（KATA）だと、列の上からリボン（ui-series）。その列から買ったお客さんは、同じ列からもう1こ
+   画面に数字は出さない（結び目とリボンと、売れたときのキラキラで見せる） ---------- */
+const KATA = { yaki: '焼き菓子', hiya: 'ひんやり', ame: 'あめ', fuwa: 'ふわふわ' };
+const KATA_OF = {};
+[
+  ['yaki', [['mugi', 'mugi'], ['mugi', 'hachimitsu'], ['mugi', 'milk'], ['mugi', 'egg'], ['mugi', 'ichigo'], ['egg', 'egg'], ['mizuame', 'mugi'], ['herb', 'mugi']]],
+  ['hiya', [['milk', 'milk'], ['milk', 'egg'], ['ichigo', 'ichigo'], ['herb', 'ichigo'], ['herb', 'herb']]],
+  ['ame', [['hachimitsu', 'hachimitsu'], ['hachimitsu', 'milk'], ['hachimitsu', 'ichigo'], ['mizuame', 'hachimitsu'], ['mizuame', 'milk'], ['mizuame', 'ichigo'], ['mizuame', 'mizuame'], ['herb', 'hachimitsu'], ['herb', 'mizuame']]],
+  ['fuwa', [['hachimitsu', 'egg'], ['milk', 'ichigo'], ['egg', 'ichigo'], ['mizuame', 'egg'], ['herb', 'milk'], ['herb', 'egg']]],
+].forEach(([k, L]) => L.forEach(([a, b]) => { KATA_OF[recipeKey(a, b)] = k; }));
+const KATA_FORM = { mugi: 'yaki', ichigo: 'yaki', hachimitsu: 'fuwa', milk: 'hiya', egg: 'hiya', herb: 'hiya', mizuame: 'ame' };   // モンスター素材のお菓子は、もう1つの素材の形（クッキー・タルト・ケーキ…）で
+function candyKata(key) {
+  const mats = String(key).split('+'), k = KATA_OF[recipeKey(mats[0], mats[1])];
+  if (k) return k;
+  const mon = mats.filter(isMonMat);
+  if (mon.length === 2) return 'hiya';   // まぜまぜパフェ
+  const o = mats.find(isHiruMat);
+  return mon.length && o ? KATA_FORM[o] || null : null;
+}
+const AISHO = [
+  ['ichigo', 'milk', 'いちごミルク'], ['hoshi', 'milk', 'ミルキーウェイ'], ['hachimitsu', 'zeri', 'はちみつゼリー'],   // 基本の素材だけの相性は いちごミルクだけ（多いと、置くだけでぜんぶつながる・11/21）
+  ['ichigo', 'mizuame', 'いちご飴'], ['hachimitsu', 'herb', 'はちみつハーブティー'], ['herb', 'milk', 'ハーブミルクティー'],
+  ['hoippu', 'ichigo', 'いちごのショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
+  ['kanten', 'minto', 'ひんやりミント'], ['hoshi', 'mizuame', '星くずキャンディ'], ['hachimitsu', 'kanten', 'はちみつ寒天'],
+  ['hoippu', 'karamel', 'キャラメルホイップ'], ['minto', 'niji', 'にじいろソーダ'],
+].map(([a, b, name]) => ({ id: recipeKey(a, b), a, b, name }));
+const AISHO_BY = Object.fromEntries(AISHO.map(x => [x.id, x]));
+/* 2つのお菓子の相性（同じお菓子どうしはなし）。2つの中で、ちがう素材どうしの組み合わせが AISHO にあれば */
+function aishoOf(k1, k2) {
+  if (k1 === k2) return null;
+  const A = String(k1).split('+'), B = String(k2).split('+');
+  for (const x of A) for (const y of B) if (x !== y) { const p = AISHO_BY[recipeKey(x, y)]; if (p) return p; }
+  return null;
+}
+/* 棚のマス（shelfSlots の slots）の、となりの相性（links：i が左か上・dir r＝横 d＝たて）と、たての列のシリーズ（series：列 c・なかま kata） */
+function puzzleOf(slots) {
+  const n = slots.length, rows = Math.ceil(n / SHELF_COLS), links = [], series = [];
+  for (let i = 0; i < n; i++) {
+    const o = slots[i]; if (!o) continue;
+    for (const [j, dir] of [[i + 1, 'r'], [i + SHELF_COLS, 'd']]) {
+      if (j >= n || (dir === 'r' && j % SHELF_COLS === 0)) continue;
+      const q = slots[j], p = q && aishoOf(o.s.key, q.s.key);
+      if (p) links.push({ i, j, dir, p, out: o.s.n <= 0 || q.s.n <= 0 });
+    }
+  }
+  if (rows >= 2) for (let c = 0; c < SHELF_COLS; c++) {
+    const col = []; for (let r = 0; r < rows; r++) col.push(slots[r * SHELF_COLS + c]);
+    if (col.some(o => !o)) continue;
+    const k = candyKata(col[0].s.key);
+    if (k && col.every(o => candyKata(o.s.key) === k)) series.push({ c, kata: k, out: col.every(o => o.s.n <= 0) });
+  }
+  return { links, series };
+}
+
 /* ---------- 昼のお客さん ---------- */
 const DAY_MS = 40000;     // 営業は約40秒（はやおくりで約20秒）
 const DAY_FAST = 2;       // はやおくりの速さ

@@ -17,6 +17,15 @@ const mSe = (n, o) => { if (typeof sePlay === 'function') sePlay(n, o); };
 const mKoe = id => { if (typeof koePlay === 'function') koePlay(id); };
 const mJg = n => { if (typeof jgPlay === 'function') jgPlay(n); };
 const mSoroiN = () => soroiRows(dSlots().slots).length;
+/* 昼のパズル（11/21）：いまの棚の 相性の結び目＋シリーズの列 の数（ふえたら いい音）・はじめて見つけた相性を相性帳へ（S.seen の ai:<id>＝その日） */
+const mPzN = () => { const P = puzzleOf(dSlots().slots); return P.links.length + P.series.length; };
+function mPzFind() {
+  const P = puzzleOf(dSlots().slots), neu = [];
+  for (const L of P.links) if (!S.seen['ai:' + L.p.id]) { S.seen['ai:' + L.p.id] = S.day; neu.push(L.p); }
+  if (neu.length) { save(); toast(`相性を見つけた！「${neu.map(p => p.name).join('」「')}」`); }
+  if (P.series.length && !S.seen.series && !talking()) { S.seen.series = S.day; save(); talk(STORY.seriesFirst(KATA[P.series[0].kata]), () => {}); }
+}
+const mPlaceSe = (so0, pz0, kan) => mSe(mSoroiN() > so0 || mPzN() > pz0 ? 'soroi' : kan ? 'kanban' : 'place');
 
 /* ほっぺのすす（11/18 しょーくん）：はじめて焼く（1日目の「ちょっと焦げた」＝S.seen.mBaked）までは、
    すすなしの立ち絵（ART の <名前>-clean・いまは最初に出る6まい）を会話に出す。ない表情は今までどおり */
@@ -161,26 +170,26 @@ function dPut(wi, idx) {
     if (idx < 0) idx = slots[ks] ? -1 : ks;
     if (idx < 0) return toast('棚がいっぱい！');
   }
-  const o = slots[idx], so0 = mSoroiN();
+  const o = slots[idx], so0 = mSoroiN(), pz0 = mPzN();
   M.baked.splice(wi, 1);
   if (o) M.baked.push(S.shelf.splice(o.i, 1, b)[0]);
   else S.shelf.push(b);
   if (idx === ks) { M.kanban = b.key; dFront(b); }
   dFixKan(); save(); renderMorning(); dPop(b);
-  mSe(mSoroiN() > so0 ? 'soroi' : idx === ks ? 'kanban' : 'place');
+  mPlaceSe(so0, pz0, idx === ks); mPzFind();
 }
 /* 棚の si 番目を、棚の idx のマスへ（看板の枠へ・入れかえ・空いたマスへ） */
 function dMove(si, idx) {
   const M = mState(), s = S.shelf[si]; if (!s) return;
   const { slots, ks } = dSlots(), o = slots[idx], fromKan = !!slots[ks] && slots[ks].i === si;
   if (o && o.i === si) return;
-  const so0 = mSoroiN();
+  const so0 = mSoroiN(), pz0 = mPzN();
   if (idx === ks) { M.kanban = s.key; dFront(s); }
   else if (fromKan) M.kanban = o ? S.shelf[o.i].key : null;
   else if (o) { S.shelf[si] = S.shelf[o.i]; S.shelf[o.i] = s; }
   else { S.shelf.splice(si, 1); S.shelf.push(s); }
   save(); renderMorning(); dPop(s);
-  mSe(mSoroiN() > so0 ? 'soroi' : idx === ks ? 'kanban' : 'place');
+  mPlaceSe(so0, pz0, idx === ks); mPzFind();
 }
 function dOff(si) {
   const M = mState(), s = S.shelf.splice(si, 1)[0]; if (!s) return;
@@ -377,7 +386,8 @@ function displayHTML(M) {
   return `<section class="morning mdisp fit" id="msec">
     <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
       <p class="md-tip">${esc(tip)}</p>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}
-      <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${(rib => slots.map((o, i) => mSlotHTML(o, i, ks, rib[i])).join(''))(dSoroiRibs(slots))}</div>
+      <button class="round md-aishob" data-act="m-aisho" aria-label="相性帳">${ART['ui-aisho-book'] ? `<img src="${ART['ui-aisho-book']}" alt="">` : '<b>相性</b>'}</button>
+      <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${(rib => slots.map((o, i) => mSlotHTML(o, i, ks, rib[i])).join(''))(dCaseDeco(slots))}</div>
     </div>
     <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span><div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
     <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
@@ -403,7 +413,7 @@ function zakkaHTML() {
 }
 function renderMorning() {
   const M = mState(), v = M.view;
-  $('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : v === 'book' ? bookHTML() : kitchenHTML(M);
+  $('screen').innerHTML = v === 'display' ? displayHTML(M) : v === 'zakka' ? zakkaHTML() : v === 'book' ? bookHTML() : v === 'aisho' ? aishoBookHTML() : kitchenHTML(M);
   $('msec').addEventListener('pointerdown', mDown);
   /* トレーの右にまだあるときは、右はしに「›」（すべるのは中の .mt-row・ふちの外枠はすべらない） */
   document.querySelectorAll('#msec .mt-row').forEach(el => {
@@ -548,6 +558,25 @@ function mBookSecs() {
   for (const x of secs) x.known = x.keys.filter(k => known(k));
   return secs;
 }
+/* 相性帳（11/21）：見つけた となりの相性（hiru.js の AISHO）。見つけていないものは「？？？」と素材1つのヒント（その素材を見たことがあるときだけ） */
+function aishoBookHTML() {
+  const seen = new Set(seenMats()), got = AISHO.filter(p => S.seen['ai:' + p.id]).length;
+  const rows = AISHO.map(p => {
+    if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(matShort(p.a))}×${esc(matShort(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
+    const h = seen.has(p.a) ? matShort(p.a) + '×？' : seen.has(p.b) ? matShort(p.b) + '×？' : '？×？';
+    return `<div class="ms-good bk-rec un"><span class="bk-ico${ART['ui-mada'] ? ' art' : ''}">${ART['ui-mada'] ? `<img src="${ART['ui-mada']}" alt="">` : ''}<b>？</b></span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(h)}</em></span><span class="bk-note">となりに並べると、見つかるかも</span></span></div>`;
+  }).join('');
+  const sbg = ART['bg-zakka'];
+  return `<section class="morning mzakka mbook fit" id="msec">
+    <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
+      <div class="ms-top"><span class="ms-ttl">相性帳</span><span class="bk-cnt">${got} / ${AISHO.length}</span></div>
+      <div class="ms-goods"><p class="ms-sec">となりの相性<em>どちらかが売れると、いっしょに売れる</em></p>${rows}
+        <p class="ms-sec">たての列のシリーズ<em>たての列を同じなかまでそろえる</em></p>${Object.keys(KATA).map(k => `<div class="ms-good bk-rec ai-kata"><span class="bk-body"><span class="bk-nm">${KATA[k]}</span><span class="bk-note">${esc(STORY.kataNote[k])}</span></span></div>`).join('')}</div>
+    </div></div>
+    <div class="mz-foot gingham"><p class="mz-hint bk-top"><b>ほのか</b>${esc(STORY.aishoTop(got))}</p></div>
+    <div class="m-bar"><button class="big" data-act="m-disp">棚にもどる</button></div>
+  </section>`;
+}
 function bookHTML() {
   const secs = mBookSecs();
   STORY.bookAll = 15 + 6 + 7 + Object.keys(MON_WORD).length * 7 + 1;
@@ -583,6 +612,7 @@ const MORNING_ACTS = {
   'm-good': el => buyGood(el.dataset.id),
   'm-deco': el => mDeco(el.dataset.id, el.dataset.off === '1'),
   'm-book': () => { if (!mBusy) mView('book'); },
+  'm-aisho': () => mView('aisho'),
   'm-auto': () => mAutoBake(),
   'm-arr': () => mAutoArrange(),
   toShelf: () => renderMorning(),   // 前の形のボタン（main.js の toCard もここへ）
