@@ -615,7 +615,11 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .sh-top .sh-l,.sh-top .sh-r{display:flex;align-items:center;gap:6px;min-width:0;pointer-events:auto}
 .sh-top .sh-l,.sh-top .sh-r{position:relative}
 .sh-top .kone-n{position:absolute;left:0;top:30px}   /* こね・ジャムの数はラウンドの下（せまい画面で1列に入らない・11/20） */
-.night .shopov:not(.many):has(.sh-top .kone-n) .sh-cards{padding-top:28px}
+/* ラウンド2から（3まい）は上にそろえる（11/21 しょーくん「少し上に揃えたら綺麗・その下はチュートリアルの吹き出しや まぜたあとの効果が出ることが多い」）：
+   値札（カードの上 34px）が上の段の札の 8px 下に来る。値札の分の 44px は padding に入れたので、高さの式からはずす。こね・ジャムの数があるときは その下から */
+.night .shopov:not(.many) .sh-cards{align-content:flex-start;padding-top:42px}
+.night .shopov:not(.many) .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 2px) / 1.68),150px)}
+.night .shopov:not(.many):has(.sh-top .kone-n) .sh-cards{padding-top:60px}
 /* 11/20 しょーくん「上まんなかのエンブレムは下まんなかへ・入れかえと所持金を横に並べて大きさを合わせる」：コインと入れかえは右に同じ高さで、こね・ジャムの数はラウンドのとなり */
 .sh-top .sh-rd,.sh-top .sh-coin,.sh-top .sh-roll,.sh-top .kone-n,.night .stage .ov-top>span{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;margin:0;padding-top:0;padding-bottom:0;line-height:1}
 .sh-top .sh-roll.sh-roll.pill{background:none;box-shadow:none;border:1px solid transparent;border-radius:0;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;
