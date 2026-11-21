@@ -586,3 +586,7 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .m-wallet.m-wallet::before,.mz-wallet.mz-wallet::before{flex:none;margin-top:0;margin-bottom:0}
 .m-wallet b{margin:0 2px 0 4px;line-height:1}
 .mz-wallet b{line-height:1;margin:0 3px 0 4px}
+/* 見た目のまんなかを測ってそろえる（11/21 しょーくん「金額の数字だけ少し下にある」）：数字の字の形（Dela Gothic One）は箱のまんなかより約0.8〜1.1px下 → 1px上へ。
+   絵（お財布・予報）は字より約0.7px上 → 少し下へ（4倍で撮って測った） */
+.m-wallet b,.mz-wallet b{translate:0 -1px}
+.m-wallet.m-wallet::before,.m-fc .fc-ic,.m-fc .hico{translate:0 .75px}
