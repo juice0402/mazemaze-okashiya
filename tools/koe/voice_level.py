@@ -2,7 +2,7 @@
 使い方：python3 -I tools/koe/voice_level.py assets/koe [--target -22.5] [--dry]
 - level.sh（平均 -24dB）は無音もふくめた平均なので、短い声（ふっ・ほいっ・うふふ）ほど 声の所が大きくなっていた（+4dB くらい）
 - ここでは 20ms ごとの大きさで、いちばん大きい所から 18dB 以内を「声の所」とし、その平均を target にそろえる（山は -3dB まで）
-- 新しい声を入れたら、これをもう一度かける（そろっている声は ±0.3dB 以内なら さわらない）
+- 新しい声を入れたら、これをもう一度かける（そろっている声は ±0.8dB 以内なら さわらない＝mp3 の作りなおしで音がにごるのをふせぐ。作りなおすと 0.4dB ほど小さくなる）
 """
 import sys, subprocess, pathlib, numpy as np
 args = sys.argv[1:]
@@ -19,7 +19,7 @@ def measure(x):
 for f in sorted(pathlib.Path(args[0]).glob('*.mp3')):
     a, p = measure(pcm(str(f)))
     g = round(min(target - a, -3 - p), 1)
-    if abs(g) <= 0.3: print(f'{f.stem:14s} {a:6.1f} dB そのまま'); continue
+    if abs(g) <= 0.8: print(f'{f.stem:14s} {a:6.1f} dB そのまま'); continue
     print(f'{f.stem:14s} {a:6.1f} dB → {g:+.1f} dB')
     if dry: continue
     tmp = f.with_suffix('.tmp.mp3')
