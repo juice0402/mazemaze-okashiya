@@ -24,7 +24,7 @@ function updTile(i, cid, cook, ice) {
   return slot.querySelector('.pc');
 }
 /* 掛け声（11/19 H-034・声は koe-irai・11/21〜 Gemini TTS：ほのか Leda・みなも Despina・わかば Achernar）：大きい攻撃（★2・★3・必殺技）はいつも・★1 は3回に1回くらい。大満足・だめだったときは night.js の nightEndSnd */
-const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore'], minamo: ['mina-ha', 'mina-fu'], wakaba: ['waka-sore', 'waka-ei'] };
+const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore', 'hono-taa', 'hono-tou', 'hono-sei'], minamo: ['mina-ha', 'mina-fu', 'mina-fun', 'mina-soko'], wakaba: ['waka-sore', 'waka-ei', 'waka-hoi', 'waka-eei'] };   // 11/21 PR #25 の本文の0（たぁっ・とうっ・せいっ／ふんっ・そこ／ほいっ・えーいっ）
 const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-uun'] };   // 11/21 昼の PR #25：あらあら（waka-araara）をなくしたので、だめだった声は うーん
 /* 考えている声「んー」（11/21 しょーくん「んーは夜のショップの考えているシーンに使うの」・waka-maa は使わない）：
    ショップで しばらく何もしないと1回。毎ラウンドだとうるさいので、鳴ったら次のラウンドは休む */
@@ -44,7 +44,8 @@ function thinkArm() {
 }
 function atkKoe(pose) {
   const L = KOE_ATK[chefArt()]; if (!L || (pose === 'atk1' && Math.random() > .34)) return;
-  koePlay(L[Math.floor(Math.random() * L.length)]);
+  const C = L.filter(n => n !== atkKoe.last), n = C[Math.floor(Math.random() * C.length)];   // すぐ前と同じ声は続けない（飽きにくく）
+  atkKoe.last = n; koePlay(n);
 }
 function burntFx(slot) { sePlay('burnt'); replay($('smoke'), 'on'); heroPose('burnt', 1100); if (slot) floatAt(slot, '焦げた', 'koge'); }
 function floatAt(el, text, cls = '') {
