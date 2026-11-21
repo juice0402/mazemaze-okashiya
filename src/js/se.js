@@ -1,6 +1,7 @@
 /* ==== 効果音・ジングル・掛け声（11/19 昼のチャット【okashi-hiru】・しょーくん「音楽とSEは完璧」） ====
    - 音のファイル：効果音 assets/se/<名前>.mp3（tools/se/make_se.py）・ジングル assets/bgm/jg-*.mp3（tools/bgm/make_bgm_hiru.py）
-     ・掛け声 assets/koe/<id>.mp3（声の依頼箱 koe-irai の out/okashi/kakegoe・VOICEVOX）
+     ・掛け声 assets/koe/<id>.mp3（声の依頼箱 koe-irai の out/okashi/kakegoe-gemini・11/21〜 Gemini TTS：ほのか Leda・みなも Despina・わかば Achernar。
+       1本にまとめた声を tools/koe/split2.py で切り分け・1ことばの声は tools/koe/trim.py・大きさは tools/koe/level.sh で平均 -24dB に）
    - 鳴らす：sePlay(名前, { rate, vol })・jgPlay(名前)（鳴っているあいだ曲を少し下げる）・koePlay(id)
      昼のチャットの画面は morning.js の mSe・mKoe・mJg から（se.js がビルドに入っていないときは何もしない）
    - AudioContext は sound.js の bgm.ctx をいっしょに使う（はじめのタップで bgmUnlock が作る）
