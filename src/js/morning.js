@@ -446,7 +446,7 @@ const mGoodIco = n => ART[n] ? `<img class="msg-ico" src="${ART[n]}" alt="">` : 
 const mDecoSpot = sp => (DECO_SPOTS.find(x => x[0] === sp) || [])[1] || '';
 function mDecoRows() {
   const P = decoPts();
-  let h = '<p class="ms-sec">お店のかざり<em>場所ごとに1つ・同じテーマを3つ・5つでセット効果</em></p>';
+  let h = '<p class="ms-sec ms-sec2">お店のかざり<em>場所ごとに1つ・同じテーマを3つ・5つでセット効果</em></p>';
   for (const th of Object.keys(DECO_TH)) {
     const L = DECO_LIST.filter(d => d.th === th && (decoOpen(d) || S.goods[d.id])); if (!L.length) continue;
     const [t1, t2] = decoFxText(th), n = P[th] || 0;
