@@ -535,8 +535,8 @@ function impactFx(p, size) {
 }
 /* みなも・わかばの一撃のかざり（11/21 しょーくん「固有エフェクトをさらに追加して派手に」・fx-minamo2・fx-wakaba2）：
    ふつうの一撃は1つ・大きい一撃は3つ（輪を1つ入れる）。くるっと回りながら ふくらんで消える（transform と opacity だけ） */
-const FLOURISH = { minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };
-const RING = { minamo: 'fx-ame-ring', wakaba: 'fx-flowerring' };
+const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）
+const RING = { honoka: 'fx-fire-ring', minamo: 'fx-ame-ring', wakaba: 'fx-flowerring' };
 function chefFlourish(chef, p, n) {
   const L = (FLOURISH[chef] || []).filter(k => ART[k]); if (!L.length || !document.body.animate) return;
   const keys = n > 1 && ART[RING[chef]] ? [RING[chef], ...L.sort(() => Math.random() - .5).slice(0, n - 1)] : [L[Math.floor(Math.random() * L.length)]];
