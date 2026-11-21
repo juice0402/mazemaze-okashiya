@@ -4731,7 +4731,7 @@ K.push({ ...kf(.96), offset: 1 });
 const anim = ball.animate(K, { duration: all, fill: 'forwards' });
 for (let k = 1; k < 5; k++) setTimeout(() => sparkBurst({ ...at(.6 * k / 5), w: 8 }, 3, 'all', .35), t1 * k / 5);
 const app = $('app'); let slowed = [];
-setTimeout(() => sePlay('slowin', { vol: .7 }), Math.max(0, all - 1150));   // 吸いこむ音が止まった所でドーン
+setTimeout(() => sePlay('slowin', { vol: .7, rate: 1000 / Math.max(1, T(1000)) }), Math.max(0, all - T(1050)));   // 吸いこむ音が止まった所（1.05秒）でドーン。はやおくりは音も速く
 setTimeout(() => {   // スロー：ほかの動き（モブ・シェフ・光）も 1/5 の速さに
 slowed = document.getAnimations().filter(a => a !== anim && a.playState === 'running');   // 先にあつめる（暗くする幕の出るアニメはおそくしない）
 slowed.forEach(a => { try { a.playbackRate = .2; } catch (e) { /* もう終わった */ } });
