@@ -337,7 +337,7 @@ function mDrop(src, v) {
 function mTile(m) {
   const n = S.stock[m] || 0, H = HIRU_MATS[m];
   const tag = H ? `<span class="mt-pr">${fmt(H.price)}円</span>` : '<span class="mt-pr sp">とくべつ</span>';
-  return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && H && H.price > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm" style="--n:${[...matShort(m)].length}">${esc(matShort(m))}</span>${tag}${n ? `<em class="mt-n">${n}</em>` : ''}</div>`;
+  return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && H && H.price > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm" style="--n:${[...mTileNm(m)].length}">${esc(mTileNm(m))}</span>${tag}${n ? `<em class="mt-n">${n}</em>` : ''}</div>`;
 }
 /* オーブンの上の札：つぎにすること */
 function mHint(M) {

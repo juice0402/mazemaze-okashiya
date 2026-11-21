@@ -2522,6 +2522,8 @@ const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじ�
 const isHiruMat = m => !!HIRU_MATS[m];
 const isMonMat = m => !!(MATS[m] && MATS[m].fushigi);
 const matShort = m => HIRU_MATS[m] ? HIRU_MATS[m].short : MATS[m] ? MATS[m].short : m;
+const M_TILE_NM = { zeri: 'ゼリー', hoippu: 'ホイップ', niji: 'にじ水あめ', minto: 'ミント', hoshi: 'ほしくず', karamel: 'カラメル' };
+const mTileNm = m => M_TILE_NM[m] || matShort(m);
 const matName = m => HIRU_MATS[m] ? HIRU_MATS[m].name : MATS[m] ? MATS[m].name : m;
 const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? (MATS[m].rare ? MON_PRICE_RARE : MON_PRICE) : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
 function candyOf(key) {
@@ -5975,7 +5977,7 @@ if (k === 'ds') return v === 'wait' ? dOff(+a) : dMove(+a, +v.slice(3));
 function mTile(m) {
 const n = S.stock[m] || 0, H = HIRU_MATS[m];
 const tag = H ? `<span class="mt-pr">${fmt(H.price)}円</span>` : '<span class="mt-pr sp">とくべつ</span>';
-return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && H && H.price > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm" style="--n:${[...matShort(m)].length}">${esc(matShort(m))}</span>${tag}${n ? `<em class="mt-n">${n}</em>` : ''}</div>`;
+return `<div class="mt${isMonMat(m) ? ' mmat' : ''}${!n && H && H.price > S.money ? ' poor' : ''}" data-mdrag="mat:${m}" data-mdrop="mat:${m}">${matIcon(m)}<span class="mt-nm" style="--n:${[...mTileNm(m)].length}">${esc(mTileNm(m))}</span>${tag}${n ? `<em class="mt-n">${n}</em>` : ''}</div>`;
 }
 function mHint(M) {
 if (mBusy) return '焼いてるよ……';

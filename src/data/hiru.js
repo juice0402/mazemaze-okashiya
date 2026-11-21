@@ -34,6 +34,10 @@ const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじ�
 const isHiruMat = m => !!HIRU_MATS[m];
 const isMonMat = m => !!(MATS[m] && MATS[m].fushigi);
 const matShort = m => HIRU_MATS[m] ? HIRU_MATS[m].short : MATS[m] ? MATS[m].short : m;
+/* 材料だなのマスに出す名前（11/21 リーダー：アプリの中は字が 8px より小さくならない → 7文字の名前がマスからはみ出す・しょーくん「マスでは短い名前」）
+   マスの中は約50px＝6文字まで（5文字をこえると横にちぢめる・6文字で 8.3px）。ほかの所（セリフ・レシピ帳・吹き出し）は matShort のまま */
+const M_TILE_NM = { zeri: 'ゼリー', hoippu: 'ホイップ', niji: 'にじ水あめ', minto: 'ミント', hoshi: 'ほしくず', karamel: 'カラメル' };
+const mTileNm = m => M_TILE_NM[m] || matShort(m);
 const matName = m => HIRU_MATS[m] ? HIRU_MATS[m].name : MATS[m] ? MATS[m].name : m;
 const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? (MATS[m].rare ? MON_PRICE_RARE : MON_PRICE) : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
 
