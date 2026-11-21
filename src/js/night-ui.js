@@ -208,7 +208,7 @@ function megaHit(ball, kf, at, x1, y1, fly, land, size) {
 function shopOut(done) {
   const ov = document.querySelector('.shopov');
   if (!ov || REDUCED) return done();
-  ov.classList.add('out');
+  ov.classList.add('out'); const st = $('stage'); if (st) st.classList.add('st-out');   // .st-shop.st-out＝ショップがのれんのように上がるところ（CSS で :has を使わない＝軽い・11/21 夜）
   setTimeout(done, 560);
 }
 /* 2. ラウンドの帯：ななめの帯が走って「ラウンド 3/9」「バトル！」「ノルマ」。モンスターがほえる */
@@ -691,7 +691,7 @@ function renderNight() {
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
   const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
-    <div class="stage${NBG() ? ' hasbg' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
+    <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
       <i class="chef-sh"></i>${heroImg(hk)}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>

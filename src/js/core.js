@@ -13,15 +13,23 @@ const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduc
 /* 起動で待つのはタイトルの絵（title-*）とタイトルのボタンの皮（.big＝ui-btn-red・.sub＝ui-btn-wood）だけ（11/19 H-031 しょーくん「描写までの表示を爆速に」）。
    ほかの ui-*（夜の札・カードのふち・紋章など約80まい）は、タイトルが出てから ひまなときに読む（artWarm） */
 const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
+/* ためしのページの まとめファイル（art-pack2＝朝昼の絵・art-pack3＝まぜた先のカードの絵）を読んで、1まいずつ blob の URL にする。
+   11/21 夜（しょーくん「軽量化と最適化」）：art-pack2 は起動の絵が出てから（タイトルと同時に読むと起動がおそい）・art-pack3 は夜の先読みのとき */
+function artPackLoad(P, flag, after) {
+  if (!P || artBlobs[flag]) return; artBlobs[flag] = 1;
+  fetch(P.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
+    for (const [k, [o, l, t]] of Object.entries(P.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
+    if (after) after();
+  }).catch(() => { artBlobs[flag] = 0; });
+}
+const artPack2 = () => artPackLoad(typeof ART_PACK2 !== 'undefined' && ART_PACK2, 'pk2', () => {   // 届いたら いまの画面を描きなおす
+  if (typeof S !== 'undefined' && S && ['morning', 'day', 'result'].includes(S.phase) && typeof render === 'function' && !(typeof talking === 'function' && talking())) render();
+});
+const artPack3 = () => artPackLoad(typeof ART_PACK3 !== 'undefined' && ART_PACK3, 'pk3', () => {   // 夜のショップなら描きなおす（バトル中・会話中はそのまま＝次に描くときに出る）
+  if (typeof S !== 'undefined' && S && S.phase === 'night' && typeof N !== 'undefined' && N && N.stage === 'shop' && !(typeof fighting !== 'undefined' && fighting) && !(typeof busy !== 'undefined' && busy) && !(typeof talking === 'function' && talking()) && typeof render === 'function') render();
+});
 function artBlobs(done) {
   /* ためしのページ（アーティファクト）は、ui-*・fx-* の絵が1つのファイル art-pack.webp（11/19・1つの版に511ファイルまで）。先に読んで、1まいずつ blob の URL にする */
-  if (typeof ART_PACK2 !== 'undefined' && ART_PACK2 && !artBlobs.pk2) {   // 朝昼の絵のまとめ（11/21）：起動は待たせず裏で読む。届いたら いまの画面を描きなおす
-    artBlobs.pk2 = 1;
-    fetch(ART_PACK2.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
-      for (const [k, [o, l, t]] of Object.entries(ART_PACK2.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
-      if (typeof S !== 'undefined' && S && ['morning', 'day', 'result'].includes(S.phase) && typeof render === 'function' && !(typeof talking === 'function' && talking())) render();
-    }).catch(() => {});
-  }
   if (typeof ART_PACK !== 'undefined' && ART_PACK && !artBlobs.pk) {
     artBlobs.pk = 1; let go = false;
     const next = () => { if (go) return; go = true; artBlobs(done); };
@@ -33,7 +41,7 @@ function artBlobs(done) {
     return;
   }
   let fin = false, left = 0; const later = [];
-  const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); setTimeout(() => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); }, 3000); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
+  const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); setTimeout(artPack2, 400); setTimeout(() => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); }, 3000); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
   try {
     for (const k of Object.keys(ART)) {
       if (ART_FIRST.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }

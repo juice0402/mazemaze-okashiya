@@ -13,7 +13,7 @@
 
 ## ビルド
 - `node tools/build.mjs` → `index.html`（CSS は STYLES の順・JS は ORDER の順）（遊ぶ人が開く1ファイル。自動で作る・手で直さない・コミットはする）
-- アーティファクトは1つの版に511ファイルまで（11/19）：音はぜんぶ snd-pack.mp3（大きい曲は bgm/ のまま）、ui-*・fx-* の絵は art-pack.webp（起動のとき待つ）、cust-*・sweet-*・deco-*・fc-* は art-pack2.webp（11/21・裏で読んで、届いたら朝昼の画面を描きなおす）に まとめて出す（build.mjs が SND_PACK・ART_PACK の表を入れ、sound.js・core.js の artBlobs が blob の URL に切り分ける）。遊ぶ人の index.html は今までどおり1こずつ。art_files.mjs は ui-*・fx-*・音が変わったら art-pack.webp・snd-pack.mp3 を出す
+- アーティファクトは1つの版に511ファイルまで（11/19）：音はぜんぶ snd-pack.mp3（大きい曲は bgm/ のまま）、ui-*・fx-* の絵は art-pack.webp（起動のとき待つ）、cust-*・sweet-*・deco-*・fc-* は art-pack2.webp（11/21・起動の絵が出てから裏で読んで〔core.js の artPack2〕、届いたら朝昼の画面を描きなおす）、まぜた先のカードの絵 mix*（mix-・mix3-・mixc-）は art-pack3.webp（11/21 夜・夜に入ったときに読む〔nightWarm(build, true) → artPack3〕・届いたら夜のショップを描きなおす）に まとめて出す（build.mjs が SND_PACK・ART_PACK の表を入れ、sound.js・core.js の artBlobs が blob の URL に切り分ける）。遊ぶ人の index.html は今までどおり1こずつ。art_files.mjs は ui-*・fx-*・音が変わったら art-pack.webp・snd-pack.mp3 を出す
 - `node tools/build.mjs --artifact <フォルダ>/okashi.html` → アーティファクト用も書く（11/19〜 ページは小さな骨・CSS と JS は同じフォルダの app.css・app.js。新しい会話は出しなおす前に今のページをぜんぶ読む決まりで、0.5MB のページは読みきれなかったため）。アーティファクトだけ `TRIAL = true`（こね生地などを日にちを待たずに ためせる。遊ぶ人の index.html は false）
 - JS は下の順に1つの `(() => { ... })()` にまとめる（どのファイルの名前も同じ場所で見える）。**同じ名前の関数・変数を2つのファイルで作らない**（あとのファイルが勝って、前のが消える。11/18 朝の bake と夜の bake がかぶった）。昼のチャットは m・d などで始める名前に
 - index.html では、CSS のコメントと空白・JS の1行まるごとのコメントと行の頭の空白を消す（src はそのまま）。だから src の文字列やテンプレートの中で、行を `//` や `/*` で始めない
@@ -99,3 +99,4 @@
 - morning（昼のチャット）・dayRun（昼のチャット。kanban・open も入れてよい）
 - night：stage（arrive＝来店の会話・shop・roundEnd・thanks＝お礼の会話・end）・field（フィールドの id か null）・heat（鉄板の火力 1〜4・ラウンドをまたいで残る）・call（よびりん）・bin（大きなびんの中の実）・jamN（この夜に作ったジャムの数）・fert・basket・board（調理台5マス {cid, cook, plus}・cook は生地の焼き加減 0〜9・①〜⑤の順）・shop・coins（夜のショップのコイン。お店のお金とは別）・round・score・met（おなかをまんぞくさせた数）・burnt・sel・view（手札はなくした・前のセーブの held は調理台の空きへ）
 - カードの id：`m:生地か素材`・`t:道具`・`b:フィールド`（★1）・`o:食材+食材`（生地・素材の★2）・`s:★2|★2`（★3）・`u:道具+道具`（道具の★2）・`w:★2|★2`（道具の★3）・`k:1〜3`（焦げの★1〜★3）・`c:★2のケーキ|熟した実`（わかばの★3のくだものケーキ）・`j:実+実+実`（わかばの★3のジャム）
+- 軽く（11/21 夜 しょーくん「軽量化と最適化」・はかる道具は tools/perf.py〔ためしのページのフォルダで・CPU 4倍おそく・DPR 3・起動とバトルのこま落ち・長い処理・プロファイル〕）：シェフの戦闘ポーズは たて1000px（画面では大きくて 250px ほど・DPR 3 でも足りる。会話の立ち絵は 1520 のまま）・夜の先読み nightWarm はほどかずに読むだけ（夜に入ったときに ポーズ・背景・そのシェフの一撃の絵・お客さんの顔だけ decode）・ほかのシェフの一撃のかざりは読まない・舞台の :has(.shopov)・:has(.pickov) は .stage の st-shop・st-pick・st-out（renderNight と shopOut）。はかった結果（CPU 4倍おそく）：起動の絵が出るまで 2.6 → 0.9 秒・起動で読む まとめ 10.7 → 7.9MB・バトルの長い処理 1.5 → 0.9 秒

@@ -636,25 +636,30 @@ function petitFx(e, run, q) {
    少しずつ（ひまなときに4まいずつ）読んで ほどいて（decode）、夜のあいだ NWARM に持っておく。音（効果音・掛け声・ジングル）も seLoad で先に読む（はじめのタップのあと） */
 const NWARM = new Map();
 const nwIdle = f => window.requestIdleCallback ? requestIdleCallback(f, { timeout: 900 }) : setTimeout(() => f(null), 120);
-function nwArt(urls) {
+/* dec＝先にほどいておく絵（シェフの戦闘ポーズと夜の背景だけ・夜に入ったときだけ）。ほかは読むだけ（ほどくのは出すとき）。
+   11/21 夜（しょーくん「軽量化と最適化」）：起動のときに 100まいぜんぶをほどいていて、メモリと起動の手間が大きかった */
+function nwArt(urls, dec) {
+  if (dec) for (const u of dec) { const im = NWARM.get(u); if (im && im.decode && !im.__dec) { im.__dec = 1; im.decode().catch(() => {}); } }
   const list = [...new Set(urls)].filter(u => u && typeof u === 'string' && !u.startsWith('data:') && !NWARM.has(u));
   let i = 0;
   const step = dl => {
     for (let n = 0; i < list.length && n < 4 && (!dl || dl.didTimeout || dl.timeRemaining() > 5); n++) {
       const u = list[i++];
-      try { const im = new Image(); im.decoding = 'async'; im.src = u; NWARM.set(u, im); if (im.decode) im.decode().catch(() => {}); } catch (e) { /* 読めなくてもよい */ }
+      try { const im = new Image(); im.decoding = 'async'; im.src = u; NWARM.set(u, im); if (dec && dec.has(u) && im.decode) { im.__dec = 1; im.decode().catch(() => {}); } } catch (e) { /* 読めなくてもよい */ }
     }
     if (i < list.length) nwIdle(step);
   };
   if (list.length) nwIdle(step);
 }
-function nightWarm(build) {
+function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景をほどいておく）。起動のときは読むだけ
+  if (hot && typeof artPack3 === 'function') artPack3();   // まぜた先のカードの絵のまとめ（ためしのページ・11/21 夜）：夜に入ってから読む
   try {
     const B = BUILDS[build] || BUILDS.cookie, C = CHEFS[B.chef] || {}, chef = (C.art || B.chef || 'honoka');
     const P = chef === 'minamo' ? POSE_MINAMO : chef === 'wakaba' ? POSE_WAKABA : POSE;
     const keys = Object.values(P).map(v => Array.isArray(v) ? v[0] : v);   // シェフの戦闘ポーズ（いちばん大きい絵）
     for (const k of Object.keys(ART)) {
-      if (/^fx-(burst|slash|cutin|wall|crack|shard)-/.test(k)) { if (k.includes('-' + chef)) keys.push(k); }   // 一撃の衝撃・斬撃・カットインの帯・大技の壁（11/20）は そのシェフの分
+      if (/^fx-(burst|slash|cutin|wall|crack|shard|numhit|scatter)-/.test(k)) { if (k.includes('-' + chef)) keys.push(k); }
+      else if (Object.entries(FLOURISH).some(([c, L]) => c !== chef && L.includes(k)) || Object.entries(RING).some(([c, r]) => c !== chef && r === k)) continue;   // ほかのシェフの一撃のかざりは読まない   // 一撃の衝撃・斬撃・カットインの帯・大技の壁（11/20）は そのシェフの分
       else if (/^fx-/.test(k)) keys.push(k);
       else if (/^(candy|special|jam|burnt)-/.test(k)) keys.push(k);   // まぜてできる★2・★3の絵
     }
@@ -663,7 +668,10 @@ function nightWarm(build) {
     for (const [n] of DECO_MOBS) keys.push(n + '-cheer', n + '-jump');   // 賑やかしのモブのポーズちがい（11/21）
     keys.push('bg-night-' + chef, 'fx-numhit-' + chef, 'fx-scatter-' + chef, ...(FLOURISH[chef] || []), RING[chef] || '');   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
     const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
-    nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
+    const hotSet = hot ? new Set([...Object.values(P).map(v => ART[Array.isArray(v) ? v[0] : v]), ART['bg-night-' + chef] || ART['bg-night'],
+      ...['fx-burst-', 'fx-slash-', 'fx-numhit-', 'fx-scatter-', 'fx-cutin-'].map(k => ART[k + chef]), ...(FLOURISH[chef] || []).map(k => ART[k]), ART[RING[chef]],
+      ...(mon ? ['', '-eat', '-happy'].map(x => ART['mon-' + mon.id + x]) : [])].filter(Boolean)) : null;   // 一撃のはじめで ほどく手間（長い処理）が出ないように、シェフの一撃の絵とお客さんの顔も
+    nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
       ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
       [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef], ...Object.values(KOE_MORE).map(o => o[chef])].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));

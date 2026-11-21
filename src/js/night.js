@@ -40,11 +40,11 @@ function startNight() {
     build: open.includes(S.build) ? S.build : open[0], kone: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
   };
   S.today.belly = nightHP(S.day, S.night.build);   // おなかはビルドで変わる（11/19・world.js の quota）
-  N = S.night; nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
+  N = S.night; nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
-function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; nightPrep(); nightWarm(id); save(); renderNight(); }
+function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; nightPrep(); nightWarm(id, true); save(); renderNight(); }
 function pickGo() {
   if (N.stage !== 'pick') return;
   S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
