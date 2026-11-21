@@ -1,10 +1,12 @@
 """声の最後の音（いちばんうしろの大きいかたまり）だけを短くする・語尾を下げる（11/21 しょーくん：ほのか「できたっ！」の「た」を短く・できた↓）
+注意（11/21）：のびている母音を途中で切ると、しょーくんには「ノイズ」に聞こえた（加工なしの声はノイズなし）。ゲームの声は、koe-irai で言い方を変えて作りなおすほうがよい
 使い方：python3 -I tools/koe/shorten_last.py <入力（trim.py のあと）> <出力.mp3> [--len 0.17] [--fall 430:355]
 - 短くするのは「切る」：最後の音のはじまりから --len 秒だけ残して、うしろ 50ms をなめらかに消す
   （はじめは atempo で早送りしていたが、しょーくん「圧縮されたみたいなノイズ」→ 早送りはしない。rubberband も母音がへこむので使わない）
 - --fall 始め:終わり（Hz）：語尾を下げる。最後の音を、はじめ 70ms は「始め」の高さ、130ms までに「終わり」の高さへ。
   テープをゆっくり回すのと同じしくみ（ゆっくり読むと低くなる）で、もとの高さを測って その時その時の はやさを決める。音を切ったりつないだりしないのでノイズが出ない
-- このあと voice_level.py で大きさをそろえる
+- 大きさもここでそろえて（voice_level.py と同じはかり方で -22.5dB・山は -3dB まで）、mp3 にするのは1回だけ（-q:a 2・11/21 しょーくん「まだノイズがある」→ mp3 にしなおす回数をへらす）。
+  そろっているので、あとで voice_level.py をかけても さわらない
 """
 import subprocess, sys, numpy as np
 a = sys.argv[1:]
@@ -49,5 +51,8 @@ else:
         pos[k] = p; p += r / SR
     B = np.interp(pos * SR * 4, np.arange(len(x4)), x4)
 y = np.concatenate([x[:int(cut * SR)], B * w[:len(B)]])
-subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ar', str(SR), '-ac', '1', '-i', '-', '-b:a', '96k', dst], input=y.astype(np.float32).tobytes(), check=True)
+n = 882; fr = y[: len(y) // n * n].reshape(-1, n); r = np.sqrt((fr ** 2).mean(1) + 1e-12); rd = 20 * np.log10(r)
+act = 10 * np.log10((r[rd > rd.max() - 18] ** 2).mean()); pk = 20 * np.log10(np.abs(y).max() + 1e-9)
+y = y * 10 ** (min(-22.5 - act, -3 - pk) / 20)
+subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ar', str(SR), '-ac', '1', '-i', '-', '-codec:a', 'libmp3lame', '-q:a', '2', dst], input=y.astype(np.float32).tobytes(), check=True)
 print(f'{dst}: 最後の音を {L} 秒に' + (f'・高さ {fall} Hz' if fall else ''))
