@@ -1839,7 +1839,20 @@ background:conic-gradient(from 135deg at 50% 0,#e8607a 0 90deg,transparent 0) 0 
 .ai-ico{display:flex;align-items:center;justify-content:center;gap:0}
 .ai-ico .hico{width:24px;height:24px;flex:none}
 .ai-ico .hico+.hico{margin-left:-6px}
-.ai-kata .bk-body{padding-left:4px}</style>
+.ai-kata .bk-body{padding-left:4px}
+.m-fc{position:absolute;left:8px;top:36px;z-index:2;display:flex;align-items:center;gap:5px;padding:3px 9px 3px 4px;border-radius:999px;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);color:var(--milk);font-size:9.5px;line-height:1}
+.m-fc .fc-ic{width:24px;height:24px;object-fit:contain;max-width:none;display:block}
+.m-fc span{display:flex;align-items:center;gap:2px}
+.m-fc b{font-weight:700}
+.m-fc .hico{width:20px;height:20px;flex:none}
+.fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
+.fc-face.none{background:#e9d4b0}
+.fc-card{position:relative;display:grid;gap:3px;justify-items:start;padding:22px 18px 14px;min-width:180px;background:var(--ui-forecast,#fff4dc) center/100% 100% no-repeat;color:#4a2f1f;font-size:12px;line-height:1.3}
+.fc-card .fc-ttl{justify-self:center;font-size:12.5px;color:#9b4a1c}
+.fc-card .fc-row{display:flex;align-items:center;gap:6px}
+.fc-card .fc-ic{width:28px;height:28px;object-fit:contain;max-width:none}
+.fc-card .fc-ev{font-weight:700}
+.fc-card .hico{width:22px;height:22px;flex:none}</style>
 </head>
 <body>
 <div id="app">
@@ -2654,7 +2667,7 @@ const CUST_NEW = [
 ];
 for (const c of CUST_NEW) if (!CUST[c.id]) { CUSTOMERS.push(c); CUST[c.id] = c; }
 const CUST_DAY = { elf: 4, vamp: 7, tanuki: 10 };
-const custOpen = c => S.day >= (CUST_DAY[c] || 0) && (!CUST_DAY[c] || !!ART['cust-' + c]);
+const custOpen = (c, d = S.day) => d >= (CUST_DAY[c] || 0) && (!CUST_DAY[c] || !!ART['cust-' + c]);
 const REG_STEPS = {
 kodomo:   [[2, 1], [5, 3], [8, 6, 'minamo']],
 gakusei:  [[3, 1], [6, 3], [9, 6], [12, 10]],
@@ -2688,15 +2701,15 @@ let r = Math.random() * sum;
 for (const x of items) { r -= w(x); if (r < 0) return x; }
 return items[items.length - 1];
 }
-function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
+function custPlan(n, kanbanKey, soroi = [], first = [], fix = null, fc = null) {   // fc＝その日の予報（fcGet・11/21）：多めのお客さん×FC_W・人気の味×FC_LIKE_W   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
 const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + (fix.vr || 1)] : []);
 const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
-const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m) * decoLikeW(m)); };
+const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m) * decoLikeW(m) * (fc && m === fc.m ? FC_LIKE_W : 1)); };
 const away = regTrip() ? ['otona'] : [];   // 旅に出ている常連さんは、1まいめの見た目で来ない
 let prev = null;
 return Array.from({ length: n }, (_, i) => {
 if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: fix.vr || 1, like: (fix.c === 'kodomo' || /^rozetta/.test(fix.reg)) && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルとロゼッタはいちごが大すき
-const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => custOpen(id) && id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), decoCustW); prev = c;   // 新しいお客さんは CUST_DAY から   // かざりのテーマで来やすさが変わる（11/21）
+const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => custOpen(id) && id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), id => decoCustW(id) * (fc && id === fc.c ? FC_W : 1)); prev = c;   // 新しいお客さんは CUST_DAY から   // かざりのテーマで来やすさが変わる（11/21）
 const all = custVariants(c), vs = away.includes(c) && all.length > 1 ? all.filter(x => x !== 1) : all;
 const fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
 used.add(c + vr);
@@ -2785,6 +2798,22 @@ const mToolHas = id => !!(S.goods && S.goods['t-' + id]);
 const mToolOpen = id => (typeof TRIAL !== 'undefined' && TRIAL) || !!(S.seen && S.seen['u:' + id]);   // 試しのページ（TRIAL）は、はじめから雑貨屋に並ぶ（紹介の朝はふつうに出る）
 const DAY_SUPER = 4;      // 超はやおくりの速さ（砂時計）
 const EVENT_P = .4;
+const FC_W = 3, FC_LIKE_W = 2;
+function fcMake(day) {
+const ev = day >= 3 && Math.random() < EVENT_P ? pick(DAY_EVENTS).id : '', E = DAY_EVENTS.find(e => e.id === ev);
+const open = CUSTOMERS.map(x => x.id).filter(id => custOpen(id, day));
+const c = (E && E.first && E.first[0]) || pick(open.length ? open : ['kodomo']);
+const pool = seenMats(), pref = (CUST_LIKES[c] || []).filter(m => pool.includes(m));
+return { ev, c, m: pick(pref.length ? pref : pool) };
+}
+function fcGet(day) {
+const k = 'fc:' + day;
+if (!S.seen[k] || typeof S.seen[k] !== 'object') S.seen[k] = fcMake(day);
+delete S.seen['fc:' + (day - 2)];   // 古い予報はすてる
+return S.seen[k];
+}
+const FC_EV_NM = { '': '晴れ', rain: '雨', matsuri: '町のお祭り', ensoku: '妖精の遠足', kotori: '小鳥がいっぱい', kaze: '森の風', majo: '魔女の口コミ' };
+const fcIconName = ev => 'fc-' + (ev || 'hare');
 const DAY_EVENTS = [
 { id: 'rain', add: -1, cls: 'ev-rain' },
 { id: 'matsuri', add: 2, cls: 'ev-matsuri' },
@@ -3544,6 +3573,11 @@ kataNote: { yaki: 'クッキー・タルト・マドレーヌなど、オーブ�
 regPair: ['ガルド：ただいま！帰ってきたよ', 'マーサ：おやまあ、この子ったら', 'ほのか【びっくり】：えっ、ガルドさんが、マーサさんのお孫さん！？', 'マーサ：すきな味、ここだったのね', 'ガルド：旅先で、ここの話をしたよ'],
 regKoge: ['コハク：……こげくさい'],
 diary(rec) {
+const L = STORY.diaryBase(rec) || [], fc = S.seen && S.seen['fc:' + (rec.day + 1)];
+return fc && typeof fc === 'object' && CUST[fc.c] ? [...L, STORY.fcLine(fc)] : L;
+},
+fcLine: fc => fc.ev ? `あしたは${FC_EV_NM[fc.ev]}みたい！` : 'あしたは、いいお天気みたい。',   // 日記の紙は右にちびのシールがあるので短く（くわしくは まとめの札 fcCardHTML と朝の札）
+diaryBase(rec) {
 if (rec.day === 1) return ['お店をひらいた日。お客さんは' + rec.visitors + '人。', '夜にスライムが来た。ゼリー、何に使おうかな？'];
 if (S.seen.m9 === rec.day) return ['みなもちゃんに、パン種を教わった。', 'こねすぎて、うでがパンパン。楽しい！'];   // ⑨の日（紙に入るよう少しちぢめた）
 if (STORY.mateDay('wakaba') === rec.day) return ['わかばさんが仲間になった！', 'お店が、もっとにぎやかになりそう。'];
@@ -3906,6 +3940,19 @@ return `<div class="cu-fig" style="--skin:${c.skin};--hair:${c.hair};--shirt:${c
 <i class="cu-torso">${id === 'gakusei' ? '<i class="cu-collar"></i>' : ''}</i>
 <i class="cu-head">${acc}<i class="cu-hair"></i><i class="cu-eye l"></i><i class="cu-eye r"></i><i class="cu-cheek l"></i><i class="cu-cheek r"></i><i class="cu-mouth"></i></i>
 </div>`;
+}
+function fcFace(c) {
+const b = ART['cust-' + c];
+return b ? `<i class="fc-face" style="background-image:url('${b}')"></i>` : `<i class="fc-face none"></i>`;
+}
+function fcChipHTML(day = S.day) {
+const fc = fcGet(day), ic = ART[fcIconName(fc.ev)];
+return `<div class="m-fc" aria-label="今日の予報：${esc(FC_EV_NM[fc.ev || ''])}・${esc(CUST[fc.c].name)}が多め・${esc(matShort(fc.m))}が人気">${ic ? `<img class="fc-ic" src="${ic}" alt="">` : ''}<span class="fc-who">${fcFace(fc.c)}<b>多め</b></span><span class="fc-like">${matIcon(fc.m)}<b>人気</b></span></div>`;
+}
+function fcCardHTML(day = S.day + 1) {
+const fc = S.seen && S.seen['fc:' + day]; if (!fc || typeof fc !== 'object' || !CUST[fc.c]) return '';
+const ic = ART[fcIconName(fc.ev)];
+return `<div class="fc-card"><b class="fc-ttl">あしたの予報</b><div class="fc-row">${ic ? `<img class="fc-ic" src="${ic}" alt="">` : ''}<span class="fc-ev">${esc(FC_EV_NM[fc.ev || ''])}</span></div><div class="fc-row">${fcFace(fc.c)}<span>${esc(CUST[fc.c].name)}が多そう</span></div><div class="fc-row">${matIcon(fc.m)}<span>${esc(matShort(fc.m))}が人気かも</span></div></div>`;
 }
 
 /* src/js/night.js */
@@ -6195,6 +6242,7 @@ const baked = M.baked.map(b => `<span class="mb-item">${candyIcon(b.key)}</span>
 return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
 <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
 <span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
+${fcChipHTML()}
 <div class="m-tools">${mAutoBakeOk() ? `<button class="pill sub" data-act="m-auto"${mBusy ? ' disabled' : ''}>きのうと同じに焼く</button>` : ''}<button class="round m-bookb" data-act="m-book" aria-label="レシピ帳">${ART['ui-book'] ? `<img class="m-bookimg" src="${ART['ui-book']}" alt="">` : M_BOOK_SVG}</button></div>
 <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
 <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
@@ -6536,10 +6584,11 @@ if (!R.kanban) return toast('看板にするお菓子を、えらんでね');
 const go = () => {
 R.open = true; R.t = 0; R.i = 0; R.cur = null;
 R.soroi = soroiRows(shelfSlots().slots).flatMap(x => x.mats);   // おそろいの段は開店のときの並びで
-if (!R.ev && S.day >= 3 && Math.random() < EVENT_P) R.ev = pick(DAY_EVENTS).id;   // 昼のできごと（11/19）
+const fc = fcGet(S.day);   // 予報どおりの日（11/21・前の日の閉店で決めてある）
+if (!R.ev && fc.ev) R.ev = fc.ev;   // 昼のできごと（11/19）
 const E = dEv(R);
 const fx = dRegDue(), first = (E && E.first) || [], n = Math.max(2, custCount() + ((E && E.add) || 0));   // 常連さん（11/19）：来る日は2人目か、できごとのお客さんのあと
-R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) });
+R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) }, fc);
 R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
 dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad', ...(x.duo ? ['cust-' + x.duo] : [])]; }));   // 今日のお客さんの顔を先に読む
 R.lk = {}; R.got = {}; R.miss = {};
@@ -6771,6 +6820,7 @@ function dDecoSold(s) { if (s.n <= 0 && decoSoldHeart(s.key)) { S.rep++; S.today
 function closeDay(msg) {
 const R = S.dayRun; R.done = true; R.cur = null;
 clearTimeout(dayTick); dayTick = 0;
+fcGet(S.day + 1);   // あしたの予報を決めておく（日記と朝の札・11/21）
 const loss = S.shelf.some(s => s.n > 0) && !S.seen.loss ? (S.seen.loss = S.day, STORY.lossFirst) : [];   // 売れのこりは今日でおしまい（はじめての日だけ ほのかが言う）
 save(); if (msg) toast(msg);
 renderDay(); mSe('close');

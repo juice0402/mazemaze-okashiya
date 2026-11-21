@@ -131,10 +131,11 @@ function openDay() {
   const go = () => {
     R.open = true; R.t = 0; R.i = 0; R.cur = null;
     R.soroi = soroiRows(shelfSlots().slots).flatMap(x => x.mats);   // おそろいの段は開店のときの並びで
-    if (!R.ev && S.day >= 3 && Math.random() < EVENT_P) R.ev = pick(DAY_EVENTS).id;   // 昼のできごと（11/19）
+    const fc = fcGet(S.day);   // 予報どおりの日（11/21・前の日の閉店で決めてある）
+    if (!R.ev && fc.ev) R.ev = fc.ev;   // 昼のできごと（11/19）
     const E = dEv(R);
     const fx = dRegDue(), first = (E && E.first) || [], n = Math.max(2, custCount() + ((E && E.add) || 0));   // 常連さん（11/19）：来る日は2人目か、できごとのお客さんのあと
-    R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) });
+    R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) }, fc);
     R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
     dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad', ...(x.duo ? ['cust-' + x.duo] : [])]; }));   // 今日のお客さんの顔を先に読む
     R.lk = {}; R.got = {}; R.miss = {};
@@ -387,6 +388,7 @@ function dDecoSold(s) { if (s.n <= 0 && decoSoldHeart(s.key)) { S.rep++; S.today
 function closeDay(msg) {
   const R = S.dayRun; R.done = true; R.cur = null;
   clearTimeout(dayTick); dayTick = 0;
+  fcGet(S.day + 1);   // あしたの予報を決めておく（日記と朝の札・11/21）
   const loss = S.shelf.some(s => s.n > 0) && !S.seen.loss ? (S.seen.loss = S.day, STORY.lossFirst) : [];   // 売れのこりは今日でおしまい（はじめての日だけ ほのかが言う）
   save(); if (msg) toast(msg);
   renderDay(); mSe('close');

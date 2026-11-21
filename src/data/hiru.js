@@ -163,7 +163,7 @@ const CUST_NEW = [
 ];
 for (const c of CUST_NEW) if (!CUST[c.id]) { CUSTOMERS.push(c); CUST[c.id] = c; }
 const CUST_DAY = { elf: 4, vamp: 7, tanuki: 10 };
-const custOpen = c => S.day >= (CUST_DAY[c] || 0) && (!CUST_DAY[c] || !!ART['cust-' + c]);
+const custOpen = (c, d = S.day) => d >= (CUST_DAY[c] || 0) && (!CUST_DAY[c] || !!ART['cust-' + c]);
 /* 常連さん（11/19・仮）：段ごとに [その日から, その種類のお客さんからのハートの合計, 条件]。条件 minamo＝みなもが仲間・trip＝ガルドが旅のあいだ（日にちは見ない）
    その日にあてはまる常連さんがいれば、その日はかならず来る（1日1場面・仲間が来る日と物語の場面の日はなし）。来るのは1まいめの見た目。セリフは story.js の STORY.reg */
 const REG_STEPS = {
@@ -204,15 +204,15 @@ function wpick(items, w) {
 }
 /* その日のお客さん（開店のときに決める）：[{ c: お客さんの id, like: すきな素材 }] */
 /* その日のお客さんの順番：同じ種類のお客さんは続けて来ない。見た目ちがいの絵（day-scene.js の custVariants）があれば、その日まだ来ていない見た目から（vr） */
-function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
+function custPlan(n, kanbanKey, soroi = [], first = [], fix = null, fc = null) {   // fc＝その日の予報（fcGet・11/21）：多めのお客さん×FC_W・人気の味×FC_LIKE_W   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
   const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + (fix.vr || 1)] : []);
   const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
-  const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m) * decoLikeW(m)); };
+  const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m) * decoLikeW(m) * (fc && m === fc.m ? FC_LIKE_W : 1)); };
   const away = regTrip() ? ['otona'] : [];   // 旅に出ている常連さんは、1まいめの見た目で来ない
   let prev = null;
   return Array.from({ length: n }, (_, i) => {
     if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: fix.vr || 1, like: (fix.c === 'kodomo' || /^rozetta/.test(fix.reg)) && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルとロゼッタはいちごが大すき
-    const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => custOpen(id) && id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), decoCustW); prev = c;   // 新しいお客さんは CUST_DAY から   // かざりのテーマで来やすさが変わる（11/21）
+    const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => custOpen(id) && id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), id => decoCustW(id) * (fc && id === fc.c ? FC_W : 1)); prev = c;   // 新しいお客さんは CUST_DAY から   // かざりのテーマで来やすさが変わる（11/21）
     const all = custVariants(c), vs = away.includes(c) && all.length > 1 ? all.filter(x => x !== 1) : all;
     const fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
     used.add(c + vr);
@@ -325,6 +325,25 @@ const DAY_SUPER = 4;      // 超はやおくりの速さ（砂時計）
    3日目から、お店をあけるときに ときどき1つ（EVENT_P）。お金やごほうびが運で増えるしくみにはしない（お客さんの数と顔ぶれだけ・claude/game-art-rule.md）
    add＝お客さんの数に足す・first＝はじめに続けて来るお客さん・cls＝舞台につける見た目 ---------- */
 const EVENT_P = .4;
+/* あしたの予報（11/21 しょーくん「明日はイベントだから妖精がたくさんくる、みたいなお気に入り予想を立てて戦略が練れる」→ えらぶ質問で「あしたの予報」）
+   その日のできごと（ev・なしは ''）・多めに来るお客さん（c）・人気の味（m）を前の日の閉店（day.js の closeDay）で決めて S.seen['fc:<日>'] に置く。
+   その日の昼は、できごとをそのまま起こし、c を FC_W 倍・m を FC_LIKE_W 倍 来やすく（custPlan）。見せるのは日記の3行目・朝のキッチンの札・まとめの札（fcCardHTML） */
+const FC_W = 3, FC_LIKE_W = 2;
+function fcMake(day) {
+  const ev = day >= 3 && Math.random() < EVENT_P ? pick(DAY_EVENTS).id : '', E = DAY_EVENTS.find(e => e.id === ev);
+  const open = CUSTOMERS.map(x => x.id).filter(id => custOpen(id, day));
+  const c = (E && E.first && E.first[0]) || pick(open.length ? open : ['kodomo']);
+  const pool = seenMats(), pref = (CUST_LIKES[c] || []).filter(m => pool.includes(m));
+  return { ev, c, m: pick(pref.length ? pref : pool) };
+}
+function fcGet(day) {
+  const k = 'fc:' + day;
+  if (!S.seen[k] || typeof S.seen[k] !== 'object') S.seen[k] = fcMake(day);
+  delete S.seen['fc:' + (day - 2)];   // 古い予報はすてる
+  return S.seen[k];
+}
+const FC_EV_NM = { '': '晴れ', rain: '雨', matsuri: '町のお祭り', ensoku: '妖精の遠足', kotori: '小鳥がいっぱい', kaze: '森の風', majo: '魔女の口コミ' };
+const fcIconName = ev => 'fc-' + (ev || 'hare');
 const DAY_EVENTS = [
   { id: 'rain', add: -1, cls: 'ev-rain' },
   { id: 'matsuri', add: 2, cls: 'ev-matsuri' },
