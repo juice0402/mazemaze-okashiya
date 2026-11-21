@@ -57,7 +57,7 @@
 .msg-done{font-size:11px;color:var(--ink-soft)}
 .ms-hint{margin:0;font-size:11px;color:var(--milk-soft);text-align:center}
 .ms-close{flex:none;align-self:center;padding:6px 22px}
-.m-wallet{position:absolute;left:8px;top:8px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
+.m-wallet{position:absolute;left:8px;top:15.5px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
 .m-wallet b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--brass-hi)}
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
 @keyframes mspent{0%{opacity:0;transform:translateY(-6px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
@@ -536,8 +536,10 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 @keyframes dSeriesHit{0%,100%{rotate:0deg}25%{rotate:-8deg}55%{rotate:6deg}80%{rotate:-2deg}}
 @media (prefers-reduced-motion:reduce){.d-aisho.pop,.d-aisho.hit,.d-series.pop,.d-series.hit{animation:none}}
 /* 相性帳のボタン（商品を並べるの左上）と、相性帳の行（素材2つの丸） */
-.md-aishob{position:absolute;left:8px;top:8px;z-index:5;width:40px;height:40px;padding:0;display:grid;place-items:center}
-.md-aishob img{width:30px;height:30px;max-width:none;object-fit:contain;display:block}
+/* 相性帳のボタン：上のヒントの札と同じ高さのまんなか・棚の枠にかからない大きさ（11/21 しょーくん「枠と少し被ってる」→ 測ると7px かかっていた）。押せる所は ::after で44pxに */
+.md-room button.md-aishob{position:absolute;left:8px;top:calc(10px + var(--tipH,27px) / 2 - 15px);z-index:5;width:30px;height:30px;min-width:0;min-height:0;padding:0;display:grid;place-items:center}
+.md-aishob::after{content:"";position:absolute;inset:-7px}
+.md-aishob img{width:22px;height:22px;max-width:none;object-fit:contain;display:block}
 .md-aishob b{font-size:9px}
 .ai-ico{display:flex;align-items:center;justify-content:center;gap:0}
 .ai-ico .hico{width:24px;height:24px;flex:none}
@@ -545,10 +547,11 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .ai-kata .bk-ico .hico{width:36px;height:36px}
 
 /* ---------- あしたの予報（11/21）：朝のキッチンの札 .m-fc（お財布の下）と、1日のまとめの札 .fc-card（ui-forecast の紙） ---------- */
-.m-fc{position:relative;top:-3px;display:inline-flex;align-items:center;vertical-align:middle;gap:3px;height:15px;margin:-2px 0 0 7px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
-.m-fc .fc-ic{width:18px;height:18px;margin:-3px 0;object-fit:contain;max-width:none;display:block}
-.m-fc .fc-like{display:flex;align-items:center;gap:1px}
-.m-fc .hico{width:18px;height:18px;margin:-3px 0;flex:none}
+/* お財布の枠の中の予報（11/21 しょーくん「アイコンの高さや文字の高さがあってない」）：お財布の絵（style.css の .m-wallet::before＝1.35em・vertical-align:middle・上下 -3px）と同じ大きさ・同じそろえ方。字は お財布 と同じ 11px のまま同じ行に */
+.m-fc{display:inline;margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
+.m-fc .fc-like{display:inline}
+.m-fc .fc-ic,.m-fc .hico{display:inline-block;width:1.35em;height:1.35em;max-width:none;margin:-3px 2px -3px 0;vertical-align:middle;object-fit:contain;position:relative;top:-1.5px}
+.mstage .m-wallet.m-wallet::before{position:relative;top:-1.5px}   /* お財布の絵も字のまんなかへ（測ると絵が字より1.3〜1.8px下だった） */
 .fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
 .fc-face.none{background:#e9d4b0}
 .fc-card{position:relative;display:grid;gap:3px;justify-items:start;padding:22px 18px 14px;min-width:180px;background:var(--ui-forecast,#fff4dc) center/100% 100% no-repeat;color:#4a2f1f;font-size:12px;line-height:1.3}

@@ -1437,7 +1437,7 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .msg-done{font-size:11px;color:var(--ink-soft)}
 .ms-hint{margin:0;font-size:11px;color:var(--milk-soft);text-align:center}
 .ms-close{flex:none;align-self:center;padding:6px 22px}
-.m-wallet{position:absolute;left:8px;top:8px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
+.m-wallet{position:absolute;left:8px;top:15.5px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
 .m-wallet b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--brass-hi)}
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
 @keyframes mspent{0%{opacity:0;transform:translateY(-6px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
@@ -1833,17 +1833,18 @@ background:conic-gradient(from 135deg at 50% 0,#e8607a 0 90deg,transparent 0) 0 
 @keyframes dSeriesPop{0%{scale:1 0}100%{scale:1 1}}
 @keyframes dSeriesHit{0%,100%{rotate:0deg}25%{rotate:-8deg}55%{rotate:6deg}80%{rotate:-2deg}}
 @media (prefers-reduced-motion:reduce){.d-aisho.pop,.d-aisho.hit,.d-series.pop,.d-series.hit{animation:none}}
-.md-aishob{position:absolute;left:8px;top:8px;z-index:5;width:40px;height:40px;padding:0;display:grid;place-items:center}
-.md-aishob img{width:30px;height:30px;max-width:none;object-fit:contain;display:block}
+.md-room button.md-aishob{position:absolute;left:8px;top:calc(10px + var(--tipH,27px) / 2 - 15px);z-index:5;width:30px;height:30px;min-width:0;min-height:0;padding:0;display:grid;place-items:center}
+.md-aishob::after{content:"";position:absolute;inset:-7px}
+.md-aishob img{width:22px;height:22px;max-width:none;object-fit:contain;display:block}
 .md-aishob b{font-size:9px}
 .ai-ico{display:flex;align-items:center;justify-content:center;gap:0}
 .ai-ico .hico{width:24px;height:24px;flex:none}
 .ai-ico .hico+.hico{margin-left:-6px}
 .ai-kata .bk-ico .hico{width:36px;height:36px}
-.m-fc{position:relative;top:-3px;display:inline-flex;align-items:center;vertical-align:middle;gap:3px;height:15px;margin:-2px 0 0 7px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
-.m-fc .fc-ic{width:18px;height:18px;margin:-3px 0;object-fit:contain;max-width:none;display:block}
-.m-fc .fc-like{display:flex;align-items:center;gap:1px}
-.m-fc .hico{width:18px;height:18px;margin:-3px 0;flex:none}
+.m-fc{display:inline;margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
+.m-fc .fc-like{display:inline}
+.m-fc .fc-ic,.m-fc .hico{display:inline-block;width:1.35em;height:1.35em;max-width:none;margin:-3px 2px -3px 0;vertical-align:middle;object-fit:contain;position:relative;top:-1.5px}
+.mstage .m-wallet.m-wallet::before{position:relative;top:-1.5px}
 .fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
 .fc-face.none{background:#e9d4b0}
 .fc-card{position:relative;display:grid;gap:3px;justify-items:start;padding:22px 18px 14px;min-width:180px;background:var(--ui-forecast,#fff4dc) center/100% 100% no-repeat;color:#4a2f1f;font-size:12px;line-height:1.3}
@@ -2628,7 +2629,7 @@ return mon.length && o ? KATA_FORM[o] || null : null;
 const AISHO = [
 ['ichigo', 'milk', 'いちごミルク'], ['hoshi', 'milk', 'ミルキーウェイ'], ['hachimitsu', 'zeri', 'はちみつゼリー'],   // 基本の素材だけの相性は いちごミルクだけ（多いと、置くだけでぜんぶつながる・11/21）
 ['ichigo', 'mizuame', 'いちご飴'], ['hachimitsu', 'herb', 'はちみつハーブティー'], ['herb', 'milk', 'ハーブミルクティー'],
-['hoippu', 'ichigo', 'いちごのショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
+['hoippu', 'ichigo', 'ショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
 ['kanten', 'minto', 'ひんやりミント'], ['hoshi', 'mizuame', '星くずキャンディ'], ['hachimitsu', 'kanten', 'はちみつ寒天'],
 ['hoippu', 'karamel', 'キャラメルホイップ'], ['minto', 'niji', 'にじいろソーダ'],
 ].map(([a, b, name]) => ({ id: recipeKey(a, b), a, b, name }));
@@ -3572,25 +3573,25 @@ calledSay: ['じゃあ、それにする！', 'おすすめなら、ひとつ！
 pairSay: ['これと、いっしょに！', 'となりのも、ください', 'セットで食べたい！', 'この組み合わせ、最高！'],
 seriesSay: ['この列、ぜんぶ気になる', 'なかまのお菓子も！', '並んでると、ほしくなる', 'こっちも、そろえたい！'],
 seriesFirst: kata => [`ほのか【わくわく】：たての列が、ぜんぶ${kata}！`, 'ほのか【ドヤ】：同じなかまでそろえると、まとめて買ってもらえるかも！'],
-aishoNotes: {
-'ichigo+milk': 'あまずっぱいと、まろやか。並べるだけでピンク色の気分',
-'hoshi+milk': '白いミルクに、星くず。夜空みたい',
-'hachimitsu+zeri': 'ぷるぷるに、はちみつがとろり',
-'ichigo+mizuame': 'みなもちゃんの飴で、いちごがきらきら',
-'hachimitsu+herb': 'わかばさんの、とっておきの組み合わせ',
+aishoNotes: {   // 1行に入る長さ（360幅で18字まで・11/21 測った）
+'ichigo+milk': 'あまずっぱくて、まろやか',
+'hoshi+milk': '白いミルクに、星くず',
+'hachimitsu+zeri': 'ぷるぷるに、はちみつとろり',
+'ichigo+mizuame': 'みなもちゃんの飴で、きらきら',
+'hachimitsu+herb': 'わかばさんの、とっておき',
 'herb+milk': 'すーっとして、ほっとする',
-'hoippu+ichigo': 'ふわふわホイップに、いちご。王道！',
-'egg+karamel': 'ひよこのカラメルと、たまご。……ひよこに負けた味',
-'ichigo+zeri': 'ぷるぷるの中に、いちごがとじこめられてる',
-'kanten+minto': 'すーっと、ひんやり。夏に売りたい',
-'hoshi+mizuame': '夜空を、飴でとじこめた',
-'hachimitsu+kanten': 'つるんとして、あまい。おばあちゃんが好きそう',
-'hoippu+karamel': 'こんがりと、ふわふわ。ずるい組み合わせ',
-'minto+niji': 'しゅわっとして、にじいろ。ふしぎな味',
+'hoippu+ichigo': 'ふわふわホイップに、いちご',
+'egg+karamel': 'ひよこのカラメルに、負けた味',
+'ichigo+zeri': 'いちごが、ぷるぷるの中に',
+'kanten+minto': 'すーっと、ひんやり',
+'hoshi+mizuame': '夜空を、飴にとじこめた',
+'hachimitsu+kanten': 'つるんと、やさしいあまさ',
+'hoippu+karamel': 'こんがりと、ふわふわ',
+'minto+niji': 'しゅわっと、にじいろ',
 },
 aishoNote: p => STORY.aishoNotes[p.id] || '',
 aishoTop: n => n >= AISHO.length ? 'ぜんぶ見つけた！わたし、天才かも！' : n >= 7 ? 'だいぶ集まってきた！あと少し！' : n ? 'となりどうしの相性、もっと探そう！' : 'となりに並べると、相性が見つかるかも！',
-kataNote: { yaki: 'クッキー・タルト・マドレーヌなど、オーブンで焼いたお菓子', hiya: 'アイス・プリン・ゼリー・パフェなど、つめたいお菓子', ame: '飴・キャラメル・ジャムなど、とろっと甘いお菓子', fuwa: 'スフレ・ババロア・ケーキなど、ふわふわのお菓子' },
+kataNote: { yaki: 'クッキー・タルトなど、焼いたお菓子', hiya: 'アイス・プリン・ゼリーなど', ame: '飴・キャラメル・ジャムなど', fuwa: 'スフレ・ババロア・ケーキなど' },
 regPair: ['ガルド：ただいま！帰ってきたよ', 'マーサ：おやまあ、この子ったら', 'ほのか【びっくり】：えっ、ガルドさんが、マーサさんのお孫さん！？', 'マーサ：すきな味、ここだったのね', 'ガルド：旅先で、ここの話をしたよ'],
 regKoge: ['コハク：……こげくさい'],
 diary(rec) {
@@ -6443,7 +6444,7 @@ return secs;
 function aishoBookHTML() {
 const seen = new Set(seenMats()), got = AISHO.filter(p => S.seen['ai:' + p.id]).length;
 const rows = AISHO.map(p => {
-if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(matShort(p.a))}×${esc(matShort(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
+if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(mTileNm(p.a))}×${esc(mTileNm(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
 const h = seen.has(p.a) ? matShort(p.a) + '×？' : seen.has(p.b) ? matShort(p.b) + '×？' : '？×？';
 return `<div class="ms-good bk-rec un"><span class="bk-ico${ART['ui-mada'] ? ' art' : ''}">${ART['ui-mada'] ? `<img src="${ART['ui-mada']}" alt="">` : ''}<b>？</b></span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(h)}</em></span><span class="bk-note">となりに並べると、見つかるかも</span></span></div>`;
 }).join('');

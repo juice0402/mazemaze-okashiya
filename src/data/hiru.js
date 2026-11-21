@@ -99,7 +99,7 @@ function candyKata(key) {
 const AISHO = [
   ['ichigo', 'milk', 'いちごミルク'], ['hoshi', 'milk', 'ミルキーウェイ'], ['hachimitsu', 'zeri', 'はちみつゼリー'],   // 基本の素材だけの相性は いちごミルクだけ（多いと、置くだけでぜんぶつながる・11/21）
   ['ichigo', 'mizuame', 'いちご飴'], ['hachimitsu', 'herb', 'はちみつハーブティー'], ['herb', 'milk', 'ハーブミルクティー'],
-  ['hoippu', 'ichigo', 'いちごのショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
+  ['hoippu', 'ichigo', 'ショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
   ['kanten', 'minto', 'ひんやりミント'], ['hoshi', 'mizuame', '星くずキャンディ'], ['hachimitsu', 'kanten', 'はちみつ寒天'],
   ['hoippu', 'karamel', 'キャラメルホイップ'], ['minto', 'niji', 'にじいろソーダ'],
 ].map(([a, b, name]) => ({ id: recipeKey(a, b), a, b, name }));

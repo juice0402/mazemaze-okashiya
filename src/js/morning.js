@@ -563,7 +563,7 @@ function mBookSecs() {
 function aishoBookHTML() {
   const seen = new Set(seenMats()), got = AISHO.filter(p => S.seen['ai:' + p.id]).length;
   const rows = AISHO.map(p => {
-    if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(matShort(p.a))}×${esc(matShort(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
+    if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(mTileNm(p.a))}×${esc(mTileNm(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
     const h = seen.has(p.a) ? matShort(p.a) + '×？' : seen.has(p.b) ? matShort(p.b) + '×？' : '？×？';
     return `<div class="ms-good bk-rec un"><span class="bk-ico${ART['ui-mada'] ? ' art' : ''}">${ART['ui-mada'] ? `<img src="${ART['ui-mada']}" alt="">` : ''}<b>？</b></span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(h)}</em></span><span class="bk-note">となりに並べると、見つかるかも</span></span></div>`;
   }).join('');
