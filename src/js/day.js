@@ -632,7 +632,7 @@ function dRefill(si) {
   if (M.baked.length === 1) return dRefillDo(si, 0);
   const cs = $('dCase'); if (!cs) return;
   dRefillClose();
-  cs.insertAdjacentHTML('beforeend', `<div class="d-refp" id="dRefp"><b>どれを補充する？</b><span>${M.baked.map((b, w) => `<button class="d-refo" data-act="d-refill2" data-i="${si}" data-w="${w}">${candyIcon(b.key)}<em>${esc(candyOf(b.key).name)}</em></button>`).join('')}</span></div>`);
+  cs.insertAdjacentHTML('beforeend', `<div class="d-refp" id="dRefp"><b>どれを補充する？</b><span>${M.baked.map((b, w) => `<button class="d-refo" data-act="d-refill2" data-i="${si}" data-w="${w}">${candyIcon(b.key)}<em>${mNmBr(candyOf(b.key).name)}</em></button>`).join('')}</span></div>`);
 }
 const dRefillClose = () => { const p = $('dRefp'); if (p) p.remove(); };
 function dRefillDo(si, wi) {

@@ -365,8 +365,7 @@ function kitchenHTML(M) {
   const baked = M.baked.map(b => `<span class="mb-item">${candyIcon(b.key)}</span>`).join('');
   return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
     <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-      <span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
-      ${fcChipHTML()}
+      <span class="m-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span>${fcChipHTML()}${spent}</span>
       <div class="m-tools">${mAutoBakeOk() ? `<button class="pill sub" data-act="m-auto"${mBusy ? ' disabled' : ''}>きのうと同じに焼く</button>` : ''}<button class="round m-bookb" data-act="m-book" aria-label="レシピ帳">${ART['ui-book'] ? `<img class="m-bookimg" src="${ART['ui-book']}" alt="">` : M_BOOK_SVG}</button></div>
       <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
       <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
@@ -383,15 +382,15 @@ function mSlotHTML(o, idx, ks, rib = '') {
 function displayHTML(M) {
   const bg = ART['bg-day'], { slots, ks } = dSlots();
   const full = slots.every((o, j) => o || j === ks) && !!slots[ks];
-  const tip = M.baked.length && full ? 'のこりは天板に。売り切れたら補充！' : M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
+  const tip = M.baked.length && full ? 'のこりは、あとで補充！' : M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
   const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${mNmBr(candyOf(b.key).name)}</span></div>`).join('');
   return `<section class="morning mdisp fit" id="msec">
     <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-      <p class="md-tip">${esc(tip)}</p>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}
+      <p class="md-tip">${esc(tip)}</p>
       <button class="round md-aishob" data-act="m-aisho" aria-label="相性帳">${ART['ui-aisho-book'] ? `<img src="${ART['ui-aisho-book']}" alt="">` : '<b>相性</b>'}</button>
       <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${(rib => slots.map((o, i) => mSlotHTML(o, i, ks, rib[i])).join(''))(dCaseDeco(slots))}</div>
     </div>
-    <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span><div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
+    <div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}<div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
     <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
   </section>`;
 }
@@ -409,7 +408,7 @@ function zakkaHTML() {
       <div class="ms-top"><span class="ms-ttl">雑貨屋</span></div>
       ${body}
     </div></div>
-    <div class="mz-foot gingham"><span class="mz-wallet">お財布 <b>${fmt(S.money)}</b>円</span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
+    <div class="mz-foot gingham"><span class="mz-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span></span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
     <div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
   </section>`;
 }
@@ -564,7 +563,7 @@ function mBookSecs() {
 function aishoBookHTML() {
   const seen = new Set(seenMats()), got = AISHO.filter(p => S.seen['ai:' + p.id]).length;
   const rows = AISHO.map(p => {
-    if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(matShort(p.a))}×${esc(matShort(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
+    if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(mTileNm(p.a))}×${esc(mTileNm(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
     const h = seen.has(p.a) ? matShort(p.a) + '×？' : seen.has(p.b) ? matShort(p.b) + '×？' : '？×？';
     return `<div class="ms-good bk-rec un"><span class="bk-ico${ART['ui-mada'] ? ' art' : ''}">${ART['ui-mada'] ? `<img src="${ART['ui-mada']}" alt="">` : ''}<b>？</b></span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(h)}</em></span><span class="bk-note">となりに並べると、見つかるかも</span></span></div>`;
   }).join('');
@@ -573,7 +572,7 @@ function aishoBookHTML() {
     <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
       <div class="ms-top"><span class="ms-ttl">相性帳</span><span class="bk-cnt">${got} / ${AISHO.length}</span></div>
       <div class="ms-goods"><p class="ms-sec">となりの相性<em>どちらかが売れると、いっしょに売れる</em></p>${rows}
-        <p class="ms-sec">たての列のシリーズ<em>たての列を同じなかまでそろえる</em></p>${Object.keys(KATA).map(k => `<div class="ms-good bk-rec ai-kata"><span class="bk-body"><span class="bk-nm">${KATA[k]}</span><span class="bk-note">${esc(STORY.kataNote[k])}</span></span></div>`).join('')}</div>
+        <p class="ms-sec">たての列のシリーズ<em>たての列を同じなかまでそろえる</em></p>${Object.keys(KATA).map(k => `<div class="ms-good bk-rec ai-kata"><span class="bk-ico">${candyIcon(KATA_ICON[k])}</span><span class="bk-body"><span class="bk-nm">${KATA[k]}</span><span class="bk-note">${esc(STORY.kataNote[k])}</span></span></div>`).join('')}</div>
     </div></div>
     <div class="mz-foot gingham"><p class="mz-hint bk-top"><b>ほのか</b>${esc(STORY.aishoTop(got))}</p></div>
     <div class="m-bar"><button class="big" data-act="m-disp">棚にもどる</button></div>

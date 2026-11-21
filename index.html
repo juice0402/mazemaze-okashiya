@@ -1458,7 +1458,7 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .msg-done{font-size:11px;color:var(--ink-soft)}
 .ms-hint{margin:0;font-size:11px;color:var(--milk-soft);text-align:center}
 .ms-close{flex:none;align-self:center;padding:6px 22px}
-.m-wallet{position:absolute;left:8px;top:8px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
+.m-wallet{position:absolute;left:8px;top:15.5px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
 .m-wallet b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--brass-hi)}
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
 @keyframes mspent{0%{opacity:0;transform:translateY(-6px)}20%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
@@ -1846,26 +1846,25 @@ background:conic-gradient(from 135deg at 50% 0,#e8607a 0 90deg,transparent 0) 0 
 .d-aisho.hit{animation:dAishoHit .9s ease-out both}
 @keyframes dAishoPop{0%{scale:0}100%{scale:1}}
 @keyframes dAishoHit{0%{scale:1;filter:drop-shadow(0 0 0 #ffe9a0)}30%{scale:1.6;filter:drop-shadow(0 0 6px #ffe9a0)}100%{scale:1;filter:drop-shadow(0 1px 1px rgba(60,20,10,.45))}}
-.d-series{position:absolute;z-index:2;left:1px;top:-5px;width:17px;height:58px;display:grid;place-items:center;padding:3px 0 12px;pointer-events:none;background:var(--ui-series,linear-gradient(#f6c75a,#e2a42e)) center/100% 100% no-repeat;filter:drop-shadow(0 1px 1px rgba(60,20,10,.4))}
-.d-series b{writing-mode:vertical-rl;font-size:8.5px;line-height:1;font-weight:700;letter-spacing:-.5px;color:#5a2410;white-space:nowrap}
+.d-series{position:absolute;z-index:2;left:1px;top:-5px;width:16px;height:max(36px,min(50px,calc(100% - 32px)));display:grid;place-items:center;padding:1px 0 7px;pointer-events:none;background:var(--ui-series,linear-gradient(#f6c75a,#e2a42e)) center/100% 100% no-repeat;filter:drop-shadow(0 1px 1px rgba(60,20,10,.4))}
+.d-series b{writing-mode:vertical-rl;font-size:8px;line-height:1;font-weight:700;letter-spacing:-1px;color:#5a2410;white-space:nowrap}
 .d-series.out{filter:grayscale(.8) opacity(.55)}
 .d-series.pop{animation:dSeriesPop .55s cubic-bezier(.3,1.5,.5,1) both;transform-origin:50% 0}
 .d-series.hit{animation:dSeriesHit .9s ease-out both;transform-origin:50% 0}
 @keyframes dSeriesPop{0%{scale:1 0}100%{scale:1 1}}
 @keyframes dSeriesHit{0%,100%{rotate:0deg}25%{rotate:-8deg}55%{rotate:6deg}80%{rotate:-2deg}}
 @media (prefers-reduced-motion:reduce){.d-aisho.pop,.d-aisho.hit,.d-series.pop,.d-series.hit{animation:none}}
-.md-aishob{position:absolute;left:8px;top:8px;z-index:5;width:40px;height:40px;padding:0;display:grid;place-items:center}
-.md-aishob img{width:30px;height:30px;max-width:none;object-fit:contain;display:block}
+.md-room button.md-aishob{position:absolute;left:8px;top:calc(10px + var(--tipH,27px) / 2 - 15px);z-index:5;width:30px;height:30px;min-width:0;min-height:0;padding:0;display:grid;place-items:center}
+.md-aishob::after{content:"";position:absolute;inset:-7px}
+.md-aishob img{width:22px;height:22px;max-width:none;object-fit:contain;display:block}
 .md-aishob b{font-size:9px}
 .ai-ico{display:flex;align-items:center;justify-content:center;gap:0}
 .ai-ico .hico{width:24px;height:24px;flex:none}
 .ai-ico .hico+.hico{margin-left:-6px}
-.ai-kata .bk-body{padding-left:4px}
-.m-fc{position:absolute;left:8px;top:36px;z-index:2;display:flex;align-items:center;gap:5px;padding:3px 9px 3px 4px;border-radius:999px;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);color:var(--milk);font-size:9.5px;line-height:1}
-.m-fc .fc-ic{width:24px;height:24px;object-fit:contain;max-width:none;display:block}
-.m-fc span{display:flex;align-items:center;gap:2px}
-.m-fc b{font-weight:700}
-.m-fc .hico{width:20px;height:20px;flex:none}
+.ai-kata .bk-ico .hico{width:36px;height:36px}
+.m-fc{display:flex;align-items:center;gap:2px;margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
+.m-fc .fc-like{display:flex;align-items:center;gap:2px}
+.m-fc .fc-ic,.m-fc .hico{display:block;flex:none;width:1.35em;height:1.35em;max-width:none;object-fit:contain}
 .fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
 .fc-face.none{background:#e9d4b0}
 .fc-card{position:relative;display:grid;gap:3px;justify-items:start;padding:22px 18px 14px;min-width:180px;background:var(--ui-forecast,#fff4dc) center/100% 100% no-repeat;color:#4a2f1f;font-size:12px;line-height:1.3}
@@ -1881,13 +1880,23 @@ background:conic-gradient(from 135deg at 50% 0,#e8607a 0 90deg,transparent 0) 0 
 .d-calln{position:absolute;left:50%;bottom:3px;translate:-50% 0;display:flex;gap:2px}
 .d-calln i{display:block;width:6px;height:6px;border-radius:50%;background:#f6c44a;box-shadow:0 0 0 1px #5a2410}
 .dslot.refill{cursor:pointer}
-.dslot .d-refl{position:absolute;left:50%;bottom:4px;translate:-50% 0;z-index:4;font-size:9px;font-weight:700;line-height:1;color:#fff;background:#d2546b;border-radius:999px;padding:3px 7px;box-shadow:0 1px 0 rgba(60,20,10,.4)}
+.dslot.refill .d-out{opacity:.35}
+.dslot .d-refl{position:absolute;left:50%;top:38%;translate:-50% -50%;z-index:4;font-size:9px;font-weight:700;line-height:1;color:#fff;background:#d2546b;border-radius:999px;padding:3px 7px;box-shadow:0 1px 0 rgba(60,20,10,.4)}
 .d-refp{position:absolute;left:8px;right:8px;top:8px;z-index:6;display:grid;gap:6px;padding:8px;border-radius:12px;background:rgba(36,19,10,.92);border:1.5px solid var(--brass);color:var(--milk);font-size:11px}
 .d-refp>span{display:flex;gap:6px;overflow-x:auto}
 .d-refo{flex:none;display:grid;justify-items:center;gap:2px;width:64px;padding:4px 2px;border-radius:10px;background:#fff8ec;border:1.5px solid #c9a27a;color:#4a2f1f}
 .d-refo .hico{width:34px;height:34px}
-.d-refo em{font-style:normal;font-size:8.5px;line-height:1.1;text-align:center}
-.dcase{position:relative}</style>
+.d-refo em{font-style:normal;font-size:8.5px;font-weight:700;line-height:1.2;text-align:center;letter-spacing:-.03em;word-break:keep-all;min-height:2.4em}
+.dcase{position:relative}
+.md-room .md-tip{max-width:calc(100% - 92px);padding-left:12px;padding-right:12px;text-wrap:balance;line-height:1.3}
+.md-wait .md-autob.md-autob{top:-.5px;right:10px;height:20px;min-height:0;line-height:18px;padding:0 10px;font-size:10px}
+.m-wallet.m-wallet,.mz-wallet.mz-wallet{display:inline-flex;align-items:center}
+.m-wallet.m-wallet{box-sizing:border-box;min-height:29px}
+.m-wallet.m-wallet::before,.mz-wallet.mz-wallet::before{flex:none;margin-top:0;margin-bottom:0}
+.m-wallet b{margin:0 2px 0 4px;line-height:1}
+.mz-wallet b{line-height:1;margin:0 3px 0 4px}
+.m-wallet b,.mz-wallet b{translate:0 -1px}
+.m-wallet.m-wallet::before,.m-fc .fc-ic,.m-fc .hico{translate:0 .75px}</style>
 </head>
 <body>
 <div id="app">
@@ -2649,6 +2658,7 @@ const KATA_OF = {};
 ['ame', [['hachimitsu', 'hachimitsu'], ['hachimitsu', 'milk'], ['hachimitsu', 'ichigo'], ['mizuame', 'hachimitsu'], ['mizuame', 'milk'], ['mizuame', 'ichigo'], ['mizuame', 'mizuame'], ['herb', 'hachimitsu'], ['herb', 'mizuame']]],
 ['fuwa', [['hachimitsu', 'egg'], ['milk', 'ichigo'], ['egg', 'ichigo'], ['mizuame', 'egg'], ['herb', 'milk'], ['herb', 'egg']]],
 ].forEach(([k, L]) => L.forEach(([a, b]) => { KATA_OF[recipeKey(a, b)] = k; }));
+const KATA_ICON = { yaki: 'hachimitsu+mugi', hiya: 'milk+milk', ame: 'hachimitsu+hachimitsu', fuwa: 'egg+ichigo' };   // 相性帳のなかまの行の絵（そのなかまのお菓子1つ）
 const KATA_FORM = { mugi: 'yaki', ichigo: 'yaki', hachimitsu: 'fuwa', milk: 'hiya', egg: 'hiya', herb: 'hiya', mizuame: 'ame' };   // モンスター素材のお菓子は、もう1つの素材の形（クッキー・タルト・ケーキ…）で
 function candyKata(key) {
 const mats = String(key).split('+'), k = KATA_OF[recipeKey(mats[0], mats[1])];
@@ -2661,7 +2671,7 @@ return mon.length && o ? KATA_FORM[o] || null : null;
 const AISHO = [
 ['ichigo', 'milk', 'いちごミルク'], ['hoshi', 'milk', 'ミルキーウェイ'], ['hachimitsu', 'zeri', 'はちみつゼリー'],   // 基本の素材だけの相性は いちごミルクだけ（多いと、置くだけでぜんぶつながる・11/21）
 ['ichigo', 'mizuame', 'いちご飴'], ['hachimitsu', 'herb', 'はちみつハーブティー'], ['herb', 'milk', 'ハーブミルクティー'],
-['hoippu', 'ichigo', 'いちごのショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
+['hoippu', 'ichigo', 'ショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
 ['kanten', 'minto', 'ひんやりミント'], ['hoshi', 'mizuame', '星くずキャンディ'], ['hachimitsu', 'kanten', 'はちみつ寒天'],
 ['hoippu', 'karamel', 'キャラメルホイップ'], ['minto', 'niji', 'にじいろソーダ'],
 ].map(([a, b, name]) => ({ id: recipeKey(a, b), a, b, name }));
@@ -3605,25 +3615,25 @@ calledSay: ['じゃあ、それにする！', 'おすすめなら、ひとつ！
 pairSay: ['これと、いっしょに！', 'となりのも、ください', 'セットで食べたい！', 'この組み合わせ、最高！'],
 seriesSay: ['この列、ぜんぶ気になる', 'なかまのお菓子も！', '並んでると、ほしくなる', 'こっちも、そろえたい！'],
 seriesFirst: kata => [`ほのか【わくわく】：たての列が、ぜんぶ${kata}！`, 'ほのか【ドヤ】：同じなかまでそろえると、まとめて買ってもらえるかも！'],
-aishoNotes: {
-'ichigo+milk': 'あまずっぱいと、まろやか。並べるだけでピンク色の気分',
-'hoshi+milk': '白いミルクに、星くず。夜空みたい',
-'hachimitsu+zeri': 'ぷるぷるに、はちみつがとろり',
-'ichigo+mizuame': 'みなもちゃんの飴で、いちごがきらきら',
-'hachimitsu+herb': 'わかばさんの、とっておきの組み合わせ',
+aishoNotes: {   // 1行に入る長さ（360幅で18字まで・11/21 測った）
+'ichigo+milk': 'あまずっぱくて、まろやか',
+'hoshi+milk': '白いミルクに、星くず',
+'hachimitsu+zeri': 'ぷるぷるに、はちみつとろり',
+'ichigo+mizuame': 'みなもちゃんの飴で、きらきら',
+'hachimitsu+herb': 'わかばさんの、とっておき',
 'herb+milk': 'すーっとして、ほっとする',
-'hoippu+ichigo': 'ふわふわホイップに、いちご。王道！',
-'egg+karamel': 'ひよこのカラメルと、たまご。……ひよこに負けた味',
-'ichigo+zeri': 'ぷるぷるの中に、いちごがとじこめられてる',
-'kanten+minto': 'すーっと、ひんやり。夏に売りたい',
-'hoshi+mizuame': '夜空を、飴でとじこめた',
-'hachimitsu+kanten': 'つるんとして、あまい。おばあちゃんが好きそう',
-'hoippu+karamel': 'こんがりと、ふわふわ。ずるい組み合わせ',
-'minto+niji': 'しゅわっとして、にじいろ。ふしぎな味',
+'hoippu+ichigo': 'ふわふわホイップに、いちご',
+'egg+karamel': 'ひよこのカラメルに、負けた味',
+'ichigo+zeri': 'いちごが、ぷるぷるの中に',
+'kanten+minto': 'すーっと、ひんやり',
+'hoshi+mizuame': '夜空を、飴にとじこめた',
+'hachimitsu+kanten': 'つるんと、やさしいあまさ',
+'hoippu+karamel': 'こんがりと、ふわふわ',
+'minto+niji': 'しゅわっと、にじいろ',
 },
 aishoNote: p => STORY.aishoNotes[p.id] || '',
 aishoTop: n => n >= AISHO.length ? 'ぜんぶ見つけた！わたし、天才かも！' : n >= 7 ? 'だいぶ集まってきた！あと少し！' : n ? 'となりどうしの相性、もっと探そう！' : 'となりに並べると、相性が見つかるかも！',
-kataNote: { yaki: 'クッキー・タルト・マドレーヌなど、オーブンで焼いたお菓子', hiya: 'アイス・プリン・ゼリー・パフェなど、つめたいお菓子', ame: '飴・キャラメル・ジャムなど、とろっと甘いお菓子', fuwa: 'スフレ・ババロア・ケーキなど、ふわふわのお菓子' },
+kataNote: { yaki: 'クッキー・タルトなど、焼いたお菓子', hiya: 'アイス・プリン・ゼリーなど', ame: '飴・キャラメル・ジャムなど', fuwa: 'スフレ・ババロア・ケーキなど' },
 regPair: ['ガルド：ただいま！帰ってきたよ', 'マーサ：おやまあ、この子ったら', 'ほのか【びっくり】：えっ、ガルドさんが、マーサさんのお孫さん！？', 'マーサ：すきな味、ここだったのね', 'ガルド：旅先で、ここの話をしたよ'],
 regKoge: ['コハク：……こげくさい'],
 diary(rec) {
@@ -4035,7 +4045,7 @@ return b ? `<i class="fc-face" style="background-image:url('${b}')"></i>` : `<i 
 }
 function fcChipHTML(day = S.day) {
 const fc = fcGet(day), ic = ART[fcIconName(fc.ev)];
-return `<div class="m-fc" aria-label="今日の予報：${esc(FC_EV_NM[fc.ev || ''])}・${esc(CUST[fc.c].name)}が多め・${esc(matShort(fc.m))}が人気">${ic ? `<img class="fc-ic" src="${ic}" alt="">` : ''}<span class="fc-who">${fcFace(fc.c)}<b>多め</b></span><span class="fc-like">${matIcon(fc.m)}<b>人気</b></span></div>`;
+return `<span class="m-fc" aria-label="今日の予報：${esc(FC_EV_NM[fc.ev || ''])}・${esc(matShort(fc.m))}が人気">${ic ? `<img class="fc-ic" src="${ic}" alt="">` : ''}<span class="fc-like">${matIcon(fc.m)}人気</span></span>`;
 }
 function fcCardHTML(day = S.day + 1) {
 const fc = S.seen && S.seen['fc:' + day]; if (!fc || typeof fc !== 'object' || !CUST[fc.c]) return '';
@@ -6458,8 +6468,7 @@ const wait = !mBusy && M.oven.length < 2 && shelfRoom();
 const baked = M.baked.map(b => `<span class="mb-item">${candyIcon(b.key)}</span>`).join('');
 return `<section class="morning mkitchen fit${mBusy ? ' busy' : ''}" id="msec">
 <div class="mstage${mBusy ? ' baking' : ''}${bg ? '' : ' noart'}" id="mstage"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-<span class="m-wallet">お財布 <b>${fmt(S.money)}</b>円${spent}</span>
-${fcChipHTML()}
+<span class="m-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span>${fcChipHTML()}${spent}</span>
 <div class="m-tools">${mAutoBakeOk() ? `<button class="pill sub" data-act="m-auto"${mBusy ? ' disabled' : ''}>きのうと同じに焼く</button>` : ''}<button class="round m-bookb" data-act="m-book" aria-label="レシピ帳">${ART['ui-book'] ? `<img class="m-bookimg" src="${ART['ui-book']}" alt="">` : M_BOOK_SVG}</button></div>
 <div class="m-oven${wait ? ' wait' : ''}" data-mdrop="oven"><i class="mo-glow"></i><i class="mo-steam"></i><span class="mo-row"><span class="mo-hint">${mHint(M)}</span><span class="mo-slots">${ovenSlots}</span></span></div>
 <div class="m-baked"><span class="mb-lbl">焼けたお菓子<em>${room > 0 ? `あと${room}つ焼ける` : '棚がいっぱい'}</em></span><span class="mb-row">${baked || '<i class="mb-none">焼けたら、ここにならぶよ</i>'}</span></div>
@@ -6476,15 +6485,15 @@ return `<div class="dslot${kan}" data-mdrag="ds:${o.i}" data-mdrop="ds:${idx}">$
 function displayHTML(M) {
 const bg = ART['bg-day'], { slots, ks } = dSlots();
 const full = slots.every((o, j) => o || j === ks) && !!slots[ks];
-const tip = M.baked.length && full ? 'のこりは天板に。売り切れたら補充！' : M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
+const tip = M.baked.length && full ? 'のこりは、あとで補充！' : M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
 const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${mNmBr(candyOf(b.key).name)}</span></div>`).join('');
 return `<section class="morning mdisp fit" id="msec">
 <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>
-<p class="md-tip">${esc(tip)}</p>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}
+<p class="md-tip">${esc(tip)}</p>
 <button class="round md-aishob" data-act="m-aisho" aria-label="相性帳">${ART['ui-aisho-book'] ? `<img src="${ART['ui-aisho-book']}" alt="">` : '<b>相性</b>'}</button>
 <div class="dcase md-case" style="--rows:${Math.ceil(slots.length / SHELF_COLS)}">${(rib => slots.map((o, i) => mSlotHTML(o, i, ks, rib[i])).join(''))(dCaseDeco(slots))}</div>
 </div>
-<div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span><div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
+<div class="md-wait gingham" data-mdrop="wait"><span class="mw-lbl">天板</span>${mToolHas('doll') && (M.baked.length || placedN()) ? '<button class="pill sub md-autob" data-act="m-arr">おまかせで並べる</button>' : ''}<div class="mt-row">${wait || '<p class="mw-empty">焼けたお菓子は、ぜんぶ並べたよ</p>'}</div></div>
 <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
 </section>`;
 }
@@ -6502,7 +6511,7 @@ return `<section class="morning mzakka fit" id="msec">
 <div class="ms-top"><span class="ms-ttl">雑貨屋</span></div>
 ${body}
 </div></div>
-<div class="mz-foot gingham"><span class="mz-wallet">お財布 <b>${fmt(S.money)}</b>円</span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
+<div class="mz-foot gingham"><span class="mz-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span></span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
 <div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
 </section>`;
 }
@@ -6640,7 +6649,7 @@ return secs;
 function aishoBookHTML() {
 const seen = new Set(seenMats()), got = AISHO.filter(p => S.seen['ai:' + p.id]).length;
 const rows = AISHO.map(p => {
-if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(matShort(p.a))}×${esc(matShort(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
+if (S.seen['ai:' + p.id]) return `<div class="ms-good bk-rec ai-rec"><span class="bk-ico ai-ico">${matIcon(p.a)}${matIcon(p.b)}</span><span class="bk-body"><span class="bk-nm">${esc(p.name)}<em>${esc(mTileNm(p.a))}×${esc(mTileNm(p.b))}</em></span><span class="bk-note">${esc(STORY.aishoNote(p))}</span></span></div>`;
 const h = seen.has(p.a) ? matShort(p.a) + '×？' : seen.has(p.b) ? matShort(p.b) + '×？' : '？×？';
 return `<div class="ms-good bk-rec un"><span class="bk-ico${ART['ui-mada'] ? ' art' : ''}">${ART['ui-mada'] ? `<img src="${ART['ui-mada']}" alt="">` : ''}<b>？</b></span><span class="bk-body"><span class="bk-nm">？？？<em>${esc(h)}</em></span><span class="bk-note">となりに並べると、見つかるかも</span></span></div>`;
 }).join('');
@@ -6649,7 +6658,7 @@ return `<section class="morning mzakka mbook fit" id="msec">
 <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
 <div class="ms-top"><span class="ms-ttl">相性帳</span><span class="bk-cnt">${got} / ${AISHO.length}</span></div>
 <div class="ms-goods"><p class="ms-sec">となりの相性<em>どちらかが売れると、いっしょに売れる</em></p>${rows}
-<p class="ms-sec">たての列のシリーズ<em>たての列を同じなかまでそろえる</em></p>${Object.keys(KATA).map(k => `<div class="ms-good bk-rec ai-kata"><span class="bk-body"><span class="bk-nm">${KATA[k]}</span><span class="bk-note">${esc(STORY.kataNote[k])}</span></span></div>`).join('')}</div>
+<p class="ms-sec">たての列のシリーズ<em>たての列を同じなかまでそろえる</em></p>${Object.keys(KATA).map(k => `<div class="ms-good bk-rec ai-kata"><span class="bk-ico">${candyIcon(KATA_ICON[k])}</span><span class="bk-body"><span class="bk-nm">${KATA[k]}</span><span class="bk-note">${esc(STORY.kataNote[k])}</span></span></div>`).join('')}</div>
 </div></div>
 <div class="mz-foot gingham"><p class="mz-hint bk-top"><b>ほのか</b>${esc(STORY.aishoTop(got))}</p></div>
 <div class="m-bar"><button class="big" data-act="m-disp">棚にもどる</button></div>
@@ -7251,7 +7260,7 @@ const M = mState(), s = S.shelf[+si]; if (!s || s.n > 0 || !dRefillOk()) return;
 if (M.baked.length === 1) return dRefillDo(si, 0);
 const cs = $('dCase'); if (!cs) return;
 dRefillClose();
-cs.insertAdjacentHTML('beforeend', `<div class="d-refp" id="dRefp"><b>どれを補充する？</b><span>${M.baked.map((b, w) => `<button class="d-refo" data-act="d-refill2" data-i="${si}" data-w="${w}">${candyIcon(b.key)}<em>${esc(candyOf(b.key).name)}</em></button>`).join('')}</span></div>`);
+cs.insertAdjacentHTML('beforeend', `<div class="d-refp" id="dRefp"><b>どれを補充する？</b><span>${M.baked.map((b, w) => `<button class="d-refo" data-act="d-refill2" data-i="${si}" data-w="${w}">${candyIcon(b.key)}<em>${mNmBr(candyOf(b.key).name)}</em></button>`).join('')}</span></div>`);
 }
 const dRefillClose = () => { const p = $('dRefp'); if (p) p.remove(); };
 function dRefillDo(si, wi) {
