@@ -516,7 +516,7 @@ function omotenashi() {
       const step = () => {
         if (k >= res.ev.length) return setTimeout(() => finishRound(res), T(950));
         const e = res.ev[k];
-        if (e.type === 'act' && !e.again && !e.cut && cardDef(e.cid).star === 3) { e.cut = true; return setTimeout(step, cutIn(e.cid, 'スペシャル発動！')); }
+        if (e.type === 'act' && !e.again && !e.cut && cardDef(e.cid).star === 3) { e.cut = true; return setTimeout(step, cutIn(e.cid, 'スペシャル発動！', false)); }
         k++; run += e.dmg || 0;
         setTimeout(step, T(showEvent(e, run, q)));
       };

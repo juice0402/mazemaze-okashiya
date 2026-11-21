@@ -275,6 +275,7 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .chef[data-pose=charge]{translate:-3% 0;scale:.96 1.03}
 .chef[data-pose=atk1]{translate:9% 0}
 .chef[data-pose=atk2]{translate:14% 0;rotate:3deg}
+.chef[data-pose=atk2]:not([data-chef=honoka]){rotate:none}   /* みなも・わかばの atk2 は、うしろ足を上げた踏みこみの絵（11/21）：かたむけると うしろ足が浮いて前の足がしずむ */
 .chef[data-pose=atk3]{translate:18% 0;scale:1.06}
 .chef[data-pose=special]{translate:20% 0;scale:1.12;rotate:-2deg}
 .chef[data-pose=support]{translate:5% 0}

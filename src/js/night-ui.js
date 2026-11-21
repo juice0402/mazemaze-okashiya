@@ -43,7 +43,7 @@ function thinkArm() {
   }, THINK_MS);
 }
 /* 場面の声（11/21 しょーくん「大作ができたときの ほのか『できた！』みなも『完成。』わかば『できた』とか色々」・えらぶ質問で4つ）：
-   star3＝★3ができた（カットイン）・full＝ラウンドでおなか満タン・sp＝必殺技の一撃・show＝ビルドの見せ場（焦げた・冷えた・熟した＝1ラウンドに1回）。
+   star3＝★3ができた（まぜて★3・大作の完成・ジャム。バトルの発動では鳴らさない）・full＝ラウンドでおなか満タン・sp＝必殺技の一撃・show＝ビルドの見せ場（焦げた・冷えた・熟した＝1ラウンドに1回）。
    音のファイルがないときは鳴らさない（koe-irai の kakegoe-night2 から えらんで assets/koe へ） */
 const KOE_MORE = {
   star3: { honoka: 'hono-dekita', minamo: 'mina-kansei', wakaba: 'waka-dekita' },
@@ -316,10 +316,11 @@ function actChips(e) {
 const fxOn = (d, k) => !!d.fx[k];
 const cookStage = c => (c || 0) >= COOK_MAX ? 3 : (c || 0) >= 6 ? 2 : (c || 0) >= 3 ? 1 : 0;
 const fmtMul = v => Math.round(v * 100) / 100;
-/* ★3 のカットイン：ななめの金の帯に、ほのかが左から・カードが右から・名前を大きく。かかる時間（ms）を返す */
-function cutIn(cid, sub) {
+/* ★3 のカットイン：ななめの金の帯に、ほのかが左から・カードが右から・名前を大きく。かかる時間（ms）を返す
+   made＝★3ができたとき（まぜた・大作の完成・ジャム）だけ声（できたっ。・完成。・できたわぁ）。バトルの「スペシャル発動！」は false（11/21 しょーくん） */
+function cutIn(cid, sub, made = true) {
   const d = cardDef(cid), h = heroPick('battle'), ms = T(1500);
-  setTimeout(() => koeMore('star3'), T(260));   // ★3ができた！（できた！・完成。・できた）
+  if (made) setTimeout(() => koeMore('star3'), T(260));
   const el = document.createElement('div');
   el.className = 'cutin'; el.style.setProperty('--cd', ms + 'ms');
   const band = ART['fx-cutin-' + chefArt()];   // 描き下ろしの帯（11/19・シェフごと：炎・水・若葉）
@@ -439,10 +440,25 @@ function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] =
 function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8, .23]; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]};--sw:${f[3]}`; }
 function heroSetVars(n, flip) { const st = $('stage'); if (st) for (const kv of heroVars(n, flip).split(';')) { const [k, v] = kv.split(':'); st.style.setProperty(k, v); } }
 function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="chef${ART[chefArt()] ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="chef" data-chef="${chefArt()}" src="${h.src}" alt="${esc(C.job + ' ' + C.name)}">`; }
+/* 絵と足もと（--fp・影）は いっしょに変える（11/21 しょーくん「新しい立ち絵の影と脚の位置関係がおかしい」）：
+   src を変えても、新しい絵がほどけるまで前の絵が出たままなのに --fp だけ先に変わり、足が床にしずむ・浮く一瞬があった
+   （追加の攻撃ポーズは足の下のすき間が大きい＝minamo-atk2 は 0.17）。新しい絵を先に decode してから、絵と足もとを同じときに変える */
+let heroWant = '';
+function heroShow(el, h, then) {
+  heroWant = h.src;
+  const go = () => {
+    if (heroWant !== h.src || !el.isConnected) return;   // あとから別のポーズになった・描きなおした
+    if (el.getAttribute('src') !== h.src) el.src = h.src;
+    el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); if (then) then();
+  };
+  if (el.getAttribute('src') === h.src) return go();
+  const im = new Image(); im.src = h.src;
+  (im.decode ? im.decode() : Promise.resolve()).then(go, go);
+}
 let heroT = 0;
 function heroFor(k, ms) {
   const el = $('chef'); if (!el) return;
-  const set = kk => { const h = heroPick(kk); el.src = h.src; el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); delete el.dataset.pose; const st = $('stage'); if (st) delete st.dataset.pose; };
+  const set = kk => heroShow(el, heroPick(kk), () => { delete el.dataset.pose; const st = $('stage'); if (st) delete st.dataset.pose; });
   set(k); clearTimeout(heroT); heroT = setTimeout(() => set('battle'), ms);
 }
 /* ほのかの戦闘ポーズ（11/18 しょーくん「チャージや攻撃必殺技とか、いつまで見てても飽きない戦闘シーンにしたい」）
@@ -469,9 +485,10 @@ function heroPose(p, ms) {
   const el = $('chef'); if (!el || !POSE[p]) return;
   const six = POSE_SIX[chefArt()], sk = six && poseKey(p === 'support' && chefArt() === 'wakaba' && binNight() ? 'wakaba-jar' : six[p]), mi = sk && ART[sk];   // 飴ジャムの夜の支援は びんに入れるポーズ
   const [n, alt] = POSE[p], h = mi ? { src: mi, flip: false, n: sk } : chefArt() === 'honoka' && ART[n] ? { src: ART[n], flip: false, n } : heroPick(alt);
-  if (el.getAttribute('src') !== h.src) el.src = h.src;
-  el.classList.toggle('flip', h.flip); heroSetVars(h.n, h.flip); el.dataset.pose = p;
-  const st = $('stage'); if (st) st.dataset.pose = p;   // 影と足もとの光は #stage の data-pose で（:has を使わない＝軽い・11/19）
+  heroShow(el, h, () => {
+    el.dataset.pose = p;
+    const st = $('stage'); if (st) st.dataset.pose = p;   // 影と足もとの光は #stage の data-pose で（:has を使わない＝軽い・11/19）
+  });
   clearTimeout(poseT); if (ms) poseT = setTimeout(() => heroPose('stance'), ms);
 }
 /* おなかの帯：1枚ずつ味パワーがたまる（+の数字が帯の先からぽん・帯が光る） */
