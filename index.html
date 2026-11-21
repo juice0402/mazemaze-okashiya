@@ -1438,8 +1438,6 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .shopov.mshop.ms-bg{background:linear-gradient(rgba(36,16,6,.58),rgba(36,16,6,.1) 28%,rgba(36,16,6,.1) 72%,rgba(36,16,6,.72)),var(--msbg) 50% 50%/cover no-repeat,#5a3824}
 .ms-top{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
 .ms-ttl{font-family:var(--disp);font-size:18px;color:var(--milk);text-shadow:0 2px 0 rgba(0,0,0,.45)}
-.ms-wallet{font-size:12px;color:var(--milk);white-space:nowrap}
-.ms-wallet b{font-family:var(--disp);font-weight:400;font-size:16px;color:var(--brass-hi)}
 .ms-goods{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
 .ms-good{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:5px 8px;background:rgba(255,246,232,.92);border:1.5px solid #3a1c08;border-radius:10px}
 .msg-nm{font-size:13px;font-weight:700;color:var(--ink)}
@@ -1448,8 +1446,6 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .ms-good .sub,.msg-done{grid-row:1 / 3;grid-column:2}
 .ms-good .sub{padding:5px 10px;font-size:13px}
 .msg-done{font-size:11px;color:var(--ink-soft)}
-.ms-hint{margin:0;font-size:11px;color:var(--milk-soft);text-align:center}
-.ms-close{flex:none;align-self:center;padding:6px 22px}
 .m-wallet{position:absolute;left:8px;top:8px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
 .m-wallet b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--brass-hi)}
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
@@ -1678,17 +1674,18 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .tt-scene{position:absolute;z-index:0;--H:calc(100cqh + 24px);--w:calc(max(100cqw,calc(var(--H) * var(--ar))) * var(--z));--h:calc(max(var(--H),calc(100cqw / var(--ar))) * var(--z));width:var(--w);height:var(--h);left:calc((100cqw - var(--w)) * var(--fx));top:calc((var(--H) - var(--h)) * var(--fy));pointer-events:none}
 .tt-zoom{position:absolute;inset:0;transform-origin:50% 62%;animation:ttZoom 26s ease-in-out infinite alternate}
 .tt-bgi{position:absolute;inset:0;width:100%;height:100%;display:block}
-.tt-lt{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 1%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,228,165,.9),rgba(255,178,92,.4) 45%,rgba(255,150,60,0));mix-blend-mode:screen;animation:ttWin 5s ease-in-out infinite}
+.tt-lt{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 1%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,228,165,.9),rgba(255,178,92,.4) 45%,rgba(255,150,60,0));animation:ttWin 5s ease-in-out infinite}
 .tt-lt.lamp{animation:ttFlick 2.6s linear infinite}
 .tt-lt.pool{aspect-ratio:3/1;background:radial-gradient(closest-side,rgba(255,204,128,.45),rgba(255,172,92,0));animation-duration:7s}
 .tt-lt.moon{background:radial-gradient(closest-side,rgba(255,246,220,.65),rgba(255,232,196,0));animation-duration:9s}
-.tt-ray{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--w) * 1%);height:calc(var(--h) * 1%);translate:-50% 0;rotate:var(--r);transform-origin:50% 0;background:linear-gradient(rgba(255,216,150,.45),rgba(255,192,112,.15) 55%,rgba(255,180,100,0));clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);mix-blend-mode:screen;filter:blur(3px);animation:ttRay 6s ease-in-out infinite}
+.tt-ray{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--w) * 1%);height:calc(var(--h) * 1%);translate:-50% 0;rotate:var(--r);transform-origin:50% 0;animation:ttRay 6s ease-in-out infinite}
+.tt-ray::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,216,150,.45),rgba(255,192,112,.15) 55%,rgba(255,180,100,0));clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);filter:blur(3px)}
 .tt-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(rgba(30,8,22,.6),rgba(30,8,22,0) 30%,rgba(30,8,22,0) 56%,rgba(22,8,4,.35) 76%,rgba(22,8,4,.85))}
 .tt-sky,.tt-fx{position:absolute;inset:0;pointer-events:none}
 .tt-sky{z-index:1}
 .tt-fx{z-index:4}
 .tt-tw{position:absolute;width:var(--s);height:var(--s);opacity:0;animation:ttTw 3s ease-in-out infinite both}
-.tt-tw svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 4px rgba(255,222,150,.95))}
+.tt-tw svg{display:block;width:100%;height:100%;overflow:visible}
 .tt-mote{position:absolute;width:calc(var(--s) * 3);height:calc(var(--s) * 3);border-radius:50%;background:radial-gradient(circle,#fff7dc 0 22%,rgba(255,204,116,.8) 38%,rgba(255,172,82,0) 70%);opacity:0;animation:ttRise 10s linear infinite}
 .tt-logo{z-index:4;margin-top:6px}
 .tt-stage{flex:1 1 0;min-height:0;width:100%;z-index:2}
@@ -2854,7 +2851,7 @@ const fcIconName = ev => 'fc-' + (ev || 'hare');
 const DAY_EVENTS = [
 { id: 'rain', add: -1, cls: 'ev-rain' },
 { id: 'matsuri', add: 2, cls: 'ev-matsuri' },
-{ id: 'ensoku', first: ['kodomo', 'kodomo', 'kodomo'], cls: '' },
+{ id: 'ensoku', first: ['kodomo', 'kodomo', 'kodomo'], cls: 'ev-ensoku' },   // 11/21：遠足の日のキラキラ（style-hiru.css の .ev-ensoku）が出ていなかった
 { id: 'kotori', add: 0, cls: 'ev-kotori' },
 { id: 'kaze', add: 0, cls: 'ev-kaze' },
 { id: 'majo', first: ['obaachan'], add: 1, cls: '' },
@@ -7334,6 +7331,7 @@ const LG_MOTES = [[8, 8, 6, 9, 0, 14], [18, 30, 4, 11, 3, -10], [27, 12, 5, 8, 6
 const LG_TWINK = [[9, 6, 20, 3.2, 0], [86, 9, 16, 2.8, 1.2], [24, 22, 13, 3.6, 2.1], [72, 26, 18, 3.1, .6], [94, 40, 13, 2.9, 1.8], [5, 38, 16, 3.4, 2.6],
 [40, 4, 12, 2.6, 1.5], [62, 3, 14, 3.8, .3], [33, 58, 16, 3.3, 2.9], [68, 62, 15, 3.0, 1.1], [16, 70, 13, 3.5, .9], [90, 74, 14, 2.7, 2.3]];
 const LG_STAR = '<svg viewBox="0 0 20 20"><path d="M10 0 C11 7 13 9 20 10 C13 11 11 13 10 20 C9 13 7 11 0 10 C7 9 9 7 10 0 Z" fill="#fff3c4"/></svg>';
+const LG_STAR_GLOW = LG_STAR.replace('<path', '<defs><radialGradient id="lgTwG"><stop offset="0" stop-color="#ffde96" stop-opacity=".85"/><stop offset=".35" stop-color="#ffde96" stop-opacity=".45"/><stop offset="1" stop-color="#ffde96" stop-opacity="0"/></radialGradient></defs><circle cx="10" cy="10" r="12" fill="url(#lgTwG)"/><path');
 function lgArt(c) { for (const k of c) if (ART[k]) return ART[k]; return ''; }
 function lgTitleHTML(saved, arm) {
 const play = !lgPlayed, logo = logoHTML();
@@ -7342,7 +7340,7 @@ const B = LG_BG['title-bg'], bg = ART['title-bg'] || ART['bg-night'] || '';
 const lt = B.lt.map(([x, y, s, k], i) => `<i class="tt-lt ${k}" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * 1.37).toFixed(2)}s"></i>`).join('');
 const ray = B.ray.map(([x, y, w, h, r], i) => `<i class="tt-ray" style="--x:${x};--y:${y};--w:${w};--h:${h};--r:${r}deg;animation-delay:${(-i * 2.1).toFixed(1)}s"></i>`).join('');
 const motes = LG_MOTES.map(([x, b, s, t, d, dx]) => `<i class="tt-mote" style="left:${x}%;bottom:${b}%;--s:${s}px;--dx:${dx}px;animation-duration:${t}s;animation-delay:${-d}s"></i>`).join('');
-const twink = LG_TWINK.map(([x, y, s, t, d]) => `<i class="tt-tw" style="left:${x}%;top:${y}%;--s:${s}px;animation-duration:${t}s;animation-delay:${d}s">${LG_STAR}</i>`).join('');
+const twink = LG_TWINK.map(([x, y, s, t, d]) => `<i class="tt-tw" style="left:${x}%;top:${y}%;--s:${s}px;animation-duration:${t}s;animation-delay:${d}s">${LG_STAR_GLOW}</i>`).join('');
 const cast = LG_CAST.map(([id, c, x, h, z, d], i) => { const src = lgArt(c); return src
 ? `<span class="tt-ch tt-${id}" style="--x:${x};--h:${h};z-index:${z}"><span class="tt-in" style="animation-delay:${d}s"><span class="tt-br" style="animation-delay:${(-i * 1.1).toFixed(1)}s"><img src="${src}" alt="" draggable="false"></span></span></span>` : ''; }).join('');
 const mons = LG_MONS.map(([id, x, b, h, fl, mv, d], i) => { const src = lgArt(['title-mon-' + id, 'mon-' + id]); return src

@@ -350,7 +350,7 @@ const fcIconName = ev => 'fc-' + (ev || 'hare');
 const DAY_EVENTS = [
   { id: 'rain', add: -1, cls: 'ev-rain' },
   { id: 'matsuri', add: 2, cls: 'ev-matsuri' },
-  { id: 'ensoku', first: ['kodomo', 'kodomo', 'kodomo'], cls: '' },
+  { id: 'ensoku', first: ['kodomo', 'kodomo', 'kodomo'], cls: 'ev-ensoku' },   // 11/21：遠足の日のキラキラ（style-hiru.css の .ev-ensoku）が出ていなかった
   { id: 'kotori', add: 0, cls: 'ev-kotori' },
   { id: 'kaze', add: 0, cls: 'ev-kaze' },
   { id: 'majo', first: ['obaachan'], add: 1, cls: '' },

@@ -100,6 +100,9 @@ const LG_MOTES = [[8, 8, 6, 9, 0, 14], [18, 30, 4, 11, 3, -10], [27, 12, 5, 8, 6
 const LG_TWINK = [[9, 6, 20, 3.2, 0], [86, 9, 16, 2.8, 1.2], [24, 22, 13, 3.6, 2.1], [72, 26, 18, 3.1, .6], [94, 40, 13, 2.9, 1.8], [5, 38, 16, 3.4, 2.6],
   [40, 4, 12, 2.6, 1.5], [62, 3, 14, 3.8, .3], [33, 58, 16, 3.3, 2.9], [68, 62, 15, 3.0, 1.1], [16, 70, 13, 3.5, .9], [90, 74, 14, 2.7, 2.3]];
 const LG_STAR = '<svg viewBox="0 0 20 20"><path d="M10 0 C11 7 13 9 20 10 C13 11 11 13 10 20 C9 13 7 11 0 10 C7 9 9 7 10 0 Z" fill="#fff3c4"/></svg>';
+/* またたく星の光（11/21 軽く）：前は CSS の drop-shadow で光らせていた。回って大きさが変わる星にフィルターをかけると、スマホが毎こま光を計算しなおすので、
+   光は絵の中にまるいぼかし（radialGradient）として描く。星の形は LG_STAR と同じ */
+const LG_STAR_GLOW = LG_STAR.replace('<path', '<defs><radialGradient id="lgTwG"><stop offset="0" stop-color="#ffde96" stop-opacity=".85"/><stop offset=".35" stop-color="#ffde96" stop-opacity=".45"/><stop offset="1" stop-color="#ffde96" stop-opacity="0"/></radialGradient></defs><circle cx="10" cy="10" r="12" fill="url(#lgTwG)"/><path');
 function lgArt(c) { for (const k of c) if (ART[k]) return ART[k]; return ''; }
 function lgTitleHTML(saved, arm) {
   const play = !lgPlayed, logo = logoHTML();
@@ -108,7 +111,7 @@ function lgTitleHTML(saved, arm) {
   const lt = B.lt.map(([x, y, s, k], i) => `<i class="tt-lt ${k}" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * 1.37).toFixed(2)}s"></i>`).join('');
   const ray = B.ray.map(([x, y, w, h, r], i) => `<i class="tt-ray" style="--x:${x};--y:${y};--w:${w};--h:${h};--r:${r}deg;animation-delay:${(-i * 2.1).toFixed(1)}s"></i>`).join('');
   const motes = LG_MOTES.map(([x, b, s, t, d, dx]) => `<i class="tt-mote" style="left:${x}%;bottom:${b}%;--s:${s}px;--dx:${dx}px;animation-duration:${t}s;animation-delay:${-d}s"></i>`).join('');
-  const twink = LG_TWINK.map(([x, y, s, t, d]) => `<i class="tt-tw" style="left:${x}%;top:${y}%;--s:${s}px;animation-duration:${t}s;animation-delay:${d}s">${LG_STAR}</i>`).join('');
+  const twink = LG_TWINK.map(([x, y, s, t, d]) => `<i class="tt-tw" style="left:${x}%;top:${y}%;--s:${s}px;animation-duration:${t}s;animation-delay:${d}s">${LG_STAR_GLOW}</i>`).join('');
   const cast = LG_CAST.map(([id, c, x, h, z, d], i) => { const src = lgArt(c); return src
     ? `<span class="tt-ch tt-${id}" style="--x:${x};--h:${h};z-index:${z}"><span class="tt-in" style="animation-delay:${d}s"><span class="tt-br" style="animation-delay:${(-i * 1.1).toFixed(1)}s"><img src="${src}" alt="" draggable="false"></span></span></span>` : ''; }).join('');
   const mons = LG_MONS.map(([id, x, b, h, fl, mv, d], i) => { const src = lgArt(['title-mon-' + id, 'mon-' + id]); return src

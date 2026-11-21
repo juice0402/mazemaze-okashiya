@@ -45,8 +45,6 @@
 .shopov.mshop.ms-bg{background:linear-gradient(rgba(36,16,6,.58),rgba(36,16,6,.1) 28%,rgba(36,16,6,.1) 72%,rgba(36,16,6,.72)),var(--msbg) 50% 50%/cover no-repeat,#5a3824}
 .ms-top{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
 .ms-ttl{font-family:var(--disp);font-size:18px;color:var(--milk);text-shadow:0 2px 0 rgba(0,0,0,.45)}
-.ms-wallet{font-size:12px;color:var(--milk);white-space:nowrap}
-.ms-wallet b{font-family:var(--disp);font-weight:400;font-size:16px;color:var(--brass-hi)}
 .ms-goods{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
 .ms-good{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:5px 8px;background:rgba(255,246,232,.92);border:1.5px solid #3a1c08;border-radius:10px}
 .msg-nm{font-size:13px;font-weight:700;color:var(--ink)}
@@ -55,8 +53,6 @@
 .ms-good .sub,.msg-done{grid-row:1 / 3;grid-column:2}
 .ms-good .sub{padding:5px 10px;font-size:13px}
 .msg-done{font-size:11px;color:var(--ink-soft)}
-.ms-hint{margin:0;font-size:11px;color:var(--milk-soft);text-align:center}
-.ms-close{flex:none;align-self:center;padding:6px 22px}
 .m-wallet{position:absolute;left:8px;top:8px;z-index:2;font-size:11px;color:var(--milk);white-space:nowrap;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);border-radius:999px;padding:3px 10px}
 .m-wallet b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--brass-hi)}
 .m-spent{position:absolute;left:10px;top:100%;font-style:normal;font-family:var(--disp);font-size:14px;color:#ffd0c0;text-shadow:0 2px 0 rgba(0,0,0,.5);animation:mspent 1.2s ease-out forwards;pointer-events:none}
@@ -326,17 +322,18 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .tt-scene{position:absolute;z-index:0;--H:calc(100cqh + 24px);--w:calc(max(100cqw,calc(var(--H) * var(--ar))) * var(--z));--h:calc(max(var(--H),calc(100cqw / var(--ar))) * var(--z));width:var(--w);height:var(--h);left:calc((100cqw - var(--w)) * var(--fx));top:calc((var(--H) - var(--h)) * var(--fy));pointer-events:none}
 .tt-zoom{position:absolute;inset:0;transform-origin:50% 62%;animation:ttZoom 26s ease-in-out infinite alternate}
 .tt-bgi{position:absolute;inset:0;width:100%;height:100%;display:block}
-.tt-lt{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 1%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,228,165,.9),rgba(255,178,92,.4) 45%,rgba(255,150,60,0));mix-blend-mode:screen;animation:ttWin 5s ease-in-out infinite}
+.tt-lt{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 1%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,228,165,.9),rgba(255,178,92,.4) 45%,rgba(255,150,60,0));animation:ttWin 5s ease-in-out infinite}
 .tt-lt.lamp{animation:ttFlick 2.6s linear infinite}
 .tt-lt.pool{aspect-ratio:3/1;background:radial-gradient(closest-side,rgba(255,204,128,.45),rgba(255,172,92,0));animation-duration:7s}
 .tt-lt.moon{background:radial-gradient(closest-side,rgba(255,246,220,.65),rgba(255,232,196,0));animation-duration:9s}
-.tt-ray{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--w) * 1%);height:calc(var(--h) * 1%);translate:-50% 0;rotate:var(--r);transform-origin:50% 0;background:linear-gradient(rgba(255,216,150,.45),rgba(255,192,112,.15) 55%,rgba(255,180,100,0));clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);mix-blend-mode:screen;filter:blur(3px);animation:ttRay 6s ease-in-out infinite}
+.tt-ray{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--w) * 1%);height:calc(var(--h) * 1%);translate:-50% 0;rotate:var(--r);transform-origin:50% 0;animation:ttRay 6s ease-in-out infinite}
+.tt-ray::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,216,150,.45),rgba(255,192,112,.15) 55%,rgba(255,180,100,0));clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);filter:blur(3px)}   /* ぼかしは動かない内がわに（11/21 軽く：動く光にフィルターをかけると毎こまぼかしを計算しなおす）・screen の重ね方はやめた */
 .tt-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(rgba(30,8,22,.6),rgba(30,8,22,0) 30%,rgba(30,8,22,0) 56%,rgba(22,8,4,.35) 76%,rgba(22,8,4,.85))}
 .tt-sky,.tt-fx{position:absolute;inset:0;pointer-events:none}
 .tt-sky{z-index:1}
 .tt-fx{z-index:4}
 .tt-tw{position:absolute;width:var(--s);height:var(--s);opacity:0;animation:ttTw 3s ease-in-out infinite both}
-.tt-tw svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 4px rgba(255,222,150,.95))}
+.tt-tw svg{display:block;width:100%;height:100%;overflow:visible}
 .tt-mote{position:absolute;width:calc(var(--s) * 3);height:calc(var(--s) * 3);border-radius:50%;background:radial-gradient(circle,#fff7dc 0 22%,rgba(255,204,116,.8) 38%,rgba(255,172,82,0) 70%);opacity:0;animation:ttRise 10s linear infinite}
 .tt-logo{z-index:4;margin-top:6px}
 .tt-stage{flex:1 1 0;min-height:0;width:100%;z-index:2}
