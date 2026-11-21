@@ -68,8 +68,24 @@ function specialCanvas(id) {
 const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンディ': 'candy', 'カステラ': 'castella', 'ブラウニー': 'brownie', 'ゼリー': 'jelly', 'シュークリーム': 'puff',
   'メロンパン': 'melonpan', 'クリームパン': 'creampan', 'ロール': 'roll', 'あんパン': 'anpan', 'コロネ': 'koronet', 'パン': 'pan' };   // パンは こね生地（11/18 夜）
 const JAM_ART = { apple: 'card-torojam', berry: 'card-torojam', grape: 'card-torojam', peach: 'card-shimejam', mikan: 'card-shimejam' };
+/* まぜた先の絵（11/21 夜 しょーくん「混ぜた先の絵を思いっきり増やして」）：カードの名前 → 絵の名前。絵がまだないカードは下の形の絵のまま。
+   art-irai の requests/okashi/mix-*.md（わかばの★3 くだもののケーキ・ほのかの★2 クッキー・★3 クッキーの特製）。絵が入ったら ART にあれば出る */
+const MIX_ART = (() => {
+  const T = {}, F = { apple: 'りんご', berry: 'きいちご', peach: 'もも', mikan: 'みかん', grape: 'ぶどう' }, SH = { cake: 'ケーキ', tart: 'タルト', deco: 'デコケーキ', chiffon: 'シフォン', roll: 'ロール' };
+  for (const f in F) for (const s in SH) T[f === 'berry' && s === 'deco' ? 'きいちごデコ' : F[f] + SH[s]] = `mix-${f}-${s}`;
+  const C2 = { あまあまカステラ: 'amama-castella', あまあまサブレ: 'amama-sable', あまあまショコラ: 'amama-choco', あまあまドロップ: 'amama-drop',
+    はちみつカステラ: 'mitsu-castella', はちみつクッキー: 'mitsu-cookie', はちみつサブレ: 'mitsu-sable', はちみつショコラ: 'mitsu-choco',
+    いちばんクッキー: 'ichiban-cookie', さくさくクッキー: 'sakusaku-cookie', しめのクッキー: 'shime-cookie', ふわふわクッキー: 'fuwa-cookie',
+    ふわふわショコラ: 'fuwa-choco', チョコクッキー: 'choco-cookie', バターカステラ: 'bata-castella', バターショコラ: 'bata-choco' };
+  for (const n in C2) T[n] = 'mix-' + C2[n];
+  const C3 = { カステラクッキー: 'castella-cookie', カステラショコラ: 'castella-choco', サブレカステラ: 'sable-castella', サブレクッキー: 'sable-cookie', サブレショコラ: 'sable-choco',
+    ショコラクッキー: 'choco-cookie', ドロップカステラ: 'drop-castella', ドロップクッキー: 'drop-cookie', ドロップサブレ: 'drop-sable', ドロップショコラ: 'drop-choco' };
+  for (const n in C3) T[n] = 'mix3-' + C3[n];
+  return T;
+})();
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
+  if (k === 'o' || k === 's' || k === 'c') { let n = ''; try { n = cardDef(cid).name; } catch (e) { /* 名前なし */ } if (MIX_ART[n] && ART[MIX_ART[n]]) return ART[MIX_ART[n]]; }
   if (k === 'm' || k === 't') return ART['card-' + id] || (MATS[id] && ART[MATS[id].alt]) || null;   // alt＝絵が届くまでの仮の絵
   if (k === 'b') return ART['field-' + id] || (FIELDS[id] && ART[FIELDS[id].alt]) || null;   // フィールド（ほのかの鉄板・ごうごう石窯。めん棒は絵が届くまで alt）
   if (k === 'k') return ART['burnt-' + id] || null;   // 焦げ（★1〜★3）
