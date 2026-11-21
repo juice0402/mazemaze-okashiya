@@ -220,7 +220,7 @@ function buyGood(id) {
   else if (id === 'tatekanban') { S.goods.tatekanban = (S.goods.tatekanban || 0) + 1; toast('立て看板を置いた！お客さんがふえるよ'); }
   else if (id.startsWith('t-')) { S.goods[id] = 1; toast((M_TOOLS.find(x => 't-' + x.id === id) || {}).name + 'が、お店にきた！'); }
   else { const d = decoById(id); S.goods[id] = 1; S.goods['at:' + d.spot] = d.n; toast(`${d.name}を、${mDecoSpot(d.spot)}にかざった！`); }
-  save(); renderMorning(); mSe('buy');
+  save(); renderMorning(); mSe('buy'); mDecoSet();
 }
 
 /* ---------- つかんで動かす（夜の drag.js と同じ考え方：はなした所で決まる・行き先が光る・札） ----------
@@ -455,7 +455,13 @@ function mDeco(id, off) {
   const d = decoById(id); if (!d || !S.goods[id] || mBusy) return;
   S.goods['at:' + d.spot] = off ? 0 : d.n;
   if (!off) toast(`${d.name}を、${mDecoSpot(d.spot)}にかざった！`);
-  save(); renderMorning(); mSe(off ? 'tap' : 'place');
+  save(); renderMorning(); mSe(off ? 'tap' : 'place'); if (!off) mDecoSet();
+}
+/* はじめて同じテーマを3つそろえたとき、ひとこと（1回だけ・STORY.decoSet） */
+function mDecoSet() {
+  const P = decoPts(), th = Object.keys(P).find(k => P[k] >= 3 && !S.seen['ds:' + k]);
+  if (!th || talking() || !(STORY.decoSet || {})[th]) return;
+  S.seen['ds:' + th] = S.day; save(); talk(STORY.decoSet[th], () => {});
 }
 function mToolRows() {
   const open = M_TOOLS.filter(t => mToolOpen(t.id)); if (!open.length) return '';
