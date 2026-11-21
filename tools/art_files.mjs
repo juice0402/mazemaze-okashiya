@@ -20,6 +20,9 @@ if (since) {
     else if (/^assets\/bgm\/[^/]+\.mp3$/.test(l) && statSync(join(root, l)).size > 400000) map[l.slice(7)] = { from: join(root, l), contentType: 'audio/mpeg' };   // 大きい曲（Lyria・11/21）は bgm/<名前>.mp3 のまま（build.mjs の BIG_BGM と同じ数）
     else if (/^assets\/(bgm|se|koe)\/[^/]+\.mp3$/.test(l) && pageDir) map['snd-pack.mp3'] = { from: resolve(pageDir, 'snd-pack.mp3'), contentType: 'audio/mpeg' };   // 曲・効果音・掛け声は1つにまとめた snd-pack.mp3（11/19・アーティファクトは511ファイルまで）
   }
+  /* 曲・効果音・声を足した・変えた・消したら、まとめ snd-pack.mp3 も出しなおす（11/21：小さい曲が大きい曲になる・消すと、まとめの中身と app.js の表が変わる） */
+  const snd = execFileSync('git', ['-C', root, 'diff', '--name-only', since, '--', 'assets/bgm', 'assets/se', 'assets/koe'], { encoding: 'utf8' }).trim();
+  if (snd && pageDir) map['snd-pack.mp3'] = { from: resolve(pageDir, 'snd-pack.mp3'), contentType: 'audio/mpeg' };
   if (!pageDir) console.log('ページのフォルダがない（app.css・app.js が入らない）');
   console.log(JSON.stringify(map));
 } else {
