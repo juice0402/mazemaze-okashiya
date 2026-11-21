@@ -47,7 +47,7 @@ function matUnlocked(m) { const who = HIRU_MATS[m] && HIRU_MATS[m].who; return !
 const shopMats = () => Object.keys(HIRU_MATS).filter(matUnlocked);
 const shelfMaxN = () => Math.min(SHELF_MAX, S.shelfMax || 6);
 const placedN = () => S.shelf.filter(s => s.n > 0).length;
-const mRoomN = () => shelfMaxN() - placedN() - mState().baked.length;   // あと何回焼けるか（棚のマス − 棚にある − 天板にある）
+const mRoomN = () => shelfMaxN() + BACK_N - placedN() - mState().baked.length;   // あと何回焼けるか（棚のマス＋天板のおかわり − 棚にある − 天板にある・11/21 おかわり BACK_N）
 const shelfRoom = () => mRoomN() > 0;
 const isNewRecipe = key => !(key in S.recipes);
 /* 下の材料だなに出す素材：倉庫にあるモンスター素材（だいじなので先頭）＋基本素材（仲間の素材は来てから） */
@@ -207,7 +207,7 @@ function dKan(si) {
 function mOpen() {
   const M = mState(); if (mBusy) return;
   if (placedN() + M.baked.length > 0 && !M.kanban) return toast('看板にするお菓子を、まんなかに置いてね');
-  while (M.baked.length) S.shelf.push(M.baked.shift());
+  while (M.baked.length && S.shelf.length < shelfMaxN()) S.shelf.push(M.baked.shift());   // 棚に入らないぶんは天板でおかわり（営業中に補充・11/21）
   S.seen.dayPre = 1; save();
   mSe('door'); mKoe('hono-yoshi');
   goDay();
@@ -382,7 +382,8 @@ function mSlotHTML(o, idx, ks, rib = '') {
 }
 function displayHTML(M) {
   const bg = ART['bg-day'], { slots, ks } = dSlots();
-  const tip = M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
+  const full = slots.every((o, j) => o || j === ks) && !!slots[ks];
+  const tip = M.baked.length && full ? 'のこりは天板に。売り切れたら補充！' : M.baked.length ? 'お菓子を棚へ。まんなかは今日の看板！' : M.kanban ? `今日の看板は ${candyOf(M.kanban).name}` : placedN() ? '看板にするお菓子を、まんなかへ' : '棚がからっぽ……キッチンで焼こう';
   const wait = M.baked.map((b, i) => `<div class="mw" data-mdrag="wait:${i}">${candyIcon(b.key)}<span class="mw-nm">${mNmBr(candyOf(b.key).name)}</span></div>`).join('');
   return `<section class="morning mdisp fit" id="msec">
     <div class="md-room${bg ? '' : ' noart'}"${bg ? ` style="--bgimg:url('${bg}')"` : ''}>

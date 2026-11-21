@@ -81,8 +81,8 @@ const dNmLong = nm => nm.length >= 7 ? ' dnl' : '';   // 「lg」はロゴの箱
 function slotHTML(o, idx, ks, pre, rib = '') {
   const kan = idx === ks ? ' kan' : '', kl = kan ? '<span class="d-kl">看板</span>' : '';
   if (!o) return `<div class="dslot empty${kan}">${kl}</div>`;
-  const c = candyOf(o.s.key), out = o.s.n <= 0, tag = pre ? 'button' : 'div';
-  return `<${tag} class="dslot${kan}${out ? ' out' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm${dNmLong(c.name)}">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うり<br>きれ</span>' : ''}${rib}</${tag}>`;
+  const c = candyOf(o.s.key), out = o.s.n <= 0, re = !pre && out && dRefillOk(), tag = pre || re ? 'button' : 'div';
+  return `<${tag} class="dslot${kan}${out ? ' out' : ''}${re ? ' refill' : ''}"${pre ? ` data-act="d-pick" data-i="${o.i}"` : re ? ` data-act="d-refill" data-i="${o.i}" aria-label="天板のおかわりを補充"` : ''} data-key="${esc(o.s.key)}">${kl}${candyIcon(o.s.key)}<span class="d-nm${dNmLong(c.name)}">${esc(c.name)}</span><span class="d-dots">${'<i></i>'.repeat(Math.max(0, Math.min(6, o.s.n)))}</span>${out ? '<span class="d-out">うり<br>きれ</span>' : ''}${re ? '<span class="d-refl">補充</span>' : ''}${rib}</${tag}>`;
 }
 function caseHTML(pre) {
   const { slots, ks } = shelfSlots(), rib = dCaseDeco(slots);
@@ -98,7 +98,7 @@ function renderDay() {
   if (pre && empty) bar = '<button class="big" data-act="toEvening">今日はお休みして夕方へ</button>';
   else if (pre) bar = '<button class="big" data-act="d-open">お店をあける</button>';
   else if (R.done) bar = '<button class="big" data-act="toEvening">閉店して夕方へ</button>';
-  else bar = `<div class="d-bar"><span class="d-lbl">えいぎょう中</span>${mToolHas('bell') ? '<button class="sub" data-act="d-bell">ひるねの鐘</button>' : ''}<button class="sub" data-act="d-fast">${dSpeedLbl()}</button></div>`;
+  else bar = `<div class="d-bar">${dCallBtn(R)}<span class="d-lbl">えいぎょう中</span>${mToolHas('bell') ? '<button class="sub" data-act="d-bell">ひるねの鐘</button>' : ''}<button class="sub" data-act="d-fast">${dSpeedLbl()}</button></div>`;
   const tip = !pre ? '' : empty ? '棚がからっぽ……今日はお休みかな' : R.kanban ? `今日の看板は ${candyOf(R.kanban).name}` : '看板にするお菓子を、タップしてえらんでね';
   const rows = Math.ceil(Math.min(SHELF_MAX, S.shelfMax || 6) / SHELF_COLS);
   $('screen').innerHTML = `<section class="day fit">
@@ -138,7 +138,7 @@ function openDay() {
     R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) }, fc);
     R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
     dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad', ...(x.duo ? ['cust-' + x.duo] : [])]; }));   // 今日のお客さんの顔を先に読む
-    R.lk = {}; R.got = {}; R.miss = {};
+    R.lk = {}; R.got = {}; R.miss = {}; R.call = CALL_N;   // 呼びこみのベル（11/21）
     S.today.kanban = R.kanban; S.today.kanbanSoldOut = false;
     save(); renderDay();
     setTimeout(() => { const E = dEv(R); E ? dSayRun(STORY.pickE(STORY.ev[E.id].open)) : dSay('open'); }, 700);
@@ -323,6 +323,7 @@ function serve(v) {
   const liked = items.filter(s => candyHas(s.key, v.like));
   let s = null, love = false;
   if (liked.length) { love = true; s = liked.find(x => x.key === R.kanban) || liked.sort((a, b) => candyOf(b.key).price - candyOf(a.key).price)[0]; }
+  else if (v.called && R.kanban && dLeft(R.kanban) > 0) { love = true; s = items.find(x => x.key === R.kanban); }   // 呼びこみ（11/21）：すきな味がなくても、すすめた看板を気に入って買う
   else if (items.length && ((v.reg && v.reg !== 'koge') || Math.random() < OTHER_BUY)) s = pick(items);   // 常連さんの場面の日は、かならず何か買う
   if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
   const price = decoPrice(s.key);   // かざりのセット効果で値段+1割（11/21）
@@ -336,7 +337,7 @@ function serve(v) {
   if (dPairFor(s, got)) ex.push('pair');
   if (dSeriesFor(s, got, v.like)) ex.push('series');
   for (let k = 0; k < more && ex.length < 3; k++) ex.push('more');
-  return { kind: love ? 'love' : 'other', key: s.key, say: STORY.custSay(v.c, love ? 'love' : 'other'), more: ex.length, ex, got };
+  return { kind: love ? 'love' : 'other', key: s.key, say: v.called && love && !candyHas(s.key, v.like) ? pick(STORY.calledSay) : STORY.custSay(v.c, love ? 'love' : 'other'), more: ex.length, ex, got };
 }
 /* 昼のパズル（11/21）：買ったお菓子 s のマスの、となりの相性の相手（まだあって、まだ買っていないもの）・シリーズの列のほかのお菓子 */
 function dSlotOf(s) { const { slots } = shelfSlots(); return { slots, i: slots.findIndex(o => o && o.s === s) }; }
@@ -454,6 +455,7 @@ function dChibi(who, face, text) {
   const pose = /考|かんがえ|こまり|ふあん|不安|しょんぼり|ジト|じと|ため息|あちゃ|なやみ/.test(face) || /[？?]|……$/.test(text) ? 'think'
     : /！|!/.test(text) || /うれし|わくわく|やるき|ドヤ|どや|びっくり|よろこ|感動/.test(face) ? 'cheer' : 'sit';
   const pre = who === 'honoka' ? '' : who + '-';
+  if (who === 'honoka' && (face === '呼びこみ' || face === '補充')) return ART[face === '呼びこみ' ? 'chibi-call' : 'chibi-carry'] || ART['chibi-cheer'] || '';   // 11/21
   return ART[pre + 'chibi-' + pose] || ART[pre + 'chibi-cheer'] || '';
 }
 
@@ -602,10 +604,55 @@ function toggleDayFast(el) {
   const R = S.dayRun; if (R) dLightSync(R, R.open && !R.done && !talking());
 }
 
+/* ---------- 営業中も少しさわれる（11/21 しょーくん「お昼を夜レベルに面白く」→ えらぶ質問で「少しさわれる」）
+   呼びこみのベル（1日 CALL_N 回）：すきな味を考えているお客さんがいて、その味が棚にないとき → 看板をすすめて、気に入って買ってくれる（ハート）。
+     そうでないとき → 呼びこみの声で、お客さんが1人ふえる。ボタンの点がのこりの回数（数字は出さない）
+   補充：棚に入らなかったお菓子は天板でおかわり（hiru.js の BACK_N）。売り切れたマスをタップすると、天板のお菓子をそのマスへ（2つ以上あるときは、えらぶ） ---------- */
+function dCallBtn(R) {
+  const n = R.call || 0, ic = ART['ui-bell'];
+  return `<button class="round d-call" data-act="d-call"${n ? '' : ' disabled'} aria-label="呼びこみ">${ic ? `<img src="${ic}" alt="">` : '<b>呼</b>'}<i class="d-calln">${'<i></i>'.repeat(n)}</i></button>`;
+}
+function dCall() {
+  const R = S.dayRun; if (!R || !R.open || R.done || talking() || dScene || !(R.call > 0)) return;
+  R.call--;
+  const v = R.cur, items = S.shelf.filter(s => s.n > 0);
+  if (v && v.step === 1 && !v.called && !items.some(s => candyHas(s.key, v.like)) && R.kanban && dLeft(R.kanban) > 0) {
+    v.called = true;   // serve で看板を買う
+  } else {
+    R.plan.push(custPlan(1, R.kanban, R.soroi, [], null, fcGet(S.day))[0]);   // 呼びこみで1人ふえる
+    R.len = Math.max(R.len, R.plan.length * D_SLOT);
+  }
+  save(); mSe('door', { rate: 1.25 });
+  dSkip = 0; dSayRun(['ほのか【呼びこみ】：' + pick(STORY.callSay)]);
+  const b = document.querySelector('.d-call'); if (b) b.outerHTML = dCallBtn(R);
+}
+const dRefillOk = () => { const R = S.dayRun; return !!(R && R.open && !R.done && typeof mState === 'function' && mState().baked.length); };
+function dRefill(si) {
+  const M = mState(), s = S.shelf[+si]; if (!s || s.n > 0 || !dRefillOk()) return;
+  if (M.baked.length === 1) return dRefillDo(si, 0);
+  const cs = $('dCase'); if (!cs) return;
+  dRefillClose();
+  cs.insertAdjacentHTML('beforeend', `<div class="d-refp" id="dRefp"><b>どれを補充する？</b><span>${M.baked.map((b, w) => `<button class="d-refo" data-act="d-refill2" data-i="${si}" data-w="${w}">${candyIcon(b.key)}<em>${esc(candyOf(b.key).name)}</em></button>`).join('')}</span></div>`);
+}
+const dRefillClose = () => { const p = $('dRefp'); if (p) p.remove(); };
+function dRefillDo(si, wi) {
+  const R = S.dayRun, M = mState(), s = S.shelf[+si], b = M.baked[+wi]; dRefillClose();
+  if (!s || !b || s.n > 0 || !dRefillOk()) return;
+  M.baked.splice(+wi, 1);
+  if (s.key === R.kanban) R.kanban = b.key;   // 看板のマスに入れたら、それが看板
+  S.shelf[+si] = b;
+  save(); mSe('place');
+  const cs = dCaseUpdate(), sl = cs && cs.querySelector(`.dslot[data-key="${CSS.escape(b.key)}"]`); if (sl) sl.classList.add('pop');
+  dSkip = 0; dSayRun(['ほのか【補充】：' + pick(STORY.refillSay)]);
+}
+
 /* 昼の画面のボタン（data-act）。main.js の ACTS に入る */
 const DAY_ACTS = {
   'd-pick': el => pickKanban(el.dataset.i),
   'd-open': () => openDay(),
   'd-fast': el => toggleDayFast(el),
   'd-bell': () => dBell(),
+  'd-call': () => dCall(),
+  'd-refill': el => dRefill(el.dataset.i),
+  'd-refill2': el => dRefillDo(el.dataset.i, el.dataset.w),
 };

@@ -329,6 +329,9 @@ const EVENT_P = .4;
    その日のできごと（ev・なしは ''）・多めに来るお客さん（c）・人気の味（m）を前の日の閉店（day.js の closeDay）で決めて S.seen['fc:<日>'] に置く。
    その日の昼は、できごとをそのまま起こし、c を FC_W 倍・m を FC_LIKE_W 倍 来やすく（custPlan）。見せるのは日記の3行目・朝のキッチンの札・まとめの札（fcCardHTML） */
 const FC_W = 3, FC_LIKE_W = 2;
+/* 営業中も少しさわれる（11/21 えらぶ質問で「少しさわれる」）：呼びこみのベルは1日 CALL_N 回（すきな味がなくて帰りそうなお客さんに看板をすすめる・いなければお客さんが1人ふえる）
+   天板のおかわりは BACK_N こまで（棚のマスより多く焼ける・のこりは天板で待って、売り切れたマスに補充できる・閉店で消える） */
+const CALL_N = 3, BACK_N = 3;
 function fcMake(day) {
   const ev = day >= 3 && Math.random() < EVENT_P ? pick(DAY_EVENTS).id : '', E = DAY_EVENTS.find(e => e.id === ev);
   const open = CUSTOMERS.map(x => x.id).filter(id => custOpen(id, day));

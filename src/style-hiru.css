@@ -558,3 +558,19 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .fc-card .fc-ic{width:28px;height:28px;object-fit:contain;max-width:none}
 .fc-card .fc-ev{font-weight:700}
 .fc-card .hico{width:22px;height:22px;flex:none}
+
+/* ---------- 営業中の呼びこみのベル .d-call（のこりの回数は点）・補充 .dslot.refill と えらぶ窓 .d-refp（11/21） ---------- */
+.d-call{position:relative;flex:none;width:44px;height:44px;padding:0;display:grid;place-items:center}
+.d-call img{width:28px;height:28px;margin-top:-6px;max-width:none;object-fit:contain;display:block}
+.d-call b{font-size:12px}
+.d-call:disabled img{filter:grayscale(1) opacity(.5)}
+.d-calln{position:absolute;left:50%;bottom:3px;translate:-50% 0;display:flex;gap:2px}
+.d-calln i{display:block;width:6px;height:6px;border-radius:50%;background:#f6c44a;box-shadow:0 0 0 1px #5a2410}
+.dslot.refill{cursor:pointer}
+.dslot .d-refl{position:absolute;left:50%;bottom:4px;translate:-50% 0;z-index:4;font-size:9px;font-weight:700;line-height:1;color:#fff;background:#d2546b;border-radius:999px;padding:3px 7px;box-shadow:0 1px 0 rgba(60,20,10,.4)}
+.d-refp{position:absolute;left:8px;right:8px;top:8px;z-index:6;display:grid;gap:6px;padding:8px;border-radius:12px;background:rgba(36,19,10,.92);border:1.5px solid var(--brass);color:var(--milk);font-size:11px}
+.d-refp>span{display:flex;gap:6px;overflow-x:auto}
+.d-refo{flex:none;display:grid;justify-items:center;gap:2px;width:64px;padding:4px 2px;border-radius:10px;background:#fff8ec;border:1.5px solid #c9a27a;color:#4a2f1f}
+.d-refo .hico{width:34px;height:34px}
+.d-refo em{font-style:normal;font-size:8.5px;line-height:1.1;text-align:center}
+.dcase{position:relative}
