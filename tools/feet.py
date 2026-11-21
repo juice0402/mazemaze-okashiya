@@ -13,8 +13,8 @@ from PIL import Image
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POSES = {
     'honoka': 'battle charge atk1 atk2 atk3 special win support heatup heatdown knead field burnt joy surprise oops',
-    'minamo': 'battle charge atk special win support shonbori bikkuri',
-    'wakaba': 'battle charge atk special win support komari odoroki',
+    'minamo': 'battle charge atk atk2 atk3 heatup heatdown special win support shonbori bikkuri',
+    'wakaba': 'battle charge atk atk2 atk3 grow jar special win support komari odoroki',
 }
 FIX = {   # 目で見て合わせた（11/19）：たき火の石・鉄板の脚が足もとの帯に入る絵
     'honoka-heatup': {'fx': .32, 'sw': .32},   # 足だけに影（たき火は石の上）
