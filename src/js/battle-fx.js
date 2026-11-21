@@ -502,6 +502,10 @@ function impactFx(p, size) {
   const burst = ART['fx-burst-' + chef], slash = ART['fx-slash-' + chef];
   if (burst) { const b = fxEl('fx-art fx-burst' + (size ? ' s-' + size : ''), p, `<img src="${burst}" alt="">`); setTimeout(() => b.remove(), T(700)); }
   if (slash) { const s = fxEl('fx-art fx-slash' + (size ? ' s-' + size : ''), p, `<img src="${slash}" alt="">`); setTimeout(() => s.remove(), T(560)); }
+  /* 数字が当たった瞬間の ぎざぎざの衝撃と、飛び散るかけらの輪（11/21 しょーくん「数字を敵にぶつけた時の大迫力なエフェクト」） */
+  const nh = ART['fx-numhit-' + chef], sc = ART['fx-scatter-' + chef];
+  if (nh) { const n = fxEl('fx-art fx-numhit' + (size ? ' s-' + size : ''), p, `<img src="${nh}" alt="">`); setTimeout(() => n.remove(), T(520)); }
+  if (sc) { const c = fxEl('fx-art fx-scatter' + (size ? ' s-' + size : ''), p, `<img src="${sc}" alt="">`); setTimeout(() => c.remove(), T(820)); }
   const W = innerWidth, H = innerHeight;   // 画面のはしまで飛ぶ火花（額縁の外へ）
   sparkBurst(p, big ? 18 : 10, 'all', Math.max(W, H) / 120);
 }
@@ -607,7 +611,7 @@ function nightWarm(build) {
     }
     const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
     if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy', 'mon-' + mon.id + '-sad');
-    keys.push('bg-night-' + chef);   // シェフごとの夜の背景（11/21・絵があるときだけ）
+    keys.push('bg-night-' + chef, 'fx-numhit-' + chef, 'fx-scatter-' + chef);   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
     const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）

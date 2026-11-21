@@ -39,6 +39,8 @@ const TK_SPEED = 38;   // 1文字の ms
 function talkParse(s) {
   s = String(s || '').trim();
   if (!s || s[0] === '→') return null;
+  /* 物語の一枚絵（11/21）：「［絵:cg-open］」で出す・「［絵:なし］」でしまう（会話がおわるとしまう）。絵の名前は ART の cg-* */
+  const cg = s.match(/^［絵[:：]\s*(.+?)］$/); if (cg) return { cg: cg[1].trim() === 'なし' ? '' : cg[1].trim() };
   if (s[0] === '（' || s[0] === '(') return { nar: true, t: s.replace(/^[（(]/, '').replace(/[）)]$/, '') };
   const m = s.match(/^([^：:【（(]{1,12})(?:【([^】]+)】)?[：:](.+)$/);
   if (!m) return { nar: true, t: s };
@@ -55,6 +57,7 @@ function talkImg(who, face) {
 /* 会話を始めるときに、その会話で出る表情の絵をぜんぶ先に読む（11/19 H-032：キャラの絵がもとの大きさになったので、表情が変わったときに一瞬おくれないように） */
 const TALK_PRE = new Set();
 function talkPreload(L) {
+  for (const l of L) if (l.cg && ART[l.cg] && !TALK_PRE.has(ART[l.cg])) { TALK_PRE.add(ART[l.cg]); const pre = new Image(); pre.src = ART[l.cg]; }
   for (const l of L) for (const f of l.who ? [l.face, null] : []) {
     const im = talkImg(l.who, f); if (!im || TALK_PRE.has(im.src)) continue;
     TALK_PRE.add(im.src); const pre = new Image(); pre.decoding = 'async'; pre.src = im.src;
@@ -71,7 +74,7 @@ function talk(lines, done, opt = {}) {
   talkPreload(L);
   const el = document.createElement('div');
   el.id = 'talk'; el.className = 'talk' + (opt.dim === false ? '' : ' dim');
-  el.innerHTML = `<div class="tk-stage"><span class="tk-p l"></span><span class="tk-p r"></span></div>
+  el.innerHTML = `<div class="tk-stage"><span class="tk-p l"></span><span class="tk-p r"></span><div class="tk-cg" hidden><img alt=""></div></div>
     <button class="pill tk-skip" type="button">スキップ</button>
     <div class="tk-win"><span class="tk-name"></span><p class="tk-text"></p><i class="tk-next"></i></div>`;
   $('app').appendChild(el);
@@ -88,6 +91,7 @@ function talkNext() {
   TK.i++;
   if (TK.i >= TK.L.length) return talkClose();
   const l = TK.L[TK.i], el = TK.el, win = el.querySelector('.tk-win');
+  if (l.cg !== undefined) { talkCg(l.cg); return talkNext(); }   // 一枚絵の行は、絵を出して次の行へ
   if (l.who) TK.face[l.who] = l.face || TK.face[l.who] || null;
   win.classList.toggle('nar', !!l.nar);
   win.dataset.who = l.who && TALKERS[l.who].mon ? 'mon' : (l.who || '');
@@ -110,6 +114,14 @@ function talkFinish() {
   clearInterval(TK.timer); TK.full = true;
   const l = TK.L[TK.i]; if (l) TK.el.querySelector('.tk-text').textContent = l.t;
   TK.el.querySelector('.tk-win').classList.add('full');
+}
+/* 物語の一枚絵：立ち絵の上・窓の上に、木の額縁で大きく（絵がないときは何もしない） */
+function talkCg(k) {
+  const box = TK.el.querySelector('.tk-cg'), u = k && ART[k];
+  if (!u) { box.hidden = true; TK.el.classList.remove('has-cg'); return; }
+  const im = box.firstElementChild; if (im.getAttribute('src') !== u) im.src = u;
+  box.hidden = false; TK.el.classList.add('has-cg');
+  box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
 }
 /* 立ち絵：左（ほのか）と右（相手）に1人ずつ。同じ側に別の人が出たら入れかわる。話していない人は少し下がってうすく */
 function talkPortrait(who) {

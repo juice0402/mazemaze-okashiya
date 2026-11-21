@@ -23,6 +23,11 @@
 @keyframes tkpop{from{opacity:0;transform:translateY(8%)}}
 @keyframes tkhop{40%{transform:translateY(-3%)}}
 .tk-skip{position:absolute;top:8px;right:10px;z-index:3;font-size:12px;padding:5px 12px}
+.tk-cg{position:absolute;left:12px;right:12px;bottom:10px;z-index:3;max-height:calc(100% - 52px);aspect-ratio:16/9;margin:0 auto;border:10px solid transparent;border-image:var(--ui-stage-frame) 74/20px round;background:#2a1408;filter:drop-shadow(0 6px 12px rgba(20,8,2,.6))}   /* 物語の一枚絵（11/21・talk.js の talkCg）。低い画面では高さに合わせて小さく（16:9 のまま） */
+.tk-cg img{display:block;width:100%;height:100%;object-fit:cover}
+.tk-cg.pop{animation:tkcg .45s cubic-bezier(.2,1.1,.4,1)}
+@keyframes tkcg{from{opacity:0;transform:scale(.94)}}
+.talk.has-cg .tk-p{opacity:0}   /* 一枚絵のあいだは立ち絵をしまう（名前の札と文はそのまま） */
 #app:has(> .talk) .night .stage .ov-heat{display:none}   /* 夜の会話のあいだは、右上のスキップとかぶるビルドのゲージをしまう（11/21 レイアウトの総デバッグ） */
 .tk-win{position:relative;z-index:3;flex:none;min-height:108px;margin-top:-6px;padding:20px 16px 16px;border-radius:14px;background:radial-gradient(90% 70% at 50% 0%,rgba(255,214,150,.2),transparent 70%),linear-gradient(#8d6142,#5e3c24);border:2px solid #24130a;box-shadow:inset 0 0 0 2px var(--brass),inset 0 0 0 4px rgba(40,18,6,.6),0 6px 0 rgba(0,0,0,.4);color:var(--milk);font-size:17px;line-height:1.6}
 .tk-name{position:absolute;left:14px;top:-15px;padding:3px 16px 4px;border-radius:9px;background:linear-gradient(#f07c8e,#c4415a);border:2px solid #5a1a24;color:#fff;font-family:var(--disp);font-weight:400;font-size:14px;letter-spacing:.06em;box-shadow:0 3px 0 rgba(0,0,0,.35)}

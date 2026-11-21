@@ -750,11 +750,12 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .cu-bub.cu-bub::after{left:12px;bottom:-15.2px;transform:none}   /* 根もとは枠の線の上だけ（#tipb と同じ） */
 /* ==== UI の絵 その5（11/18 art-irai ui-chips・ui-day）==== */
 /* 計算の札（ui-chip-*・240×84〔こげ茶は 240×64〕）：左右の丸いはしを9分割の角に・まんなかが横にのびる。字はコード。style-battle.css より強く */
-.fchip.fchip{background:none;box-shadow:none;border-radius:0;border:1px solid transparent;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill / 19px 20px stretch;padding:3px 14px 4px;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
-.fchip.c-ember{border-image-source:var(--ui-chip-ember)}
-.fchip.c-pink{border-image-source:var(--ui-chip-pink)}
-.fchip.c-mint{border-image-source:var(--ui-chip-mint)}
-.fchip.c-koge{border-image-source:var(--ui-chip-koge);border-image-slice:49% 13% 49% 13% fill}
+/* 11/21〜 リボン型の札（ui-buff-*・400×86：左は宝石と矢じり 20%・右は切りこみ 11%）。しょーくん「2回発動・+60 などの楕円の枠をかっこよく」 */
+.fchip.fchip{background:none;box-shadow:none;border-radius:0;border:1px solid transparent;border-image:var(--ui-buff-gold) 49% 11% 49% 20% fill / 19px 20px 19px 36px stretch;padding:3px 18px 4px 34px;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
+.fchip.c-ember{border-image-source:var(--ui-buff-ember)}
+.fchip.c-pink{border-image-source:var(--ui-buff-pink)}
+.fchip.c-mint{border-image-source:var(--ui-buff-mint)}
+.fchip.c-koge{border-image-source:var(--ui-buff-koge)}
 /* 発動のメダル（ui-medal-ring・160×152・穴は横34〜129）：.fh-ico（54px）の丸に輪を重ねる */
 .fh-ico.fh-ico{position:relative;overflow:visible;box-shadow:0 0 18px 4px rgba(255,200,90,.65)}
 .fh-ico.fh-ico::after{content:"";position:absolute;left:-18px;top:-15px;width:88px;height:83px;background:var(--ui-medal-ring) center/100% 100% no-repeat;pointer-events:none}
@@ -855,9 +856,9 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .kone-n.kone-n small{color:var(--milk-soft)}
 .kone-n.kone-n b{color:var(--gold);text-shadow:0 1px 0 #2a170c}
 /* カードにかかる効果の札（+45 など）：計算の札と同じ色の ui-chip-*（光りは drop-shadow） */
-.buff.buff{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 7px 4px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/9px 10px stretch;padding:0 1px;color:#3a1c08;filter:drop-shadow(0 0 4px var(--bc))}
-.buff.b-next,.buff.b-clead{border-image-source:var(--ui-chip-pink);color:#5a1028}
-.buff.b-again{border-image-source:var(--ui-chip-ember);color:#3a1204}
+.buff.buff{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 7px 4px 13px;border-image:var(--ui-buff-gold) 49% 11% 49% 20% fill/9px 9px 9px 17px stretch;padding:0 1px;color:#3a1c08;filter:drop-shadow(0 0 4px var(--bc))}
+.buff.b-next,.buff.b-clead{border-image-source:var(--ui-buff-pink);color:#5a1028}
+.buff.b-again{border-image-source:var(--ui-buff-ember);color:#3a1204}
 /* 「えらんでいる」の札：ピンクの札 */
 .pk-on.pk-on{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-pink) 49% 18% 49% 18% fill/10px 11px stretch;padding:0 2px;color:#5a1028}
 /* まぜられるしるし（＋）・ヒントのとじる（×）：丸いボタンの皮 */

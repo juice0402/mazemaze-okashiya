@@ -573,6 +573,11 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .fx-art img{display:block;width:100%;height:auto}
 .fx-burst{width:240px;animation:fxburst .62s ease-out forwards}.fx-burst.s-big{width:320px}.fx-burst.s-huge{width:420px}
 @keyframes fxburst{0%{transform:scale(.3);opacity:1}60%{opacity:1}100%{transform:scale(1.35);opacity:0}}
+/* 数字が当たった瞬間（fx-numhit-*：ぎざぎざの衝撃は一瞬で大きく・fx-scatter-*：かけらの輪は遅れて外へ広がる・11/21） */
+.fx-numhit{width:230px;animation:fxnumhit .5s cubic-bezier(.15,1.4,.4,1) forwards}.fx-numhit.s-big{width:300px}.fx-numhit.s-huge{width:380px}
+@keyframes fxnumhit{0%{transform:scale(.2) rotate(-12deg);opacity:1}35%{transform:scale(1.08) rotate(4deg);opacity:1}100%{transform:scale(1.25) rotate(8deg);opacity:0}}
+.fx-scatter{width:260px;animation:fxscatter .8s ease-out forwards}.fx-scatter.s-big{width:340px}.fx-scatter.s-huge{width:440px}
+@keyframes fxscatter{0%{transform:scale(.35);opacity:0}15%{opacity:1}100%{transform:scale(1.6);opacity:0}}
 .fx-slash{width:300px;animation:fxslash .5s cubic-bezier(.2,.9,.3,1) forwards}.fx-slash.s-big{width:380px}.fx-slash.s-huge{width:480px}
 @keyframes fxslash{0%{transform:translate(-45%,28%) scale(.7);opacity:0}22%{opacity:1}100%{transform:translate(6%,-6%) scale(1.12);opacity:0}}
 /* 味の光の玉：モンスターから おなかの帯へ */
