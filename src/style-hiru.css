@@ -501,10 +501,10 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 
 /* ==== お店のかざり（11/21・hiru.js の DECO_LIST・day-scene.js の dDecoHTML） ====
    bg-day（16:9）は下のまんなかに合わせて cover：絵のはば W＝max(100cqw, 177.78cqh)・高さ H＝max(100cqh, 56.25cqw)。絵の中の場所（横 fx・下からの高さ）で置く
-   たての長い画面では絵の左右が切れる（見えるのは fx .3〜.7 くらい）ので、まんなかに寄せる：窓べ＝左の窓のふちの右（fx .355）・天井＝ドアと右の窓のあいだの上からつるす（fx .64）・壁＝左の窓とドアのあいだ（fx .39）・床＝右（fx .66）・カウンター＝左（fx .40・ちびの右・手前のカウンターより前） */
+   たての長い画面では絵の左右が切れる（見えるのは fx .3〜.7 くらい）ので、まんなかに寄せる：窓べ＝左の窓のふちの右（fx .355）・天井＝左の窓の上からつるす（fx .37・右上は評判のびん）・壁＝左の窓とドアのあいだ（fx .39）・床＝右（fx .66）・カウンター＝左（fx .40・ちびの右・手前のカウンターより前） */
 .ds-deco{position:absolute;z-index:1;--W:max(100cqw,177.78cqh);--H:max(100cqh,56.25cqw);width:auto;max-width:none;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 2px 2px rgba(42,20,8,.35))}
 .dd-mado{left:calc(50cqw - .145 * var(--W));bottom:calc(.532 * var(--H));height:calc(.12 * var(--H))}
-.dd-tenjo{left:calc(50cqw + .14 * var(--W));top:calc(100cqh - var(--H));height:calc(.2 * var(--H));filter:none}
+.dd-tenjo{left:calc(50cqw - .13 * var(--W));top:calc(100cqh - var(--H));height:calc(.2 * var(--H));filter:none}
 .dd-kabe{left:calc(50cqw - .11 * var(--W));bottom:calc(.62 * var(--H));height:calc(.11 * var(--H));filter:none}
 .dd-yuka{left:calc(50cqw + .16 * var(--W));bottom:calc(.15 * var(--H));height:calc(.18 * var(--H))}
 .dd-counter{left:calc(50cqw - .10 * var(--W));bottom:calc(.135 * var(--H));height:calc(.1 * var(--H));z-index:4}
