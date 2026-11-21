@@ -91,6 +91,8 @@
 - sale：koe-irai・sfx:wyzowl/money/money-register（Wyzowl SFX Kit・CC0）
 - heart：koe-irai・sfx:wyzowl/notifications/notification-success-bubble（Wyzowl SFX Kit・CC0）
 - buy：koe-irai・sfx:wyzowl/money/money-coin-drop（Wyzowl SFX Kit・CC0）（11/21 昼の PR #32・しょーくんがえらんだ）
+- boom：koe-irai・sfx:wyzowl/cinematic-hits/cinematic-drum-massive ＋ wyzowl/booms-and-bass/bass-rumble-short ＋ wyzowl/cinematic-hits/cinematic-thunder-big の頭0.5秒（Wyzowl SFX Kit・CC0）を ffmpeg でかさねた（11/21 夜 1万こえの一撃のドーン）
+- slowin：koe-irai・sfx:wyzowl/reverse-whooshes/reverse-whoosh-long-strong（Wyzowl SFX Kit・CC0・+6dB）（11/21 夜 1万こえの一撃のスロー）
 - soldout：koe-irai・sfx:wyzowl/notifications/notification-alert-clear（Wyzowl SFX Kit・CC0）
 - close：koe-irai・sfx:wyzowl/everyday-props/props-shop-bell（Wyzowl SFX Kit・CC0）・高さ 0.85
 - card：koe-irai・sfx:wyzowl/appear-and-vanish/appear-flip-quick（Wyzowl SFX Kit・CC0）

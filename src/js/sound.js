@@ -76,6 +76,13 @@ function bgmStart(name, b) {
   src.connect(g); g.connect(bgm.master); src.start(t, lead);
   bgm.src = src; bgm.gain = g; bgm.cur = name;
 }
+/* 大きい一撃のスロー（11/21 夜）：曲を少しのあいだ小さく → ドーンのあとで ゆっくりもどす */
+function bgmDuck(ms, to = 0.25) {
+  if (!bgm.ctx || !bgm.master) return;
+  const g = bgm.master.gain, t = bgm.ctx.currentTime;
+  g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(BGM_VOL * to, t + 0.25);
+  g.setValueAtTime(BGM_VOL * to, t + ms / 1000); g.linearRampToValueAtTime(BGM_VOL, t + ms / 1000 + 1.4);
+}
 function bgmFadeOut() {
   if (!bgm.src) return;
   const t = bgm.ctx.currentTime, s = bgm.src, g = bgm.gain;

@@ -533,6 +533,15 @@ function impactFx(p, size) {
   const W = innerWidth, H = innerHeight;   // 画面のはしまで飛ぶ火花（額縁の外へ）
   sparkBurst(p, big ? 18 : 10, 'all', Math.max(W, H) / 120);
 }
+/* 1万こえの一撃のドーン（11/21 夜）：画面いっぱいの白い光・二重の衝撃波（もう1つは少しおくれて大きく）・長く大きいゆれ。impactFx（huge）にかさねる */
+function megaBoom(p) {
+  if (REDUCED || !p) return;
+  const f = document.createElement('i'); f.className = 'fx-megaflash'; fxLayer().appendChild(f); setTimeout(() => f.remove(), T(700));
+  const w = fxEl('fx-wave s-huge mega', p, ''); setTimeout(() => w.remove(), T(1000));
+  setTimeout(() => { const w2 = fxEl('fx-wave w2 s-huge mega', p, ''); setTimeout(() => w2.remove(), T(1100)); }, T(140));
+  const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
+  edgeGlow('big');
+}
 /* みなも・わかばの一撃のかざり（11/21 しょーくん「固有エフェクトをさらに追加して派手に」・fx-minamo2・fx-wakaba2）：
    ふつうの一撃は1つ・大きい一撃は3つ（輪を1つ入れる）。くるっと回りながら ふくらんで消える（transform と opacity だけ） */
 const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）

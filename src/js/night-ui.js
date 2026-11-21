@@ -135,7 +135,10 @@ function countUp(el, from, to, ms, f = fmt) {
 }
 /* バトルの一撃：ほのかの手から火の玉（火の粉の尾）→ モンスターに当たってぐにゃっ・光の輪と火花 → 大きな数字
    ぜんぶ画面の上の層 #fxl に出す（額縁の外へはみ出す）。ノルマにくらべて大きいほど派手に（big＝舞台がゆれる・huge＝画面いっぱいの炎） */
-function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（battle-fx.js の flyHub）。あればそれがモンスターへ飛ぶ（なければ ほのかの手から火の玉）
+/* 1万をこえる一撃（11/21 夜 しょーくん「ヒットストップして、大ダメージを与えてる感覚に・一瞬スローになって、次の瞬間に爆撃音」）：
+   数字が飛んでいくとちゅうから スロー（ほかの動きも 1/5 の速さ・画面のまわりが暗く・曲が小さく・吸いこむ音）→ 当たる直前で止まる（ヒットストップ）→ ドーン（boom・白い光・二重の衝撃波・大きなゆれ） */
+const MEGA_HIT = 10000, MEGA_SLOW = 900;   // MEGA_SLOW＝ふつうの一撃より長くなる ms（はやおくり前）
+function hitFx(dmg, q, proj, mega) {   // proj＝舞台に飛んできた数字（battle-fx.js の flyHub）。あればそれがモンスターへ飛ぶ（なければ ほのかの手から火の玉）
   const chef = $('chef'), a = spot(proj || chef), b = spot($('mon'));
   if (!chef || !chef.dataset.pose) replay(chef, 'act');   // 戦闘ポーズ中は heroPose の動きにまかせる
   const size = dmg >= q * 0.6 ? 'huge' : dmg >= q * 0.2 ? 'big' : '', fly = T(size ? 520 : 440);
@@ -153,7 +156,9 @@ function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（batt
   const ball = proj || document.createElement('i'), ang = proj ? 0 : Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
   if (proj) proj.classList.add('shot');
   else { ball.className = 'fx-ball' + (size ? ' s-' + size : ''); ball.style.left = x0 + 'px'; ball.style.top = y0 + 'px'; L.appendChild(ball); }
-  ball.animate([...Array(9)].map((_, k) => { const t = k / 8, p = at(t); return { transform: `translate(${p.x - x0}px,${p.y - y0}px) rotate(${ang}deg) scale(${proj ? 1 + .5 * t : .55 + .85 * t})` }; }), { duration: fly, fill: 'forwards' });
+  const kf = t => { const p = at(t); return { transform: `translate(${p.x - x0}px,${p.y - y0}px) rotate(${ang}deg) scale(${proj ? 1 + .5 * t : .55 + .85 * t})` }; };
+  if (mega) return megaHit(ball, kf, at, x1, y1, fly, land, size);
+  ball.animate([...Array(9)].map((_, k) => kf(k / 8)), { duration: fly, fill: 'forwards' });
   for (let k = 1; k < 8; k++) setTimeout(() => sparkBurst({ ...at(k / 8), w: 8 }, size ? 3 : 2, 'all', .35), fly * k / 8);
   setTimeout(() => {
     if (!REDUCED) ball.animate([{ transform: ball.style.transform || 'none' }], { duration: 1 });   // ヒットストップ：当たった所で一瞬止まる
@@ -164,6 +169,38 @@ function hitFx(dmg, q, proj) {   // proj＝舞台に飛んできた数字（batt
     L.appendChild(h); setTimeout(() => h.remove(), 520);
     sparkBurst({ x: x1, y: y1, w: 20 }, size === 'huge' ? 34 : size ? 24 : 14, 'all', size === 'huge' ? 2.3 : size ? 1.7 : 1.15);
   }, fly + T(90));   // 90ms 止まってから はじける
+}
+
+/* 1万こえの一撃：ふつうの速さ（道の6割）→ スロー（道の6割→9割6分）→ 止まる → ドーン。合わせて ふつうの一撃より MEGA_SLOW ぶん長い */
+function megaHit(ball, kf, at, x1, y1, fly, land, size) {
+  const t1 = Math.round(fly * .5), t2 = T(Math.round(MEGA_SLOW * .62)), t3 = T(Math.round(MEGA_SLOW * .26)), all = t1 + t2 + t3, o1 = t1 / all, o2 = (t1 + t2) / all;
+  const K = [];
+  for (let k = 0; k <= 4; k++) K.push({ ...kf(.6 * k / 4), offset: o1 * k / 4 });
+  for (let k = 1; k <= 6; k++) K.push({ ...kf(.6 + .36 * k / 6), offset: o1 + (o2 - o1) * k / 6, easing: 'linear' });
+  K.push({ ...kf(.96), offset: 1 });
+  const anim = ball.animate(K, { duration: all, fill: 'forwards' });
+  for (let k = 1; k < 5; k++) setTimeout(() => sparkBurst({ ...at(.6 * k / 5), w: 8 }, 3, 'all', .35), t1 * k / 5);
+  const app = $('app'); let slowed = [];
+  setTimeout(() => sePlay('slowin', { vol: .7 }), Math.max(0, all - 1150));   // 吸いこむ音が止まった所でドーン
+  setTimeout(() => {   // スロー：ほかの動き（モブ・シェフ・光）も 1/5 の速さに
+    slowed = document.getAnimations().filter(a => a !== anim && a.playState === 'running');   // 先にあつめる（暗くする幕の出るアニメはおそくしない）
+    slowed.forEach(a => { try { a.playbackRate = .2; } catch (e) { /* もう終わった */ } });
+    if (app) app.classList.add('slowmo');
+    if (typeof bgmDuck === 'function') bgmDuck(t2 + t3 + 200);
+  }, t1);
+  setTimeout(() => {   // ヒットストップ：ぜんぶ止める
+    if (app) app.classList.add('hitstop');
+    slowed.forEach(a => { try { a.playbackRate = 0; } catch (e) { /* もう終わった */ } });
+  }, t1 + t2);
+  setTimeout(() => {   // ドーン
+    slowed.forEach(a => { try { a.playbackRate = 1; } catch (e) { /* もう終わった */ } });
+    if (app) app.classList.remove('slowmo', 'hitstop');
+    sePlay('boom', { vol: .9 });
+    ball.remove(); land({ x: x1, y: y1 }); megaBoom({ x: x1, y: y1 });
+    const L = fxLayer(), h = document.createElement('i'); h.className = 'fx-hit s-huge'; h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
+    L.appendChild(h); setTimeout(() => h.remove(), 520);
+    sparkBurst({ x: x1, y: y1, w: 20 }, 44, 'all', 2.8);
+  }, all);
 }
 
 /* ---------- バトルの流れ（11/18 しょーくん「一瞬すぎて味気ない」「ショップ→戦闘の移行をかっこよく」・ぜんぶのせシップの切りかえを参考に） ---------- */
@@ -262,16 +299,16 @@ function showEvent(e, run, q) {
     /* ため（11/19）：数字がふるえて光が集まる・画面のふちが暗くなる → 金色に決まる → シェフが攻撃 */
     setTimeout(() => numTame(H), T(t)); t += 480;
     setTimeout(() => hubFin(H, e.dmg), T(t));
-    const atk = e.dmg >= q * 0.6 ? 'special' : 'atk' + Math.min(3, d.star || 1);
+    const atk = e.dmg >= q * 0.6 ? 'special' : 'atk' + Math.min(3, d.star || 1), mega = e.dmg >= MEGA_HIT && !REDUCED, slow = mega ? MEGA_SLOW : 0;
     setTimeout(() => { heroPose(atk, 1100); atkKoe(atk); }, T(t + 120));   // 数字が飛ぶのに合わせて、ほのかが攻撃（掛け声も）
     t += 420;
     const tk = t;
     setTimeout(() => {
       if (!$('qfill')) return;   // 夜の画面からはなれたあと（11/19）
-      hitFx(e.dmg, q, H.el); sePlay('hit', { rate: Math.min(2, Math.pow(1.12, (H.mk || 0) + 1)) });
-      setTimeout(() => { if ($('qfill')) { orbsToBelly(e.dmg, q); setTimeout(() => { if ($('qfill')) scoreTick(e.dmg, run, q); }, T(620)); } }, T(560));   // 味の光の玉が モンスターから おなかの帯へ（額縁の外）
+      hitFx(e.dmg, q, H.el, mega); if (!mega) sePlay('hit', { rate: Math.min(2, Math.pow(1.12, (H.mk || 0) + 1)) });
+      setTimeout(() => { if ($('qfill')) { orbsToBelly(e.dmg, q); setTimeout(() => { if ($('qfill')) scoreTick(e.dmg, run, q); }, T(620)); } }, T(560 + slow));   // 味の光の玉が モンスターから おなかの帯へ（額縁の外）
     }, T(tk));
-    t += 1700;   // 一撃 → 光の玉が おなかへ → 帯がのびる まで
+    t += 1700 + slow;   // 一撃 → 光の玉が おなかへ → 帯がのびる まで（1万をこえる一撃は スローとヒットストップのぶん長い）
   } else t += 620;
   return t;
 }
