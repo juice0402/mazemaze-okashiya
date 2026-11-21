@@ -69,27 +69,41 @@ const NOUN_ID = { 'クッキー': 'cookie', 'サブレ': 'sable', 'キャンデ�
   'メロンパン': 'melonpan', 'クリームパン': 'creampan', 'ロール': 'roll', 'あんパン': 'anpan', 'コロネ': 'koronet', 'パン': 'pan' };   // パンは こね生地（11/18 夜）
 const JAM_ART = { apple: 'card-torojam', berry: 'card-torojam', grape: 'card-torojam', peach: 'card-shimejam', mikan: 'card-shimejam' };
 /* まぜた先の絵（11/21 夜 しょーくん「混ぜた先の絵を思いっきり増やして」）：カードの名前から絵の名前（art-irai の requests/okashi/mix-*.md）。
-   ★2 は「味のことば＋形」を mix-<味>-<形> に（ほのかのクッキー・こね生地のパン・みなもの飴細工）。わかばのケーキの★2（cat が cake）は同じ名前がパンにもあるので引かない。
-   ★3 のくだもののケーキ・クッキーの特製は表 MIX_ART。絵がまだないカードは下の形の絵のまま */
-const MIX_PRE = { あまあま: 'amama', はちみつ: 'mitsu', いちばん: 'ichiban', さくさく: 'sakusaku', しめの: 'shime', ふわふわ: 'fuwa', チョコ: 'choco', バター: 'bata', くるくる: 'kurukuru', とろり: 'torori', ふっくら: 'fukkura',
-  うみの: 'umi', きらきら: 'kira', きらめく: 'kirameku', しあげの: 'shiage', しんじゅ: 'shinju', すきとおる: 'sukitoru', つやつや: 'tsuyatsuya', にじいろ: 'niji', のびのび: 'nobinobi', はなやか: 'hanayaka' };
-const MIX_SUF = { クッキー: 'cookie', サブレ: 'sable', カステラ: 'castella', ショコラ: 'choco', ドロップ: 'drop', あんパン: 'anpan', クリーム: 'cream', コロネ: 'koronet', メロンパン: 'melon', メロン: 'melon', パン: 'pan', ロール: 'roll',
-  お城: 'oshiro', 白鳥: 'hakucho', 花かご: 'hanakago', 飴細工: 'amezaiku', つや飴: 'tsuyaame', のばし飴: 'nobashi', しお飴: 'shioame', うろこ糖: 'urokoto', パール糖: 'pearl', 氷砂糖: 'korizato', シロップ: 'syrup' };
+   ★2＝「味のことば＋形」→ mix-<味>-<形>（わかばのケーキ cat cake は mixc-…：同じ名前がパンにもあるため）。
+   ★3＝「形＋形」「形の形」→ mix3-<形>-<形>・「形タワー」→ mix3-<形>-tower・「きわみの形」→ mix3-kiwami-<形>（ケーキは mixc3-…）。くだもののケーキは表 MIX_ART。
+   絵がまだないカードは下の形の絵のまま。ことばは scratchpad の mixvocab.py と同じ（依頼書を作るときに使った） */
+const MIX_PRE = { あまあま: 'amama', はちみつ: 'mitsu', いちばん: 'ichiban', さくさく: 'sakusaku', しめの: 'shime', ふわふわ: 'fuwa', チョコ: 'choco', バター: 'bata', くるくる: 'kurukuru', とろり: 'torori', ふっくら: 'fukkura', うみの: 'umi', きらきら: 'kira', きらめく: 'kirameku', しあげの: 'shiage', しんじゅ: 'shinju', すきとおる: 'sukitoru', つやつや: 'tsuyatsuya', にじいろ: 'niji', のびのび: 'nobinobi', はなやか: 'hanayaka', こちこち: 'kochikochi', ころころ: 'korokoro', ごろごろ: 'gorogoro', つなぎの: 'tsunagi', はじける: 'hajikeru', はじまり: 'hajimari', ぱちぱち: 'pachipachi', ひえひえ: 'hiehie', ダブル: 'double', 大びん: 'obin', あさいち: 'asaichi', ぐつぐつ: 'gutsugutsu', もりの: 'mori' };
+const MIX_SUF = { クッキー: 'cookie', サブレ: 'sable', カステラ: 'castella', ショコラ: 'choco', ドロップ: 'drop', あんパン: 'anpan', クリーム: 'cream', コロネ: 'koronet', メロンパン: 'melon', メロン: 'melon', パン: 'pan', ロール: 'roll', お城: 'oshiro', 白鳥: 'hakucho', 花かご: 'hanakago', 飴細工: 'amezaiku', つや飴: 'tsuyaame', のばし飴: 'nobashi', しお飴: 'shioame', うろこ糖: 'urokoto', パール糖: 'pearl', 氷砂糖: 'korizato', シロップ: 'syrup', びん飴: 'biname', はじけ飴: 'hajikeame', ペロキャン: 'perocan', ミント飴: 'mintame', キャンディ: 'candy', ジャム: 'jam', 水あめ: 'mizuame' };
+const MIX_CSUF = { ケーキ: 'cake', シフォン: 'chiffon', タルト: 'tart', デコケーキ: 'deco', デコ: 'deco', ロール: 'roll' };
+const MIX_PC = { クッキー: 'cookie', サブレ: 'sable', カステラ: 'castella', ショコラ: 'choco', ドロップ: 'drop', あんパン: 'anpan', クリーム: 'cream', コロネ: 'koronet', メロンパン: 'melon', メロン: 'melon', パン: 'pan', ロール: 'roll', お城: 'oshiro', 白鳥: 'hakucho', 花かご: 'hanakago', 飴細工: 'amezaiku', つや飴: 'tsuyaame', のばし飴: 'nobashi', しお飴: 'shioame', うろこ糖: 'urokoto', パール糖: 'pearl', 氷砂糖: 'korizato', シロップ: 'syrup', びん飴: 'biname', はじけ飴: 'hajikeame', ペロキャン: 'perocan', ミント飴: 'mintame', キャンディ: 'candy', ジャム: 'jam', 水あめ: 'mizuame', クリームパン: 'cream' };
+const MIX_CPC = { ケーキ: 'cake', シフォン: 'chiffon', タルト: 'tart', デコケーキ: 'deco', ロール: 'roll' };
 const MIX_ART = (() => {
   const T = {}, F = { apple: 'りんご', berry: 'きいちご', peach: 'もも', mikan: 'みかん', grape: 'ぶどう' }, SH = { cake: 'ケーキ', tart: 'タルト', deco: 'デコケーキ', chiffon: 'シフォン', roll: 'ロール' };
   for (const f in F) for (const s in SH) T[f === 'berry' && s === 'deco' ? 'きいちごデコ' : F[f] + SH[s]] = `mix-${f}-${s}`;
-  const C3 = { カステラクッキー: 'castella-cookie', カステラショコラ: 'castella-choco', サブレカステラ: 'sable-castella', サブレクッキー: 'sable-cookie', サブレショコラ: 'sable-choco',
-    ショコラクッキー: 'choco-cookie', ドロップカステラ: 'drop-castella', ドロップクッキー: 'drop-cookie', ドロップサブレ: 'drop-sable', ドロップショコラ: 'drop-choco' };
-  for (const n in C3) T[n] = 'mix3-' + C3[n];
   return T;
 })();
 const MIX_PRE_L = Object.keys(MIX_PRE).sort((a, b) => b.length - a.length);
+function mixKey(name, star, cake) {
+  if (star === 2) {
+    const S = cake ? MIX_CSUF : MIX_SUF, p = MIX_PRE_L.find(x => name.startsWith(x) && S[name.slice(x.length)]);
+    return p ? `${cake ? 'mixc' : 'mix'}-${MIX_PRE[p]}-${S[name.slice(p.length)]}` : '';
+  }
+  const P = cake ? MIX_CPC : MIX_PC, pre = cake ? 'mixc3' : 'mix3';
+  if (name.endsWith('タワー') && P[name.slice(0, -3)]) return `${pre}-${P[name.slice(0, -3)]}-tower`;
+  if (name.startsWith('きわみの') && P[name.slice(4)]) return `${pre}-kiwami-${P[name.slice(4)]}`;
+  for (let i = 1; i < name.length; i++) {
+    const a = name.slice(0, i), b = name.slice(i);
+    if (b[0] === 'の' && P[a] && P[b.slice(1)]) return `${pre}-${P[a]}-${P[b.slice(1)]}`;
+    if (P[a] && P[b]) return `${pre}-${P[a]}-${P[b]}`;
+  }
+  return '';
+}
 function mixArt(d) {
   if (!d || !d.name) return null;
   if (MIX_ART[d.name]) return ART[MIX_ART[d.name]] || null;
-  if (d.star !== 2 || d.cat === 'cake') return null;
-  const p = MIX_PRE_L.find(x => d.name.startsWith(x)), s = p && MIX_SUF[d.name.slice(p.length)];
-  return (s && ART[`mix-${MIX_PRE[p]}-${s}`]) || null;
+  if (d.star < 2) return null;
+  const k = mixKey(d.name, d.star, d.cat === 'cake');
+  return (k && ART[k]) || null;
 }
 function hiArt(cid) {
   const k = cid[0], id = cid.slice(2);
