@@ -578,6 +578,7 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 @keyframes fxnumhit{0%{transform:scale(.2) rotate(-12deg);opacity:1}35%{transform:scale(1.08) rotate(4deg);opacity:1}100%{transform:scale(1.25) rotate(8deg);opacity:0}}
 .fx-scatter{width:260px;animation:fxscatter .8s ease-out forwards}.fx-scatter.s-big{width:340px}.fx-scatter.s-huge{width:440px}
 @keyframes fxscatter{0%{transform:scale(.35);opacity:0}15%{opacity:1}100%{transform:scale(1.6);opacity:0}}
+.fx-flourish{width:120px;translate:none}.fx-flourish.ring{width:200px}   /* みなも・わかばの一撃のかざり（battle-fx.js の chefFlourish・動きは Web Animations で translate(-50%,-50%) から） */
 .fx-slash{width:300px;animation:fxslash .5s cubic-bezier(.2,.9,.3,1) forwards}.fx-slash.s-big{width:380px}.fx-slash.s-huge{width:480px}
 @keyframes fxslash{0%{transform:translate(-45%,28%) scale(.7);opacity:0}22%{opacity:1}100%{transform:translate(6%,-6%) scale(1.12);opacity:0}}
 /* 味の光の玉：モンスターから おなかの帯へ */

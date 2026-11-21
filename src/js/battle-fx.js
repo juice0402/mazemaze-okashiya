@@ -214,6 +214,7 @@ function sproutFx(t, ripe) {
   const u = ART[ripe ? 'fx-sprout-bloom' : 'fx-sprout'] || ART['fx-sprout'], e = document.createElement('i');
   e.className = 'fx-sprout' + (u ? '' : ' code'); e.innerHTML = u ? `<img src="${u}" alt="">` : '<b></b><b></b><b></b><b></b>';
   t.appendChild(e); setTimeout(() => e.remove(), 1500);
+  if (ripe && ART['fx-bloom']) { const r = t.getBoundingClientRect(); chefFlourishAt('fx-bloom', { x: r.left + r.width / 2, y: r.top + r.height * .35 }); }   // 熟した！で花がひらく（11/21）
   for (let k = 0; k < 6; k++) {
     const pu = ART[ripe ? (k % 2 ? 'fx-flower' : 'fx-petal') : 'fx-leaf'];   // 熟したら花びらと小さな花
     const p = document.createElement('i'); p.className = 'fx-leafp' + (pu ? '' : ripe ? ' code ripe' : ' code');
@@ -262,8 +263,16 @@ function aquaHTML() {
   const fc = art ? '<i class="aq-fc tl"></i><i class="aq-fc tr"></i><i class="aq-fc bl"></i><i class="aq-fc br"></i>' : '';
   return (aquaCache = `<span class="aqua${art ? ' art' : ''}" aria-hidden="true"${sty}><i class="aq-frost">${fc}</i><i class="aq-warm"></i>${e}</span>`);
 }
+/* かざりを1つだけ（熟した・冷えたの所） */
+function chefFlourishAt(k, p) {
+  if (!ART[k] || !document.body.animate || REDUCED) return;
+  const e = fxEl('fx-art fx-flourish', p, `<img src="${ART[k]}" alt="">`), ms = T(820);
+  e.animate([{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-50%) rotate(20deg) scale(1.3)', opacity: 0 }], { duration: ms, easing: 'ease-out', fill: 'both' });
+  setTimeout(() => e.remove(), ms + 50);
+}
 /* 冷えた瞬間に飛ぶ氷のかけら（fx-iceshard） */
 function aquaShards(c, n) {
+  if (n >= 6) chefFlourishAt('fx-ice-flower', c);   // 冷えた！で氷の花（11/21）
   if (!ART['fx-iceshard'] || !document.body.animate) return;
   const L = fxLayer();
   for (let k = 0; k < n; k++) {
@@ -506,8 +515,25 @@ function impactFx(p, size) {
   const nh = ART['fx-numhit-' + chef], sc = ART['fx-scatter-' + chef];
   if (nh) { const n = fxEl('fx-art fx-numhit' + (size ? ' s-' + size : ''), p, `<img src="${nh}" alt="">`); setTimeout(() => n.remove(), T(520)); }
   if (sc) { const c = fxEl('fx-art fx-scatter' + (size ? ' s-' + size : ''), p, `<img src="${sc}" alt="">`); setTimeout(() => c.remove(), T(820)); }
+  chefFlourish(chef, p, big ? 3 : 1);
   const W = innerWidth, H = innerHeight;   // 画面のはしまで飛ぶ火花（額縁の外へ）
   sparkBurst(p, big ? 18 : 10, 'all', Math.max(W, H) / 120);
+}
+/* みなも・わかばの一撃のかざり（11/21 しょーくん「固有エフェクトをさらに追加して派手に」・fx-minamo2・fx-wakaba2）：
+   ふつうの一撃は1つ・大きい一撃は3つ（輪を1つ入れる）。くるっと回りながら ふくらんで消える（transform と opacity だけ） */
+const FLOURISH = { minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };
+const RING = { minamo: 'fx-ame-ring', wakaba: 'fx-flowerring' };
+function chefFlourish(chef, p, n) {
+  const L = (FLOURISH[chef] || []).filter(k => ART[k]); if (!L.length || !document.body.animate) return;
+  const keys = n > 1 && ART[RING[chef]] ? [RING[chef], ...L.sort(() => Math.random() - .5).slice(0, n - 1)] : [L[Math.floor(Math.random() * L.length)]];
+  keys.forEach((k, i) => {
+    const ring = k === RING[chef], a = Math.random() * Math.PI * 2, d = ring ? 0 : 50 + Math.random() * 40;
+    const e = fxEl('fx-art fx-flourish' + (ring ? ' ring' : ''), { x: p.x + Math.cos(a) * d, y: p.y + Math.sin(a) * d * .7 }, `<img src="${ART[k]}" alt="">`);
+    const r0 = (Math.random() - .5) * 40, ms = T(ring ? 760 : 900);
+    e.animate([{ transform: `translate(-50%,-50%) rotate(${r0}deg) scale(.3)`, opacity: 0 }, { transform: `translate(-50%,-50%) rotate(${r0 + 10}deg) scale(1)`, opacity: 1, offset: .25 },
+      { transform: `translate(-50%,-50%) rotate(${r0 + (ring ? 40 : 25)}deg) scale(${ring ? 1.7 : 1.25})`, opacity: 0 }], { duration: ms, delay: T(i * 90), easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'both' });
+    setTimeout(() => e.remove(), ms + T(i * 90) + 50);
+  });
 }
 function orbsToBelly(dmg, q) {
   const m = $('mon'), bar = document.querySelector('.quota .qbar'); if (!m || !bar || REDUCED) return;
@@ -611,7 +637,7 @@ function nightWarm(build) {
     }
     const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
     if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy', 'mon-' + mon.id + '-sad');
-    keys.push('bg-night-' + chef, 'fx-numhit-' + chef, 'fx-scatter-' + chef);   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
+    keys.push('bg-night-' + chef, 'fx-numhit-' + chef, 'fx-scatter-' + chef, ...(FLOURISH[chef] || []), RING[chef] || '');   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
     const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
