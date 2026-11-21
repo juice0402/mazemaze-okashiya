@@ -36,6 +36,7 @@ function renderResult() {
   const gifts = Object.entries(T.gifts || {}).map(([m, n]) => `<span class="gift"><img src="${matURL(m)}" alt="">${esc(MATS[m].short)}×${n}</span>`).join('');
   $('screen').innerHTML = `<section class="result fit">
     <div class="diary"><h2>${T.day}日目のにっき</h2>${diary.map(l => `<p>${esc(l)}</p>`).join('')}${ART['chibi-cheer'] ? `<img class="d-stk" src="${ART['chibi-cheer']}" alt="">` : ''}</div>
+    ${typeof fcCardHTML === 'function' ? fcCardHTML(S.day + 1) : ''}
     <div class="panel tight sum">
       <div class="sum-row"><dl>
         <dt>お昼の売上</dt><dd>${fmt(T.sales)}円</dd>

@@ -1349,7 +1349,7 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .diary p{margin:0;font-size:16px;line-height:32px;font-weight:700;animation:dwrite .5s ease-out backwards}
 .diary p+p{animation-delay:.35s}
 .diary p,.cinfo,.vhint,.opt-cr p{word-break:auto-phrase}
-.d-stk{position:absolute;right:10px;bottom:8px;width:34%;max-width:130px;transform:rotate(6deg);opacity:.95;filter:drop-shadow(0 2px 2px rgba(80,40,10,.3))}
+.d-stk{position:absolute;right:10px;bottom:8px;width:auto;max-width:130px;height:min(165px,calc(100% - 128px));object-fit:contain;object-position:100% 100%;transform:rotate(6deg);opacity:.95;filter:drop-shadow(0 2px 2px rgba(80,40,10,.3))}
 @keyframes dwrite{from{opacity:0;transform:translateX(-6px)}}
 .sum{flex:none}
 .sum-row{display:flex;gap:10px;align-items:center}
@@ -7158,6 +7158,7 @@ const diary = STORY.diary(T) || [];
 const gifts = Object.entries(T.gifts || {}).map(([m, n]) => `<span class="gift"><img src="${matURL(m)}" alt="">${esc(MATS[m].short)}×${n}</span>`).join('');
 $('screen').innerHTML = `<section class="result fit">
 <div class="diary"><h2>${T.day}日目のにっき</h2>${diary.map(l => `<p>${esc(l)}</p>`).join('')}${ART['chibi-cheer'] ? `<img class="d-stk" src="${ART['chibi-cheer']}" alt="">` : ''}</div>
+${typeof fcCardHTML === 'function' ? fcCardHTML(S.day + 1) : ''}
 <div class="panel tight sum">
 <div class="sum-row"><dl>
 <dt>お昼の売上</dt><dd>${fmt(T.sales)}円</dd>

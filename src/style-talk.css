@@ -73,7 +73,7 @@
 .diary p+p{animation-delay:.35s}
 /* 日本語の折り返しを ことばの切れ目で（11/21 レイアウトの総デバッグ：「ひつじホイップ／をくれた」「いちばん最／後に」と折れていた）。Chrome 119〜・ほかのブラウザはふつうの折り返し */
 .diary p,.cinfo,.vhint,.opt-cr p{word-break:auto-phrase}
-.d-stk{position:absolute;right:10px;bottom:8px;width:34%;max-width:130px;transform:rotate(6deg);opacity:.95;filter:drop-shadow(0 2px 2px rgba(80,40,10,.3))}
+.d-stk{position:absolute;right:10px;bottom:8px;width:auto;max-width:130px;height:min(165px,calc(100% - 128px));object-fit:contain;object-position:100% 100%;transform:rotate(6deg);opacity:.95;filter:drop-shadow(0 2px 2px rgba(80,40,10,.3))}
 @keyframes dwrite{from{opacity:0;transform:translateX(-6px)}}
 .sum{flex:none}
 .sum-row{display:flex;gap:10px;align-items:center}

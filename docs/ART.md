@@ -66,13 +66,45 @@
 | assets/bgm/hiru.mp3・hiru-2.mp3（昼のお店・2本・どちらも57.6秒の1ループ） | Lyria の曲（AI で作った曲・人の演奏ではない） | koe-irai・Lyria:lyria-3.5（2026-11-21）＝ループ版 <id>_loop.mp3（44.1kHz ステレオ 96kbps・SynthID 入り） | 2026-11-21 | 司令塔（koe-irai の out/_test/lyria-okashi-full・聞きくらべ https://claude.ai/artifact/NKqhQFiuWkcxNZVc31WwNh）・しょーくん「音楽全て完璧すぎ」 | 昼（日ごとに交代・偶数の日が -2・src/js/sound.js の bgmTake）。前のコードの曲（11/19 司令塔）は使っていない |
 | assets/bgm/yoru-honoka.mp3・-2（57.6秒・64秒）・yoru-minamo.mp3・-2（105.9秒・54.9秒）・yoru-wakaba.mp3・-2（54.9秒・72.3秒） | Lyria の曲（AI で作った曲・人の演奏ではない） | koe-irai・Lyria:lyria-3.5（2026-11-21）＝ループ版（ほのか＝A 四角い音のリード・みなも＝C エレクトロポップ・わかば＝B かわいいオーケストラ） | 2026-11-21 | 司令塔（同じ所）。わかばの2本めは manifest のつなぎ目の点数が低い（score 0.61・seam 0.63）が、しょーくんが聞いて「問題なし」（11/21） | 夜（その夜のシェフの曲・日ごとに交代・sound.js の bgmNight）。ためしのページでは大きい曲（400KB より上）は snd-pack.mp3 に入れず bgm/ のまま（build.mjs の BIG_BGM・BGM_BIG） |
 | assets/bgm/title.mp3・asa.mp3・matome.mp3（タイトル28.8秒・朝32秒・まとめ26.7秒・1ループ）と jg-hirameki・jg-manzoku・jg-nakama（ジングル・1回） | C・コードで作った曲 | tools/bgm/make_bgm_hiru.py（make_bgm.py の部品）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 昼のチャット（PR #20・H-034） | 曲はタイトルとプロローグ・朝・まとめ（sound.js の bgmName）・ジングルは se.js の jgPlay（新しいお菓子・大満足・仲間の来店） |
-| assets/se/*.mp3（効果音25こ：tap・wipe・card・buy・reroll・serve・hit・mult・star・manzoku・coin・fire・burnt と朝昼の pick・drop・bake・done・place・kanban・soroi・door・heart・sale・soldout・close） | C・コードで作った音 | tools/se/make_se.py（FluidR3_GM＋numpy） | 2026-11-19 | 昼のチャット（PR #20・H-034） | se.js の sePlay（夜は night.js・night-ui.js・battle-fx.js・main.js から） |
+| assets/se/*.mp3（効果音25こ：tap・wipe・card・buy・reroll・serve・hit・mult・star・manzoku・coin・fire・burnt と朝昼の pick・drop・bake・done・place・kanban・soroi・door・heart・sale・soldout・close）と ジングル jg-hirameki・jg-manzoku・jg-nakama・jg-dame | 効果音集（buy だけ C） | 11/21〜 koe-irai・sfx:<id>（Wyzowl SFX Kit・Kenney＝CC0／Oculus Audio Pack 01＝CC BY 4.0）。buy だけ tools/se/make_se.py のまま。音ごとの出どころは下の「効果音の出どころ」 | 2026-11-21 | 昼の PR #30（しょーくんが聞きくらべでえらんだ28こ・koe-irai の sfx/picks/okashi.json）・se.js で残響 | se.js の sePlay・jgPlay（夜のだめだった＝night.js の jg-dame） |
 | assets/koe/*.mp3（掛け声24こ：ほのか hono-・みなも mina-・わかば waka-。11/21 わぁ hono-waa・あらあら waka-araara をなくした・みなもの mina-n は「ん」→「うん」） | 音声合成 | koe-irai・Gemini TTS:Leda・Despina・Achernar（gemini-3.8-flash-tts）＝ほのか Leda・みなも Despina・わかば Achernar（11/21〜。前は VOICEVOX） | 2026-11-21 | 声の依頼箱 juice0402/koe-irai の out/okashi/kakegoe-gemini（昼の PR #25・切り分けは tools/koe/） | se.js の koePlay（夜の攻撃・大満足・だめだったとき＝night-ui.js の KOE_ATK・KOE_END／夜のショップで考えている「んー」＝KOE_THINK・waka-maa は使っていない）と朝の mKoe |
 
 ### クレジット（クレジットの画面・ストアの説明に入れる）
+- 効果音："Oculus Audio Pack 01" by Oculus VR, LLC (https://developers.meta.com/vr/downloads/package/oculus-audio-pack-1/), licensed under CC BY 4.0（11/21〜・Wyzowl と Kenney は CC0 でクレジットの義務なし）
 - 楽器の音：FluidR3_GM（Frank Wen・MIT ライセンス）
 - 声（Gemini TTS）はクレジットの義務なし（11/21〜。VOICEVOX はもう使っていないので消した）
 - ゲームの中では、タイトルとまとめの画面の「せってい」の窓に出す（main.js の optHTML・11/19）
+
+### 効果音の出どころ（11/21 昼の PR #30）
+- docs/ART.md の音の行：assets/se の行を「koe-irai・sfx:<id>（集・ライセンス）」に（buy だけは C・tools/se/make_se.py のまま）・ジングルの行も同じ。音ごとの出どころ：
+- tap：koe-irai・sfx:wyzowl/foley/foley-wood-touch（Wyzowl SFX Kit・CC0）
+- wipe：koe-irai・sfx:wyzowl/whooshes/whoosh-medium-soft（Wyzowl SFX Kit・CC0）
+- pick：koe-irai・sfx:wyzowl/pops/pop-medium-in（Wyzowl SFX Kit・CC0）
+- drop：koe-irai・sfx:wyzowl/pops/pop-large-bubble（Wyzowl SFX Kit・CC0）
+- bake：koe-irai・sfx:wyzowl/whooshes/whoosh-slow-medium（Wyzowl SFX Kit・CC0）
+- done：koe-irai・sfx:wyzowl/tones/tone-ding-high（Wyzowl SFX Kit・CC0）
+- burnt：koe-irai・sfx:wyzowl/notifications/notification-failure-deflate（Wyzowl SFX Kit・CC0）
+- place：koe-irai・sfx:wyzowl/impacts/impact-light-firm（Wyzowl SFX Kit・CC0）
+- kanban：koe-irai・sfx:wyzowl/shimmers/shimmer-short-bright（Wyzowl SFX Kit・CC0）
+- soroi：koe-irai・sfx:wyzowl/shimmers/shimmer-medium-sparkle（Wyzowl SFX Kit・CC0）
+- door：koe-irai・sfx:wyzowl/everyday-props/props-shop-bell（Wyzowl SFX Kit・CC0）
+- sale：koe-irai・sfx:wyzowl/money/money-register（Wyzowl SFX Kit・CC0）
+- heart：koe-irai・sfx:wyzowl/notifications/notification-success-bubble（Wyzowl SFX Kit・CC0）
+- soldout：koe-irai・sfx:wyzowl/notifications/notification-alert-clear（Wyzowl SFX Kit・CC0）
+- close：koe-irai・sfx:wyzowl/everyday-props/props-shop-bell（Wyzowl SFX Kit・CC0）・高さ 0.85
+- card：koe-irai・sfx:wyzowl/appear-and-vanish/appear-flip-quick（Wyzowl SFX Kit・CC0）
+- serve：koe-irai・sfx:oculus/user-interface/UIClick_MagicalOpen_OS_01（Oculus Audio Pack 01・CC BY 4.0）
+- hit：koe-irai・sfx:wyzowl/tones/tone-step-1（Wyzowl SFX Kit・CC0）
+- mult：koe-irai・sfx:oculus/user-interface/UIMisc_Powerup_OS_01（Oculus Audio Pack 01・CC BY 4.0）
+- star：koe-irai・sfx:wyzowl/shimmers/shimmer-medium-bright（Wyzowl SFX Kit・CC0）
+- coin：koe-irai・sfx:kenney/rpg/handleCoins（Kenney・CC0）
+- reroll：koe-irai・sfx:wyzowl/swipes/swipe-medium-firm（Wyzowl SFX Kit・CC0）
+- manzoku：koe-irai・sfx:wyzowl/notifications/notification-success-flourish（Wyzowl SFX Kit・CC0）
+- fire：koe-irai・sfx:wyzowl/risers-and-fallers/riser-1s-strong（Wyzowl SFX Kit・CC0）
+- jg-hirameki：koe-irai・sfx:oculus/musical/MUSCStngr_LevelUpMallet_OS_01（Oculus Audio Pack 01・CC BY 4.0）
+- jg-nakama：koe-irai・sfx:oculus/musical/MUSCStngr_LevelUpOrchestral_OS_02（Oculus Audio Pack 01・CC BY 4.0）
+- jg-manzoku：koe-irai・sfx:oculus/musical/MUSCStngr_VictoryMallet_OS_01（Oculus Audio Pack 01・CC BY 4.0）
+- jg-dame：koe-irai・sfx:oculus/musical/MUSCStngr_LossMallet_OS_01（Oculus Audio Pack 01・CC BY 4.0）
 | chibi-think・chibi-cheer・chibi-sit（ほのかのデフォルメ：考える・応援・すわってクッキー） | A | Codex | 2026-11-18 | art-irai `requests/okashi/honoka-chibi.md`（step1〜3）・もとの PNG `assets/art/raw/honoka-chibi_step1〜3.png` | 舞台の賑やかし（ショップ＝考える・バトル＝すわって・大きな一撃と勝ち＝応援） |
 | mob-slime・mob-hitsuji（スライム・くもひつじのデフォルメ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step1）・もとの PNG `assets/art/raw/mobs-chibi_step1.png` | 舞台の賑やかしのモブ |
 | mob-tokage・mob-hiyoko・mob-kurage（こんぺいトカゲ・ほのお鳥のひよこ・しずくクラゲ） | A | Codex | 2026-11-18 | art-irai `requests/okashi/mobs-chibi.md`（step2）・もとの PNG `assets/art/raw/mobs-chibi_step2.png` | 舞台の賑やかしのモブ（あとで敵にしてもよい） |
@@ -98,6 +130,8 @@
 | bg-night-minamo・bg-night-wakaba（夜の舞台の背景：飴の工房・温室のキッチン） | A | Codex | 2026-11-21 | art-irai `requests/okashi/bg-night2.md`（PR #189）・参考 sources/okashi/bg-night.png・`prep_art.py bg` | night-ui.js の NBG（その夜のシェフの背景・なければ bg-night） |
 | mon-<7体>-sad（夜のお客さんの しょんぼり顔） | A | Codex | 2026-11-21 | art-irai `requests/okashi/monfaces-sad.md`（PR #190）・元の絵 sources/okashi/mons-all.png（いまの7体を並べた）から1体ずつ切って mon-<id> と同じ大きさに・トカゲ・にじいろクラゲ・ミントうさぎは --strict | おなかの半分にもとどかなかったラウンドの結果・ちょっと満足の夜（night-ui.js の renderNight） |
 | mon-mogura・mon-pengin・mon-kaeru・mon-risu（新しい夜のお客さん4体：チョコもぐら・プリンペンギン・まっちゃガエル・ポップコーンりす・まだゲームに出していない） | A | Codex | 2026-11-21 | art-irai `requests/okashi/monsters4.md`（PR #198）・4等分して trim_fit 520・カエルは --strict | 夜のお客さん（world.js の MONSTERS に足すのは、素材と朝のお菓子の絵がそろってから） |
+| cust-elf・-2・-3／cust-vamp・-2・-3／cust-tanuki・-2・-3（新しいお客さん：エルフのうたうたい・日傘の吸血鬼のお嬢さま・行商のたぬき）とその うれしい・ざんねんの顔（18まい） | A | Codex | 2026-11-21 | art-irai `requests/okashi/new-elf.md`・`new-vamp.md`・`new-tanuki.md`（PR #183〜#185・step1〜3）・表情は new-*-face・`prep_art.py one … 480`（cust-tanuki は 525） | 昼のお客さん（昼の PR #29・hiru.js の CUST_NEW） |
+| ui-aisho・ui-series・ui-aisho-book・ui-forecast・ui-bell（陳列パズルの札・相性帳・予報・呼びこみのベル）／fc-hare・fc-rain・fc-matsuri・fc-ensoku・fc-kotori・fc-kaze・fc-majo（あしたの予報）／chibi-call・chibi-carry（ほのかのちび：呼びこみ・補充） | A | Codex | 2026-11-21 | art-irai `requests/okashi/hiru-ui4.md`（PR #211）・`hiru-forecast.md`（#213）・`honoka-chibi-call.md`（#212） | 昼のパズル・予報・呼びこみ（昼の PR #31） |
 | ui-buff-gold・-ember・-pink・-mint・-koge（効果の札：宝石と矢じりのリボン型） | A | Codex | 2026-11-21 | art-irai `requests/okashi/ui-buffchip.md`（PR #195）・`prep_art.py parts … 400`。ミントは緑の背景といっしょに抜けたので、ピンクの札の色を回して作った | カードにかかる札 .buff と計算の札 .fchip（style.css・9分割 49% 11% 49% 20%）。前の ui-chip-* は ほかの札でそのまま |
 | fx-numhit-honoka・-minamo・-wakaba・fx-scatter-honoka・-minamo・-wakaba（数字が当たった瞬間の衝撃とかけらの輪） | A | Codex | 2026-11-21 | art-irai `requests/okashi/fx-numhit.md`（PR #196）・黒は明るさで すけに | battle-fx.js の impactFx |
 | cg-open・cg-night1・cg-minamo（物語の一枚絵：開店の朝・はじめての夜・みなもが仲間に） | A | Codex | 2026-11-21 | art-irai `requests/okashi/cg-story1.md`（PR #197）・`prep_art.py bg` | 会話の「［絵:cg-open］」の行（talk.js の talkCg・どの会話で出すかは昼の story.js） |
