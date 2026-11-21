@@ -210,7 +210,7 @@ function goodNext(id) {
   if (id.startsWith('t-')) { const t = M_TOOLS.find(x => 't-' + x.id === id); return t && mToolOpen(t.id) && !mToolHas(t.id) ? t.price : null; }
   if (id === 'tatekanban') { const lv = S.goods.tatekanban || 0; return lv < GOODS.tatekanban.price.length ? GOODS.tatekanban.price[lv] : null; }
   if (id === 'showcase') { const lv = S.goods.showcase || 0; return lv < GOODS.showcase.price.length && shelfMaxN() < SHELF_MAX ? GOODS.showcase.price[lv] : null; }
-  const k = GOODS.kazari.find(x => x.id === id); return k && !S.goods[id] ? k.price : null;
+  const d = decoById(id); return d && decoOpen(d) && !S.goods[id] ? d.price : null;   // お店のかざり（11/21・hiru.js の DECO_LIST）
 }
 function buyGood(id) {
   const p = goodNext(id); if (p == null || mBusy) return;
@@ -219,8 +219,8 @@ function buyGood(id) {
   if (id === 'showcase') { S.goods.showcase = (S.goods.showcase || 0) + 1; S.shelfMax = Math.min(SHELF_MAX, shelfMaxN() + GOODS.showcase.add); toast('棚のマスがふえた！'); }
   else if (id === 'tatekanban') { S.goods.tatekanban = (S.goods.tatekanban || 0) + 1; toast('立て看板を置いた！お客さんがふえるよ'); }
   else if (id.startsWith('t-')) { S.goods[id] = 1; toast((M_TOOLS.find(x => 't-' + x.id === id) || {}).name + 'が、お店にきた！'); }
-  else { S.goods[id] = 1; toast('お店にかざった！'); }
-  save(); renderMorning(); mSe('buy');
+  else { const d = decoById(id); S.goods[id] = 1; S.goods['at:' + d.spot] = d.n; toast(`${d.name}を、${mDecoSpot(d.spot)}にかざった！`); }
+  save(); renderMorning(); mSe('buy'); mDecoSet();
 }
 
 /* ---------- つかんで動かす（夜の drag.js と同じ考え方：はなした所で決まる・行き先が光る・札） ----------
@@ -384,13 +384,13 @@ function displayHTML(M) {
   </section>`;
 }
 function zakkaHTML() {
-  const body = `<div class="ms-goods">${['tatekanban', 'showcase', ...GOODS.kazari.map(k => k.id)].map(id => {
+  const body = `<div class="ms-goods">${['tatekanban', 'showcase'].map(id => {
     const G = GOODS[id] || GOODS.kazari.find(k => k.id === id), p = goodNext(id);
     const lv = id === 'tatekanban' ? S.goods.tatekanban || 0 : id === 'showcase' ? S.goods.showcase || 0 : 0;
     const tx = GOODS[id] ? G.text : '見た目だけ';
     const done = id === 'tatekanban' || id === 'showcase' ? 'これ以上は置けない' : 'かざった';
     return `<div class="ms-good${mGoodIco('good-' + id) ? ' hasico' : ''}">${mGoodIco('good-' + id)}<span class="msg-nm">${esc(G.name)}${lv ? `<em>${lv}こ</em>` : ''}</span><span class="msg-tx">${tx}</span>${p == null ? `<span class="msg-done">${done}</span>` : `<button class="sub" data-act="m-good" data-id="${id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`}</div>`;
-  }).join('')}${mToolRows()}</div>`;
+  }).join('')}${mToolRows()}${mDecoRows()}</div>`;
   const sbg = ART['bg-zakka'];
   return `<section class="morning mzakka fit" id="msec">
     <div class="mz-wrap"><div class="shopov mshop${sbg ? ' ms-bg' : ''}"${sbg ? ` style="--msbg:url('${sbg}')"` : ''}>
@@ -431,6 +431,38 @@ function mView(v) { const M = mState(); M.view = v; save(); renderMorning(); }
 /* ---------- べんり道具（11/19・hiru.js の M_TOOLS）：雑貨屋の行・おまかせオーブン・からくり陳列人形 ---------- */
 /* 雑貨屋のグッズとべんり道具の絵（H-027：good-<id>・tool-<id>。届くまでは字だけ） */
 const mGoodIco = n => ART[n] ? `<img class="msg-ico" src="${ART[n]}" alt="">` : '';
+/* お店のかざり（11/21・hiru.js の DECO_LIST）：テーマごとに見出し（いくつかざっているか・効果）→ 5か所のかざり。買うとその場所にかざる・持っているものは「かざる」でえらびなおす */
+const mDecoSpot = sp => (DECO_SPOTS.find(x => x[0] === sp) || [])[1] || '';
+function mDecoRows() {
+  const P = decoPts();
+  let h = '<p class="ms-sec">お店のかざり<em>場所ごとに1つ・同じテーマを3つ・5つでセット効果</em></p>';
+  for (const th of Object.keys(DECO_TH)) {
+    const L = DECO_LIST.filter(d => d.th === th && (decoOpen(d) || S.goods[d.id])); if (!L.length) continue;
+    const [t1, t2] = decoFxText(th), n = P[th] || 0;
+    h += `<div class="ms-dth${n >= 3 ? ' on' : ''}"><span class="mdt-nm">${esc(DECO_TH[th].name)}${th === 'kihon' ? '' : `<em>${n}/5</em>`}</span><span class="mdt-fx">${esc(t1)}${t2 ? `<br>${esc(t2)}` : ''}</span></div>`;
+    h += L.map(d => {
+      const own = !!S.goods[d.id], at = decoAt(d.spot) === d, p = goodNext(d.id);
+      const btn = at ? `<button class="sub" data-act="m-deco" data-id="${d.id}" data-off="1">はずす</button>`
+        : own ? `<button class="sub" data-act="m-deco" data-id="${d.id}">かざる</button>`
+        : p == null ? '<span class="msg-done">まだ</span>' : `<button class="sub" data-act="m-good" data-id="${d.id}"${S.money < p ? ' disabled' : ''}>${fmt(p)}円</button>`;
+      const ico = mGoodIco(d.art);
+      return `<div class="ms-good${ico ? ' hasico' : ''}${at ? ' at' : ''}">${ico}<span class="msg-nm">${esc(d.name)}<em>${mDecoSpot(d.spot)}</em></span><span class="msg-tx">${at ? 'かざってる' : own ? '持ってる' : ''}</span>${btn}</div>`;
+    }).join('');
+  }
+  return h;
+}
+function mDeco(id, off) {
+  const d = decoById(id); if (!d || !S.goods[id] || mBusy) return;
+  S.goods['at:' + d.spot] = off ? 0 : d.n;
+  if (!off) toast(`${d.name}を、${mDecoSpot(d.spot)}にかざった！`);
+  save(); renderMorning(); mSe(off ? 'tap' : 'place'); if (!off) mDecoSet();
+}
+/* はじめて同じテーマを3つそろえたとき、ひとこと（1回だけ・STORY.decoSet） */
+function mDecoSet() {
+  const P = decoPts(), th = Object.keys(P).find(k => P[k] >= 3 && !S.seen['ds:' + k]);
+  if (!th || talking() || !(STORY.decoSet || {})[th]) return;
+  S.seen['ds:' + th] = S.day; save(); talk(STORY.decoSet[th], () => {});
+}
 function mToolRows() {
   const open = M_TOOLS.filter(t => mToolOpen(t.id)); if (!open.length) return '';
   return `<p class="ms-sec">べんり道具</p>` + open.map(t => {
@@ -549,6 +581,7 @@ const MORNING_ACTS = {
   'm-open': () => mOpen(),
   'm-shop': el => mView(el.dataset.o === '1' ? 'zakka' : 'kitchen'),   // 前の名前（tools/audit.py の m-shop）
   'm-good': el => buyGood(el.dataset.id),
+  'm-deco': el => mDeco(el.dataset.id, el.dataset.off === '1'),
   'm-book': () => { if (!mBusy) mView('book'); },
   'm-auto': () => mAutoBake(),
   'm-arr': () => mAutoArrange(),

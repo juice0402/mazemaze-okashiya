@@ -61,7 +61,7 @@ function dayStageBg(sign) {
   const m = mado ? `<i class="ds-mado ds-m1" style="--mado:url('${mado}')"></i><i class="ds-mado ds-m2" style="--mado:url('${mado}')"></i><i class="ds-mado ds-out" style="--mado:url('${mado}')"><i class="ds-rain"></i></i>` : '';   // ds-out＝窓の外の生きもの・雨（day.js の dAmbient）
   const gl = glow ? `<i class="ds-mado ds-glow" style="--mado:url('${glow}')"></i>` : '';
   const motes = DS_MOTES.map(([x, y, d, dl, s]) => `<i class="ds-mote" style="--x:${x}%;--y:${y}%;--d:${d}s;--dl:-${dl}s;--s:${s}"></i>`).join('');
-  if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')">${m}<i class="ds-dusk"></i>${gl}${motes}<span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
+  if (bg) return `<div class="ds-bg art" style="--bgimg:url('${bg}')">${m}${dDecoHTML(false)}<i class="ds-dusk"></i>${gl}${motes}<span class="ds-sign on-art">${sign}</span></div>`;   // 絵：まんなかがドア・下がカウンター
   return `<div class="ds-bg" aria-hidden="true">
     <i class="ds-win"><i class="ds-tree a"></i><i class="ds-tree b"></i><i class="ds-pane"></i></i>
     <i class="ds-rack"><i class="ds-jar a"></i><i class="ds-jar b"></i><i class="ds-jar c"></i></i>
@@ -69,6 +69,14 @@ function dayStageBg(sign) {
     <span class="ds-sign">${sign}</span>
     <i class="ds-lamp"></i><i class="ds-wains"></i>
   </div>`;
+}
+/* お店のかざり（11/21・hiru.js の DECO_LIST）：bg-day の絵の上の決まった所に。front＝カウンターの上（手前のカウンターより前）・それ以外は窓べ・天井・壁・床（夕方の色の下）。絵がないものは出さない */
+function dDecoHTML(front) {
+  if (typeof decoAt !== 'function') return '';
+  return DECO_SPOTS.map(([sp]) => sp).filter(sp => (sp === 'counter') === front).map(sp => {
+    const d = decoAt(sp), u = d && ART[d.art];
+    return u ? `<img class="ds-deco dd-${sp}" src="${u}" alt="" draggable="false">` : '';
+  }).join('');
 }
 /* 次の画面の絵を、ひまなときに先に読んで、ほどいておく（11/19 しょーくん「描写までの表示を爆速に」）
    前は画面が変わってから絵を読みはじめるので、お客さんの顔や朝の背景が一瞬おくれて出ることがあった。読んだ絵は覚えておく（2回読まない） */
@@ -84,12 +92,12 @@ function dPreload(names) {
   if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 2000 }); else setTimeout(go, 300);
 }
 /* 昼の舞台の絵（朝のあいだに）・あしたの朝の絵（夜のあいだに） */
-const D_PRE_DAY = () => ['bg-day', 'bg-day-mado', 'bg-day-mado-glow', 'ui-sign', 'ui-think', 'ui-think-tail', 'ui-bubble', 'ui-bubble-tail', 'ui-jar', ...CUSTOMERS.map(c => 'cust-' + c.id)];
+const D_PRE_DAY = () => ['bg-day', 'bg-day-mado', 'bg-day-mado-glow', 'ui-sign', 'ui-think', 'ui-think-tail', 'ui-bubble', 'ui-bubble-tail', 'ui-jar', ...CUSTOMERS.map(c => 'cust-' + c.id), ...DECO_SPOTS.map(([sp]) => { const d = decoAt(sp); return d && d.art; })];
 const D_PRE_MORNING = () => ['bg-morning', 'bg-zakka', 'ui-ovenslot', 'ui-tile', ...Object.keys(HIRU_MATS).map(m => 'mat-' + m)];
 /* 手前のカウンター（お客さんの胸から下をかくす）：絵があるときは、同じ絵のカウンターの所だけを上に重ねる */
 function dayStageFront() {
   const bg = ART['bg-day'];
-  return bg ? `<i class="ds-front" style="--bgimg:url('${bg}')"></i>` : '<i class="ds-counter"></i>';
+  return bg ? `<i class="ds-front" style="--bgimg:url('${bg}')"></i>${dDecoHTML(true)}` : '<i class="ds-counter"></i>';
 }
 /* お客さん（正面・胸から上）。face：'' ふつう・'happy' うれしい・'sad' ざんねん */
 /* お客さんの見た目ちがい（11/18 しょーくん「服も何もかも同じ人が再度来店すると、また戻ってきたのかなって思っちゃう」）：

@@ -127,12 +127,12 @@ function wpick(items, w) {
 function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi＝おそろいの段の素材（段の数だけ）・first＝はじめに来るお客さん（昼のできごと）・fix＝{ i, c, reg, duo }：その日に来る常連さん（1まいめの見た目）
   const pool = seenMats(), km = kanbanKey ? kanbanKey.split('+') : [], used = new Set(fix ? [fix.c + 1] : []);
   const sw = m => Math.pow(SOROI_W, soroi.filter(x => x === m).length);
-  const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m)); };
+  const likeOf = c => { const pref = CUST_LIKES[c] || []; return wpick(pool, m => (pref.includes(m) ? LIKE_W : 1) * (km.includes(m) ? KANBAN_W : 1) * sw(m) * decoLikeW(m)); };
   const away = regTrip() ? ['otona'] : [];   // 旅に出ている常連さんは、1まいめの見た目で来ない
   let prev = null;
   return Array.from({ length: n }, (_, i) => {
     if (fix && i === fix.i) { prev = fix.c; return { c: fix.c, vr: 1, like: fix.c === 'kodomo' && pool.includes('ichigo') ? 'ichigo' : likeOf(fix.c), reg: fix.reg, duo: fix.duo }; }   // ルルはいちごが大すき
-    const c = first[i] || pick(CUSTOMERS.map(x => x.id).filter(id => id !== prev && !(fix && i + 1 === fix.i && id === fix.c))); prev = c;
+    const c = first[i] || wpick(CUSTOMERS.map(x => x.id).filter(id => id !== prev && !(fix && i + 1 === fix.i && id === fix.c)), decoCustW); prev = c;   // かざりのテーマで来やすさが変わる（11/21）
     const all = custVariants(c), vs = away.includes(c) && all.length > 1 ? all.filter(x => x !== 1) : all;
     const fresh = vs.filter(x => !used.has(c + x)), vr = pick(fresh.length ? fresh : vs);
     used.add(c + vr);
@@ -144,15 +144,89 @@ function custPlan(n, kanbanKey, soroi = [], first = [], fix = null) {   // soroi
 const GOODS = {
   tatekanban: { name: '立て看板', text: 'お客さんがふえる', price: [1600, 4000, 9000] },        // 1つ目から順に お客さん+1・+2・+3
   showcase:   { name: 'ショーケース', text: '棚のマスが3つふえる', price: [3000, 8000], add: 3 }, // いちばん多くて12マス
-  kazari: [   // 見た目だけ
-    { id: 'hana', name: 'お花', price: 600 },
-    { id: 'cushion', name: 'クッション', price: 900 },
-    { id: 'lamp', name: 'ランプ', price: 1200 },
-    { id: 'garland', name: 'ガーランド', price: 1500 },
-    { id: 'plant', name: '観葉植物', price: 2000 },
-  ],
+  // かざり（前の kazari）は下の DECO_LIST へ（11/21・はじめのかざり）
 };
 const SHELF_MAX = 12;
+/* ---------- お店のかざり（11/21 しょーくん「お店の飾りはたくさん作っちゃって」「家具も組み合わせやセット効果で効く傾向が変わるビルドが組めるように」）
+   昼のお店の5か所（窓べ・天井・壁・床・カウンター）に1つずつかざる（場所ごとに1つえらぶ）。テーマ8つ×5か所＋はじめのかざり5つ
+   1つかざるごとに少し効く・同じテーマを3つ・5つそろえるとセット効果。混ぜて組むと、いくつかの効果をいっしょに（3＋2 など）
+   持ち物は S.goods[id] = 1・かざっている所は S.goods['at:<場所>'] = 番号（下の表の n・変えない）
+   絵は deco-<テーマ>-<場所>（art-irai の requests/okashi/deco-<テーマ>.md）・はじめのかざりは good-<id>。絵がないあいだは、お店には出ない（雑貨屋には字で出る） ---------- */
+const DECO_SPOTS = [['mado', '窓べ'], ['tenjo', '天井'], ['kabe', '壁'], ['yuka', '床'], ['counter', 'カウンター']];
+/* テーマ：c＝来やすくなるお客さん・mats＝すきな味になりやすい素材・mon＝モンスター素材・mate＝その仲間が来てから雑貨屋に出る */
+const DECO_TH = {
+  kihon:  { name: 'はじめのかざり' },
+  fairy:  { name: '妖精のお花畑', c: 'kodomo' },
+  fuwa:   { name: 'ふわもこ', c: 'gakusei' },
+  bouken: { name: '冒険者の山小屋', c: 'otona' },
+  majo:   { name: '魔女のアンティーク', c: 'obaachan' },
+  ame:    { name: '飴細工のきらきら', mats: ['mizuame'], mate: 'minamo' },
+  herb:   { name: 'ハーブガーデン', mats: ['herb'], mate: 'wakaba' },
+  pan:    { name: 'ほかほかベーカリー', mats: ['mugi'] },
+  mon:    { name: 'モンスターのなかま', mon: 1 },
+};
+/* 数字（仮・遊びながら直す）：1つにつき お客さん×1.25・すきな味×1.3／3つ：2こ買い×2・値段×1.1・評判+1／5つ：常連さんのハート×2・売り切れでハート・評判+2 */
+const DECO_FX = { cust: .25, like: .3, more3: 2, price3: 1.1, regMul5: 2 };
+/* [n, テーマ, 場所, 名前, 値段, いるもの（モンスター素材を見たことがある）]。はじめのかざりは前からの id（hana など）をそのまま */
+const DECO_LIST = [
+  [1, 'kihon', 'mado', 'お花', 600, 0, 'hana'], [2, 'kihon', 'mado', 'クッション', 900, 0, 'cushion'], [3, 'kihon', 'counter', 'ランプ', 1200, 0, 'lamp'],
+  [4, 'kihon', 'tenjo', 'ガーランド', 1500, 0, 'garland'], [5, 'kihon', 'yuka', '観葉植物', 2000, 0, 'plant'],
+  [11, 'fairy', 'mado', 'お花の鉢', 1500], [12, 'fairy', 'tenjo', 'お花のつる', 2500], [13, 'fairy', 'kabe', '押し花の額', 2000], [14, 'fairy', 'yuka', 'きのこのいす', 3500], [15, 'fairy', 'counter', '花びらのびん', 1800],
+  [21, 'fuwa', 'mado', 'ねこのぬいぐるみ', 1500], [22, 'fuwa', 'tenjo', 'ポンポンかざり', 2500], [23, 'fuwa', 'kabe', '毛糸のタペストリー', 2000], [24, 'fuwa', 'yuka', 'ふわふわクッション', 3500], [25, 'fuwa', 'counter', '毛糸玉のかご', 1800],
+  [31, 'bouken', 'mado', '望遠鏡', 1500], [32, 'bouken', 'tenjo', '鉄のランタン', 2500], [33, 'bouken', 'kabe', '宝の地図', 2000], [34, 'bouken', 'yuka', '木のたる', 3500], [35, 'bouken', 'counter', 'コンパス', 1800],
+  [41, 'majo', 'mado', '薬のびん', 1500], [42, 'majo', 'tenjo', '星と月のモビール', 2500], [43, 'majo', 'kabe', 'ふり子時計', 2000], [44, 'majo', 'yuka', '魔女のほうき', 3500], [45, 'majo', 'counter', '水晶玉', 1800],
+  [51, 'ame', 'mado', 'ガラスの白鳥', 2200], [52, 'ame', 'tenjo', 'しずくのモビール', 3800], [53, 'ame', 'kabe', 'ステンドグラス', 3000], [54, 'ame', 'yuka', '飴色の花びん', 5200], [55, 'ame', 'counter', 'キャンディポット', 2700],
+  [61, 'herb', 'mado', 'ハーブの鉢', 2200], [62, 'herb', 'tenjo', 'ドライハーブ', 3800], [63, 'herb', 'kabe', 'スプーンかけ', 3000], [64, 'herb', 'yuka', '畑のかご', 5200], [65, 'herb', 'counter', 'ハーブティー', 2700],
+  [71, 'pan', 'mado', 'パンのかご', 2200], [72, 'pan', 'tenjo', 'おなべかけ', 3800], [73, 'pan', 'kabe', '黒板メニュー', 3000], [74, 'pan', 'yuka', '小麦のふくろ', 5200], [75, 'pan', 'counter', 'ケーキスタンド', 2700],
+  [81, 'mon', 'mado', 'スライムのぬいぐるみ', 4500, 'zeri'], [82, 'mon', 'tenjo', 'クラゲのモビール', 7500, 'kanten'], [83, 'mon', 'kabe', 'ひつじのリース', 6000, 'hoippu'],
+  [84, 'mon', 'yuka', 'トカゲのクッション', 10500, 'hoshi'], [85, 'mon', 'counter', 'ひよこのランプ', 5400, 'karamel'],
+].map(([n, th, spot, name, price, need, id]) => ({ n, th, spot, name, price, need: need || null, id: id || `d-${th}-${spot}`, art: id ? 'good-' + id : `deco-${th}-${spot}` }));
+const decoById = id => DECO_LIST.find(d => d.id === id);
+/* かざっている所：場所 → かざり（なければ null）。前に はじめのかざりを買った人は、えらんでいなくても その場所に出す */
+function decoAt(spot) {
+  const n = S.goods['at:' + spot];
+  if (n === 0) return null;   // 0＝はずした
+  const d = n && DECO_LIST.find(x => x.n === n && S.goods[x.id]);
+  return d || DECO_LIST.find(x => x.th === 'kihon' && x.spot === spot && S.goods[x.id]) || null;
+}
+/* テーマごとの数（かざっている所だけ） */
+function decoPts() {
+  const P = {};
+  for (const [sp] of DECO_SPOTS) { const d = decoAt(sp); if (d && d.th !== 'kihon') P[d.th] = (P[d.th] || 0) + 1; }
+  return P;
+}
+/* 雑貨屋に出すか：仲間・モンスター素材 */
+function decoOpen(d) {
+  const T = DECO_TH[d.th];
+  if (T.mate && !STORY.mate(T.mate)) return false;
+  if (d.need && !seenMats().includes(d.need)) return false;
+  return true;
+}
+/* 効果の説明（雑貨屋の見出しの下・2行まで） */
+function decoFxText(th) {
+  const T = DECO_TH[th]; if (th === 'kihon') return ['見た目だけ', ''];
+  if (T.c) { const c = (CUSTOMERS.find(x => x.id === T.c) || {}).name || ''; return [`${c}が来やすくなる`, '3つで2こ買いやすく・5つで常連さんと早く仲よし']; }
+  if (T.mon) return ['モンスター素材のお菓子が、すきな味になりやすい', '3つで評判+1・5つで評判+2（その味で買ったとき）'];
+  return [`${T.mats.map(m => HIRU_MATS[m].short).join('・')}のお菓子が、すきな味になりやすい`, '3つで値段+1割・5つで売り切れるとハート'];
+}
+/* 効果：お客さんの来やすさ・すきな味の出やすさ・2こ買い・値段・評判・常連さん・売り切れ */
+const decoThOfCust = c => Object.keys(DECO_TH).find(k => DECO_TH[k].c === c);
+const decoHasMat = (th, key) => { const T = DECO_TH[th]; return T.mon ? candyOf(key).mats.some(isMonMat) : !!(T.mats && T.mats.some(m => candyHas(key, m))); };
+function decoCustW(c) { const th = decoThOfCust(c); return 1 + DECO_FX.cust * ((th && decoPts()[th]) || 0); }
+function decoLikeW(m) {
+  const P = decoPts(); let w = 1;
+  for (const th in P) { const T = DECO_TH[th]; if ((T.mats && T.mats.includes(m)) || (T.mon && isMonMat(m))) w *= 1 + DECO_FX.like * P[th]; }
+  return w;
+}
+function decoMoreMul(c) { const th = decoThOfCust(c); return th && (decoPts()[th] || 0) >= 3 ? DECO_FX.more3 : 1; }
+function decoRegMul(c) { const th = decoThOfCust(c); return th && (decoPts()[th] || 0) >= 5 ? DECO_FX.regMul5 : 1; }
+function decoPrice(key) {
+  const P = decoPts(); let mul = 1;
+  for (const th of ['ame', 'herb', 'pan']) if ((P[th] || 0) >= 3 && decoHasMat(th, key)) mul = DECO_FX.price3;
+  return Math.round(candyOf(key).price * mul);
+}
+function decoRepAdd(key) { const p = decoPts().mon || 0; return p >= 3 && decoHasMat('mon', key) ? (p >= 5 ? 2 : 1) : 0; }
+function decoSoldHeart(key) { const P = decoPts(); return ['ame', 'herb', 'pan'].some(th => (P[th] || 0) >= 5 && decoHasMat(th, key)); }
 /* ---------- べんり道具（11/19 しょーくん「自動化とお金をかけ合わせる」・雑貨屋で買う）
    はじめは雑貨屋に出ない。仲間が「前のお店で使ってた」などと朝に紹介した日から並ぶ（STORY.toolTalk・S.seen['u:<id>']）
    by＝紹介する仲間・after＝仲間になった次の朝から何日あと・買ったら S.goods['t-<id>'] = 1

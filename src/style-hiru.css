@@ -498,3 +498,21 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .dcase.dcase .d-nm.d-nm{border:solid transparent;border-width:2px 6px;border-radius:0;background:none;box-shadow:none;border-image:var(--ui-nametag) 30 30 fill/2px 6px stretch;padding:0 1px;color:#4a2414}
 /* 看板の札（ui-hangsign・つるした木の札）：字は木の板の上 */
 .dslot .d-kl.d-kl,.md-case.md-case .dslot.kan .d-kl{width:44px;height:34px;padding:12px 0 0;border:0;border-radius:0;background:var(--ui-hangsign) center/100% 100% no-repeat;font-size:9.5px;line-height:18px;text-align:center;color:var(--milk);text-shadow:0 1px 0 rgba(40,16,4,.8)}
+
+/* ==== お店のかざり（11/21・hiru.js の DECO_LIST・day-scene.js の dDecoHTML） ====
+   bg-day（16:9）は下のまんなかに合わせて cover：絵のはば W＝max(100cqw, 177.78cqh)・高さ H＝max(100cqh, 56.25cqw)。絵の中の場所（横 fx・下からの高さ）で置く
+   たての長い画面では絵の左右が切れる（見えるのは fx .3〜.7 くらい）ので、まんなかに寄せる：窓べ＝左の窓のふちの右（fx .355）・天井＝左の窓の上からつるす（fx .37・右上は評判のびん）・壁＝左の窓とドアのあいだ（fx .39）・床＝右（fx .66）・カウンター＝左（fx .40・ちびの右・手前のカウンターより前） */
+.ds-deco{position:absolute;z-index:1;--W:max(100cqw,177.78cqh);--H:max(100cqh,56.25cqw);width:auto;max-width:none;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 2px 2px rgba(42,20,8,.35))}
+.dd-mado{left:calc(50cqw - .145 * var(--W));bottom:calc(.532 * var(--H));height:calc(.12 * var(--H))}
+.dd-tenjo{left:calc(50cqw - .13 * var(--W));top:calc(100cqh - var(--H));height:calc(.2 * var(--H));filter:none}
+.dd-kabe{left:calc(50cqw - .11 * var(--W));bottom:calc(.62 * var(--H));height:calc(.11 * var(--H));filter:none}
+.dd-yuka{left:calc(50cqw + .16 * var(--W));bottom:calc(.15 * var(--H));height:calc(.18 * var(--H))}
+.dd-counter{left:calc(50cqw - .10 * var(--W));bottom:calc(.135 * var(--H));height:calc(.1 * var(--H));z-index:4}
+/* 雑貨屋：テーマの見出し（名前・いくつかざっているか・効果2行）・かざっている行 */
+.ms-dth{display:grid;gap:1px;margin:6px 0 0;padding:5px 8px;border-radius:8px;background:rgba(58,28,8,.72);color:#fff2d8}
+.ms-dth.on{background:rgba(122,58,14,.85)}
+.mdt-nm{font-size:12.5px;font-weight:800}
+.mdt-nm em{font-style:normal;margin-left:6px;font-size:11px;color:var(--gold)}
+.mdt-fx{font-size:10.5px;line-height:1.35;opacity:.92}
+.ms-good.at{outline:2px solid var(--gold);outline-offset:-2px}
+
