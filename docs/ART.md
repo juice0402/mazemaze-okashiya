@@ -66,7 +66,7 @@
 | assets/bgm/hiru.mp3・hiru-2.mp3（昼のお店・2本・どちらも57.6秒の1ループ） | Lyria の曲（AI で作った曲・人の演奏ではない） | koe-irai・Lyria:lyria-3.5（2026-11-21）＝ループ版 <id>_loop.mp3（44.1kHz ステレオ 96kbps・SynthID 入り） | 2026-11-21 | 司令塔（koe-irai の out/_test/lyria-okashi-full・聞きくらべ https://claude.ai/artifact/NKqhQFiuWkcxNZVc31WwNh）・しょーくん「音楽全て完璧すぎ」 | 昼（日ごとに交代・偶数の日が -2・src/js/sound.js の bgmTake）。前のコードの曲（11/19 司令塔）は使っていない |
 | assets/bgm/yoru-honoka.mp3・-2（57.6秒・64秒）・yoru-minamo.mp3・-2（105.9秒・54.9秒）・yoru-wakaba.mp3・-2（54.9秒・72.3秒） | Lyria の曲（AI で作った曲・人の演奏ではない） | koe-irai・Lyria:lyria-3.5（2026-11-21）＝ループ版（ほのか＝A 四角い音のリード・みなも＝C エレクトロポップ・わかば＝B かわいいオーケストラ） | 2026-11-21 | 司令塔（同じ所）。わかばの2本めは manifest のつなぎ目の点数が低い（score 0.61・seam 0.63）が、しょーくんが聞いて「問題なし」（11/21） | 夜（その夜のシェフの曲・日ごとに交代・sound.js の bgmNight）。ためしのページでは大きい曲（400KB より上）は snd-pack.mp3 に入れず bgm/ のまま（build.mjs の BIG_BGM・BGM_BIG） |
 | assets/bgm/title.mp3・asa.mp3・matome.mp3（タイトル28.8秒・朝32秒・まとめ26.7秒・1ループ）と jg-hirameki・jg-manzoku・jg-nakama（ジングル・1回） | C・コードで作った曲 | tools/bgm/make_bgm_hiru.py（make_bgm.py の部品）・楽器の音 FluidR3_GM（MIT） | 2026-11-19 | 昼のチャット（PR #20・H-034） | 曲はタイトルとプロローグ・朝・まとめ（sound.js の bgmName）・ジングルは se.js の jgPlay（新しいお菓子・大満足・仲間の来店） |
-| assets/se/*.mp3（効果音25こ：tap・wipe・card・buy・reroll・serve・hit・mult・star・manzoku・coin・fire・burnt と朝昼の pick・drop・bake・done・place・kanban・soroi・door・heart・sale・soldout・close）と ジングル jg-hirameki・jg-manzoku・jg-nakama・jg-dame | 効果音集（buy だけ C） | 11/21〜 koe-irai・sfx:<id>（Wyzowl SFX Kit・Kenney＝CC0／Oculus Audio Pack 01＝CC BY 4.0）。buy だけ tools/se/make_se.py のまま。音ごとの出どころは下の「効果音の出どころ」 | 2026-11-21 | 昼の PR #30（しょーくんが聞きくらべでえらんだ28こ・koe-irai の sfx/picks/okashi.json）・se.js で残響 | se.js の sePlay・jgPlay（夜のだめだった＝night.js の jg-dame） |
+| assets/se/*.mp3（効果音25こ：tap・wipe・card・buy・reroll・serve・hit・mult・star・manzoku・coin・fire・burnt と朝昼の pick・drop・bake・done・place・kanban・soroi・door・heart・sale・soldout・close）と ジングル jg-hirameki・jg-manzoku・jg-nakama・jg-dame | 効果音集 | 11/21〜 koe-irai・sfx:<id>（Wyzowl SFX Kit・Kenney＝CC0／Oculus Audio Pack 01＝CC BY 4.0）。buy だけ tools/se/make_se.py のまま。音ごとの出どころは下の「効果音の出どころ」 | 2026-11-21 | 昼の PR #30（しょーくんが聞きくらべでえらんだ28こ・koe-irai の sfx/picks/okashi.json）・se.js で残響 | se.js の sePlay・jgPlay（夜のだめだった＝night.js の jg-dame） |
 | assets/koe/*.mp3（掛け声35こ：ほのか hono-・みなも mina-・わかば waka-。11/21 わぁ hono-waa・あらあら waka-araara をなくした・みなもの mina-n は「ん」→「うん」） | 音声合成 | koe-irai・Gemini TTS:Leda・Despina・Achernar（gemini-3.8-flash-tts）＝ほのか Leda・みなも Despina・わかば Achernar（11/21〜。前は VOICEVOX） | 2026-11-21 | 声の依頼箱 juice0402/koe-irai の out/okashi/kakegoe-gemini（昼の PR #25・切り分けは tools/koe/） | se.js の koePlay（夜の攻撃・大満足・だめだったとき＝night-ui.js の KOE_ATK・KOE_END／★3・おなか満タン・必殺技・焦げた／冷えた／熟した＝KOE_MORE〔11/21 koe-irai の kakegoe-night2・しょーくんがえらんだ。hono-dekita は「できたっ。」（語尾を下げて短く止める言い方）の1本め。加工で「た」を切ると不自然な音になったので、声の言い方で作りなおした〕／夜のショップで考えている「んー」＝KOE_THINK・waka-maa は使っていない）と朝の mKoe |
 
 ### クレジット（クレジットの画面・ストアの説明に入れる）
@@ -76,7 +76,7 @@
 - ゲームの中では、タイトルとまとめの画面の「せってい」の窓に出す（main.js の optHTML・11/19）
 
 ### 効果音の出どころ（11/21 昼の PR #30）
-- docs/ART.md の音の行：assets/se の行を「koe-irai・sfx:<id>（集・ライセンス）」に（buy だけは C・tools/se/make_se.py のまま）・ジングルの行も同じ。音ごとの出どころ：
+- docs/ART.md の音の行：assets/se の行を「koe-irai・sfx:<id>（集・ライセンス）」に・ジングルの行も同じ。音ごとの出どころ：
 - tap：koe-irai・sfx:wyzowl/foley/foley-wood-touch（Wyzowl SFX Kit・CC0）
 - wipe：koe-irai・sfx:wyzowl/whooshes/whoosh-medium-soft（Wyzowl SFX Kit・CC0）
 - pick：koe-irai・sfx:wyzowl/pops/pop-medium-in（Wyzowl SFX Kit・CC0）
@@ -90,6 +90,7 @@
 - door：koe-irai・sfx:wyzowl/everyday-props/props-shop-bell（Wyzowl SFX Kit・CC0）
 - sale：koe-irai・sfx:wyzowl/money/money-register（Wyzowl SFX Kit・CC0）
 - heart：koe-irai・sfx:wyzowl/notifications/notification-success-bubble（Wyzowl SFX Kit・CC0）
+- buy：koe-irai・sfx:wyzowl/money/money-coin-drop（Wyzowl SFX Kit・CC0）（11/21 昼の PR #32・しょーくんがえらんだ）
 - soldout：koe-irai・sfx:wyzowl/notifications/notification-alert-clear（Wyzowl SFX Kit・CC0）
 - close：koe-irai・sfx:wyzowl/everyday-props/props-shop-bell（Wyzowl SFX Kit・CC0）・高さ 0.85
 - card：koe-irai・sfx:wyzowl/appear-and-vanish/appear-flip-quick（Wyzowl SFX Kit・CC0）
