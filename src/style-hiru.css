@@ -516,3 +516,61 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .mdt-fx{font-size:10.5px;line-height:1.35;opacity:.92}
 .ms-good.at{outline:2px solid var(--gold);outline-offset:-2px}
 
+
+/* ---------- 昼のパズル（11/21）：となりの相性の結び目 .d-aisho（左か上のマスの中・マスのさかいに出す）・たての列のシリーズのリボン .d-series（列のいちばん上のマス）
+   絵は ui-aisho・ui-series（hiru-ui4）。数字は出さない。売れたら .hit で光る ---------- */
+.d-aisho{position:absolute;z-index:3;width:30px;height:15px;pointer-events:none;background:var(--ui-aisho,radial-gradient(circle,#f6c44a 30%,#e98aa0 32%)) center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(60,20,10,.45))}
+.d-aisho.r{left:calc(100% + 3px);top:50%;translate:-50% -50%}
+.d-aisho.d{top:calc(100% + 3px);left:50%;translate:-50% -50%}
+.d-aisho.out{filter:grayscale(.8) opacity(.55)}
+.d-aisho.pop{animation:dAishoPop .5s cubic-bezier(.3,1.6,.5,1) both}
+.d-aisho.hit{animation:dAishoHit .9s ease-out both}
+@keyframes dAishoPop{0%{scale:0}100%{scale:1}}
+@keyframes dAishoHit{0%{scale:1;filter:drop-shadow(0 0 0 #ffe9a0)}30%{scale:1.6;filter:drop-shadow(0 0 6px #ffe9a0)}100%{scale:1;filter:drop-shadow(0 1px 1px rgba(60,20,10,.45))}}
+.d-series{position:absolute;z-index:2;left:1px;top:-5px;width:17px;height:58px;display:grid;place-items:center;padding:3px 0 12px;pointer-events:none;background:var(--ui-series,linear-gradient(#f6c75a,#e2a42e)) center/100% 100% no-repeat;filter:drop-shadow(0 1px 1px rgba(60,20,10,.4))}
+.d-series b{writing-mode:vertical-rl;font-size:8.5px;line-height:1;font-weight:700;letter-spacing:-.5px;color:#5a2410;white-space:nowrap}
+.d-series.out{filter:grayscale(.8) opacity(.55)}
+.d-series.pop{animation:dSeriesPop .55s cubic-bezier(.3,1.5,.5,1) both;transform-origin:50% 0}
+.d-series.hit{animation:dSeriesHit .9s ease-out both;transform-origin:50% 0}
+@keyframes dSeriesPop{0%{scale:1 0}100%{scale:1 1}}
+@keyframes dSeriesHit{0%,100%{rotate:0deg}25%{rotate:-8deg}55%{rotate:6deg}80%{rotate:-2deg}}
+@media (prefers-reduced-motion:reduce){.d-aisho.pop,.d-aisho.hit,.d-series.pop,.d-series.hit{animation:none}}
+/* 相性帳のボタン（商品を並べるの左上）と、相性帳の行（素材2つの丸） */
+.md-aishob{position:absolute;left:8px;top:8px;z-index:5;width:40px;height:40px;padding:0;display:grid;place-items:center}
+.md-aishob img{width:30px;height:30px;max-width:none;object-fit:contain;display:block}
+.md-aishob b{font-size:9px}
+.ai-ico{display:flex;align-items:center;justify-content:center;gap:0}
+.ai-ico .hico{width:24px;height:24px;flex:none}
+.ai-ico .hico+.hico{margin-left:-6px}
+.ai-kata .bk-body{padding-left:4px}
+
+/* ---------- あしたの予報（11/21）：朝のキッチンの札 .m-fc（お財布の下）と、1日のまとめの札 .fc-card（ui-forecast の紙） ---------- */
+.m-fc{position:absolute;left:8px;top:36px;z-index:2;display:flex;align-items:center;gap:5px;padding:3px 9px 3px 4px;border-radius:999px;background:rgba(36,19,10,.78);border:1.5px solid var(--brass);color:var(--milk);font-size:9.5px;line-height:1}
+.m-fc .fc-ic{width:24px;height:24px;object-fit:contain;max-width:none;display:block}
+.m-fc span{display:flex;align-items:center;gap:2px}
+.m-fc b{font-weight:700}
+.m-fc .hico{width:20px;height:20px;flex:none}
+.fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
+.fc-face.none{background:#e9d4b0}
+.fc-card{position:relative;display:grid;gap:3px;justify-items:start;padding:22px 18px 14px;min-width:180px;background:var(--ui-forecast,#fff4dc) center/100% 100% no-repeat;color:#4a2f1f;font-size:12px;line-height:1.3}
+.fc-card .fc-ttl{justify-self:center;font-size:12.5px;color:#9b4a1c}
+.fc-card .fc-row{display:flex;align-items:center;gap:6px}
+.fc-card .fc-ic{width:28px;height:28px;object-fit:contain;max-width:none}
+.fc-card .fc-ev{font-weight:700}
+.fc-card .hico{width:22px;height:22px;flex:none}
+
+/* ---------- 営業中の呼びこみのベル .d-call（のこりの回数は点）・補充 .dslot.refill と えらぶ窓 .d-refp（11/21） ---------- */
+.d-call{position:relative;flex:none;width:44px;height:44px;padding:0;display:grid;place-items:center}
+.d-call img{width:28px;height:28px;margin-top:-6px;max-width:none;object-fit:contain;display:block}
+.d-call b{font-size:12px}
+.d-call:disabled img{filter:grayscale(1) opacity(.5)}
+.d-calln{position:absolute;left:50%;bottom:3px;translate:-50% 0;display:flex;gap:2px}
+.d-calln i{display:block;width:6px;height:6px;border-radius:50%;background:#f6c44a;box-shadow:0 0 0 1px #5a2410}
+.dslot.refill{cursor:pointer}
+.dslot .d-refl{position:absolute;left:50%;bottom:4px;translate:-50% 0;z-index:4;font-size:9px;font-weight:700;line-height:1;color:#fff;background:#d2546b;border-radius:999px;padding:3px 7px;box-shadow:0 1px 0 rgba(60,20,10,.4)}
+.d-refp{position:absolute;left:8px;right:8px;top:8px;z-index:6;display:grid;gap:6px;padding:8px;border-radius:12px;background:rgba(36,19,10,.92);border:1.5px solid var(--brass);color:var(--milk);font-size:11px}
+.d-refp>span{display:flex;gap:6px;overflow-x:auto}
+.d-refo{flex:none;display:grid;justify-items:center;gap:2px;width:64px;padding:4px 2px;border-radius:10px;background:#fff8ec;border:1.5px solid #c9a27a;color:#4a2f1f}
+.d-refo .hico{width:34px;height:34px}
+.d-refo em{font-style:normal;font-size:8.5px;line-height:1.1;text-align:center}
+.dcase{position:relative}

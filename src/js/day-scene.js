@@ -113,3 +113,19 @@ function custHTML(id, face = '', vr = 1) {
     <i class="cu-head">${acc}<i class="cu-hair"></i><i class="cu-eye l"></i><i class="cu-eye r"></i><i class="cu-cheek l"></i><i class="cu-cheek r"></i><i class="cu-mouth"></i></i>
   </div>`;
 }
+
+/* ---------- あしたの予報の札（11/21・hiru.js の fcGet）：できごとのマーク（fc-*）・多めのお客さんの顔・人気の味。数字は出さない
+   fcChipHTML＝朝のキッチンの小さな札（今日）・fcCardHTML(day)＝1日のまとめの札（あした・リーダーの renderResult に入れてもらう） ---------- */
+function fcFace(c) {
+  const b = ART['cust-' + c];
+  return b ? `<i class="fc-face" style="background-image:url('${b}')"></i>` : `<i class="fc-face none"></i>`;
+}
+function fcChipHTML(day = S.day) {
+  const fc = fcGet(day), ic = ART[fcIconName(fc.ev)];
+  return `<div class="m-fc" aria-label="今日の予報：${esc(FC_EV_NM[fc.ev || ''])}・${esc(CUST[fc.c].name)}が多め・${esc(matShort(fc.m))}が人気">${ic ? `<img class="fc-ic" src="${ic}" alt="">` : ''}<span class="fc-who">${fcFace(fc.c)}<b>多め</b></span><span class="fc-like">${matIcon(fc.m)}<b>人気</b></span></div>`;
+}
+function fcCardHTML(day = S.day + 1) {
+  const fc = S.seen && S.seen['fc:' + day]; if (!fc || typeof fc !== 'object' || !CUST[fc.c]) return '';
+  const ic = ART[fcIconName(fc.ev)];
+  return `<div class="fc-card"><b class="fc-ttl">あしたの予報</b><div class="fc-row">${ic ? `<img class="fc-ic" src="${ic}" alt="">` : ''}<span class="fc-ev">${esc(FC_EV_NM[fc.ev || ''])}</span></div><div class="fc-row">${fcFace(fc.c)}<span>${esc(CUST[fc.c].name)}が多そう</span></div><div class="fc-row">${matIcon(fc.m)}<span>${esc(matShort(fc.m))}が人気かも</span></div></div>`;
+}
