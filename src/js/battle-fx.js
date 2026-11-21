@@ -159,9 +159,10 @@ function decoHTML(mode) {
   const list = DECO_MOBS.filter(([n]) => !g || (n !== 'mob-' + g.id && n !== g.alt));
   const ground = list.map(([n]) => n).filter(n => n !== 'mob-kurage').sort((x, y) => MOB_RANK.indexOf(x) - MOB_RANK.indexOf(y));
   const slot = n => { const i = ground.indexOf(n); return i < 0 ? '' : i === ground.length - 1 && i > 0 ? ' p3' : ' p' + [1, 2, 4][i]; };
+  const v = mode === 'win' ? '-cheer' : '';   // 勝った場面は みんな応援のポーズ（mob-<id>-cheer・11/21）
   const mobs = list.map(([n, alt, cls], k) => {
-    const src = ART[n] || (alt && ART[alt]);
-    return src ? `<img class="dc dc-mob ${cls}${slot(n)}${ART[n] ? '' : ' tmp'}" style="--k:${k}" src="${src}" alt="">` : '';
+    const src = (v && ART[n + v]) || ART[n] || (alt && ART[alt]);
+    return src ? `<img class="dc dc-mob ${cls}${slot(n)}${ART[n] ? '' : ' tmp'}" data-mob="${n}" style="--k:${k}" src="${src}" alt="">` : '';
   }).join('');
   const pose = mode === 'shop' ? 'think' : mode === 'win' ? 'cheer' : 'sit';
   return `<div class="deco ${mode}" id="deco" aria-hidden="true">
@@ -181,7 +182,18 @@ let decoT = 0;
 function decoReact(kind, ms = 700) {
   const d = $('deco'); if (!d || REDUCED) return;
   d.classList.remove('hop', 'jump', 'scare'); void d.offsetWidth; d.classList.add(kind);
-  clearTimeout(decoT); decoT = setTimeout(() => d.classList.remove(kind), ms);
+  decoMobs(kind === 'jump' ? '-jump' : kind === 'hop' ? '-cheer' : '');
+  clearTimeout(decoT); decoT = setTimeout(() => { d.classList.remove(kind); decoMobs(''); }, ms);
+}
+/* モブのポーズちがい（11/21 しょーくん「枠に出てくる賑やかしちびキャラのバリエーションもほしい」）：
+   小さな反応 hop ＝応援（mob-<id>-cheer）・大よろこび jump ＝とびはねる（mob-<id>-jump）。もどすときは ふつう（勝った場面は応援のまま）。絵がない子はそのまま */
+function decoMobs(v) {
+  const d = $('deco'); if (!d) return;
+  if (!v && d.classList.contains('win')) v = '-cheer';
+  for (const el of d.querySelectorAll('.dc-mob[data-mob]')) {
+    const n = el.dataset.mob, u = (v && ART[n + v]) || ART[n];
+    if (u && el.getAttribute('src') !== u) el.src = u;
+  }
 }
 
 /* ---------- 4. ほのかの炎（11/18 しょーくん「火力をビジュアルでもわかりやすく」「火の粉とか盛りだくさん」「演出が枠を飛び出してド派手に」）
@@ -639,6 +651,7 @@ function nightWarm(build) {
     }
     const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
     if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy', 'mon-' + mon.id + '-sad');
+    for (const [n] of DECO_MOBS) keys.push(n + '-cheer', n + '-jump');   // 賑やかしのモブのポーズちがい（11/21）
     keys.push('bg-night-' + chef, 'fx-numhit-' + chef, 'fx-scatter-' + chef, ...(FLOURISH[chef] || []), RING[chef] || '');   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
     const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })]);
