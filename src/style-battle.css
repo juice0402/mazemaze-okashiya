@@ -386,7 +386,7 @@ button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
 .pk-list.many .pk-chef{font-size:10px}
 .pk-list.many .pk-cards{display:none}
 .pk-list.many .pk-text{font-size:10.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.pk-list.many .pk-on{right:auto;left:50%;translate:-50% 0;top:-17px;font-size:10px}   /* 名前の頭にかぶらないように、カードの上のふちのまんなかへ（11/19 点検） */
+.pk-list.many .pk-on{right:auto;left:50%;translate:-50% 0;top:-23px;font-size:10px}   /* 名前の頭にかぶらないように、カードの上のふちのまんなかへ（11/19 点検）。11/21 低い画面（605）で名前が2行になると5pxかぶっていたので、もう6px上へ（かぶるのは木のふちだけ） */
 /* 名前と「〇〇・特性 〇〇」は、ことばの切れ目（<wbr>・空白）だけで折る（11/19 点検） */
 .pk-name,.pk-chef{word-break:keep-all;overflow-wrap:anywhere}
 .pk-list.many .pk-pic{flex-basis:34%}
@@ -479,7 +479,7 @@ body[data-chef="wakaba"] .fx-hit::after{border-color:#fbffe0}
 .qfly{position:absolute;left:50%;top:0;width:22px;height:22px;margin-left:-11px;background:var(--ui-coin) center/contain no-repeat;z-index:3;animation:qfly 1.2s cubic-bezier(.2,.8,.3,1) forwards}
 .qfly em{position:absolute;left:50%;bottom:100%;translate:-50% -2px;font-style:normal;font-family:var(--disp);font-size:10px;line-height:1;color:#ffe08a;-webkit-text-stroke:3px #4a1404;paint-order:stroke fill;white-space:nowrap}
 .qmk.m3 .qfly em{left:auto;right:-2px;translate:0 -2px}
-@keyframes qfly{0%{transform:scale(1);opacity:1}25%{transform:translateY(-10px) scale(1.9);opacity:1}70%{transform:translateY(-34px) scale(1.4);opacity:1}100%{transform:translateY(-46px) scale(1.1);opacity:0}}
+@keyframes qfly{0%{transform:scale(1);opacity:1}25%{transform:translateY(-8px) scale(1.9);opacity:1}70%{transform:translateY(-20px) scale(1.4);opacity:1}100%{transform:translateY(-28px) scale(1.1);opacity:0}}   /* 11/21 とぶ高さを少しひくく（「コイン+1」の字が舞台の上のふちで切れていた） */
 .result.half .r-msg{color:#ffd27a}
 /* 昼のハートで味パワーアップ（11/19 H-029）：舞台の上・味パワーの札の下に小さく */
 /* 上の味パワーの札と昼のハートの倍率（.ov-hm）は 11/19 にやめた（しょーくん「味パワー4桁からもう収まらない」「何ダメージ出てるかは、もう勘でいい」「昼のハート倍率とかも消してスッキリ」）。ハートの倍率は night.js の heartMul で味パワーにかかったまま */
@@ -626,6 +626,8 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .sh-top .sh-coin b,.sh-price.sh-price,.sh-roll.sh-roll small{font-size:15px}
 .sh-price.sh-price.ng,.sh-roll.sh-roll:disabled small{color:#ff6a50}
 .sh-roll.sh-roll small{gap:3px;margin-left:0}
+.sh-top .sh-roll.sh-roll{position:relative}
+.sh-top .sh-roll.sh-roll::after{content:"";position:absolute;inset:-9px -4px}   /* 見た目は24pxの札のまま、押せる所だけ上下に広く（11/21 レイアウトの総デバッグ：指で押しにくい） */
 .night .shopov.many .sh-top .kone-n{display:none}   /* 1ラウンド目（無料の5まい）は こね・ジャムはまだ0 */
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .sh-ttl.sh-free{pointer-events:none}

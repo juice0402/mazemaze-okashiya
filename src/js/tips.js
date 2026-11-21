@@ -102,8 +102,10 @@ function tipDim(scr, before) {
 function tipRoom(b) {
   const sc = document.querySelector('.shopov .sh-cards'); if (!sc) return;
   sc.style.paddingBottom = '';
-  const br = b.getBoundingClientRect(), cr = sc.getBoundingClientRect();   // カードは配るアニメのとちゅうなので、列の箱で見る（カードはまんなかにそろうので、下があけばよける）
-  if (br.top < cr.bottom - 2 && br.right > cr.left && br.left < cr.right) sc.style.paddingBottom = Math.round(cr.bottom - br.top + 14) + 'px';
+  const cr = sc.getBoundingClientRect();   // カードは配るアニメのとちゅうなので、列の箱で見る（カードはまんなかにそろうので、下があけばよける）
+  /* 吹き出しは出てくるアニメ（scale .55 から）のとちゅうなので、getBoundingClientRect ではなく、置いた場所（style の top・left）と大きさで見る（11/21 レイアウトの総デバッグ：カードの下の行に 19px かぶっていた） */
+  const top = parseFloat(b.style.top), left = parseFloat(b.style.left), right = left + b.offsetWidth;
+  if (top < cr.bottom - 2 && right > cr.left && left < cr.right) sc.style.paddingBottom = Math.round(cr.bottom - top + 14) + 'px';
 }
 /* ---------- 描く：吹き出しはほのかの右上・指は fixed で、さす所の上へ ---------- */
 const tipKw = s => s.replace(/\{([^}]+)\}/g, '<b class="kw">$1</b>');

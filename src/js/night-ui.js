@@ -489,7 +489,7 @@ function viewerHTML() {
     const cid = N.shop[s.i]; if (!cid) return '';
     const d = cardDef(cid), free = N.round === 1;
     return box(cid, null, `<button class="pill go2" data-act="buy" data-i="${s.i}" ${!free && N.coins < d.cost ? 'disabled' : ''}>${free ? 'もらう' : `買う <small>コイン${d.cost}</small>`}</button>`,
-      d.cat === 'field' ? 'ドラッグで「場」へ' : '買うと左の空いているマスへ・ドラッグで好きなマスへ・かさねて まぜる');
+      d.cat === 'field' ? 'ドラッグで「場」へ' : '左の空きマスへ・ドラッグで好きなマスへ・かさねて まぜる');   // 11/21 1行に（小さい画面で2行めが下のボタンにかかっていた）
   }
   if (s.where === 'field') return N.field ? (fixedField() ? box('b:' + N.field, null, '', `くだものをドラッグで入れる（入れた段のまま）・あと${Math.max(0, BIN_MAX - binCount())}つでジャム`)
     : box('b:' + N.field, null, sellBtn(), '新しいのを買うと入れかわる')) : '';
@@ -528,6 +528,18 @@ let shopRO = null;
 function shopFit() {
   const sc = document.querySelector('.shopov .sh-cards'); if (!sc) return;
   const fit = () => {
+    /* 名前と【属性】：アプリの中では字が 8px より小さくならないので、小さなカードでは はみ出す（11/21 レイアウトの総デバッグ）。
+       はみ出すときだけ、見た目を transform で小さくする（transform は 8px のきまりに かからない・場所はそのまま）。名前は8文字まで ぜんぶ出す（…にしない） */
+    for (const c of sc.querySelectorAll('.pc.mini')) {
+      const a = c.querySelector('.pc-attr'), t = c.querySelector('.pc-text');
+      if (a && t) { a.style.transform = ''; const room = t.offsetLeft + t.offsetWidth - a.offsetLeft - 1, w = a.offsetWidth; if (room > 0 && w > room + .5) { a.style.transformOrigin = 'left center'; a.style.transform = `scale(${(room / w).toFixed(3)})`; } }
+      const n = c.querySelector('.pc-name'), sp = n && n.querySelector('span');
+      if (sp) {
+        sp.style.cssText = ''; const cs = getComputedStyle(n), room = n.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        sp.style.cssText = 'flex:none;max-width:none;overflow:visible;text-overflow:clip'; const w = sp.offsetWidth;
+        if (room > 0 && w > room + .5) { sp.style.transformOrigin = cs.justifyContent === 'flex-start' ? 'left center' : 'center'; sp.style.transform = `scale(${(room / w).toFixed(3)})`; } else sp.style.cssText = '';
+      }
+    }
     for (const t of sc.querySelectorAll('.pc-text')) {
       const sp = t.firstElementChild, ss = [...t.querySelectorAll('.sn')]; if (!sp) continue;
       ss.forEach(e => e.classList.remove('cut'));
@@ -545,7 +557,7 @@ function shopFit() {
 
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩・前の夜のビルドがえらばれている）。カードはシェフの絵・ビルドの名前・特性・代表のカード3まい・ひとこと */
 /* ビルドの名前の折り目：かたかなのかたまりの前後だけ（11/19 点検：「くだものケ／ーキ」「火力クッキ／ー」と ことばのとちゅうで折れていた。CSS は keep-all） */
-const pkBr = nm => (String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]).map(esc).join('<wbr>');
+const pkBr = nm => (String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]).map(esc).join('<wbr>').replace(/の(?!<wbr>|$)/g, 'の<wbr>');   // 「の」のあとでも折れる（11/21：大作の飴細工が「飴細／工」で折れていた）
 function pickHTML() {
   const list = openBuilds().map(id => {
     const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;

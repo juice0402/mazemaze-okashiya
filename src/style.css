@@ -269,7 +269,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .vbtns{width:100%;display:flex;gap:8px;justify-content:center}
 .vbtns .pill{flex:1}
 .vbtns .sq{flex:none;width:48px;padding-inline:0}
-.vhint{font-size:11px;color:var(--milk-soft);text-align:center}
+.vhint{font-size:11px;color:var(--milk-soft);text-align:center;text-wrap:balance}   /* 折れるときは2行を同じくらいの長さに（11/21：「まぜる」だけが2行めに残っていた） */
 .vclose{position:absolute;right:-2px;top:-2px;z-index:5;width:36px;height:36px;padding:0;border-radius:50%;font-size:20px;line-height:1;background:var(--cream);box-shadow:0 2px 0 var(--ink)}
 .vbox.result{width:min(78vw,300px);padding:16px;border-radius:16px;background:linear-gradient(var(--board-2),var(--board));border:2px solid #3a2318;box-shadow:0 4px 0 rgba(0,0,0,.35);text-align:center}
 .r-round{font-size:13px;color:var(--milk-soft)}
