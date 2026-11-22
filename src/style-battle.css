@@ -622,6 +622,11 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov.many .shcard{aspect-ratio:5/8.75;--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 4px) / 2 / 1.75),150px)}
 .night .shopov.many{padding-bottom:34px}   /* 2段目のカードの下のふち（紙の下）だけ 草にかくれてよい */
 .night .shopov.many .sh-cards{gap:4px 6px}
+/* 2ラウンド目からの4まい以上（収穫かごで くだものが多いときなど）は 値札がある：2段とも カードの上に値札が入るぶん あける（11/22 しょーくん「このアス比なら ほとんどの項目がかぶっちゃってる」）。
+   下の段の値札は 段のすき間（38px）に、上の段の値札は 上にあまった所（下にそろえる）に。カードはそのぶん少し小さい */
+.night .shopov.many.paid .sh-cards{row-gap:20px;padding-top:40px}   /* 段のあいだは .sh-br をはさんで 20px×2－4px＝36px */
+.night .shopov.many.paid:has(.sh-top .kone-n) .sh-cards{padding-top:58px}
+.night .shopov.many.paid .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 36px) / 2 / 1.75),150px)}
 .night .shcard .pc.tall:not(.tile):not(.ci-card){background-image:none;border:0 solid transparent;border-image:var(--ui-card-bronze) 86% 0 10.5% 0 fill/calc(var(--w) * 1.376) 0 calc(var(--w) * .168) 0 stretch}
 .night .shcard .pc.tall.s2:not(.tile):not(.ci-card){border-image-source:var(--ui-card-silver)}
 .night .shcard .pc.tall.s3:not(.tile):not(.ci-card){border-image-source:var(--ui-card-gold)}

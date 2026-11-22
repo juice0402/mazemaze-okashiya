@@ -1247,6 +1247,9 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov.many .shcard{aspect-ratio:5/8.75;--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 4px) / 2 / 1.75),150px)}
 .night .shopov.many{padding-bottom:34px}
 .night .shopov.many .sh-cards{gap:4px 6px}
+.night .shopov.many.paid .sh-cards{row-gap:20px;padding-top:40px}
+.night .shopov.many.paid:has(.sh-top .kone-n) .sh-cards{padding-top:58px}
+.night .shopov.many.paid .shcard{--w:min(calc((100cqw - 12px) / 3),calc((100cqh - 36px) / 2 / 1.75),150px)}
 .night .shcard .pc.tall:not(.tile):not(.ci-card){background-image:none;border:0 solid transparent;border-image:var(--ui-card-bronze) 86% 0 10.5% 0 fill/calc(var(--w) * 1.376) 0 calc(var(--w) * .168) 0 stretch}
 .night .shcard .pc.tall.s2:not(.tile):not(.ci-card){border-image-source:var(--ui-card-silver)}
 .night .shcard .pc.tall.s3:not(.tile):not(.ci-card){border-image-source:var(--ui-card-gold)}
@@ -5359,7 +5362,7 @@ const r1 = N.round === 1, list = N.shop;
 const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
 : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
 const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
-return `<div class="shopov${list.length > 3 ? ' many' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
+return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
 <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
 <div class="sh-cards">${list.map((cid, i) => cid
 ? `<button class="shcard${!r1 && N.coins < cardDef(cid).cost ? ' poor' : ''}" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
