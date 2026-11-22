@@ -632,7 +632,7 @@ function decoBlow(power) {
     L.appendChild(c); el.style.visibility = 'hidden';
     const x = b.left + b.width / 2, side = x < cx ? -1 : 1, front = power > 1 ? i % 3 !== 2 : i % 3 === 1;   // 手前へ（大きくなって消える）・左右へ（回りながら画面の外へ）
     const dx = front ? side * (30 + Math.random() * 70) : side * (r.width * .55 + 60 + Math.random() * 90), dy = front ? 50 + Math.random() * 70 : -(90 + Math.random() * 140);
-    const sc = front ? (power > 1 ? 5.2 : 3.4) : 1.15, rot = side * (front ? 160 + Math.random() * 200 : 420 + Math.random() * 540), ms = T((front ? 820 : 1000) + Math.random() * 260);
+    const sc = front ? (power > 1 ? 5.2 : 3.4) : 1.15, rot = side * (front ? 160 + Math.random() * 200 : 420 + Math.random() * 540), ms = T((front ? 1250 : 1500) + Math.random() * 300);   // 11/22 しょーくん「すっ飛んでいくところをしっかり見たい・ほんの少しだけ遅く」（前は 0.8〜1.3秒）
     c.animate([{ transform: 'translate(0,0) rotate(0) scale(1)', opacity: 1 },
       { transform: `translate(${dx * .45}px,${dy * .55 - (front ? 0 : 40)}px) rotate(${rot * .4}deg) scale(${1 + (sc - 1) * .45})`, opacity: 1, offset: .42 },
       { transform: `translate(${dx}px,${dy}px) rotate(${rot}deg) scale(${sc})`, opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.75,.35,1)', fill: 'forwards' });
@@ -688,8 +688,8 @@ function finale(lv, done) {
     setTimeout(() => decoBlow(lv), T(big ? 260 : 90));   // 白い光が引いてから（光でかくれない）
   }, t0);
   if (big) setTimeout(() => { finaleBoom(spot($('stage')), false); sePlay('boom', { vol: .9, rate: 1.15 }); shake(); edgeWood(14); coinRain(22); }, t0 + T(700));
-  setTimeout(() => { finaleBand('ごちそうさま！', big); sePlay('manzoku', { vol: .8 }); }, t0 + T(big ? 1050 : 650));
-  setTimeout(() => { if (nt) nt.classList.remove('quake4', 'quake5'); done(); }, t0 + T(big ? 3000 : 2250));
+  setTimeout(() => { finaleBand('ごちそうさま！', big); sePlay('manzoku', { vol: .8 }); }, t0 + T(big ? 1350 : 1000));   // 帯は ちびたちが飛んでいったあと
+  setTimeout(() => { if (nt) nt.classList.remove('quake4', 'quake5'); done(); }, t0 + T(big ? 3300 : 2600));
 }
 function qOverrun() {
   roundOver = true;

@@ -1436,8 +1436,8 @@ font-size:calc(var(--W) * var(--fz) * 2);-webkit-text-stroke:calc(var(--W) * var
 @keyframes quake4{0%,100%{transform:none}5%{transform:translate(-22px,12px) rotate(-1.6deg)}12%{transform:translate(20px,-14px) rotate(1.4deg)}20%{transform:translate(-18px,10px) rotate(-1.2deg)}29%{transform:translate(15px,-9px) rotate(1deg)}39%{transform:translate(-12px,7px) rotate(-.7deg)}50%{transform:translate(9px,-5px) rotate(.5deg)}62%{transform:translate(-6px,3px)}76%{transform:translate(3px,-2px)}88%{transform:translate(-1px,1px)}}
 @keyframes quake5{0%,100%{transform:none}4%{transform:translate(-28px,16px) rotate(-2.2deg) scale(1.03)}9%{transform:translate(26px,-18px) rotate(2deg) scale(1.03)}15%{transform:translate(-24px,14px) rotate(-1.8deg)}22%{transform:translate(20px,-12px) rotate(1.5deg)}30%{transform:translate(-16px,9px) rotate(-1.1deg)}38%{transform:translate(24px,-16px) rotate(1.8deg) scale(1.02)}45%{transform:translate(-20px,12px) rotate(-1.4deg)}53%{transform:translate(14px,-8px) rotate(.9deg)}62%{transform:translate(-10px,6px) rotate(-.6deg)}72%{transform:translate(6px,-4px)}84%{transform:translate(-3px,2px)}93%{transform:translate(1px,-1px)}}
 .bintro.fin{z-index:12}
-.bintro.fin .bi-t{font-size:min(50px,12vw)}
-.bintro.fin.gold .bi-t{font-size:min(58px,14vw);color:#ffe066;text-shadow:0 4px 0 #3a1004,0 0 26px rgba(255,210,80,1)}
+.bintro.fin .bi-t{font-size:min(50px,calc(11.5cqw - 3px))}
+.bintro.fin.gold .bi-t{font-size:min(58px,calc(12.6cqw - 1px));letter-spacing:1px;color:#ffe066;text-shadow:0 4px 0 #3a1004,0 0 26px rgba(255,210,80,1)}
 @media (prefers-reduced-motion:reduce){.night.quake4,.night.quake5{animation:none}}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
@@ -6068,7 +6068,7 @@ c.style.left = b.left + 'px'; c.style.top = b.top + 'px'; c.style.width = b.widt
 L.appendChild(c); el.style.visibility = 'hidden';
 const x = b.left + b.width / 2, side = x < cx ? -1 : 1, front = power > 1 ? i % 3 !== 2 : i % 3 === 1;   // 手前へ（大きくなって消える）・左右へ（回りながら画面の外へ）
 const dx = front ? side * (30 + Math.random() * 70) : side * (r.width * .55 + 60 + Math.random() * 90), dy = front ? 50 + Math.random() * 70 : -(90 + Math.random() * 140);
-const sc = front ? (power > 1 ? 5.2 : 3.4) : 1.15, rot = side * (front ? 160 + Math.random() * 200 : 420 + Math.random() * 540), ms = T((front ? 820 : 1000) + Math.random() * 260);
+const sc = front ? (power > 1 ? 5.2 : 3.4) : 1.15, rot = side * (front ? 160 + Math.random() * 200 : 420 + Math.random() * 540), ms = T((front ? 1250 : 1500) + Math.random() * 300);   // 11/22 しょーくん「すっ飛んでいくところをしっかり見たい・ほんの少しだけ遅く」（前は 0.8〜1.3秒）
 c.animate([{ transform: 'translate(0,0) rotate(0) scale(1)', opacity: 1 },
 { transform: `translate(${dx * .45}px,${dy * .55 - (front ? 0 : 40)}px) rotate(${rot * .4}deg) scale(${1 + (sc - 1) * .45})`, opacity: 1, offset: .42 },
 { transform: `translate(${dx}px,${dy}px) rotate(${rot}deg) scale(${sc})`, opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.75,.35,1)', fill: 'forwards' });
@@ -6124,8 +6124,8 @@ sparkBurst(p, big ? 28 : 18, 'all', big ? 1.8 : 1.3); shake();
 setTimeout(() => decoBlow(lv), T(big ? 260 : 90));   // 白い光が引いてから（光でかくれない）
 }, t0);
 if (big) setTimeout(() => { finaleBoom(spot($('stage')), false); sePlay('boom', { vol: .9, rate: 1.15 }); shake(); edgeWood(14); coinRain(22); }, t0 + T(700));
-setTimeout(() => { finaleBand('ごちそうさま！', big); sePlay('manzoku', { vol: .8 }); }, t0 + T(big ? 1050 : 650));
-setTimeout(() => { if (nt) nt.classList.remove('quake4', 'quake5'); done(); }, t0 + T(big ? 3000 : 2250));
+setTimeout(() => { finaleBand('ごちそうさま！', big); sePlay('manzoku', { vol: .8 }); }, t0 + T(big ? 1350 : 1000));   // 帯は ちびたちが飛んでいったあと
+setTimeout(() => { if (nt) nt.classList.remove('quake4', 'quake5'); done(); }, t0 + T(big ? 3300 : 2600));
 }
 function qOverrun() {
 roundOver = true;
