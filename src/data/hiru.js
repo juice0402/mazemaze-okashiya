@@ -30,13 +30,16 @@ const HIRU_RECIPES = {};
 
 /* モンスター素材の「ことば」（11/18 しょーくん）。モンスター素材＋ほかの素材＝ことば＋形。モンスター素材どうし＝まぜまぜパフェ
    hoshi・karamel・kanten は、モブ3体がお客さんになったときの素材（H-016・cards.js の MATS にリーダーが足すまでは出てこない） */
-const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじいろ', minto: 'ミント', hoshi: 'ほしぞら', karamel: 'こんがり', kanten: 'ひんやり' };
+const MON_WORD = { zeri: 'ぷるぷる', hoippu: 'ふわもこ', niji: 'にじいろ', minto: 'ミント', hoshi: 'ほしぞら', karamel: 'こんがり', kanten: 'ひんやり',
+  /* 新しい夜のお客さん4体（11/22・ぽぽちの案）：ことば＋形が8文字までに入るよう4文字まで。「ショコラ」は6人目の闇のショコラティエにとっておく */
+  kakao: 'カカオ', custard: 'とろり', maccha: 'まっちゃ', popcorn: 'ぽんぽん' };
 const isHiruMat = m => !!HIRU_MATS[m];
 const isMonMat = m => !!(MATS[m] && MATS[m].fushigi);
 const matShort = m => HIRU_MATS[m] ? HIRU_MATS[m].short : MATS[m] ? MATS[m].short : m;
 /* 材料だなのマスに出す名前（11/21 リーダー：アプリの中は字が 8px より小さくならない → 7文字の名前がマスからはみ出す・しょーくん「マスでは短い名前」）
    マスの中は約50px＝6文字まで（5文字をこえると横にちぢめる・6文字で 8.3px）。ほかの所（セリフ・レシピ帳・吹き出し）は matShort のまま */
-const M_TILE_NM = { zeri: 'ゼリー', hoippu: 'ホイップ', niji: 'にじ水あめ', minto: 'ミント', hoshi: 'ほしくず', karamel: 'カラメル' };
+const M_TILE_NM = { zeri: 'ゼリー', hoippu: 'ホイップ', niji: 'にじ水あめ', minto: 'ミント', hoshi: 'ほしくず', karamel: 'カラメル',
+  kakao: 'カカオ', custard: 'カスタード', maccha: 'まっちゃ', popcorn: 'ポップコーン' };
 const mTileNm = m => M_TILE_NM[m] || matShort(m);
 const matName = m => HIRU_MATS[m] ? HIRU_MATS[m].name : MATS[m] ? MATS[m].name : m;
 const matPrice = m => HIRU_MATS[m] ? HIRU_MATS[m].price : isMonMat(m) ? (MATS[m].rare ? MON_PRICE_RARE : MON_PRICE) : MATS[m] ? MATS[m].value * YEN_PER_VALUE : 0;
@@ -102,6 +105,8 @@ const AISHO = [
   ['hoippu', 'ichigo', 'ショートケーキ'], ['egg', 'karamel', 'カラメルプリン'], ['ichigo', 'zeri', 'いちごゼリー'],
   ['kanten', 'minto', 'ひんやりミント'], ['hoshi', 'mizuame', '星くずキャンディ'], ['hachimitsu', 'kanten', 'はちみつ寒天'],
   ['hoippu', 'karamel', 'キャラメルホイップ'], ['minto', 'niji', 'にじいろソーダ'],
+  /* 11/22 新しい夜のお客さん4体の素材（1つずつ・ぽぽちの案） */
+  ['ichigo', 'kakao', 'いちごチョコ'], ['custard', 'karamel', 'とろけるプリン'], ['hoippu', 'maccha', 'まっちゃラテ'], ['hachimitsu', 'popcorn', 'はちみつポップコーン'],
 ].map(([a, b, name]) => ({ id: recipeKey(a, b), a, b, name }));
 const AISHO_BY = Object.fromEntries(AISHO.map(x => [x.id, x]));
 /* 2つのお菓子の相性（同じお菓子どうしはなし）。2つの中で、ちがう素材どうしの組み合わせが AISHO にあれば */
@@ -147,13 +152,14 @@ const MORE3_P = 0.25;     // もう1こ買った人が、さらにもう1こ（3
    お客さん（11/18 16時 しょーくん：ファンタジーに・id はそのまま）：kodomo＝妖精の子・gakusei＝けもみみの子（ねこ耳の男の子・14さいくらい）・otona＝冒険者（20代のお兄さん）・obaachan＝魔女のおばあちゃん
    モンスター素材も1つずつ割りあて（11/18 しょーくん）：妖精の子＝ゼリー・にじいろ水あめ／けもみみの子＝ミント・ほしくずシュガー／冒険者＝ホイップ・ほのおカラメル／魔女のおばあちゃん＝しずく寒天。まだ倉庫に入ったことのない素材は、すきな味にならない（seenMats） */
 const CUST_LIKES = {
-  kodomo: ['ichigo', 'hachimitsu', 'zeri', 'niji'],
-  gakusei: ['milk', 'ichigo', 'minto', 'hoshi'],
-  otona: ['mugi', 'egg', 'herb', 'hoippu', 'karamel'],
-  obaachan: ['hachimitsu', 'egg', 'mizuame', 'kanten'],
-  elf: ['hachimitsu', 'herb', 'minto', 'kanten'],
-  vamp: ['ichigo', 'mizuame', 'niji', 'hoippu'],
-  tanuki: ['mugi', 'egg', 'hoshi', 'karamel'],
+  /* 11/22 新しい夜のお客さん4体の素材は2種類ずつ（ぽぽちの案）：カカオ＝冒険者・けもみみの子／カスタード＝妖精の子・吸血鬼／まっちゃ＝魔女のおばあちゃん・エルフ／ポップコーン＝妖精の子・たぬき */
+  kodomo: ['ichigo', 'hachimitsu', 'zeri', 'niji', 'custard', 'popcorn'],
+  gakusei: ['milk', 'ichigo', 'minto', 'hoshi', 'kakao'],
+  otona: ['mugi', 'egg', 'herb', 'hoippu', 'karamel', 'kakao'],
+  obaachan: ['hachimitsu', 'egg', 'mizuame', 'kanten', 'maccha'],
+  elf: ['hachimitsu', 'herb', 'minto', 'kanten', 'maccha'],
+  vamp: ['ichigo', 'mizuame', 'niji', 'hoippu', 'custard'],
+  tanuki: ['mugi', 'egg', 'hoshi', 'karamel', 'popcorn'],
 };
 /* 新しいお客さん（11/21 しょーくん「常連さん大量に増やす」→ えらぶ質問で新しい種族3つ）：名前と、絵がないときの仮の色。world.js の CUSTOMERS のうしろに足す
    その日から来る（CUST_DAY）・絵 cust-<id> が来てから（それまでは来ない）。見た目3人：1・2 は常連さん（REG_WHO）・3 はふつう。設定は claude/okashi-story.md */
