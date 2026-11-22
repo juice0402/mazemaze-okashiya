@@ -667,6 +667,11 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .night .shopov.many .sh-top .kone-n{display:none}   /* 1ラウンド目（無料の5まい）は こね・ジャムはまだ0 */
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .sh-ttl.sh-free{pointer-events:none}
+/* 1ラウンド目の無料の入れかえ（11/22 しょーくん「最初はリロールの存在に気づかない人も多い・定期的に揺らして・初回のショップだけ」）：3.2秒ごとに ぷるぷるっと（transform だけ） */
+.sh-top .sh-roll.nudge{animation:rrNudge 3.2s ease-in-out 1.6s infinite;transform-origin:50% 60%}
+@keyframes rrNudge{0%,78%,100%{transform:none}81%{transform:rotate(-9deg) scale(1.1)}84%{transform:rotate(8deg) scale(1.1)}87%{transform:rotate(-6deg) scale(1.06)}90%{transform:rotate(4deg)}93%{transform:rotate(-2deg)}}
+.sh-roll.sh-roll small:not(:has(.cn)){color:#8fe0a0}   /* 「無料2」は みどり */
+@media (prefers-reduced-motion:reduce){.sh-top .sh-roll.nudge{animation:none}}
 .sh-ttl.sh-rd{display:inline-flex;justify-content:center;align-items:center;gap:2px}
 .sh-ttl.sh-free b{margin:0;font-family:inherit;font-size:inherit;font-weight:inherit;line-height:inherit;color:rgb(244,194,78)}   /* 前の .sh-free b（20px）を消す＝ラウンドの札と同じ高さ */   /* 無料のまいすうは ラウンドの札と同じ枠・同じ字（11/20 しょーくん「ラウンドの枠とそろえる」） */
 

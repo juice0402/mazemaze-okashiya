@@ -8,7 +8,7 @@
    火力カードが1まいも発動しなかったラウンドの終わりに1さがる（fireDown）。場の鉄板・石窯の火（start）より下がらない（11/20 しょーくん）
    フィールドも仕入れから。買うと調理台の左の「場」に入る（1つだけ・置きかえOK）。ラウンド1だけ、5まいから3まい えらんで無料
    調理台5マス。画面は night-ui.js */
-const SLOTS = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, REROLL = 1;
+const SLOTS = 5, ROUND1_SHOW = 3, ROUND1_PICKS = 3, ROUND1_ROLLS = 2, SHOP_N = 3, INCOME = 5, REROLL = 1;   // 11/22 しょーくん「ショップの初回も陳列は3枚に固定して通常時と統一・その代わりにリロールを初回だけ2回無料」（前は1ラウンド目に5まい並べて入れかえなし）
 /* おなかの段階（11/19 しょーくん）：左はしが ぺこぺこ。半分まで＝コイン+1・満タン（まんぞく！）＝コイン+3 */
 const TIER_COIN = [0, 1, 3], tierOf = (t, q) => t >= q ? 2 : t >= q / 2 ? 1 : 0;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
@@ -34,7 +34,7 @@ function startNight() {
   Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
   const open = openBuilds();
   S.night = {
-    mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
+    mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS, rolls: ROUND1_ROLLS,
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     sel: null, view: false, last: null,
     build: open.includes(S.build) ? S.build : open[0], kone: 0, pickChef: null, pkPage: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
@@ -212,9 +212,15 @@ function sellAt(p, at) {   // at＝ドラッグで はなした所（{x,y,w}）�
 }
 function sell() { sellAt(N.sel); }
 function reroll() {
-  if (busy || N.stage !== 'shop' || N.round === 1) return;
-  if (N.coins < REROLL) return toast('コインがたりない');
-  N.coins -= REROLL; rollShop(); unsel(); tipEv('reroll'); sePlay('reroll'); save(); renderNight();
+  if (busy || N.stage !== 'shop') return;
+  if (N.round === 1) {   // 1ラウンド目は 無料で2回（rolls）
+    if (!(N.rolls > 0)) return toast('無料の入れかえは もうないよ');
+    N.rolls--;
+  } else {
+    if (N.coins < REROLL) return toast('コインがたりない');
+    N.coins -= REROLL;
+  }
+  rollShop(); unsel(); tipEv('reroll'); sePlay('reroll'); save(); renderNight();
 }
 
 /* ---------- まぜる：同じ★で、属性の合うものどうし（cards.js の mixable）。調理台・ショップのどれどうしでも、まぜられる（ショップのカードは買いながら） ---------- */

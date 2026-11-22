@@ -699,7 +699,8 @@ function barHTML() {
    カードはドラッグで調理台へ（かさねると買いながら まぜる）。調理台のカードをショップへ持ってくると うる */
 function shopHTML() {
   const r1 = N.round === 1, list = N.shop;
-  const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
+  const rr = N.rolls > 0;   // 1ラウンド目の無料の入れかえ（11/22 しょーくん「最初はリロールの存在に気づかない人も多い・リロールの札を定期的に揺らして・初回のショップだけ」→ 残っているあいだ .nudge で ゆれる）
+  const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span><button class="pill sub sh-roll${rr ? ' nudge' : ''}" data-act="reroll" ${rr ? '' : 'disabled'}>入れかえ <small>無料${N.rolls || 0}</small></button>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
     : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
   const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
   return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">

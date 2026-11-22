@@ -1283,6 +1283,10 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .night .shopov.many .sh-top .kone-n{display:none}
 .sh-ttl.sh-rd{font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;color:var(--milk);padding:2px 9px;text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
 .sh-ttl.sh-free{pointer-events:none}
+.sh-top .sh-roll.nudge{animation:rrNudge 3.2s ease-in-out 1.6s infinite;transform-origin:50% 60%}
+@keyframes rrNudge{0%,78%,100%{transform:none}81%{transform:rotate(-9deg) scale(1.1)}84%{transform:rotate(8deg) scale(1.1)}87%{transform:rotate(-6deg) scale(1.06)}90%{transform:rotate(4deg)}93%{transform:rotate(-2deg)}}
+.sh-roll.sh-roll small:not(:has(.cn)){color:#8fe0a0}
+@media (prefers-reduced-motion:reduce){.sh-top .sh-roll.nudge{animation:none}}
 .sh-ttl.sh-rd{display:inline-flex;justify-content:center;align-items:center;gap:2px}
 .sh-ttl.sh-free b{margin:0;font-family:inherit;font-size:inherit;font-weight:inherit;line-height:inherit;color:rgb(244,194,78)}
 .fw-art{position:absolute;left:-3%;width:106%;bottom:0;transform-origin:50% 100%;will-change:transform}
@@ -4204,7 +4208,7 @@ return `<div class="fc-card"><b class="fc-ttl">あしたの予報</b><div class=
 
 /* src/js/night.js */
 
-const SLOTS = 5, ROUND1_SHOW = 5, ROUND1_PICKS = 3, SHOP_N = 3, INCOME = 5, REROLL = 1;
+const SLOTS = 5, ROUND1_SHOW = 3, ROUND1_PICKS = 3, ROUND1_ROLLS = 2, SHOP_N = 3, INCOME = 5, REROLL = 1;   // 11/22 しょーくん「ショップの初回も陳列は3枚に固定して通常時と統一・その代わりにリロールを初回だけ2回無料」（前は1ラウンド目に5まい並べて入れかえなし）
 const TIER_COIN = [0, 1, 3], tierOf = (t, q) => t >= q ? 2 : t >= q / 2 ? 1 : 0;
 const SELL = [0, 1, 3, 8];      // うると戻るコイン（★ごと）
 const START_HEAT = 2;           // 夜のはじめの鉄板（中火）
@@ -4227,7 +4231,7 @@ const mon = nightMonster(), id = MONSTERS[mon].id;
 Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
 const open = openBuilds();
 S.night = {
-mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
+mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS, rolls: ROUND1_ROLLS,
 board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
 sel: null, view: false, last: null,
 build: open.includes(S.build) ? S.build : open[0], kone: 0, pickChef: null, pkPage: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
@@ -4390,9 +4394,15 @@ sellFx(c, from, v, was);
 }
 function sell() { sellAt(N.sel); }
 function reroll() {
-if (busy || N.stage !== 'shop' || N.round === 1) return;
+if (busy || N.stage !== 'shop') return;
+if (N.round === 1) {   // 1ラウンド目は 無料で2回（rolls）
+if (!(N.rolls > 0)) return toast('無料の入れかえは もうないよ');
+N.rolls--;
+} else {
 if (N.coins < REROLL) return toast('コインがたりない');
-N.coins -= REROLL; rollShop(); unsel(); tipEv('reroll'); sePlay('reroll'); save(); renderNight();
+N.coins -= REROLL;
+}
+rollShop(); unsel(); tipEv('reroll'); sePlay('reroll'); save(); renderNight();
 }
 const canMix = (a, b) => mixable(cardDef(a.cid), cardDef(b.cid));
 const asCard = cid => cardDef(cid).meter ? { cid, cook: 0 } : { cid };   // 仕入れの生地は生（焼き加減0）・大作は大きさ0
@@ -5359,7 +5369,8 @@ return `<button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'dis
 }
 function shopHTML() {
 const r1 = N.round === 1, list = N.shop;
-const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
+const rr = N.rolls > 0;   // 1ラウンド目の無料の入れかえ（11/22 しょーくん「最初はリロールの存在に気づかない人も多い・リロールの札を定期的に揺らして・初回のショップだけ」→ 残っているあいだ .nudge で ゆれる）
+const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span><button class="pill sub sh-roll${rr ? ' nudge' : ''}" data-act="reroll" ${rr ? '' : 'disabled'}>入れかえ <small>無料${N.rolls || 0}</small></button>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
 : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
 const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
 return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
