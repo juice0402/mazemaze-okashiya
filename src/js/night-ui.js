@@ -58,13 +58,16 @@ const KOE_MORE = {
   star3: { honoka: 'hono-dekita', minamo: 'mina-kansei', wakaba: 'waka-dekita' },
   full: { honoka: 'hono-yattane', minamo: 'mina-joudeki', wakaba: 'waka-iikao' },
   sp: { honoka: 'hono-ikke', minamo: 'mina-korede', wakaba: 'waka-soree' },
-  show: { honoka: 'hono-achi', minamo: 'mina-hieta', wakaba: 'waka-jukushita' },
+  show: { honoka: 'hono-achi', minamo: ['mina-hieta', 'mina-iikanji'], wakaba: 'waka-jukushita' },   // 11/22 しょーくん「みなもの凍ったときの いい感じ」：冷えた。と かわりばんこ
+  max: { honoka: 'hono-max' },   // 11/22 しょーくん「ほのかの火力マックス」：バトルで火力がマックスになったとき（1ラウンドに1回）
 };
 const koeHas = id => !!id && typeof KOE_SRC !== 'undefined' && !!KOE_SRC[id];
 function koeMore(k, perRound) {
-  const id = (KOE_MORE[k] || {})[chefArt()]; if (!koeHas(id)) return false;
+  let id = (KOE_MORE[k] || {})[chefArt()];
+  if (Array.isArray(id)) { const L = id.filter(koeHas), c = L.filter(n => n !== koeMore.prev); id = (c.length ? c : L)[Math.floor(Math.random() * (c.length || L.length))]; }   // 候補がいくつかあるときは すぐ前と同じ声にしない
+  if (!koeHas(id)) return false;
   if (perRound) { const key = S.day + ':' + (N ? N.round : 0) + ':' + k; if (koeMore.last === key) return false; koeMore.last = key; }
-  koePlay(id); return true;
+  koeMore.prev = id; koePlay(id); return true;
 }
 function atkKoe(pose) {
   if (pose === 'special' && koeMore('sp')) return;   // 必殺技は「いっけー！」など

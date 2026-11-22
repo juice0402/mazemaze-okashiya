@@ -100,7 +100,7 @@ function auraOut(e, o) {
   const tos = Array.isArray(o.to) ? o.to : [o.to];
   tos.forEach((to, n) => setTimeout(() => aura(e.i, to, o.k, () => {
     if (BUFF_TXT[o.k]) addBuff(to, o.k, BUFF_TXT[o.k](o), e.i);
-    if (o.k === 'heat') { setHeat(e.heat[1]); replay($('heatBar'), 'ahit'); }
+    if (o.k === 'heat') { setHeat(e.heat[1]); replay($('heatBar'), 'ahit'); if (e.heat[1] >= HEAT_MAX && e.heat[0] < HEAT_MAX && chefArt() === 'honoka' && typeof koeMore === 'function') koeMore('max', true); }   // 火力マックス！（11/22）
     if (o.k === 'sear' && e.sear) {
       const c2 = updTile(e.sear.i, e.sear.cid, e.sear.burnt ? undefined : e.sear.to);
       if (c2) replay(c2, 'sear');
@@ -773,7 +773,7 @@ function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
       ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
-      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).map(o => o[chef])].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
+      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).flatMap(o => [].concat(o[chef] || []))].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
       seLoad('bgm', 'jg-manzoku').catch(() => {});
     }
     if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
