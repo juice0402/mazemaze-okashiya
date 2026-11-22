@@ -235,7 +235,7 @@
 .fx-dmg.s-big{font-size:min(50px,12vw)}
 .fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
 /* ダメージの数字の絵（.dgs・battle-fx.js の numSet・11/22）：字の絵を1つずつ並べる。ふちと光は絵にあるので、字のふちと影はなし・光は drop-shadow（動かさない） */
-.dgs{display:inline-flex;align-items:flex-end;-webkit-text-stroke:0;text-shadow:none!important;color:transparent}
+.dgs.dgs{display:inline-flex;flex-wrap:nowrap;align-items:flex-end;-webkit-text-stroke:0;text-shadow:none!important;color:transparent}
 .dgs .dg{display:block;height:1.1em;width:auto;margin:0 -.05em;flex:none}
 .dgs .num-1{margin:0 -.02em}
 .dgs :is(.num-comma,.num-dot){height:.42em;margin:0 -.04em -.06em}
