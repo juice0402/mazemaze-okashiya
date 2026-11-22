@@ -31,7 +31,13 @@ const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', '
 /* 考えている声「んー」（11/21 しょーくん「んーは夜のショップの考えているシーンに使うの」・waka-maa は使わない）：
    11/22 しょーくん「ショップ画面でキャラクターみんな、悩んでるボイスが流れてない気がする」→ 前は「8秒なにもしない」で、さわるたびに数えなおし・鳴ったら次のラウンドは休み＝ほとんど鳴らなかった。
    いまは ショップが出てから4秒で、毎ラウンド1回（つかんでいる・会話・大きく見ている・ヒントの声のあいだは少し待つ）。さわっても数えなおさない */
-const KOE_THINK = { honoka: 'hono-uun', minamo: 'mina-uun', wakaba: 'waka-uun' };
+/* 11/22 しょーくん「考え中の読み上げバリエーションを増やそう・キャラの性格に合わせて3種類くらい」：んー に3つずつ足して、毎回ちがう声（すぐ前と同じ声は続けない・ファイルのない声は使わない） */
+const KOE_THINK = { honoka: ['hono-uun', 'hono-think1', 'hono-think2', 'hono-think3'], minamo: ['mina-uun', 'mina-think1', 'mina-think2', 'mina-think3'], wakaba: ['waka-uun', 'waka-think1', 'waka-think2', 'waka-think3'] };
+function thinkKoe() {
+  const L = (KOE_THINK[chefArt()] || []).filter(koeHas), c = L.filter(n => n !== thinkKoe.last);
+  const n = (c.length ? c : L)[Math.floor(Math.random() * (c.length || L.length))]; if (!n) return;
+  thinkKoe.last = n; koePlay(n);
+}
 const THINK_MS = 4000;
 let thinkT = 0, thinkKey = '', thinkDone = '';
 function thinkArm() {
@@ -42,7 +48,7 @@ function thinkArm() {
   thinkT = setTimeout(function go() {
     if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting || S.day + ':' + N.round !== key) { thinkKey = ''; return; }
     if (busy || talking() || N.view || document.querySelector('.night.dragging') || (typeof TIP !== 'undefined' && TIP && Date.now() - (TIP.at || 0) < 4000)) { thinkT = setTimeout(go, 1500); return; }
-    thinkDone = key; koePlay(KOE_THINK[chefArt()]);
+    thinkDone = key; thinkKoe();
   }, THINK_MS);
 }
 /* 場面の声（11/21 しょーくん「大作ができたときの ほのか『できた！』みなも『完成。』わかば『できた』とか色々」・えらぶ質問で4つ）：

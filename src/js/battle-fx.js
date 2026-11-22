@@ -773,7 +773,7 @@ function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
       ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
-      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), KOE_THINK[chef], ...Object.values(KOE_MORE).map(o => o[chef])].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
+      [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).map(o => o[chef])].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
       seLoad('bgm', 'jg-manzoku').catch(() => {});
     }
     if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
