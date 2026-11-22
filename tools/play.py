@@ -115,6 +115,9 @@ with sync_playwright() as p:
                 except Exception as e: log.append('close fail ' + str(e)[:80])
                 page.wait_for_timeout(250); continue
             st = s['st']
+            if st == 'ichi':   # 夜市（11/22 夜）は買わずに お店へ
+                if not btn(page, 'ichiGo'): ev(page, 'ichiGo(); 0')
+                page.wait_for_timeout(600); continue
             if st == 'pick':
                 ev(page, f"pickBuild('{build}'); 0"); page.wait_for_timeout(200)
                 if not btn(page, 'pickGo'): ev(page, 'pickGo(); 0')

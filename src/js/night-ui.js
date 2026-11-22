@@ -786,16 +786,7 @@ function pickHTML() {
       <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
   const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
-  return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${pkIchiHTML()}${trial}</div>`;
-}
-/* 夜市（11/22 夜 しょーくん「モンスター素材を有限に・夜市で3枚までビルドに組みこむ」）：いちど来たお客さんのふしぎな素材を並べ、タップで買う・やめる。
-   買った素材は その夜のデッキに入る（night.js の poolList）。並ぶ素材がなければ出さない */
-function pkIchiHTML() {
-  const list = ichiList(); if (!list.length) return '';
-  const on = N.ichi || [];
-  return `<div class="pk-ex"><p class="pk-ex-ttl">夜市 <small>${on.length}/${ICHI_N}まい・1まい ${fmt(ICHI_PRICE)}円</small><span class="pk-ex-wal">お財布 ${fmt(S.money)}円</span></p>
-    <div class="pk-ex-row">${list.map(id => { const b = on.includes(id), poor = !b && (S.money < ICHI_PRICE || on.length >= ICHI_N);
-      return `<button class="pk-xc${b ? ' on' : ''}${poor ? ' poor' : ''}" data-act="ichi" data-id="${esc(id)}" aria-pressed="${b}" aria-label="${esc(MATS[id].short)}">${cardMini('m:' + id)}${b ? '<i class="pk-on pk-xon">買った</i>' : ''}</button>`; }).join('')}</div></div>`;
+  return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
 }
 
 /* ---------- 夜の画面 ---------- */
@@ -813,6 +804,7 @@ function pickRender() {
 function renderNight() {
   if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
   N = S.night;
+  if (N.stage === 'ichi') return ichiRender();   // 夜市（来店の前・ichi.js）
   document.body.dataset.chef = chefArt();   // シェフごとの見た目（紋章・一撃の色）。fx の層は body の下なので body につける（11/19）
   document.body.dataset.candy = candyNight() ? '1' : '';   // ちいさなキャンディの夜は 氷ではなく 飴の演出（11/22 しょーくん「冷気関係なくなったから 氷のエフェクトじゃなくて」）
   const mon = MONSTERS[N.mon];   // 上の札はラウンドだけ（場の名前は 11/19 にやめた・しょーくん「ビルド表記もいらない。ウェーブだけでOK」）

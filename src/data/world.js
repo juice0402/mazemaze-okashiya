@@ -48,10 +48,26 @@ const KAISO_WORD = { coin: n => '夜のはじめのコイン+' + n, roll: n => '
 const kaisoText = st => Object.entries(st.give).map(([k, n]) => KAISO_WORD[k](n)).join('・');   // 雑貨屋に出す文
 function kaisoBuy() { const st = kaisoNext(); if (!st || S.money < st.price) return false; S.money -= st.price; S.kaiso = kaisoLv() + 1; save(); return true; }
 /* 夜市（11/22 夜 しょーくん「モンスター素材を有限に・夜市で3枚までビルドに組みこむ・永続的にお金を使う用途」）：
-   いちど来たお客さんのふしぎな素材を、夜のビルドをえらぶ画面で 毎晩 お金で買う（3まいまで）→ その夜のデッキに入る（ショップに出る・その夜だけ）。
-   その夜のお客さんの素材がタダでショップに出るのは やめた（夜市だけ）。値段はぽぽちの仮 */
-const ICHI_N = 3, ICHI_PRICE = 1000;
-const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶ素材
+   いちど来たお客さんのふしぎな素材を 毎晩 お金で買う（3まいまで）→ その夜のデッキに入る（ショップに出る・その夜だけ）。
+   その夜のお客さんの素材がタダでショップに出るのは やめた（夜市だけ）。
+   11/22 夜 しょーくん「夜市をもっと専用のページに・ドワーフの女の子の行商人が仕入れたモンスター素材・値段はランダムで値上げも値引きも」→ えらぶ質問で
+   「来店の前に寄る」「品ごと＋たまに大安売り」「毎晩4品だけ」。ページは ichi.js。値段と割合はぽぽちの仮 */
+const ICHI_N = 3, ICHI_PRICE = 1000, ICHI_SHOW = 4;
+const ICHI_MUL = [0.7, 0.85, 1, 1, 1.2, 1.4], ICHI_SALE_P = 0.15, ICHI_SALE = 0.5;   // 品ごとの値段のゆれ（1,000円に かける）・大安売りの夜（約7晩に1回・ぜんぶ半額）
+const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶことのある素材
+/* その夜の仕入れ：日にちで決まる（読みなおしても同じ）。{ sale, items:[{ id, price, tag:'sale'|'down'|'up'|'' }] } */
+function ichiStock(day = S.day) {
+  const list = ichiList(); if (!list.length) return { sale: false, items: [] };
+  let s = (Math.imul(day + 7, 2654435761) ^ 0x5bd1e995) >>> 0;
+  const r = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
+  r(); const sale = r() < ICHI_SALE_P;
+  for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
+  const items = list.slice(0, ICHI_SHOW).map(id => {
+    const m = sale ? ICHI_SALE : ICHI_MUL[Math.floor(r() * ICHI_MUL.length)];
+    return { id, price: Math.round(ICHI_PRICE * m / 50) * 50, tag: sale ? 'sale' : m < 1 ? 'down' : m > 1 ? 'up' : '' };
+  });
+  return { sale, items };
+}
 
 /* お金（11/18 しょーくん「現実の値段っぽく。売値・原価・モンスターのお金のバランスが崩れないように」）
    お菓子1こ：ふつう200〜300円・モンスター素材入り400〜600円（cards.js の recipeOf の price＝材料の value×YEN_PER_VALUE）

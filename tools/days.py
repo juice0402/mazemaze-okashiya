@@ -132,7 +132,12 @@ with sync_playwright() as p:
             page.wait_for_timeout(800)
         elif ph == 'night':
             sg = st['stage']
-            if sg == 'pick':
+            if sg == 'ichi':   # 夜市（11/22 夜）：1日おきに1まい目を大きく見て買う → お店へ
+                if st['day'] % 2 == 0 and click('.ich-it'):
+                    page.wait_for_timeout(300); click('.vbtns [data-act=ichiBuy]'); page.wait_for_timeout(300)
+                if not click('[data-act=ichiGo]'): ev('ichiGo()')
+                page.wait_for_timeout(600)
+            elif sg == 'pick':
                 L = st['open']; bd = L[st['day'] % len(L)]
                 ev(f'pickBuild({json.dumps(bd)}); pickGo()'); page.wait_for_timeout(600)
             elif sg == 'arrive': page.wait_for_timeout(400)

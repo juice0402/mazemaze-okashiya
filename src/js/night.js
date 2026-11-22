@@ -28,14 +28,14 @@ let busy = false;      // バトルとまぜる演出の間は操作しない
 let fighting = false;  // バトルの間（ショップをとじて、舞台でバトルを見せる）
 
 function startNight() {
-  S.phase = 'night'; frameCracks = [];   // オーバーランの額縁のひびは その夜だけ（battle-fx.js）
+  S.phase = 'night'; frameCracks = []; ichiSel = null; ichiLine = '';   // オーバーランの額縁のひびは その夜だけ（battle-fx.js）
   if (!S.today) S.today = newDay(S.day);
   const mon = nightMonster(), id = MONSTERS[mon].id;
   Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
   S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
   const open = openBuilds();
   S.night = {
-    mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 || ichiList().length ? 'pick' : 'arrive',   // えらぶ画面はビルドが2つ以上か、夜市に素材があるとき（11/22 夜）
+    mon, field: null, heat: START_HEAT, call: false, stage: ichiStock().items.length ? 'ichi' : open.length > 1 ? 'pick' : 'arrive',   // 夜市（11/22 夜・来店の前に寄る・ichi.js）→ えらぶ画面はビルドが2つ以上のとき
     round: 1, coins: kaisoGive('coin'), picks: ROUND1_PICKS, rolls: ROUND1_ROLLS, free: kaisoGive('roll'), ichi: [],   // coins・free＝お店の改装（11/22・free は2ラウンド目からの無料の入れかえ）・ichi＝夜市で買った素材（その夜だけ）
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     sel: null, view: false, last: null,
@@ -47,15 +47,23 @@ function startNight() {
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
-/* 夜市（11/22 夜 しょーくん）：えらぶ画面のビルドの一覧の下。タップで買う（お店のお金 ICHI_PRICE）・もう一度タップでやめる（えらぶ画面のあいだは もどる）。3まいまで */
+/* 夜市（11/22 夜 しょーくん）：来店の前の専用ページ（ichi.js）。大きく見る画面の「買う」で買う・「やめる」でやめる（このページのあいだは お金がもどる）。3まいまで。
+   値段はその夜の仕入れ ichiStock（world.js）。もどると えらぶ画面（ビルドが2つ以上）か 来店へ */
 function ichiPick(id) {
-  if (N.stage !== 'pick' || !ichiList().includes(id)) return;
-  N.ichi = N.ichi || [];
-  if (N.ichi.includes(id)) { N.ichi = N.ichi.filter(x => x !== id); S.money += ICHI_PRICE; }
-  else if (N.ichi.length >= ICHI_N) return toast('夜市で買えるのは ' + ICHI_N + 'まいまで');
-  else if (S.money < ICHI_PRICE) return toast('お金がたりない');
-  else { N.ichi = [...N.ichi, id]; S.money -= ICHI_PRICE; sePlay('buy'); save(); return pickRender(); }
-  sePlay('tap'); save(); pickRender();
+  const it = N.stage === 'ichi' && ichiStock().items.find(x => x.id === id); if (!it) return;
+  N.ichi = N.ichi || []; N.ichiPaid = N.ichiPaid || {};
+  if (N.ichi.includes(id)) { N.ichi = N.ichi.filter(x => x !== id); S.money += N.ichiPaid[id] || it.price; delete N.ichiPaid[id]; ichiLine = 'back'; sePlay('tap'); }
+  else if (N.ichi.length >= ICHI_N) ichiLine = 'full';
+  else if (S.money < it.price) ichiLine = 'poor';
+  else { N.ichi = [...N.ichi, id]; N.ichiPaid[id] = it.price; S.money -= it.price; ichiLine = 'buy'; sePlay('buy'); }
+  ichiSel = null; save(); ichiRender();
+}
+function ichiGo() {
+  if (N.stage !== 'ichi') return;
+  ichiSel = null; ichiLine = '';
+  if (openBuilds().length > 1) N.stage = 'pick';
+  else { nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true; }   // 買った素材がショップに出るように、配りなおす
+  sePlay('tap'); save(); render();
 }
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
 /* シェフ → ビルド（11/22）：pickChef＝そのシェフのビルドの一覧へ（前の夜とちがうシェフなら、そのシェフの1つめのビルドをえらんでおく）・pickBack＝シェフの一覧へ・pickNext＝いまのシェフのビルドの一覧へ */

@@ -1444,19 +1444,51 @@ font-size:calc(var(--W) * var(--fz) * 2);-webkit-text-stroke:calc(var(--W) * var
 .bintro.fin.gold .bi-t{font-size:min(58px,calc(12.6cqw - 1px));letter-spacing:1px;color:#ffe066;text-shadow:0 4px 0 #3a1004,0 0 26px rgba(255,210,80,1)}
 @media (prefers-reduced-motion:reduce){.night.quake4,.night.quake5{animation:none}}
 .pk-best{color:#a8380a;font-weight:800}
-.pk-ex{flex:none;display:flex;flex-direction:column;gap:4px;padding:2px 6px 4px;border:10px solid transparent;border-image:var(--ui-strip) 30 fill/10px stretch;color:#4a2814}
-.pk-ex-ttl{margin:0;font-family:var(--disp);font-weight:400;font-size:14px;color:#7a1a0c}
-.pk-ex-ttl{display:flex;align-items:baseline;gap:8px}
-.pk-ex-ttl small{font-family:var(--font);font-size:11px;font-weight:700;color:#7a5a4a}
-.pk-ex-wal{margin-left:auto;font-family:var(--font);font-size:11px;font-weight:800;color:#5a3404;white-space:nowrap}
-.pk-ex-row{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px;scrollbar-width:none}
-.pk-ex-row::-webkit-scrollbar{display:none}
-button.pk-xc{position:relative;flex:none;width:44px;aspect-ratio:5/7;padding:0;border:0;background:none;box-shadow:none;transition:transform .15s,opacity .15s}
-button.pk-xc.on{opacity:1;filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 7px rgba(255,190,80,.8))}
-button.pk-xc:active{transform:scale(.94)}
-button.pk-xc.poor{opacity:.4}
-.pk-xc .pk-xon{position:absolute;left:50%;right:auto;top:-12px;translate:-50% 0;height:18px;line-height:16px;padding:0 .9em;font-size:9.5px}
 .end-best{margin:-4px 0 4px;font-family:var(--disp);font-weight:400;font-size:15px;color:#ffe08a;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill}
+.ichi{position:relative;display:flex;flex-direction:column}
+.ich-stage{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:14px;border:3px solid #3a2318;box-shadow:0 4px 0 rgba(0,0,0,.35);
+background:#1c1230 var(--ichbg) center 35%/cover no-repeat}
+.ichi:not(.hasbg) .ich-stage::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(18,10,40,.62),rgba(30,14,40,.5) 55%,rgba(20,10,20,.7));pointer-events:none}
+.ich-stage::after{content:"";position:absolute;left:10%;right:10%;top:18%;height:46%;background:radial-gradient(closest-side,rgba(255,196,110,.28),transparent);pointer-events:none}
+.ich-top{position:absolute;top:9px;left:13px;right:13px;z-index:6;display:flex;align-items:center}
+.ich-ttl{height:24px;box-sizing:border-box;display:inline-flex;align-items:center;padding:0 12px;font-family:var(--disp);font-size:13px;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c;
+border:1px solid transparent;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;background:linear-gradient(#6b3418,#6b3418) center/calc(100% - 1.2em) calc(100% - 4px) no-repeat}
+.ich-banner{position:absolute;top:8px;left:50%;translate:-50% 0;z-index:5;width:min(62%,230px);aspect-ratio:3.2/1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+background:linear-gradient(#d8402c,#a82418);border:2px solid #f2c45a;border-radius:4px;box-shadow:0 3px 0 rgba(0,0,0,.3);animation:ichSway 3.6s ease-in-out infinite;transform-origin:50% 0}
+.ich-banner.art{background:center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none}
+.ich-banner b{font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.1;color:#ffe9a8;text-shadow:0 2px 0 #5a0e06}
+.ich-banner small{font-size:10px;font-weight:800;color:#fff3d6}
+@keyframes ichSway{50%{transform:rotate(1.4deg)}}
+.ich-girl{position:absolute;left:50%;bottom:6%;z-index:2;height:66%;width:auto;max-width:none;translate:-50% 0;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));animation:ichBreath 4.2s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes ichBreath{50%{transform:scaleY(1.012)}}
+.ich-say{position:absolute;left:12px;right:12px;top:42px;z-index:5;margin:0;padding:7px 12px;font-size:12px;line-height:1.45;color:#3a2318;background:#fff6e4;border:2px solid #6b3418;border-radius:12px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.ich-say.low{top:calc(8px + min(62%,230px) / 3.2 + 8px)}
+.ich-say b{display:block;font-size:10px;color:#8a4a1c}
+.ich-counter{position:absolute;left:0;right:0;bottom:0;z-index:3;aspect-ratio:4/1.15;
+background:linear-gradient(#a8703f 0 9%,#7a4a26 9% 13%,#8f5a30 13% 68%,#6b3418 68% 72%,transparent 72%),
+repeating-linear-gradient(90deg,#5a1e48 0 14px,#6e2a58 14px 28px) bottom/100% 30% no-repeat}
+.ich-counter.art{background:center bottom/100% auto no-repeat}
+.ich-row{position:absolute;left:10px;right:10px;bottom:calc(100% - 12%);display:flex;justify-content:center;align-items:flex-end;gap:8px}
+button.ich-it{position:relative;flex:0 1 auto;width:calc((100% - 24px) / 4);max-width:86px;padding:0;border:0;background:none;display:flex;flex-direction:column;align-items:center;transition:transform .12s}
+button.ich-it:active{transform:scale(.95)}
+.ich-card{display:block;width:100%;aspect-ratio:5/7;filter:drop-shadow(0 4px 4px rgba(0,0,0,.45))}
+.ich-card .pc{width:100%;height:100%}
+.ich-nm{position:absolute;top:100%;left:-4px;right:-4px;margin-top:9px;font-size:10px;font-weight:800;line-height:1.2;text-align:center;color:var(--milk);text-shadow:0 1px 0 #2a120a,1px 0 0 #2a120a,-1px 0 0 #2a120a,0 -1px 0 #2a120a}
+button.ich-it.on .ich-card{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 8px rgba(255,190,80,.8))}
+button.ich-it.poor .ich-card{opacity:.45}
+.ich-got{position:absolute;left:50%;bottom:4px;translate:-50% 0;z-index:2;padding:1px 8px;font-size:10px;font-weight:800;font-style:normal;white-space:nowrap;color:#fff;background:#c4501e;border:1.5px solid #fff3d6;border-radius:999px}
+.ich-tag{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;margin-bottom:5px;padding:3px 6px 4px;font-style:normal;line-height:1.1;
+color:#3a2318;background:#e8c48c;border:1.5px solid #6b3418;border-radius:6px;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.ich-tag.art{min-width:62px;padding:12px 6px 6px;background:center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none}
+button.ich-it .ich-tag b{font-family:var(--disp);font-weight:400;font-size:14px;color:#3a2318}
+.ich-tag b small{font-family:var(--font);font-size:9px;font-weight:800;margin-left:1px}
+button.ich-it .ich-tag em{font-style:normal;font-size:9px;font-weight:800;color:#3a2318}
+.ich-tag.down:not(.art),.ich-tag.sale:not(.art){background:linear-gradient(90deg,#fff 0 6px,#d8402c 6px 12px) top/12px 5px repeat-x,#f2d6a2;padding-top:7px}
+button.ich-it .ich-tag.down em,button.ich-it .ich-tag.sale b{color:#b8261a}
+button.ich-it .ich-tag.up em{color:#6a2a7a}
+.ich-info{flex:none;margin:0;text-align:center;font-size:11px;font-weight:700;color:var(--milk)}
+.ich-info b{font-family:var(--disp);font-weight:400;font-size:13px;color:#ffe08a}
+@media (prefers-reduced-motion:reduce){.ich-banner,.ich-girl{animation:none}}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -2768,8 +2800,21 @@ const kaisoNext = () => KAISO[kaisoLv()] || null;   // 次の段（完成なら 
 const KAISO_WORD = { coin: n => '夜のはじめのコイン+' + n, roll: n => '夜の無料の入れかえ+' + n };
 const kaisoText = st => Object.entries(st.give).map(([k, n]) => KAISO_WORD[k](n)).join('・');   // 雑貨屋に出す文
 function kaisoBuy() { const st = kaisoNext(); if (!st || S.money < st.price) return false; S.money -= st.price; S.kaiso = kaisoLv() + 1; save(); return true; }
-const ICHI_N = 3, ICHI_PRICE = 1000;
-const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶ素材
+const ICHI_N = 3, ICHI_PRICE = 1000, ICHI_SHOW = 4;
+const ICHI_MUL = [0.7, 0.85, 1, 1, 1.2, 1.4], ICHI_SALE_P = 0.15, ICHI_SALE = 0.5;   // 品ごとの値段のゆれ（1,000円に かける）・大安売りの夜（約7晩に1回・ぜんぶ半額）
+const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶことのある素材
+function ichiStock(day = S.day) {
+const list = ichiList(); if (!list.length) return { sale: false, items: [] };
+let s = (Math.imul(day + 7, 2654435761) ^ 0x5bd1e995) >>> 0;
+const r = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
+r(); const sale = r() < ICHI_SALE_P;
+for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
+const items = list.slice(0, ICHI_SHOW).map(id => {
+const m = sale ? ICHI_SALE : ICHI_MUL[Math.floor(r() * ICHI_MUL.length)];
+return { id, price: Math.round(ICHI_PRICE * m / 50) * 50, tag: sale ? 'sale' : m < 1 ? 'down' : m > 1 ? 'up' : '' };
+});
+return { sale, items };
+}
 const START_MONEY = 1000;    // はじめのお金（プロローグ「お財布、さみしい」）
 const YEN_PER_VALUE = 7;
 const MOODS = [
@@ -4404,14 +4449,14 @@ let N = null;          // S.night（夜のあいだの状態）
 let busy = false;      // バトルとまぜる演出の間は操作しない
 let fighting = false;  // バトルの間（ショップをとじて、舞台でバトルを見せる）
 function startNight() {
-S.phase = 'night'; frameCracks = [];   // オーバーランの額縁のひびは その夜だけ（battle-fx.js）
+S.phase = 'night'; frameCracks = []; ichiSel = null; ichiLine = '';   // オーバーランの額縁のひびは その夜だけ（battle-fx.js）
 if (!S.today) S.today = newDay(S.day);
 const mon = nightMonster(), id = MONSTERS[mon].id;
 Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
 S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
 const open = openBuilds();
 S.night = {
-mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 || ichiList().length ? 'pick' : 'arrive',   // えらぶ画面はビルドが2つ以上か、夜市に素材があるとき（11/22 夜）
+mon, field: null, heat: START_HEAT, call: false, stage: ichiStock().items.length ? 'ichi' : open.length > 1 ? 'pick' : 'arrive',   // 夜市（11/22 夜・来店の前に寄る・ichi.js）→ えらぶ画面はビルドが2つ以上のとき
 round: 1, coins: kaisoGive('coin'), picks: ROUND1_PICKS, rolls: ROUND1_ROLLS, free: kaisoGive('roll'), ichi: [],   // coins・free＝お店の改装（11/22・free は2ラウンド目からの無料の入れかえ）・ichi＝夜市で買った素材（その夜だけ）
 board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
 sel: null, view: false, last: null,
@@ -4423,13 +4468,20 @@ nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読�
 save(); render();
 }
 function ichiPick(id) {
-if (N.stage !== 'pick' || !ichiList().includes(id)) return;
-N.ichi = N.ichi || [];
-if (N.ichi.includes(id)) { N.ichi = N.ichi.filter(x => x !== id); S.money += ICHI_PRICE; }
-else if (N.ichi.length >= ICHI_N) return toast('夜市で買えるのは ' + ICHI_N + 'まいまで');
-else if (S.money < ICHI_PRICE) return toast('お金がたりない');
-else { N.ichi = [...N.ichi, id]; S.money -= ICHI_PRICE; sePlay('buy'); save(); return pickRender(); }
-sePlay('tap'); save(); pickRender();
+const it = N.stage === 'ichi' && ichiStock().items.find(x => x.id === id); if (!it) return;
+N.ichi = N.ichi || []; N.ichiPaid = N.ichiPaid || {};
+if (N.ichi.includes(id)) { N.ichi = N.ichi.filter(x => x !== id); S.money += N.ichiPaid[id] || it.price; delete N.ichiPaid[id]; ichiLine = 'back'; sePlay('tap'); }
+else if (N.ichi.length >= ICHI_N) ichiLine = 'full';
+else if (S.money < it.price) ichiLine = 'poor';
+else { N.ichi = [...N.ichi, id]; N.ichiPaid[id] = it.price; S.money -= it.price; ichiLine = 'buy'; sePlay('buy'); }
+ichiSel = null; save(); ichiRender();
+}
+function ichiGo() {
+if (N.stage !== 'ichi') return;
+ichiSel = null; ichiLine = '';
+if (openBuilds().length > 1) N.stage = 'pick';
+else { nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true; }   // 買った素材がショップに出るように、配りなおす
+sePlay('tap'); save(); render();
 }
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
 function pickChef(c) {
@@ -5639,14 +5691,7 @@ return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}
 <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
 }).join('');
 const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
-return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${pkIchiHTML()}${trial}</div>`;
-}
-function pkIchiHTML() {
-const list = ichiList(); if (!list.length) return '';
-const on = N.ichi || [];
-return `<div class="pk-ex"><p class="pk-ex-ttl">夜市 <small>${on.length}/${ICHI_N}まい・1まい ${fmt(ICHI_PRICE)}円</small><span class="pk-ex-wal">お財布 ${fmt(S.money)}円</span></p>
-<div class="pk-ex-row">${list.map(id => { const b = on.includes(id), poor = !b && (S.money < ICHI_PRICE || on.length >= ICHI_N);
-return `<button class="pk-xc${b ? ' on' : ''}${poor ? ' poor' : ''}" data-act="ichi" data-id="${esc(id)}" aria-pressed="${b}" aria-label="${esc(MATS[id].short)}">${cardMini('m:' + id)}${b ? '<i class="pk-on pk-xon">買った</i>' : ''}</button>`; }).join('')}</div></div>`;
+return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
 }
 function pickRender() {
 const ov = document.querySelector('.pickov'), bar = document.querySelector('section.night > .bar');
@@ -5660,6 +5705,7 @@ document.body.dataset.chef = chefArt(); document.body.dataset.candy = candyNight
 function renderNight() {
 if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
 N = S.night;
+if (N.stage === 'ichi') return ichiRender();   // 夜市（来店の前・ichi.js）
 document.body.dataset.chef = chefArt();   // シェフごとの見た目（紋章・一撃の色）。fx の層は body の下なので body につける（11/19）
 document.body.dataset.candy = candyNight() ? '1' : '';   // ちいさなキャンディの夜は 氷ではなく 飴の演出（11/22 しょーくん「冷気関係なくなったから 氷のエフェクトじゃなくて」）
 const mon = MONSTERS[N.mon];   // 上の札はラウンドだけ（場の名前は 11/19 にやめた・しょーくん「ビルド表記もいらない。ウェーブだけでOK」）
@@ -5700,6 +5746,61 @@ if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nig
 if (N.stage === 'shop' && !fighting) shopFit();
 tipSync();   // 夜のヒント（tips.js）
 thinkArm();   // 考えている声
+}
+
+/* src/js/ichi.js */
+
+let ichiSel = null, ichiLine = '';   // 大きく見ている品・行商人のひとこと（'' はあいさつ）
+const ICHI_SAY = {
+hello: ['いらっしゃい！ 森の奥で見つけた素材、そろってるよ', 'こんばんは！ 今夜もいいのが入ったよ', 'ランタンのあかりで、ゆっくり見ていってね'],
+sale: ['今夜は大安売り！ ぜんぶ半額だよ'],
+buy: ['ありがと！ おいしいおもてなしになるといいね'],
+back: ['はーい、もどしておくね'],
+full: ['今夜はここまで。持ちきれないでしょ？'],
+poor: ['あれれ、お財布がちょっと足りないみたい'],
+};
+const ICHI_TAG = { down: 'お買い得', up: 'ちょっと高い' };
+function ichiSay(k) {
+const L = (typeof STORY === 'object' && STORY.ichi && STORY.ichi[k]) || ICHI_SAY[k] || ICHI_SAY.hello;
+return typeof L === 'function' ? L() : L[S.day % L.length];
+}
+function ichiView(id) {
+if (!N || N.stage !== 'ichi') return;
+ichiSel = id && ichiStock().items.some(x => x.id === id) ? id : null;
+if (ichiSel) sePlay('tap');
+ichiRender();
+}
+function ichiRender() {
+const st = ichiStock(), on = N.ichi || [], left = ICHI_N - on.length;
+const bg = ART['ichi-bg'], girl = ART['dwarf'], name = (typeof STORY === 'object' && STORY.ichiName) || '行商人';
+const art = n => ART[n] ? ` style="background-image:url('${ART[n]}')"` : '';
+const items = st.items.map(it => {
+const b = on.includes(it.id), poor = !b && (S.money < it.price || left <= 0);
+return `<button class="ich-it${b ? ' on' : ''}${poor ? ' poor' : ''}" data-act="ichiV" data-id="${esc(it.id)}" aria-label="${esc(MATS[it.id].short)} ${fmt(it.price)}円">
+<i class="ich-tag ${it.tag}${ART[it.tag === 'down' || it.tag === 'sale' ? 'ichi-tag-sale' : 'ichi-tag'] ? ' art' : ''}"${art(it.tag === 'down' || it.tag === 'sale' ? 'ichi-tag-sale' : 'ichi-tag')}><b>${fmt(it.price)}<small>円</small></b>${ICHI_TAG[it.tag] ? `<em>${ICHI_TAG[it.tag]}</em>` : ''}</i>
+<span class="ich-card">${cardTile('m:' + it.id)}</span><span class="ich-nm">${esc(MATS[it.id].short)}</span>${b ? '<i class="ich-got">買った</i>' : ''}</button>`;
+}).join('');
+$('screen').innerHTML = `<section class="ichi fit${bg ? ' hasbg' : ''}">
+<div class="ich-stage" style="--ichbg:url('${bg || ART['bg-shop-out-tall'] || ''}')">
+<div class="ich-top"><span class="ich-ttl">夜市</span></div>
+${st.sale ? `<div class="ich-banner${ART['ichi-banner'] ? ' art' : ''}"${art('ichi-banner')}><b>大安売り</b><small>ぜんぶ半額</small></div>` : ''}
+${girl ? `<img class="ich-girl" src="${girl}" alt="${esc(name)}">` : ''}
+<p class="ich-say${st.sale ? ' low' : ''}"><b>${esc(name)}</b>${esc(ichiSay(ichiLine || (st.sale ? 'sale' : 'hello')))}</p>
+<div class="ich-counter${ART['ichi-counter'] ? ' art' : ''}"${art('ichi-counter')}><div class="ich-row">${items}</div></div>
+</div>
+<p class="ich-info">${left > 0 ? `あと <b>${left}</b>まい 買える` : '今夜は もう持てない'}・買った素材は 今夜だけ ショップに出る</p>
+<div class="bar"><button class="bake" data-act="ichiGo">${on.length ? 'これで お店へ' : '買わずに お店へ'}</button></div>
+${ichiViewerHTML(st)}</section>`;
+renderTop();
+if (!S.seen.ichi && typeof STORY === 'object' && typeof STORY.ichiFirst === 'function' && !talking()) { S.seen.ichi = S.day; save(); talk(STORY.ichiFirst(), () => {}); }
+}
+function ichiViewerHTML(st) {
+const it = ichiSel && st.items.find(x => x.id === ichiSel); if (!it) return '';
+const b = (N.ichi || []).includes(it.id), cid = 'm:' + it.id;
+const btn = b ? `<button class="pill sub" data-act="ichiBuy" data-id="${esc(it.id)}">やめる <small>+${fmt((N.ichiPaid || {})[it.id] || it.price)}円</small></button>`
+: `<button class="pill go2" data-act="ichiBuy" data-id="${esc(it.id)}">買う <small>${fmt(it.price)}円</small></button>`;
+return `<div class="viewer" data-act="ichiClose"><div class="vbox" data-act="noop"><button class="vclose" data-act="ichiClose" aria-label="とじる">×</button>${cardBig(cid)}${cardInfo(cid)}
+<div class="vbtns"><button class="pill sub" data-act="ichiClose">とじる</button>${btn}</div><p class="vhint">${ICHI_TAG[it.tag] ? ICHI_TAG[it.tag] + '・' : it.tag === 'sale' ? '大安売り・' : ''}買うと 今夜だけ ショップに出る</p></div></div>`;
 }
 
 /* src/js/battle-fx.js */
@@ -6700,6 +6801,7 @@ addEventListener('resize', () => { if (TIP) requestAnimationFrame(tipDraw); });
 /* src/js/talk.js */
 
 const TALKERS = {
+dwarf: { name: (typeof STORY === 'object' && STORY.ichiName) || '行商人', side: 'r', faces: { ふつう: 'dwarf', にっこり: 'dwarf-joy', おどろき: 'dwarf-wow', ウインク: 'dwarf-wink', こまり: 'dwarf-komari' } },
 honoka: { name: 'ほのか', side: 'l', flip: true, faces: {
 ふつう: 'honoka', うれしい: 'honoka-joy', びっくり: 'honoka-surprise', しょんぼり: 'honoka-oops',
 やる気: 'honoka-yaruki', あちゃー: 'honoka-achaa', 不安: 'honoka-fuan', くやしい: 'honoka-kuyashii', わくわく: 'honoka-wakuwaku',
@@ -8402,7 +8504,10 @@ bake: () => omotenashi(),
 pickB: el => pickBuild(el.dataset.id),   // 夕方のシェフ・ビルドえらび（11/18）
 pickGo: () => pickGo(),
 pickC: el => pickChef(el.dataset.id),   // シェフ → ビルド（11/22）
-ichi: el => ichiPick(el.dataset.id),   // 夜市（11/22 夜）
+ichiV: el => ichiView(el.dataset.id),   // 夜市（11/22 夜・ichi.js）：タップで大きく見る → 買う・やめる → もどる
+ichiBuy: el => ichiPick(el.dataset.id),
+ichiClose: () => ichiView(null),
+ichiGo: () => ichiGo(),
 pickBack: () => pickBack(),
 pickNext: () => pickNext(),
 pkPage: el => pickPageGo(+el.dataset.d),
@@ -8440,7 +8545,7 @@ renderTop(); bgmSync();
 dragInit($('screen'));
 render();
 }
-const NO_TAP = { buy: 1, reroll: 1, optSet: 1, ichi: 1 };   // ichi＝夜市（買う音は ichiPick）
+const NO_TAP = { buy: 1, reroll: 1, optSet: 1, ichiBuy: 1, ichiGo: 1 };   // 夜市の買う・もどるの音は ichiPick・ichiGo
 function pressFx(el) {
 if (REDUCED || !el.matches('.big,.bake,.pill,.go2,.sub,.vclose')) return;
 const r = el.getBoundingClientRect(), fx = document.createElement('i');

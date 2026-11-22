@@ -10,6 +10,8 @@
    文字は1文字ずつ出る。タップで全部出す → もう1回タップで次。右上のスキップで最後まで飛ばす
    話す人の名前・立ち絵は下の TALKERS（新しい人・表情は、昼のチャットが「リーダーへのお願い」で） ==== */
 const TALKERS = {
+  /* 夜市の行商人（11/22 夜・ドワーフの女の子・ランタンの夜商人）：名前は STORY.ichiName（昼のチャット）。表情の絵は art-irai の dwarf・dwarf-face */
+  dwarf: { name: (typeof STORY === 'object' && STORY.ichiName) || '行商人', side: 'r', faces: { ふつう: 'dwarf', にっこり: 'dwarf-joy', おどろき: 'dwarf-wow', ウインク: 'dwarf-wink', こまり: 'dwarf-komari' } },
   honoka: { name: 'ほのか', side: 'l', flip: true, faces: {
     ふつう: 'honoka', うれしい: 'honoka-joy', びっくり: 'honoka-surprise', しょんぼり: 'honoka-oops',
     やる気: 'honoka-yaruki', あちゃー: 'honoka-achaa', 不安: 'honoka-fuan', くやしい: 'honoka-kuyashii', わくわく: 'honoka-wakuwaku',
