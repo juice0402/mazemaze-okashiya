@@ -31,8 +31,12 @@ const TALKERS = {
   kurage: { name: 'しずくクラゲ', side: 'r', mon: 'kurage' },   // H-022
   tokage: { name: 'こんぺいトカゲ', side: 'r', mon: 'tokage' },
   hiyoko: { name: 'ほのお鳥のひよこ', side: 'r', mon: 'hiyoko' },
+  mogura: { name: 'チョコもぐら', side: 'r', mon: 'mogura' },   // 11/22 新しい夜のお客さん4体
+  pengin: { name: 'プリンペンギン', side: 'r', mon: 'pengin' },
+  kaeru: { name: 'まっちゃガエル', side: 'r', mon: 'kaeru' },
+  risu: { name: 'ポップコーンりす', side: 'r', mon: 'risu' },
 };
-const TALKER_ID = Object.assign({ ぷるぷるスライム: 'slime', ひつじ: 'hitsuji', クラゲ: 'kurage', トカゲ: 'tokage', ひよこ: 'hiyoko' },
+const TALKER_ID = Object.assign({ ぷるぷるスライム: 'slime', ひつじ: 'hitsuji', クラゲ: 'kurage', トカゲ: 'tokage', ひよこ: 'hiyoko', もぐら: 'mogura', ペンギン: 'pengin', カエル: 'kaeru', りす: 'risu' },
   ...Object.entries(TALKERS).map(([id, t]) => ({ [t.name]: id })));
 const TK_SPEED = 38;   // 1文字の ms
 

@@ -122,11 +122,14 @@ function auraOut(e, o) {
 
 /* ---------- 3. 舞台の賑やかし ---------- */
 /* [絵の名前, 絵がまだないときの仮の絵, 置き場所のクラス]。絵は Codex（art-irai の requests/okashi/mobs-chibi.md） */
-const MOB_RANK = ['mob-hitsuji', 'mob-slime', 'mob-tokage', 'mob-hiyoko'];   // 大きい順（ショップの立ち位置）
+const MOB_RANK = ['mob-hitsuji', 'mob-risu', 'mob-slime', 'mob-mogura', 'mob-tokage', 'mob-kaeru', 'mob-hiyoko', 'mob-pengin'];   // 大きい順（ショップの立ち位置）
 const DECO_MOBS = [
   ['mob-slime', 'mon-slime', 'm-slime'], ['mob-hitsuji', 'mon-hitsuji', 'm-hitsuji'],
   ['mob-tokage', null, 'm-tokage'], ['mob-hiyoko', null, 'm-hiyoko'], ['mob-kurage', null, 'm-kurage'],
+  ['mob-mogura', null, 'm-mogura'], ['mob-risu', null, 'm-risu'], ['mob-kaeru', null, 'm-kaeru'], ['mob-pengin', null, 'm-pengin'],
 ];
+/* 新しい4体は、いちど来てくれたら はじめの子と日がわりで同じ場所に立つ（11/22・額縁の地面は4人まで）。新しい子 → 場所をかわる子 */
+const MOB_SWAP = { 'mob-mogura': 'mob-slime', 'mob-risu': 'mob-hitsuji', 'mob-kaeru': 'mob-tokage', 'mob-pengin': 'mob-hiyoko' };
 /* 今夜のシェフのデフォルメ：ショップ＝考える・バトル＝すわってにこにこ・大きな一撃と勝ったとき＝応援（ほのか chibi-*・みなも minamo-chibi-*・11/19） */
 const chibiName = pose => (chefArt() === 'honoka' ? '' : chefArt() + '-') + 'chibi-' + pose;
 const chibiSrc = pose => ART[chibiName(pose)] || ART['chibi-' + pose] || ART['chibi-cheer'] || ART.honoka || '';
@@ -156,7 +159,13 @@ function decoHTML(mode) {
   const g = N && MONSTERS[N.mon];
   /* ショップのあいだの立ち位置（11/20 しょーくん「いちばん大きな子は右はし＝ほのかの対面・その横に次の子・小さな子は まんなかより少し左」）：
      地面の子を大きい順に p1（右はし）・p2（その横）・p4（そのまた横・4人いるとき）・いちばん小さい子は p3（まんなかの少し左） */
-  const list = DECO_MOBS.filter(([n]) => !g || (n !== 'mob-' + g.id && n !== g.alt));
+  const tonight = n => !!g && (n === 'mob-' + g.id || n === g.alt), met = n => (S.seenMon || []).includes(n.slice(4)), even = S.day % 2 === 0;
+  const list = DECO_MOBS.filter(([n]) => {
+    if (tonight(n)) return false;
+    const old = MOB_SWAP[n], nw = Object.keys(MOB_SWAP).find(k => MOB_SWAP[k] === n);
+    if (old) return met(n) && (tonight(old) || even);   // 新しい子：会ったことがあって、場所の子が今夜のお客さんか、偶数の日
+    return !(nw && met(nw) && !tonight(nw) && even);    // はじめの子：新しい子が立つ日は休み
+  });
   const ground = list.map(([n]) => n).filter(n => n !== 'mob-kurage').sort((x, y) => MOB_RANK.indexOf(x) - MOB_RANK.indexOf(y));
   const slot = n => { const i = ground.indexOf(n); return i < 0 ? '' : i === ground.length - 1 && i > 0 ? ' p3' : ' p' + [1, 2, 4][i]; };
   const v = mode === 'win' ? '-cheer' : '';   // 勝った場面は みんな応援のポーズ（mob-<id>-cheer・11/21）
@@ -452,7 +461,7 @@ function iceShatter(w, r) {
   }
 }
 /* モンスター：ずっともにもに（CSS の --idle）。当たるとぐにゃっ・ほえる（もにもにはそのまま続く） */
-const MON_IDLE = { hitsuji: 'fluff' };
+const MON_IDLE = { hitsuji: 'fluff', risu: 'fluff' };
 const monIdle = id => MON_IDLE[id] || 'jelly';
 function monReact(cls) {
   const m = $('mon'); if (!m) return;

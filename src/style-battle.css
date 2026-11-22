@@ -21,6 +21,10 @@
 .m-hitsuji{right:15%;height:14cqh;max-width:16%}
 .m-tokage{left:22%;height:10cqh;max-width:13%}
 .m-hiyoko{right:31%;height:10cqh;max-width:12%}
+.m-mogura{right:2px;height:13cqh;max-width:16%}
+.m-risu{right:15%;height:13.5cqh;max-width:16%}
+.m-kaeru{left:22%;height:10.5cqh;max-width:13%}
+.m-pengin{right:31%;height:11cqh;max-width:12%}
 .m-kurage{left:auto;right:2px;top:17cqh;bottom:auto;height:9cqh;max-width:12%;animation:dcfloat 3.2s ease-in-out infinite}   /* 空のクラゲは 右の額縁に沿って（11/22 しょーくん「空に浮いてるクラゲも枠に沿った位置に」・前は まんなかの空 left 58%） */
 @keyframes dcfloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12%) rotate(4deg)}}
 .dc.tmp{opacity:.95}

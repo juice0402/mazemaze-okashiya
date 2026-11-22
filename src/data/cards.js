@@ -45,6 +45,11 @@ const MATS = {
   hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 40 } },
   karamel: { cat: 'mat', name: 'ひよこのほのおカラメル', short: 'ほのおカラメル', fushigi: true, taste: 'こんがり', adj: 'こんがり', noun: 'サブレ', nr: 2, value: 60, col: '#d9822b', alt: 'mob-hiyoko', fx: { fin: 2 } },
   kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 40, heat: -1 } },
+  /* 新しい夜のお客さん4体がくれる素材（11/22・名前と数字はぽぽちの仮）。カカオゴーレムのかけら（choco）とはべつの物 */
+  kakao:   { cat: 'mat', name: 'チョコもぐらのほりたてカカオ', short: 'ほりたてカカオ', fushigi: true, taste: 'ほろにが', adj: 'カカオ', noun: 'トリュフ', nr: 5, value: 60, col: '#6b3a24', fx: { rally: 25, nb: 20 } },
+  custard: { cat: 'mat', name: 'プリンペンギンのカスタード', short: 'とろりカスタード', fushigi: true, taste: 'とろーり', adj: 'カスタード', noun: 'プリン', nr: 4, value: 60, col: '#f6d77a', fx: { next: 2, nb: 20 } },
+  maccha:  { cat: 'mat', name: 'まっちゃガエルのまっちゃ', short: 'カエルまっちゃ', fushigi: true, taste: 'ほろにが', adj: 'まっちゃ', noun: 'ゼリー', nr: 6, value: 60, col: '#8cb860', fx: { nb: 40, heat: 1 } },
+  popcorn: { cat: 'mat', name: 'ポップコーンりすのポップコーン', short: 'りすポップコーン', fushigi: true, taste: 'しょっぱあま', adj: 'ぽんぽん', noun: 'ポップコーン', nr: 2, value: 60, col: '#f3d58c', fx: { again: 2 } },
   /* みなもの大作の飴細工（11/19・名前と数字はぽぽちの仮）。cat ame＝飴細工（主役）。taisaku＝大作（バトル開始時、飴の温度で大きさが育つ・9で完成）・done＝完成の倍率・spd＝育つはやさ
      doneRally＝スタート：完成した大作があれば主役ぜんぶ+・doneFin＝アンカー：合計×(1＋doneFin×完成した大作の数)・grow＝発動すると右どなりの大作の大きさ+。nr はみなもの素材より大きく（名前の主役がいつも飴細工） */
   amedai:   { cat: 'ame', name: '飴細工の台', short: '飴細工の台', taste: 'あまい', adj: 'つやつや', noun: '飴細工', nr: 9, value: 20, col: '#bfe6f0', fx: { dmg: 55, taisaku: 1, done: 5 } },
@@ -170,6 +175,10 @@ const FLAVOR = {
   hoshi: '金平糖のしっぽからこぼれた、星くずの砂糖。いちばん最初にふりかけると、みんながきらきら。',
   karamel: 'ほのお鳥のひよこが焦がした、こんがりカラメル。最後にかけると、ぜんぶがつやつや倍に。',
   kanten: 'しずくクラゲのひんやり寒天。となりをおいしくして、火をひとつ弱める。',
+  kakao: 'チョコもぐらが森の土からほり当てたカカオ。いちばん最初にとかすと、みんながほろにが。',
+  custard: 'プリンペンギンのおなかから、とろりとすくったカスタード。次の一撃をなめらかに。',
+  maccha: 'まっちゃガエルの、ほろにがのお茶っ葉。右の2まいをおいしくして、火をひとつ強める。',
+  popcorn: 'ポップコーンりすのしっぽから はじけた粒。右どなりが、ぽんぽん もう二度。',
   maki: 'おばけ樹木の枝。くべると、火がひとつ強くなる。',
   hiokoshi: 'サラマンダーの火種。火が一気にふたつ強くなる。',
   mizu: 'しずくクラゲに分けてもらった水。熱すぎたら、これ。',

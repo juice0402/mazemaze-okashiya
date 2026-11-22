@@ -12,6 +12,11 @@ const MONSTERS = [
   { id: 'kurage', name: 'しずくクラゲ', drop: 'kanten', from: 3, alt: 'mob-kurage', text: 'しずくでできた小さなクラゲ。ひんやりした夜風といっしょに来る' },
   { id: 'tokage', name: 'こんぺいトカゲ', drop: 'hoshi', from: 6, alt: 'mob-tokage', text: 'しっぽが金平糖のトカゲ。星くずみたいな砂糖をこぼして歩く' },
   { id: 'hiyoko', name: 'ほのお鳥のひよこ', drop: 'karamel', from: 9, alt: 'mob-hiyoko', text: 'ほのお鳥のひよこ。ぽかぽかの羽で、さわるとあったかい' },
+  /* 新しい夜のお客さん4体（11/22 しょーくん「12・15・18・21日目」）。来店の会話と鳴き声・朝のレシピは昼のチャット */
+  { id: 'mogura', name: 'チョコもぐら', drop: 'kakao', from: 12, text: 'チョコの毛のもぐら。森の土からカカオの実をほり当てる' },
+  { id: 'pengin', name: 'プリンペンギン', drop: 'custard', from: 15, text: 'プリンのおなかのペンギン。カラメルの頭で、つるんとすべってくる' },
+  { id: 'kaeru', name: 'まっちゃガエル', drop: 'maccha', from: 18, text: 'まっちゃ色のカエル。頭のホイップを、だいじにしている' },
+  { id: 'risu', name: 'ポップコーンりす', drop: 'popcorn', from: 21, text: 'ポップコーンのしっぽのりす。うれしいと、ぽんっと はじける' },
 ];
 /* その日の夕方に来るモンスター（MONSTERS の番号）：ふだんは rare のない子を順番に（from の日から入る）。
    レアは前の夜（S.yesterday）が大満足のときだけ。from の日をすぎて、まだ来ていない子は先に来る */
