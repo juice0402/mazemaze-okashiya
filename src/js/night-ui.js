@@ -6,11 +6,17 @@ const ORD = ['①', '②', '③', '④', '⑤'];
 
 /* ---------- 演出 ---------- */
 /* 鉄板の火力（1〜4）。フィールドがないと焼けないので、光らせない */
-/* キャラのまわりの空気（11/22 しょーくん「火力や冷たさに応じて キャラの周りに火の粉や冷気を纏う」「連鎖はキラキラのオーロラ・パン生地は赤いオーラ」）：
-   ほのかの火力クッキー＝火の粉（火力 0〜4）・こね生地＝赤いオーラ（この夜にこねた回数）・みなもの大作＝冷気（ひえひえ＝強い・ひんやり＝弱い）・ちいさなキャンディ＝オーロラとキラキラ（れんさ）。
-   #caBack＝シェフのうしろの光・#caFront＝シェフの前の粒（AURA_N こ・強さ data-lv 0〜4 で見せる数が変わる）。動くのは transform と opacity だけ（style-battle.css の「キャラのまわりの空気」） */
-const AURA_N = 14;
-const auraFrontHTML = () => `<i class="ca-front" id="caFront">${Array.from({ length: AURA_N }, (_, i) => `<i style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
+/* キャラのまわりの空気（11/22 しょーくん「火力や冷たさに応じて キャラの周りに火の粉や冷気を纏う」「連鎖はキラキラのオーロラ・パン生地は赤いオーラ」
+   →「縁取りじゃなくて、周りを漂ってる霧」「わかばも緑の霧に、妖精の光を」）：
+   ほのかの火力クッキー＝熱の霧と火の粉（火力 0〜4）・こね生地＝赤い霧（この夜にこねた回数）・みなもの大作＝冷気の霧と雪（ひえひえ＝強い・ひんやり＝弱い）・
+   ちいさなキャンディ＝パステルの霧とキラキラ（れんさ）・わかば＝若葉の霧と妖精の光（いつも少し・熟した実が多いほど こく）。
+   #caBack＝シェフのうしろに立ちのぼる霧 .cm（3つ）・#caFront＝足もとを横にただよう霧 .cw（2つ）と粒 .cp（AURA_N こ）と妖精 .cf（3つ）。
+   強さ data-lv 1〜4 で見せる数と こさが変わる。絵は ART の fx-aura-*（霧）と粒の絵（AURA_ART）。動くのは transform と opacity だけ（style-battle.css の「キャラのまわりの空気」） */
+const AURA_N = 12;
+const AURA_ART = { fire: ['fx-aura-fire', 'fx-ember'], kone: ['fx-aura-kone', 'fx-aura-kone'], cold: ['fx-aura-cold', 'fx-snow'], candy: ['fx-aura-candy', 'fx-twinkle'], leaf: ['fx-aura-leaf', 'fx-leaf'] };
+const auraBackHTML = () => '<i class="ca-back" id="caBack"><i class="cm cm1"></i><i class="cm cm2"></i><i class="cm cm3"></i></i>';
+const auraFrontHTML = () => `<i class="ca-front" id="caFront"><i class="cw cw1"></i><i class="cw cw2"></i>${[1, 2, 3].map(n => `<i class="cf cf${n}"><i></i></i>`).join('')}${Array.from({ length: AURA_N }, (_, i) => `<i class="cp" style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
+const ripeNow = () => N.board.filter(c => { if (!c) return false; const d = cardDef(c.cid); return (d.fruit && d.stage === RIPE) || (d.fx && d.fx.fruitCake); }).length;
 function auraSync(o = {}) {
   const b = $('caBack'), f = $('caFront'); if (!b || !f || !N) return;
   const c = chefArt(); let k = '', lv = 0;
@@ -20,6 +26,10 @@ function auraSync(o = {}) {
   } else if (c === 'minamo') {
     if (candyNight()) { k = 'candy'; const n = o.chain != null ? o.chain : chainNow; lv = n <= 0 ? 0 : n < 3 ? 1 : n < 5 ? 2 : n < 7 ? 3 : 4; }
     else { k = 'cold'; const tp = o.heat != null ? o.heat : N.heat; lv = tp <= 1 ? 4 : tp === 2 ? 2 : 0; }
+  } else if (c === 'wakaba') { k = 'leaf'; lv = 1 + Math.min(3, ripeNow()); }
+  if (b.dataset.k !== k) {   // 絵は種類が変わったときだけ入れる（絵がまだないときは、コードの光と粒＝data-art なし）
+    const A = AURA_ART[k], ok = A && ART[A[0]] && ART[A[1]];
+    for (const e of [b, f]) { e.dataset.art = ok ? '1' : ''; if (ok) { e.style.setProperty('--am', `url("${ART[A[0]]}")`); e.style.setProperty('--ap', `url("${ART[A[1]]}")`); } if (ok && k === 'leaf') e.style.setProperty('--af', `url("${ART['fx-fairy'] || ART[A[1]]}")`); }
   }
   for (const e of [b, f]) { if (e.dataset.k !== k) e.dataset.k = k; if (e.dataset.lv !== String(lv)) e.dataset.lv = lv; }
 }
@@ -136,6 +146,7 @@ function fruitFx(list) {
   setTimeout(() => list.forEach((x, n) => setTimeout(() => {
     const t = tslot(x.i), c = t && t.querySelector('.pc'); if (c) replay(c, 'kon'); sproutFx(t, x.to >= RIPE);
     floatAt(t, x.to >= RIPE ? '熟した！' : '育った', x.to >= RIPE ? 'best' : 'cookup');
+    auraSync();   // わかばの霧と妖精は、熟した実が多いほど こく
   }, n * 160)), 650);
 }
 /* 大きなびん（場）の中の実：入っている実の絵と、あといくつ（3つでジャム） */
@@ -763,7 +774,7 @@ function renderNight() {
   const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
     <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
-      <i class="ca-back" id="caBack"></i><i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
+      ${auraBackHTML()}<i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
