@@ -12,7 +12,7 @@ const BGM_LOOP = {   // 1ループの秒（Lyria は manifest.json の loop.samp
   'yoru-minamo': 4671514 / 44100, 'yoru-minamo-2': 2419195 / 44100,
   'yoru-wakaba': 2419195 / 44100, 'yoru-wakaba-2': 3189724 / 44100,
 };
-const BGM_VOL = 0.45;
+const BGM_VOL = 0.22;   // 11/22 しょーくん「BGMが大きすぎてセリフが聞き取れなかった・今の半分くらい」（前は 0.45）
 const BGM_FADE = 0.6;
 const bgm = { ctx: null, master: null, raw: {}, buf: {}, fail: {}, want: '', cur: '', src: null, gain: null };
 /* 曲の場所：ためしのページの大きい曲は BGM_BIG（まとめ snd-pack.mp3 に入れない・build.mjs）。BGM_SRC に入れないのは、se.js が BGM_SRC.hiru の場所から se/・koe/ をさがすため */

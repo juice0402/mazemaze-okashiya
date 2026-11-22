@@ -1364,46 +1364,46 @@ font-size:calc(var(--W) * var(--fz) * 2);-webkit-text-stroke:calc(var(--W) * var
 .stage.st-shop:not(.st-out) :is(.ca-back,.ca-front),.stage.st-pick :is(.ca-back,.ca-front){display:none}
 :is(.ca-back,.ca-front)[data-lv="0"]{--ao:0}:is(.ca-back,.ca-front)[data-lv="1"]{--ao:.5}:is(.ca-back,.ca-front)[data-lv="2"]{--ao:.68}:is(.ca-back,.ca-front)[data-lv="3"]{--ao:.85}:is(.ca-back,.ca-front)[data-lv="4"]{--ao:1}
 .ca-back>i,.ca-front>i{position:absolute;display:block}
-.cm{bottom:0;background:var(--am) 50% 100%/100% 100% no-repeat;opacity:0}
-.ca-back:not([data-art="1"]) .cm{background:radial-gradient(50% 50% at 50% 60%,var(--ag),transparent 75%)}
-.cm1{left:calc(var(--gx) - 46%);width:92%;height:94%;animation:cmBreath 4.6s ease-in-out infinite}
-.cm2,.cm3{width:62%;height:86%;animation:cmRise 5.2s linear infinite}
-.cm2{left:calc(var(--gx) - 70%)}
-.cm3{left:calc(var(--gx) + 8%);animation-name:cmRiseR;animation-delay:-2.6s}
+.ca-m{bottom:0;background:var(--am) 50% 100%/100% 100% no-repeat;opacity:0}
+.ca-back:not([data-art="1"]) .ca-m{background:radial-gradient(50% 50% at 50% 60%,var(--ag),transparent 75%)}
+.ca-m1{left:calc(var(--gx) - 46%);width:92%;height:94%;animation:cmBreath 4.6s ease-in-out infinite}
+.ca-m2,.ca-m3{width:62%;height:86%;animation:cmRise 5.2s linear infinite}
+.ca-m2{left:calc(var(--gx) - 70%)}
+.ca-m3{left:calc(var(--gx) + 8%);animation-name:cmRiseR;animation-delay:-2.6s}
 @keyframes cmBreath{0%,100%{opacity:calc(var(--mo, 1) * .55);transform:translateX(-2.5%) scale(.97,.95)}50%{opacity:calc(var(--mo, 1) * .8);transform:translateX(2.5%) scale(1.03,1.04)}}
 @keyframes cmRise{0%{opacity:0;transform:translate(4%,10%) scale(.85)}25%{opacity:calc(var(--mo, 1) * .85)}70%{opacity:calc(var(--mo, 1) * .6)}100%{opacity:0;transform:translate(-6%,-22%) scale(1.12)}}
 @keyframes cmRiseR{0%{opacity:0;transform:translate(-4%,10%) scale(-.85,.85)}25%{opacity:calc(var(--mo, 1) * .85)}70%{opacity:calc(var(--mo, 1) * .6)}100%{opacity:0;transform:translate(6%,-22%) scale(-1.12,1.12)}}
-:is(.ca-back,.ca-front)[data-lv="1"] :is(.cm2,.cm3,.cw,.cf2,.cf3),:is(.ca-back,.ca-front)[data-lv="2"] :is(.cm2,.cm3,.cw2,.cf3),:is(.ca-back,.ca-front)[data-lv="3"] .cw2{display:none}
-.cw{background:var(--am) 50% 50%/100% 100% no-repeat;opacity:0}
-.ca-front:not([data-art="1"]) .cw{background:radial-gradient(50% 50% at 50% 50%,var(--ag),transparent 72%)}
-.cw1{left:calc(var(--gx) - 48%);bottom:-2%;width:96%;height:20%;animation:cwDrift 7s ease-in-out infinite alternate}
-.cw2{left:calc(var(--gx) - 40%);bottom:24%;width:80%;height:18%;animation:cwDriftR 9s ease-in-out -3s infinite alternate}
+:is(.ca-back,.ca-front)[data-lv="1"] :is(.ca-m2,.ca-m3,.ca-w,.ca-f2,.ca-f3),:is(.ca-back,.ca-front)[data-lv="2"] :is(.ca-m2,.ca-m3,.ca-w2,.ca-f3),:is(.ca-back,.ca-front)[data-lv="3"] .ca-w2{display:none}
+.ca-w{background:var(--am) 50% 50%/100% 100% no-repeat;opacity:0}
+.ca-front:not([data-art="1"]) .ca-w{background:radial-gradient(50% 50% at 50% 50%,var(--ag),transparent 72%)}
+.ca-w1{left:calc(var(--gx) - 48%);bottom:-2%;width:96%;height:20%;animation:cwDrift 7s ease-in-out infinite alternate}
+.ca-w2{left:calc(var(--gx) - 40%);bottom:24%;width:80%;height:18%;animation:cwDriftR 9s ease-in-out -3s infinite alternate}
 @keyframes cwDrift{0%{opacity:calc(var(--mo, 1) * .14);transform:translateX(-14%) scale(1,.9)}50%{opacity:calc(var(--mo, 1) * .28)}100%{opacity:calc(var(--mo, 1) * .14);transform:translateX(14%) scale(1.1,1)}}
 @keyframes cwDriftR{0%{opacity:calc(var(--mo, 1) * .1);transform:translateX(12%) scale(-1,.9)}50%{opacity:calc(var(--mo, 1) * .2)}100%{opacity:calc(var(--mo, 1) * .1);transform:translateX(-12%) scale(-1.1,1)}}
-.cp{left:calc((var(--gxn) - .3 + var(--x) * .6) * 100%);bottom:4%;width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:var(--pc, #fff);box-shadow:0 0 6px 2px var(--pg, rgba(255,255,255,.6));opacity:0;animation:caRise var(--t) linear var(--d) infinite}
-.ca-front[data-art="1"] .cp{border-radius:0;box-shadow:none;background:var(--ap) 50% 50%/contain no-repeat;width:calc(11px * var(--s));height:calc(11px * var(--s))}
-.ca-front[data-lv="1"] .cp:nth-of-type(n+4),.ca-front[data-lv="2"] .cp:nth-of-type(n+7),.ca-front[data-lv="3"] .cp:nth-of-type(n+10){display:none}
+.ca-p{left:calc((var(--gxn) - .3 + var(--x) * .6) * 100%);bottom:4%;width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:var(--pc, #fff);box-shadow:0 0 6px 2px var(--pg, rgba(255,255,255,.6));opacity:0;animation:caRise var(--t) linear var(--d) infinite}
+.ca-front[data-art="1"] .ca-p{border-radius:0;box-shadow:none;background:var(--ap) 50% 50%/contain no-repeat;width:calc(11px * var(--s));height:calc(11px * var(--s))}
+.ca-front[data-lv="1"] .ca-p:nth-of-type(n+9),.ca-front[data-lv="2"] .ca-p:nth-of-type(n+12),.ca-front[data-lv="3"] .ca-p:nth-of-type(n+15){display:none}
 @keyframes caRise{0%{opacity:0;transform:translate(0,0) scale(1)}15%{opacity:1}100%{opacity:0;transform:translate(calc((var(--x) - .5) * 34px),calc(var(--ch) * -.72)) scale(.35)}}
-.cf{display:none!important;left:calc(var(--gx) - 13px);width:26px;height:26px;animation:cfX 3.8s ease-in-out infinite alternate}
-.ca-front[data-k=leaf] .cf{display:block!important}
-.ca-front[data-k=leaf][data-lv="1"] :is(.cf2,.cf3),.ca-front[data-k=leaf][data-lv="2"] .cf3{display:none!important}
-.cf>i{position:absolute;inset:0;background:var(--af) 50% 50%/contain no-repeat;animation:cfY 1.9s ease-in-out infinite alternate}
-.ca-front:not([data-art="1"]) .cf>i{border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(190,255,170,.9) 35%,transparent 70%)}
-.cf1{bottom:66%}.cf2{bottom:40%;animation-duration:4.6s;animation-delay:-1.4s}.cf2>i{animation-duration:2.2s}.cf3{bottom:84%;animation-duration:3.2s;animation-delay:-2.3s}.cf3>i{animation-duration:1.6s}
+.ca-f{display:none!important;left:calc(var(--gx) - 13px);width:26px;height:26px;animation:cfX 3.8s ease-in-out infinite alternate}
+.ca-front[data-k=leaf] .ca-f{display:block!important}
+.ca-front[data-k=leaf][data-lv="1"] :is(.ca-f2,.ca-f3),.ca-front[data-k=leaf][data-lv="2"] .ca-f3{display:none!important}
+.ca-f>i{position:absolute;inset:0;background:var(--af) 50% 50%/contain no-repeat;animation:cfY 1.9s ease-in-out infinite alternate}
+.ca-front:not([data-art="1"]) .ca-f>i{border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(190,255,170,.9) 35%,transparent 70%)}
+.ca-f1{bottom:66%}.ca-f2{bottom:40%;animation-duration:4.6s;animation-delay:-1.4s}.ca-f2>i{animation-duration:2.2s}.ca-f3{bottom:84%;animation-duration:3.2s;animation-delay:-2.3s}.ca-f3>i{animation-duration:1.6s}
 @keyframes cfX{0%{transform:translateX(calc(var(--ch) * -.3))}100%{transform:translateX(calc(var(--ch) * .3))}}
 @keyframes cfY{0%{transform:translateY(calc(var(--ch) * -.05)) scale(.85);opacity:.75}100%{transform:translateY(calc(var(--ch) * .05)) scale(1.1);opacity:1}}
 .ca-back[data-k=fire],.ca-front[data-k=fire]{--ag:rgba(255,160,60,.8);--pc:#fff0b8;--pg:rgba(255,120,20,.95)}
 .ca-back[data-k=kone],.ca-front[data-k=kone]{--mo:.72;--ag:rgba(255,40,30,.85);--pc:#ff8a6a;--pg:rgba(255,30,10,.9)}
-.ca-front[data-k=kone][data-art="1"] .cp{width:calc(26px * var(--s));height:calc(30px * var(--s));animation-duration:calc(var(--t) * .8)}
+.ca-front[data-k=kone][data-art="1"] .ca-p{width:calc(26px * var(--s));height:calc(30px * var(--s));animation-duration:calc(var(--t) * .8)}
 .ca-back[data-k=cold],.ca-front[data-k=cold]{--ag:rgba(185,232,255,.85);--pc:#f2fbff;--pg:rgba(160,215,255,.85)}
-.ca-front[data-k=cold] .cp{animation-duration:calc(var(--t) * 1.7)}
+.ca-front[data-k=cold] .ca-p{animation-duration:calc(var(--t) * 1.7)}
 .ca-back[data-k=candy],.ca-front[data-k=candy]{--ag:rgba(255,170,225,.75);--pc:#fff;--pg:rgba(255,170,230,.9)}
-.ca-front[data-k=candy] .cp{left:calc((var(--gxn) - .32 + var(--x) * .64) * 100%);bottom:calc(14% + var(--y) * 70%);width:calc(14px * var(--s));height:calc(14px * var(--s));animation:caTwinkle calc(var(--t) * .9) ease-in-out var(--d) infinite}
+.ca-front[data-k=candy] .ca-p{left:calc((var(--gxn) - .32 + var(--x) * .64) * 100%);bottom:calc(14% + var(--y) * 70%);width:calc(14px * var(--s));height:calc(14px * var(--s));animation:caTwinkle calc(var(--t) * .9) ease-in-out var(--d) infinite}
 @keyframes caTwinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
 .ca-back[data-k=leaf],.ca-front[data-k=leaf]{--ag:rgba(170,235,140,.75);--pc:#eaffd8;--pg:rgba(140,220,110,.85)}
-.ca-front[data-k=leaf] .cp{width:calc(13px * var(--s));height:calc(13px * var(--s));animation:caLeaf calc(var(--t) * 2) ease-in-out var(--d) infinite}
+.ca-front[data-k=leaf] .ca-p{width:calc(13px * var(--s));height:calc(13px * var(--s));animation:caLeaf calc(var(--t) * 2) ease-in-out var(--d) infinite}
 @keyframes caLeaf{0%{opacity:0;transform:translate(0,0) rotate(0deg)}20%{opacity:.9}100%{opacity:0;transform:translate(calc((var(--x) - .5) * 60px),calc(var(--ch) * -.6)) rotate(220deg)}}
-@media (prefers-reduced-motion:reduce){.cp,.cf{display:none!important}.cm,.cw{animation:none;opacity:.6}.cm2,.cm3{display:none}}
+@media (prefers-reduced-motion:reduce){.ca-p,.ca-f{display:none!important}.ca-m,.ca-w{animation:none;opacity:.6}.ca-m2,.ca-m3{display:none}}
 .sellcard{position:absolute;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
 .sellcard .sc-in{aspect-ratio:5/7}.sellcard .pc{width:100%;height:100%}
 .sellcoin{position:absolute;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 1.5px #5a2a04,0 0 6px 2px rgba(255,214,110,.7)}
@@ -4756,8 +4756,8 @@ save(); renderNight();
 const ORD = ['①', '②', '③', '④', '⑤'];
 const AURA_N = 12;
 const AURA_ART = { fire: ['fx-aura-fire', 'fx-ember'], kone: ['fx-aura-kone', 'fx-aura-kone'], cold: ['fx-aura-cold', 'fx-snow'], candy: ['fx-aura-candy', 'fx-twinkle'], leaf: ['fx-aura-leaf', 'fx-leaf'] };
-const auraBackHTML = () => '<i class="ca-back" id="caBack"><i class="cm cm1"></i><i class="cm cm2"></i><i class="cm cm3"></i></i>';
-const auraFrontHTML = () => `<i class="ca-front" id="caFront"><i class="cw cw1"></i><i class="cw cw2"></i>${[1, 2, 3].map(n => `<i class="cf cf${n}"><i></i></i>`).join('')}${Array.from({ length: AURA_N }, (_, i) => `<i class="cp" style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
+const auraBackHTML = () => '<i class="ca-back" id="caBack"><i class="ca-m ca-m1"></i><i class="ca-m ca-m2"></i><i class="ca-m ca-m3"></i></i>';
+const auraFrontHTML = () => `<i class="ca-front" id="caFront"><i class="ca-w ca-w1"></i><i class="ca-w ca-w2"></i>${[1, 2, 3].map(n => `<i class="ca-f ca-f${n}"><i></i></i>`).join('')}${Array.from({ length: AURA_N }, (_, i) => `<i class="ca-p" style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
 const auraCap = () => Math.min(4, (N.round <= 1 ? 0 : Math.min(3, Math.floor(N.round / 2))) + (fighting ? 1 : 0));
 const ripeNow = () => N.board.filter(c => { if (!c) return false; const d = cardDef(c.cid); return (d.fruit && d.stage === RIPE) || (d.fx && d.fx.fruitCake); }).length;
 function auraSync(o = {}) {
@@ -4813,7 +4813,7 @@ if (thinkDone === key || thinkKey === key) return;   // このラウンドは �
 clearTimeout(thinkT); thinkKey = key;
 thinkT = setTimeout(function go() {
 if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting || S.day + ':' + N.round !== key) { thinkKey = ''; return; }
-if (busy || talking() || N.view || document.querySelector('.night.dragging') || (typeof TIP !== 'undefined' && TIP && Date.now() - (TIP.at || 0) < 4000)) { thinkT = setTimeout(go, 1500); return; }
+if (busy || talking() || N.view || document.querySelector('.night.dragging') || (typeof TIP !== 'undefined' && TIP && Date.now() - (TIP.at || 0) < 4000) || (typeof koeBusy === 'function' && koeBusy())) { thinkT = setTimeout(go, 1500); return; }   // ほかの声（ヒントの読み上げなど）が鳴っているあいだも待つ（11/22）
 thinkDone = key; thinkKoe();
 }, THINK_MS);
 }
@@ -6343,7 +6343,7 @@ TIP = { t, fresh: true, at: Date.now() };
 S.seen['t:' + t.id] = 1; save();
 tipDraw(); decoReact('hop', 500);
 const v = 'hono-tip-' + t.id;
-if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v);
+if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v, { prio: 2 });   // ヒントの声は ほかの声より先（11/22）
 }
 function tipEv(kind) {
 if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
@@ -7814,7 +7814,7 @@ hiru: 2540164 / 44100, 'hiru-2': 2540165 / 44100,
 'yoru-minamo': 4671514 / 44100, 'yoru-minamo-2': 2419195 / 44100,
 'yoru-wakaba': 2419195 / 44100, 'yoru-wakaba-2': 3189724 / 44100,
 };
-const BGM_VOL = 0.45;
+const BGM_VOL = 0.22;   // 11/22 しょーくん「BGMが大きすぎてセリフが聞き取れなかった・今の半分くらい」（前は 0.45）
 const BGM_FADE = 0.6;
 const bgm = { ctx: null, master: null, raw: {}, buf: {}, fail: {}, want: '', cur: '', src: null, gain: null };
 const bgmUrl = n => BGM_SRC[n] || (typeof BGM_BIG !== 'undefined' && BGM_BIG[n]) || '';
@@ -7909,7 +7909,7 @@ if (document.hidden) bgm.ctx.suspend(); else bgm.ctx.resume();
 const SE_VOL = 0.8, KOE_VOL = 0.95, JG_VOL = 0.8, JG_DUCK = 0.3;
 const SE_GAP = 0.06, KOE_GAP = 0.5;   // 同じ効果音・声が続けて重ならないように（秒）
 const SE_WET = 0.45, SE_DRY = 0.82, SE_REV_SEC = 1.7;   // 残響「たっぷり」（すこし＝0.22・0.92）
-const seA = { out: null, dry: null, rev: null, buf: {}, last: {}, koeAt: -9, duckTo: 0, pre: false };
+const seA = { out: null, dry: null, rev: null, buf: {}, last: {}, koeAt: -9, koeEnd: 0, koePr: 0, koeTok: 0, koeSrc: null, lastSrc: null, duckTo: 0, pre: false };
 function seOn() { return !(typeof S !== 'undefined' && S && S.opt && S.opt.se === false); }
 function seCtx() {
 if (typeof bgm === 'undefined' || !bgm.ctx) return null;
@@ -7956,7 +7956,7 @@ const s = ctx.createBufferSource(), g = ctx.createGain();
 s.buffer = b; s.playbackRate.value = rate || 1; g.gain.value = vol;
 s.connect(g);
 if (rev) { g.connect(seRev(ctx)); if (seA.rev) g.connect(seA.rev); } else g.connect(seA.out);   // 声は残響なし
-s.start(0, seLead(b));
+s.start(0, seLead(b)); seA.lastSrc = s;
 return (b.duration - seLead(b)) / (rate || 1);
 }
 function sePlay(name, o = {}) {
@@ -7965,11 +7965,22 @@ const t = ctx.currentTime; if (t - (seA.last[name] || -9) < SE_GAP) return;
 seA.last[name] = t;
 seLoad('se', name).then(b => seStart(b, SE_VOL * (o.vol == null ? 1 : o.vol), o.rate, true)).catch(() => {});
 }
+function koeBusy() { const ctx = seCtx(); return !!ctx && ctx.currentTime < seA.koeEnd - 0.05; }
 function koePlay(id, o = {}) {
 const ctx = seCtx(); if (!ctx || !seOn()) return;
-const t = ctx.currentTime; if (t - seA.koeAt < KOE_GAP) return;   // 声は重ねない
-seA.koeAt = t;
-seLoad('koe', id).then(b => seStart(b, KOE_VOL * (o.vol == null ? 1 : o.vol), 1)).catch(() => {});
+const t = ctx.currentTime, pr = o.prio || 1;
+if (t - seA.koeAt < KOE_GAP && pr <= seA.koePr) return;
+if (t < seA.koeEnd - 0.05) {
+if (pr <= seA.koePr) return;
+try { if (seA.koeSrc) seA.koeSrc.stop(); } catch (e) { /* もう止まっている */ }
+}
+const tok = ++seA.koeTok; seA.koeAt = t; seA.koePr = pr; seA.koeEnd = t + 2;   // 読みこむあいだも ほかの声を待たせる
+seLoad('koe', id).then(b => {
+if (tok !== seA.koeTok) return;   // 読んでいるあいだに もっと大事な声が来た
+const dur = seStart(b, KOE_VOL * (o.vol == null ? 1 : o.vol), 1);
+seA.koeSrc = seA.lastSrc; seA.koeEnd = ctx.currentTime + dur;
+if (dur > 0.6 && typeof bgmDuck === 'function') bgmDuck(dur * 1000, 0.55);
+}).catch(() => { if (tok === seA.koeTok) seA.koeEnd = 0; });
 }
 function jgPlay(name) {
 const ctx = seCtx(); if (!ctx || !seOn()) return;

@@ -764,8 +764,8 @@ body[data-candy="1"]{--chefc:255,140,196}
 .pc.tile .pc-star.pc-star,.pc.tile:has(.cook) .pc-star.pc-star{left:5cqw;right:auto;top:4cqw;bottom:auto;font-size:14cqw;text-align:left}
 
 /* ==== キャラのまわりの空気（11/22 しょーくん・night-ui.js の auraSync）：「縁取りじゃなくて、周りを漂ってる霧」。
-   うしろ .ca-back＝立ちのぼる霧 .cm（cm1 はシェフのうしろで息をする・cm2/cm3 は左右から下→上へ流れて消える）・
-   前 .ca-front＝足もと・腰を横にただよう うすい霧 .cw・粒 .cp・わかばの妖精 .cf。強さ data-lv 1〜4・種類 data-k・絵があれば data-art=1（--am＝霧・--ap＝粒・--af＝妖精）。
+   うしろ .ca-back＝立ちのぼる霧 .ca-m（cm1 はシェフのうしろで息をする・cm2/cm3 は左右から下→上へ流れて消える）・
+   前 .ca-front＝足もと・腰を横にただよう うすい霧 .ca-w・粒 .ca-p・わかばの妖精 .ca-f。強さ data-lv 1〜4・種類 data-k・絵があれば data-art=1（--am＝霧・--ap＝粒・--af＝妖精）。
    絵がないとき（data-art なし）は、コードのやわらかい光と粒。動くのは transform と opacity だけ ==== */
 .ca-back,.ca-front{--ch:calc(min(59cqw,53cqh) * var(--scb, 1));position:absolute;left:calc(1cqw - var(--ch) * .2);bottom:calc(12cqh - var(--ch) * .06);width:calc(var(--ch) * (var(--ca, .8) + .4));height:calc(var(--ch) * 1.4);--gxn:calc((var(--ca, .8) * var(--fx, .45) + .2) / (var(--ca, .8) + .4));--gx:calc(var(--gxn) * 100%);pointer-events:none;display:none;--ao:0}
 .ca-back{z-index:1}
@@ -775,50 +775,50 @@ body[data-candy="1"]{--chefc:255,140,196}
 :is(.ca-back,.ca-front)[data-lv="0"]{--ao:0}:is(.ca-back,.ca-front)[data-lv="1"]{--ao:.5}:is(.ca-back,.ca-front)[data-lv="2"]{--ao:.68}:is(.ca-back,.ca-front)[data-lv="3"]{--ao:.85}:is(.ca-back,.ca-front)[data-lv="4"]{--ao:1}
 .ca-back>i,.ca-front>i{position:absolute;display:block}
 /* 霧（うしろ）：絵があれば絵・なければ やわらかい光 */
-.cm{bottom:0;background:var(--am) 50% 100%/100% 100% no-repeat;opacity:0}
-.ca-back:not([data-art="1"]) .cm{background:radial-gradient(50% 50% at 50% 60%,var(--ag),transparent 75%)}
-.cm1{left:calc(var(--gx) - 46%);width:92%;height:94%;animation:cmBreath 4.6s ease-in-out infinite}
-.cm2,.cm3{width:62%;height:86%;animation:cmRise 5.2s linear infinite}
-.cm2{left:calc(var(--gx) - 70%)}
-.cm3{left:calc(var(--gx) + 8%);animation-name:cmRiseR;animation-delay:-2.6s}
+.ca-m{bottom:0;background:var(--am) 50% 100%/100% 100% no-repeat;opacity:0}
+.ca-back:not([data-art="1"]) .ca-m{background:radial-gradient(50% 50% at 50% 60%,var(--ag),transparent 75%)}
+.ca-m1{left:calc(var(--gx) - 46%);width:92%;height:94%;animation:cmBreath 4.6s ease-in-out infinite}
+.ca-m2,.ca-m3{width:62%;height:86%;animation:cmRise 5.2s linear infinite}
+.ca-m2{left:calc(var(--gx) - 70%)}
+.ca-m3{left:calc(var(--gx) + 8%);animation-name:cmRiseR;animation-delay:-2.6s}
 @keyframes cmBreath{0%,100%{opacity:calc(var(--mo, 1) * .55);transform:translateX(-2.5%) scale(.97,.95)}50%{opacity:calc(var(--mo, 1) * .8);transform:translateX(2.5%) scale(1.03,1.04)}}
 @keyframes cmRise{0%{opacity:0;transform:translate(4%,10%) scale(.85)}25%{opacity:calc(var(--mo, 1) * .85)}70%{opacity:calc(var(--mo, 1) * .6)}100%{opacity:0;transform:translate(-6%,-22%) scale(1.12)}}
 @keyframes cmRiseR{0%{opacity:0;transform:translate(-4%,10%) scale(-.85,.85)}25%{opacity:calc(var(--mo, 1) * .85)}70%{opacity:calc(var(--mo, 1) * .6)}100%{opacity:0;transform:translate(6%,-22%) scale(-1.12,1.12)}}
-:is(.ca-back,.ca-front)[data-lv="1"] :is(.cm2,.cm3,.cw,.cf2,.cf3),:is(.ca-back,.ca-front)[data-lv="2"] :is(.cm2,.cm3,.cw2,.cf3),:is(.ca-back,.ca-front)[data-lv="3"] .cw2{display:none}
+:is(.ca-back,.ca-front)[data-lv="1"] :is(.ca-m2,.ca-m3,.ca-w,.ca-f2,.ca-f3),:is(.ca-back,.ca-front)[data-lv="2"] :is(.ca-m2,.ca-m3,.ca-w2,.ca-f3),:is(.ca-back,.ca-front)[data-lv="3"] .ca-w2{display:none}
 /* 霧（前）：足もとと腰を横にただよう。シェフにかかるので うすく */
-.cw{background:var(--am) 50% 50%/100% 100% no-repeat;opacity:0}
-.ca-front:not([data-art="1"]) .cw{background:radial-gradient(50% 50% at 50% 50%,var(--ag),transparent 72%)}
-.cw1{left:calc(var(--gx) - 48%);bottom:-2%;width:96%;height:20%;animation:cwDrift 7s ease-in-out infinite alternate}
-.cw2{left:calc(var(--gx) - 40%);bottom:24%;width:80%;height:18%;animation:cwDriftR 9s ease-in-out -3s infinite alternate}
+.ca-w{background:var(--am) 50% 50%/100% 100% no-repeat;opacity:0}
+.ca-front:not([data-art="1"]) .ca-w{background:radial-gradient(50% 50% at 50% 50%,var(--ag),transparent 72%)}
+.ca-w1{left:calc(var(--gx) - 48%);bottom:-2%;width:96%;height:20%;animation:cwDrift 7s ease-in-out infinite alternate}
+.ca-w2{left:calc(var(--gx) - 40%);bottom:24%;width:80%;height:18%;animation:cwDriftR 9s ease-in-out -3s infinite alternate}
 @keyframes cwDrift{0%{opacity:calc(var(--mo, 1) * .14);transform:translateX(-14%) scale(1,.9)}50%{opacity:calc(var(--mo, 1) * .28)}100%{opacity:calc(var(--mo, 1) * .14);transform:translateX(14%) scale(1.1,1)}}
 @keyframes cwDriftR{0%{opacity:calc(var(--mo, 1) * .1);transform:translateX(12%) scale(-1,.9)}50%{opacity:calc(var(--mo, 1) * .2)}100%{opacity:calc(var(--mo, 1) * .1);transform:translateX(-12%) scale(-1.1,1)}}
 /* 粒：下からのぼって消える（絵があれば絵） */
-.cp{left:calc((var(--gxn) - .3 + var(--x) * .6) * 100%);bottom:4%;width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:var(--pc, #fff);box-shadow:0 0 6px 2px var(--pg, rgba(255,255,255,.6));opacity:0;animation:caRise var(--t) linear var(--d) infinite}
-.ca-front[data-art="1"] .cp{border-radius:0;box-shadow:none;background:var(--ap) 50% 50%/contain no-repeat;width:calc(11px * var(--s));height:calc(11px * var(--s))}
-.ca-front[data-lv="1"] .cp:nth-of-type(n+4),.ca-front[data-lv="2"] .cp:nth-of-type(n+7),.ca-front[data-lv="3"] .cp:nth-of-type(n+10){display:none}
+.ca-p{left:calc((var(--gxn) - .3 + var(--x) * .6) * 100%);bottom:4%;width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:var(--pc, #fff);box-shadow:0 0 6px 2px var(--pg, rgba(255,255,255,.6));opacity:0;animation:caRise var(--t) linear var(--d) infinite}
+.ca-front[data-art="1"] .ca-p{border-radius:0;box-shadow:none;background:var(--ap) 50% 50%/contain no-repeat;width:calc(11px * var(--s));height:calc(11px * var(--s))}
+.ca-front[data-lv="1"] .ca-p:nth-of-type(n+9),.ca-front[data-lv="2"] .ca-p:nth-of-type(n+12),.ca-front[data-lv="3"] .ca-p:nth-of-type(n+15){display:none}   /* 粒は .ca-front の6つめの <i> から（前に霧2つ・妖精3つ）：強さ1は3こ・2は6こ・3は9こ */
 @keyframes caRise{0%{opacity:0;transform:translate(0,0) scale(1)}15%{opacity:1}100%{opacity:0;transform:translate(calc((var(--x) - .5) * 34px),calc(var(--ch) * -.72)) scale(.35)}}
 /* 妖精（わかば）：横のゆれ（外）とたてのゆれ（中）をずらして、まわりをふわふわ回る */
-.cf{display:none!important;left:calc(var(--gx) - 13px);width:26px;height:26px;animation:cfX 3.8s ease-in-out infinite alternate}
-.ca-front[data-k=leaf] .cf{display:block!important}
-.ca-front[data-k=leaf][data-lv="1"] :is(.cf2,.cf3),.ca-front[data-k=leaf][data-lv="2"] .cf3{display:none!important}
-.cf>i{position:absolute;inset:0;background:var(--af) 50% 50%/contain no-repeat;animation:cfY 1.9s ease-in-out infinite alternate}
-.ca-front:not([data-art="1"]) .cf>i{border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(190,255,170,.9) 35%,transparent 70%)}
-.cf1{bottom:66%}.cf2{bottom:40%;animation-duration:4.6s;animation-delay:-1.4s}.cf2>i{animation-duration:2.2s}.cf3{bottom:84%;animation-duration:3.2s;animation-delay:-2.3s}.cf3>i{animation-duration:1.6s}
+.ca-f{display:none!important;left:calc(var(--gx) - 13px);width:26px;height:26px;animation:cfX 3.8s ease-in-out infinite alternate}
+.ca-front[data-k=leaf] .ca-f{display:block!important}
+.ca-front[data-k=leaf][data-lv="1"] :is(.ca-f2,.ca-f3),.ca-front[data-k=leaf][data-lv="2"] .ca-f3{display:none!important}
+.ca-f>i{position:absolute;inset:0;background:var(--af) 50% 50%/contain no-repeat;animation:cfY 1.9s ease-in-out infinite alternate}
+.ca-front:not([data-art="1"]) .ca-f>i{border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(190,255,170,.9) 35%,transparent 70%)}
+.ca-f1{bottom:66%}.ca-f2{bottom:40%;animation-duration:4.6s;animation-delay:-1.4s}.ca-f2>i{animation-duration:2.2s}.ca-f3{bottom:84%;animation-duration:3.2s;animation-delay:-2.3s}.ca-f3>i{animation-duration:1.6s}
 @keyframes cfX{0%{transform:translateX(calc(var(--ch) * -.3))}100%{transform:translateX(calc(var(--ch) * .3))}}
 @keyframes cfY{0%{transform:translateY(calc(var(--ch) * -.05)) scale(.85);opacity:.75}100%{transform:translateY(calc(var(--ch) * .05)) scale(1.1);opacity:1}}
 /* 種類 */
 .ca-back[data-k=fire],.ca-front[data-k=fire]{--ag:rgba(255,160,60,.8);--pc:#fff0b8;--pg:rgba(255,120,20,.95)}
 .ca-back[data-k=kone],.ca-front[data-k=kone]{--mo:.72;--ag:rgba(255,40,30,.85);--pc:#ff8a6a;--pg:rgba(255,30,10,.9)}
-.ca-front[data-k=kone][data-art="1"] .cp{width:calc(26px * var(--s));height:calc(30px * var(--s));animation-duration:calc(var(--t) * .8)}
+.ca-front[data-k=kone][data-art="1"] .ca-p{width:calc(26px * var(--s));height:calc(30px * var(--s));animation-duration:calc(var(--t) * .8)}
 .ca-back[data-k=cold],.ca-front[data-k=cold]{--ag:rgba(185,232,255,.85);--pc:#f2fbff;--pg:rgba(160,215,255,.85)}
-.ca-front[data-k=cold] .cp{animation-duration:calc(var(--t) * 1.7)}
+.ca-front[data-k=cold] .ca-p{animation-duration:calc(var(--t) * 1.7)}
 .ca-back[data-k=candy],.ca-front[data-k=candy]{--ag:rgba(255,170,225,.75);--pc:#fff;--pg:rgba(255,170,230,.9)}
-.ca-front[data-k=candy] .cp{left:calc((var(--gxn) - .32 + var(--x) * .64) * 100%);bottom:calc(14% + var(--y) * 70%);width:calc(14px * var(--s));height:calc(14px * var(--s));animation:caTwinkle calc(var(--t) * .9) ease-in-out var(--d) infinite}
+.ca-front[data-k=candy] .ca-p{left:calc((var(--gxn) - .32 + var(--x) * .64) * 100%);bottom:calc(14% + var(--y) * 70%);width:calc(14px * var(--s));height:calc(14px * var(--s));animation:caTwinkle calc(var(--t) * .9) ease-in-out var(--d) infinite}
 @keyframes caTwinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
 .ca-back[data-k=leaf],.ca-front[data-k=leaf]{--ag:rgba(170,235,140,.75);--pc:#eaffd8;--pg:rgba(140,220,110,.85)}
-.ca-front[data-k=leaf] .cp{width:calc(13px * var(--s));height:calc(13px * var(--s));animation:caLeaf calc(var(--t) * 2) ease-in-out var(--d) infinite}
+.ca-front[data-k=leaf] .ca-p{width:calc(13px * var(--s));height:calc(13px * var(--s));animation:caLeaf calc(var(--t) * 2) ease-in-out var(--d) infinite}
 @keyframes caLeaf{0%{opacity:0;transform:translate(0,0) rotate(0deg)}20%{opacity:.9}100%{opacity:0;transform:translate(calc((var(--x) - .5) * 60px),calc(var(--ch) * -.6)) rotate(220deg)}}
-@media (prefers-reduced-motion:reduce){.cp,.cf{display:none!important}.cm,.cw{animation:none;opacity:.6}.cm2,.cm3{display:none}}
+@media (prefers-reduced-motion:reduce){.ca-p,.ca-f{display:none!important}.ca-m,.ca-w{animation:none;opacity:.6}.ca-m2,.ca-m3{display:none}}
 /* うったときのカードの動き（night-ui.js の sellFx・11/22 しょーくん「カードを売った時の動きがなくて サックリしすぎ」）：カードが くるっと回ってコインへ → コインが はじける */
 .sellcard{position:absolute;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
 .sellcard .sc-in{aspect-ratio:5/7}.sellcard .pc{width:100%;height:100%}

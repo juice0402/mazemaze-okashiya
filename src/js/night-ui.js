@@ -10,12 +10,12 @@ const ORD = ['①', '②', '③', '④', '⑤'];
    →「縁取りじゃなくて、周りを漂ってる霧」「わかばも緑の霧に、妖精の光を」）：
    ほのかの火力クッキー＝熱の霧と火の粉（火力 0〜4）・こね生地＝赤い霧（この夜にこねた回数）・みなもの大作＝冷気の霧と雪（ひえひえ＝強い・ひんやり＝弱い）・
    ちいさなキャンディ＝パステルの霧とキラキラ（れんさ）・わかば＝若葉の霧と妖精の光（いつも少し・熟した実が多いほど こく）。
-   #caBack＝シェフのうしろに立ちのぼる霧 .cm（3つ）・#caFront＝足もとを横にただよう霧 .cw（2つ）と粒 .cp（AURA_N こ）と妖精 .cf（3つ）。
+   #caBack＝シェフのうしろに立ちのぼる霧 .ca-m（3つ）・#caFront＝足もとを横にただよう霧 .ca-w（2つ）と粒 .ca-p（AURA_N こ）と妖精 .ca-f（3つ）。
    強さ data-lv 1〜4 で見せる数と こさが変わる。絵は ART の fx-aura-*（霧）と粒の絵（AURA_ART）。動くのは transform と opacity だけ（style-battle.css の「キャラのまわりの空気」） */
 const AURA_N = 12;
 const AURA_ART = { fire: ['fx-aura-fire', 'fx-ember'], kone: ['fx-aura-kone', 'fx-aura-kone'], cold: ['fx-aura-cold', 'fx-snow'], candy: ['fx-aura-candy', 'fx-twinkle'], leaf: ['fx-aura-leaf', 'fx-leaf'] };
-const auraBackHTML = () => '<i class="ca-back" id="caBack"><i class="cm cm1"></i><i class="cm cm2"></i><i class="cm cm3"></i></i>';
-const auraFrontHTML = () => `<i class="ca-front" id="caFront"><i class="cw cw1"></i><i class="cw cw2"></i>${[1, 2, 3].map(n => `<i class="cf cf${n}"><i></i></i>`).join('')}${Array.from({ length: AURA_N }, (_, i) => `<i class="cp" style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
+const auraBackHTML = () => '<i class="ca-back" id="caBack"><i class="ca-m ca-m1"></i><i class="ca-m ca-m2"></i><i class="ca-m ca-m3"></i></i>';
+const auraFrontHTML = () => `<i class="ca-front" id="caFront"><i class="ca-w ca-w1"></i><i class="ca-w ca-w2"></i>${[1, 2, 3].map(n => `<i class="ca-f ca-f${n}"><i></i></i>`).join('')}${Array.from({ length: AURA_N }, (_, i) => `<i class="ca-p" style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
 /* 盛り上がりの上限（11/22 しょーくん「最初は表示されないようにして、徐々に盛り上がっていく感じに」）：
    1ラウンド目のバトルの前は0・2〜3ラウンド目は1・4〜5は2・6から3。バトルのあいだ（カードが動いているあいだ）は +1（9ラウンド目のバトルでいちばん強い4） */
 const auraCap = () => Math.min(4, (N.round <= 1 ? 0 : Math.min(3, Math.floor(N.round / 2))) + (fighting ? 1 : 0));
@@ -79,7 +79,7 @@ function thinkArm() {
   clearTimeout(thinkT); thinkKey = key;
   thinkT = setTimeout(function go() {
     if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting || S.day + ':' + N.round !== key) { thinkKey = ''; return; }
-    if (busy || talking() || N.view || document.querySelector('.night.dragging') || (typeof TIP !== 'undefined' && TIP && Date.now() - (TIP.at || 0) < 4000)) { thinkT = setTimeout(go, 1500); return; }
+    if (busy || talking() || N.view || document.querySelector('.night.dragging') || (typeof TIP !== 'undefined' && TIP && Date.now() - (TIP.at || 0) < 4000) || (typeof koeBusy === 'function' && koeBusy())) { thinkT = setTimeout(go, 1500); return; }   // ほかの声（ヒントの読み上げなど）が鳴っているあいだも待つ（11/22）
     thinkDone = key; thinkKoe();
   }, THINK_MS);
 }

@@ -50,7 +50,7 @@ function tipNext() {
   tipDraw(); decoReact('hop', 500);
   /* ヒントの声（11/22 しょーくん「チュートリアルもテキストに加えて軽い文章ボイス」）：ほのか（Leda）が吹き出しの文を読む。音のファイルがなければ鳴らさない */
   const v = 'hono-tip-' + t.id;
-  if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v);
+  if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v, { prio: 2 });   // ヒントの声は ほかの声より先（11/22）
 }
 /* 操作をしたら呼ぶ（buy・mix・sell・move・reroll・bake・next）。そのヒントの操作なら、とじる */
 function tipEv(kind) {

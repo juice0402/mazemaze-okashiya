@@ -12,7 +12,7 @@
 const SE_VOL = 0.8, KOE_VOL = 0.95, JG_VOL = 0.8, JG_DUCK = 0.3;
 const SE_GAP = 0.06, KOE_GAP = 0.5;   // 同じ効果音・声が続けて重ならないように（秒）
 const SE_WET = 0.45, SE_DRY = 0.82, SE_REV_SEC = 1.7;   // 残響「たっぷり」（すこし＝0.22・0.92）
-const seA = { out: null, dry: null, rev: null, buf: {}, last: {}, koeAt: -9, duckTo: 0, pre: false };
+const seA = { out: null, dry: null, rev: null, buf: {}, last: {}, koeAt: -9, koeEnd: 0, koePr: 0, koeTok: 0, koeSrc: null, lastSrc: null, duckTo: 0, pre: false };
 
 function seOn() { return !(typeof S !== 'undefined' && S && S.opt && S.opt.se === false); }
 function seCtx() {
@@ -63,7 +63,7 @@ function seStart(b, vol, rate, rev) {
   s.buffer = b; s.playbackRate.value = rate || 1; g.gain.value = vol;
   s.connect(g);
   if (rev) { g.connect(seRev(ctx)); if (seA.rev) g.connect(seA.rev); } else g.connect(seA.out);   // 声は残響なし
-  s.start(0, seLead(b));
+  s.start(0, seLead(b)); seA.lastSrc = s;
   return (b.duration - seLead(b)) / (rate || 1);
 }
 function sePlay(name, o = {}) {
@@ -72,11 +72,24 @@ function sePlay(name, o = {}) {
   seA.last[name] = t;
   seLoad('se', name).then(b => seStart(b, SE_VOL * (o.vol == null ? 1 : o.vol), o.rate, true)).catch(() => {});
 }
+/* 声は重ねない（11/22 しょーくん「チュートリアルの読み上げセリフと、ショップのセリフが被ってしまっていた」）：
+   前の声が鳴りおわるまで 次の声は鳴らさない。ヒントの声（prio 2）は 前の声を止めて読む。声のあいだは曲を少し小さく（bgmDuck） */
+function koeBusy() { const ctx = seCtx(); return !!ctx && ctx.currentTime < seA.koeEnd - 0.05; }
 function koePlay(id, o = {}) {
   const ctx = seCtx(); if (!ctx || !seOn()) return;
-  const t = ctx.currentTime; if (t - seA.koeAt < KOE_GAP) return;   // 声は重ねない
-  seA.koeAt = t;
-  seLoad('koe', id).then(b => seStart(b, KOE_VOL * (o.vol == null ? 1 : o.vol), 1)).catch(() => {});
+  const t = ctx.currentTime, pr = o.prio || 1;
+  if (t - seA.koeAt < KOE_GAP && pr <= seA.koePr) return;
+  if (t < seA.koeEnd - 0.05) {
+    if (pr <= seA.koePr) return;
+    try { if (seA.koeSrc) seA.koeSrc.stop(); } catch (e) { /* もう止まっている */ }
+  }
+  const tok = ++seA.koeTok; seA.koeAt = t; seA.koePr = pr; seA.koeEnd = t + 2;   // 読みこむあいだも ほかの声を待たせる
+  seLoad('koe', id).then(b => {
+    if (tok !== seA.koeTok) return;   // 読んでいるあいだに もっと大事な声が来た
+    const dur = seStart(b, KOE_VOL * (o.vol == null ? 1 : o.vol), 1);
+    seA.koeSrc = seA.lastSrc; seA.koeEnd = ctx.currentTime + dur;
+    if (dur > 0.6 && typeof bgmDuck === 'function') bgmDuck(dur * 1000, 0.55);
+  }).catch(() => { if (tok === seA.koeTok) seA.koeEnd = 0; });
 }
 /* ジングル：鳴っているあいだ、曲（bgm.master）を少し下げて、おわったら戻す */
 function jgPlay(name) {
