@@ -555,7 +555,7 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .m-fc{display:flex;align-items:center;gap:2px;margin-left:6px;padding-left:7px;border-left:1px solid rgba(255,214,140,.45)}
 .m-fc .fc-like{display:flex;align-items:center;gap:2px}
 .m-fc .fc-ic,.m-fc .hico{display:block;flex:none;width:1.35em;height:1.35em;max-width:none;object-fit:contain}
-.fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
+.fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/auto 190% no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
 .fc-face.none{background:#e9d4b0}
 /* 紙・押しピン・太陽は べつべつの絵（11/22 しょーくん「メモ用紙のアス比が変わって文字がズレてる・画鋲は上の日記にかぶっていい」・リーダーが直した）：
    ui-forecast＝紙の9分割（ふちのなみは1こずつ round でならべる＝どの大きさでも なみの形がかわらない・まんなかは平らな紙の色）・
@@ -569,6 +569,7 @@ button.dslot:active{transform:scale(.96);box-shadow:none}
 .fc-card .fc-ic{width:28px;height:28px;object-fit:contain;max-width:none}
 .fc-card .fc-ev{font-weight:700}
 .fc-card .hico{width:22px;height:22px;flex:none}
+.fc-card .fc-face,.fc-card .fc-row>.hico{margin:0 3px}   /* 顔と味のマーク（22px）を天気のマーク（28px）と同じはばに＝3行の字の始まりをそろえる（11/22 しょーくん） */
 
 /* ---------- 営業中の呼びこみのベル .d-call（のこりの回数は点）・補充 .dslot.refill と えらぶ窓 .d-refp（11/21） ---------- */
 .d-call{position:relative;flex:none;width:44px;height:44px;padding:0;display:grid;place-items:center}
