@@ -2328,10 +2328,10 @@ minto:  { cat: 'mat', name: 'きらきらミント', short: 'きらきらミン�
 hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 40 } },
 karamel: { cat: 'mat', name: 'ひよこのほのおカラメル', short: 'ほのおカラメル', fushigi: true, taste: 'こんがり', adj: 'こんがり', noun: 'サブレ', nr: 2, value: 60, col: '#d9822b', alt: 'mob-hiyoko', fx: { fin: 2 } },
 kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 40, heat: -1 } },
-kakao:   { cat: 'mat', name: 'チョコもぐらのほりたてカカオ', short: 'ほりたてカカオ', fushigi: true, taste: 'ほろにが', adj: 'カカオ', noun: 'トリュフ', nr: 5, value: 60, col: '#6b3a24', fx: { rally: 25, nb: 20 } },
-custard: { cat: 'mat', name: 'プリンペンギンのカスタード', short: 'とろりカスタード', fushigi: true, taste: 'とろーり', adj: 'カスタード', noun: 'プリン', nr: 4, value: 60, col: '#f6d77a', fx: { next: 2, nb: 20 } },
-maccha:  { cat: 'mat', name: 'まっちゃガエルのまっちゃ', short: 'カエルまっちゃ', fushigi: true, taste: 'ほろにが', adj: 'まっちゃ', noun: 'ゼリー', nr: 6, value: 60, col: '#8cb860', fx: { nb: 40, heat: 1 } },
-popcorn: { cat: 'mat', name: 'ポップコーンりすのポップコーン', short: 'りすポップコーン', fushigi: true, taste: 'しょっぱあま', adj: 'ぽんぽん', noun: 'ポップコーン', nr: 2, value: 60, col: '#f3d58c', fx: { again: 2 } },
+kakao:   { cat: 'mat', name: 'チョコもぐらのほりたてカカオ', short: 'ほりたてカカオ', fushigi: true, taste: 'ほろにが', adj: 'カカオ', noun: 'トリュフ', nr: 5, value: 60, col: '#6b3a24', fx: { rally: 40, next: 2 } },
+custard: { cat: 'mat', name: 'プリンペンギンのカスタード', short: 'とろりカスタード', fushigi: true, taste: 'とろーり', adj: 'カスタード', noun: 'プリン', nr: 4, value: 60, col: '#f6d77a', fx: { next: 2, nb: 30 } },
+maccha:  { cat: 'mat', name: 'まっちゃガエルのまっちゃ', short: 'カエルまっちゃ', fushigi: true, taste: 'ほろにが', adj: 'まっちゃ', noun: 'ゼリー', nr: 6, value: 60, col: '#8cb860', fx: { fin: 1.8, heat: 1 } },
+popcorn: { cat: 'mat', name: 'ポップコーンりすのポップコーン', short: 'りすポップコーン', fushigi: true, taste: 'しょっぱあま', adj: 'ぽんぽん', noun: 'ポップコーン', nr: 2, value: 60, col: '#f3d58c', fx: { again: 1, rally: 40 } },
 amedai:   { cat: 'ame', name: '飴細工の台', short: '飴細工の台', taste: 'あまい', adj: 'つやつや', noun: '飴細工', nr: 9, value: 20, col: '#bfe6f0', fx: { dmg: 55, taisaku: 1, done: 5 } },
 hakucho:  { cat: 'ame', name: 'あめの白鳥', short: 'あめの白鳥', taste: 'ひんやり', adj: 'すきとおる', noun: '白鳥', nr: 9.5, value: 20, col: '#e8f6ff', fx: { dmg: 40, taisaku: 1, done: 5, spd: 1 } },
 oshiro:   { cat: 'ame', name: 'あめのお城', short: 'あめのお城', taste: 'あまい', adj: 'きらめく', noun: 'お城', nr: 10, value: 25, col: '#c9d8ff', fx: { dmg: 110, taisaku: 1, done: 7.5, spd: -1 } },
@@ -2810,7 +2810,7 @@ const kaisoText = st => Object.entries(st.give).map(([k, n]) => KAISO_WORD[k](n)
 function kaisoBuy() { const st = kaisoNext(); if (!st || S.money < st.price) return false; S.money -= st.price; S.kaiso = kaisoLv() + 1; save(); return true; }
 const ICHI_N = 3, ICHI_SHOW = 4;
 const ICHI_MUL = [0.7, 0.85, 1, 1, 1.2, 1.4], ICHI_SALE_P = 0.15, ICHI_SALE = 0.5;   // 品ごとの値段のゆれ（その日のもとの値段に かける）・大安売りの夜（約7晩に1回・ぜんぶ半額）
-const ICHI_PRICE = 3000;
+const ICHI_PRICE = 3200;
 const ichiBase = () => ICHI_PRICE;
 const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶことのある素材
 function ichiStock(day = S.day) {
