@@ -8,6 +8,8 @@
     夜の演出とドラッグの点検は tools/play.py
   - ときどき ページを読みなおして「つづきから」（3・9・15日目は夜のラウンド4・6日目は朝に焼いたあと・12日目は昼の開店前）
   - 見るもの：JS のエラー・画面の字の undefined／NaN・お金と倉庫の数・日がすすむか・止まり（20秒なにも変わらない）・ビルドがひらく日・仲間が来た日
+  - お金をはかる（11/22 夜・夜市の値段合わせ）：PRE='<JS>'＝はじめにその状態から（例：40日目・家具ぜんぶ・評判400 → 企画メモ）／GOOD=1＝予報のお客さんのすきな味と人気の素材をねらって焼く／
+    ICHI3=1＝毎晩 安い順に3まい買う（その日の rec の ichi＝[まい数, 払った円]）／NOICHI=1＝夜市で買わない。1日のかせぎ＝sales −（きのうの money − きょうの money0）
   - 出るもの：標準出力に JSON（errors・issues・days）と、5日ごとのまとめのスクショ
 """
 import sys, os, json, re, time, random, pathlib
@@ -44,6 +46,17 @@ BAKE = r"""(() => { if (mBusy) return 'busy'; if (!shelfRoom()) return 'full';
   const a = mon[0] || r(basic), b = mon[1] || r(basic), c = mCost([a, b]);
   if (c == null || c > S.money) return 'poor';
   mixTwo(a, b); return 'bake:' + a + '+' + b; })()"""
+if os.environ.get('GOOD'):   # 上手なお店：予報のお客さんのすきな味と人気の素材をねらって焼く
+    BAKE = r"""(() => { if (mBusy) return 'busy'; if (!shelfRoom()) return 'full';
+  const fc = S.seen['fc:' + S.day] || {}, basic = shopMats(), mon = Object.keys(S.stock).filter(m => isMonMat(m) && S.stock[m] > 0);
+  const want = [fc.m, ...(CUST_LIKES[fc.c] || [])].filter(m => m && basic.includes(m));
+  const r = L => L[Math.floor(Math.random() * L.length)];
+  for (let k = 0; k < 12; k++) {
+    const a = mon[0] || r(want.length && k < 8 ? want : basic), b = mon[1] || r(basic), c = mCost([a, b]);
+    if (c == null) continue; if (c > S.money) return 'poor';
+    mixTwo(a, b); return 'bake:' + a + '+' + b;
+  }
+  return 'poor'; })()"""
 GOODS_BUY = r"""(() => { const got = [];
   for (const id of ['showcase', 'tatekanban']) { const p = goodNext(id); if (p != null && S.money - p >= 1500) { buyGood(id); got.push(id); } }
   return got; })()"""
@@ -88,7 +101,8 @@ with sync_playwright() as p:
         after = ev('JSON.stringify({ p: S.phase, d: S.day, r: S.night && S.night.round, b: S.night && S.night.board, m: S.money })')
         if before != after: issue('読みなおしで かわった', where, before[:160], '→', after[:160])
     boot(); localst = ev('(localStorage.clear(), 0)'); boot()
-    click('[data-act=start]')
+    if os.environ.get('PRE'): print('PRE', ev(os.environ['PRE'] + '; JSON.stringify([S.day, S.phase])'), file=sys.stderr, flush=True); page.wait_for_timeout(800)
+    else: click('[data-act=start]')
     done_day, baked_day, opened_day, night_reload, morning_reload, day_reload = 0, 0, 0, set(), set(), set()
     last_sig, last_change, t0 = '', time.time(), time.time()
     rec = None
@@ -133,7 +147,8 @@ with sync_playwright() as p:
         elif ph == 'night':
             sg = st['stage']
             if sg == 'ichi':   # 夜市（11/22 夜）：1日おきに1まい目を大きく見て買う → お店へ
-                if st['day'] % 2 == 0 and click('.ich-it'):
+                if os.environ.get('ICHI3'): rec['ichi'] = ev("(() => { const m0 = S.money; for (const it of ichiStock().items.slice().sort((a, b) => a.price - b.price).slice(0, 3)) ichiPick(it.id); return [N.ichi.length, m0 - S.money]; })()")
+                elif not os.environ.get('NOICHI') and st['day'] % 2 == 0 and click('.ich-it'):
                     page.wait_for_timeout(300); click('.vbtns [data-act=ichiBuy]'); page.wait_for_timeout(300)
                 if not click('[data-act=ichiGo]'): ev('ichiGo()')
                 page.wait_for_timeout(600)
