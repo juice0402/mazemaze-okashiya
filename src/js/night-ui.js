@@ -29,19 +29,20 @@ function updTile(i, cid, cook, ice) {
 const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore', 'hono-taa', 'hono-tou', 'hono-sei'], minamo: ['mina-ha', 'mina-fu', 'mina-fun', 'mina-soko'], wakaba: ['waka-sore', 'waka-ei', 'waka-hoi', 'waka-eei'] };   // 11/21 PR #25 の本文の0（たぁっ・とうっ・せいっ／ふんっ・そこ／ほいっ・えーいっ）
 const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-uun'] };   // 11/21 昼の PR #25：あらあら（waka-araara）をなくしたので、だめだった声は うーん
 /* 考えている声「んー」（11/21 しょーくん「んーは夜のショップの考えているシーンに使うの」・waka-maa は使わない）：
-   ショップで しばらく何もしないと1回。毎ラウンドだとうるさいので、鳴ったら次のラウンドは休む */
+   11/22 しょーくん「ショップ画面でキャラクターみんな、悩んでるボイスが流れてない気がする」→ 前は「8秒なにもしない」で、さわるたびに数えなおし・鳴ったら次のラウンドは休み＝ほとんど鳴らなかった。
+   いまは ショップが出てから4秒で、毎ラウンド1回（つかんでいる・会話・大きく見ている・ヒントの声のあいだは少し待つ）。さわっても数えなおさない */
 const KOE_THINK = { honoka: 'hono-uun', minamo: 'mina-uun', wakaba: 'waka-uun' };
-const THINK_MS = 8000;
-let thinkT = 0, thinkAt = '';
+const THINK_MS = 4000;
+let thinkT = 0, thinkKey = '', thinkDone = '';
 function thinkArm() {
-  clearTimeout(thinkT);
   if (!N || N.stage !== 'shop' || fighting) return;
-  const last = thinkAt.split(':'), ok = +last[0] !== S.day || N.round - +last[1] >= 2;
-  if (!ok) return;
+  const key = S.day + ':' + N.round;
+  if (thinkDone === key || thinkKey === key) return;   // このラウンドは もう鳴らした／もう数えている
+  clearTimeout(thinkT); thinkKey = key;
   thinkT = setTimeout(function go() {
-    if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting) return;
-    if (busy || talking() || N.view || document.querySelector('.night.dragging')) { thinkT = setTimeout(go, 3000); return; }
-    thinkAt = S.day + ':' + N.round; koePlay(KOE_THINK[chefArt()]);
+    if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting || S.day + ':' + N.round !== key) { thinkKey = ''; return; }
+    if (busy || talking() || N.view || document.querySelector('.night.dragging') || (typeof TIP !== 'undefined' && TIP && Date.now() - (TIP.at || 0) < 4000)) { thinkT = setTimeout(go, 1500); return; }
+    thinkDone = key; koePlay(KOE_THINK[chefArt()]);
   }, THINK_MS);
 }
 /* 場面の声（11/21 しょーくん「大作ができたときの ほのか『できた！』みなも『完成。』わかば『できた』とか色々」・えらぶ質問で4つ）：

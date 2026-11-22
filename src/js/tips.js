@@ -45,9 +45,12 @@ function tipNext() {
   if (TIP || !tipNow() || N.view) return;
   const t = TIPS.find(t => !S.seen['t:' + t.id] && t.at === N.stage && t.when());
   if (!t) return;
-  TIP = { t, fresh: true };
+  TIP = { t, fresh: true, at: Date.now() };
   S.seen['t:' + t.id] = 1; save();
   tipDraw(); decoReact('hop', 500);
+  /* ヒントの声（11/22 しょーくん「チュートリアルもテキストに加えて軽い文章ボイス」）：ほのか（Leda）が吹き出しの文を読む。音のファイルがなければ鳴らさない */
+  const v = 'hono-tip-' + t.id;
+  if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v);
 }
 /* 操作をしたら呼ぶ（buy・mix・sell・move・reroll・bake・next）。そのヒントの操作なら、とじる */
 function tipEv(kind) {

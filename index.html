@@ -4685,17 +4685,17 @@ return slot.querySelector('.pc');
 const KOE_ATK = { honoka: ['hono-ei', 'hono-ya', 'hono-sore', 'hono-taa', 'hono-tou', 'hono-sei'], minamo: ['mina-ha', 'mina-fu', 'mina-fun', 'mina-soko'], wakaba: ['waka-sore', 'waka-ei', 'waka-hoi', 'waka-eei'] };   // 11/21 PR #25 の本文の0（たぁっ・とうっ・せいっ／ふんっ・そこ／ほいっ・えーいっ）
 const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', 'mina-n'], wakaba: ['waka-ufufu', 'waka-uun'] };   // 11/21 昼の PR #25：あらあら（waka-araara）をなくしたので、だめだった声は うーん
 const KOE_THINK = { honoka: 'hono-uun', minamo: 'mina-uun', wakaba: 'waka-uun' };
-const THINK_MS = 8000;
-let thinkT = 0, thinkAt = '';
+const THINK_MS = 4000;
+let thinkT = 0, thinkKey = '', thinkDone = '';
 function thinkArm() {
-clearTimeout(thinkT);
 if (!N || N.stage !== 'shop' || fighting) return;
-const last = thinkAt.split(':'), ok = +last[0] !== S.day || N.round - +last[1] >= 2;
-if (!ok) return;
+const key = S.day + ':' + N.round;
+if (thinkDone === key || thinkKey === key) return;   // このラウンドは もう鳴らした／もう数えている
+clearTimeout(thinkT); thinkKey = key;
 thinkT = setTimeout(function go() {
-if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting) return;
-if (busy || talking() || N.view || document.querySelector('.night.dragging')) { thinkT = setTimeout(go, 3000); return; }
-thinkAt = S.day + ':' + N.round; koePlay(KOE_THINK[chefArt()]);
+if (S.phase !== 'night' || !N || N.stage !== 'shop' || fighting || S.day + ':' + N.round !== key) { thinkKey = ''; return; }
+if (busy || talking() || N.view || document.querySelector('.night.dragging') || (typeof TIP !== 'undefined' && TIP && Date.now() - (TIP.at || 0) < 4000)) { thinkT = setTimeout(go, 1500); return; }
+thinkDone = key; koePlay(KOE_THINK[chefArt()]);
 }, THINK_MS);
 }
 const KOE_MORE = {
@@ -6142,9 +6142,11 @@ function tipNext() {
 if (TIP || !tipNow() || N.view) return;
 const t = TIPS.find(t => !S.seen['t:' + t.id] && t.at === N.stage && t.when());
 if (!t) return;
-TIP = { t, fresh: true };
+TIP = { t, fresh: true, at: Date.now() };
 S.seen['t:' + t.id] = 1; save();
 tipDraw(); decoReact('hop', 500);
+const v = 'hono-tip-' + t.id;
+if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v);
 }
 function tipEv(kind) {
 if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
