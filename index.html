@@ -686,7 +686,8 @@ background:linear-gradient(rgba(255,236,200,.55),rgba(255,236,200,0) 35%) paddin
 .buff.buff{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 7px 4px 13px;border-image:var(--ui-buff-gold) 49% 11% 49% 20% fill/9px 9px 9px 17px stretch;padding:0 1px;color:#3a1c08;filter:drop-shadow(0 0 4px var(--bc))}
 .buff.b-next,.buff.b-clead{border-image-source:var(--ui-buff-pink);color:#5a1028}
 .buff.b-again{border-image-source:var(--ui-buff-ember);color:#3a1204}
-.pk-on.pk-on{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-pink) 49% 18% 49% 18% fill/10px 11px stretch;padding:0 2px;color:#5a1028}
+.pk-on.pk-on{background:none;box-shadow:none;border-radius:0;border:1px solid transparent;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;height:22px;line-height:20px;padding:0 1.3em;font-size:11px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
+.pk-row.on .pk-on.pk-on{color:var(--gold)}
 .mx-dot.mx-dot{background:var(--ui-chip-mint) center/100% 100% no-repeat;box-shadow:none;border-radius:50%}
 .tip-x.tip-x{background:var(--ui-round) center/100% 100% no-repeat;color:#5a3418;font-weight:900}
 .pc:not(.tile):not(.ci-card) .pc-text{justify-content:flex-start;padding-left:3.5cqw}
@@ -934,7 +935,7 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .tip-x{position:absolute;right:5px;top:4px;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:11px;line-height:1;color:#fff;background:#8a5a34}
 .tipb.pop{animation:tippop .38s cubic-bezier(.3,1.45,.5,1) both}
 @keyframes tippop{from{opacity:0;transform:scale(.55) translateY(6px)}to{opacity:1;transform:none}}
-.pickov{position:absolute;inset:6px;z-index:7;display:flex;flex-direction:column;gap:6px;padding:2px 10px max(72px,21%);border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch;animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
+.pickov{position:absolute;inset:6px;z-index:7;display:flex;flex-direction:column;gap:6px;padding:2px 10px 70px;border:0 solid transparent;border-top-width:clamp(34px,calc((min(100vw,460px) - 44px) * .13),52px);border-image:var(--ui-shop) 52 0 0 0 fill/1 0 0 0 stretch;animation:shopin .28s cubic-bezier(.2,1.2,.4,1)}
 .stage.st-pick .ov-top,.stage.st-pick .ov-heat{visibility:hidden}
 .stage.st-pick .dc-chibi{display:none}
 .pk-ttl{flex:none;margin:0;text-align:center;font-family:var(--disp);font-size:17px;letter-spacing:2px;color:#ffe9b0;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
@@ -1042,19 +1043,21 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 .pk-row:not(.pkc) .pk-fig img{top:2%;height:200%}
 .pk-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px;container-type:inline-size}
 .pk-name{font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.1;color:#7a1a0c;word-break:keep-all;overflow-wrap:anywhere}
-.pk-sub{font-size:11px;line-height:1.3;color:#7a5a4a;word-break:keep-all;overflow-wrap:anywhere}
-.pk-text{font-size:11px;line-height:1.35;font-weight:500;color:#4a2814;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.pk-cards{display:flex;gap:5px;height:clamp(34px,32%,52px);margin-top:2px}
+.pk-sub{font-size:11px;line-height:1.3;color:#7a5a4a}
+.pk-sub>i{font-style:normal;display:inline-block;white-space:nowrap;margin-right:.6em}
+.pk-text{font-size:11px;line-height:1.35;font-weight:500;color:#4a2814;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pk-cards{display:flex;gap:5px;height:clamp(32px,30%,48px);margin-top:2px}
 .pk-mini{flex:none;height:100%;aspect-ratio:5/7}
 .pk-tags{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:2px}
 .pk-tags i{font-style:normal;font-size:11px;line-height:1.2;color:#5a3404;padding:0 2px;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/10px 11px stretch;white-space:nowrap}
 .pk-go{flex:none;align-self:center;width:10px;height:10px;border:solid #b07a4a;border-width:0 3px 3px 0;rotate:-45deg;margin:0 4px 0 0}
-.pk-row .pk-on{right:10px;top:-14px}
+.pk-row .pk-on{right:12px;top:-15px}
 .pk-pager{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;font-size:12px;font-weight:800;color:#fff2d8;text-shadow:0 1px 0 rgba(42,20,8,.8)}
 .pk-pager .pill{padding:3px 12px;min-height:0;font-size:12px}
 .tiles.pk-hide{display:none}
-@container (max-height:118px){.pk-text{-webkit-line-clamp:1}.pk-cards{height:30px}}
-@container (max-height:96px){.pk-row:not(.pkc) .pk-sub{display:none}}
+@container (max-height:119px){.pk-text{-webkit-line-clamp:2}}
+@container (max-height:95px){.pk-text{-webkit-line-clamp:1}.pk-cards{height:30px}}
+@container (max-height:76px){.pk-row:not(.pkc) .pk-sub{display:none}}
 .night[data-chef="wakaba"] .heat-label,.night[data-chef="wakaba"] .heat-bar,.night[data-chef="wakaba"] .embers{display:none}
 .fslot .bin-in{position:absolute;left:4%;right:4%;bottom:5%;display:flex;justify-content:center;gap:3%;z-index:4;pointer-events:none}
 .fslot .bin-in>*{width:28%;aspect-ratio:1;border-radius:50%;flex:none}
@@ -2328,7 +2331,7 @@ chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minam
 bal: [2.97, 1.123], r1: 220, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
-chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
+chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-charge', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
 trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'], extra: ['t:ameito', 't:amering'],   // 温度なし（見た目は ひんやり のまま変わらない）
 bal: [1.10, 1.186], r1: 350, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
 },
@@ -4174,6 +4177,7 @@ if (N.stage !== 'pick') return;
 if (!N.pickChef) return pickNext();
 S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
 save(); renderNight();
+if (typeof koeMore === 'function') koeMore('pick');   // まかせて！（11/22）
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
 function nightPrep() { N.heat = heatOf().start; N.heatUsed = false; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
@@ -4590,6 +4594,7 @@ if (!N.board.some(Boolean) && canPlace()) return toast('調理台にカードを
 if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
 const res = resolveRound(), q = quota(N.round, S.day);
 busy = true; unsel(); hideKw(); tipEv('bake'); tipClear();
+if (typeof koeMore === 'function') koeMore('go');   // いっくよー！（11/22）
 shopOut(() => {
 fighting = true; chainNow = (N.field && FIELDS[N.field].chain0) || 0; renderNight();   // 右上の れんさ はラウンドのはじめから数える
 battleIntro(q, () => {
@@ -4719,6 +4724,11 @@ full: { honoka: 'hono-yattane', minamo: 'mina-joudeki', wakaba: 'waka-iikao' },
 sp: { honoka: 'hono-ikke', minamo: 'mina-korede', wakaba: 'waka-soree' },
 show: { honoka: 'hono-achi', minamo: ['mina-hieta', 'mina-iikanji'], wakaba: 'waka-jukushita' },   // 11/22 しょーくん「みなもの凍ったときの いい感じ」：冷えた。と かわりばんこ
 max: { honoka: 'hono-max' },   // 11/22 しょーくん「ほのかの火力マックス」：バトルで火力がマックスになったとき（1ラウンドに1回）
+tane: { honoka: ['hono-tane1', 'hono-tane2'] },
+chain: { minamo: ['mina-chain1', 'mina-chain2'] },
+go: { honoka: ['hono-go1', 'hono-go2'], minamo: ['mina-go1', 'mina-go2'], wakaba: ['waka-go1', 'waka-go2'] },
+wow: { honoka: ['hono-wow1', 'hono-wow2'], minamo: ['mina-wow1', 'mina-wow2'], wakaba: ['waka-wow1', 'waka-wow2'] },
+pick: { honoka: 'hono-pick', minamo: 'mina-pick', wakaba: 'waka-pick' },
 };
 const koeHas = id => !!id && typeof KOE_SRC !== 'undefined' && !!KOE_SRC[id];
 function koeMore(k, perRound) {
@@ -4746,11 +4756,12 @@ const koneOn = () => N && N.build === 'kone';
 const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}">こね <b>${N.kone}</b></span>` : '';   // 字はラウンドの札と同じ（11/21 夜 しょーくん「ラウンド表記と同じく文字の大きさや中央揃えも」）
 let chainNow = 0;
 const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
-function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
+function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); if (n >= 4 && chainNow < 4) koeMore('chain', true); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
 function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
 const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
 setKone(N.kone); heroFor('joy', 900);
+if (born) koeMore('tane', true);   // パン種できた！（11/22）
 document.querySelectorAll('.tslot .pc.born').forEach(c => floatAt(c.parentNode, 'パン種', 'best'));
 if (!born) toast('調理台がいっぱいで、パン種は生まれなかった');
 }
@@ -4857,7 +4868,7 @@ slowed.forEach(a => { try { a.playbackRate = 0; } catch (e) { /* もう終わっ
 setTimeout(() => {   // ドーン
 slowed.forEach(a => { try { a.playbackRate = 1; } catch (e) { /* もう終わった */ } });
 if (app) app.classList.remove('slowmo', 'hitstop');
-sePlay('boom', { vol: .9 });
+sePlay('boom', { vol: .9 }); setTimeout(() => koeMore('wow'), 350);   // すっごーい！（11/22）
 ball.remove(); land({ x: x1, y: y1 }); megaBoom({ x: x1, y: y1 });
 const L = fxLayer(), h = document.createElement('i'); h.className = 'fx-hit s-huge'; h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
 L.appendChild(h); setTimeout(() => h.remove(), 520);
@@ -5271,7 +5282,7 @@ const rows = list.map(c => {
 const C = CHEFS[c], bs = openBuilds().filter(id => BUILDS[id].chef === c), pic = ART[C.art] || '';
 return `<button class="pk-row pkc${c === cur ? ' on' : ''}" data-act="pickC" data-id="${c}">
 <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-<span class="pk-body"><b class="pk-name">${esc(C.name)}</b><span class="pk-sub">${esc(C.job)}・<wbr>特性 ${esc(C.trait)}</span>
+<span class="pk-body"><b class="pk-name">${esc(C.name)}</b><span class="pk-sub"><i>${esc(C.job)}</i><i>特性 ${esc(C.trait)}</i></span>
 <span class="pk-tags">${bs.map(id => `<i>${pkBr(BUILDS[id].name)}</i>`).join('')}</span></span>
 <i class="pk-go" aria-hidden="true"></i>${c === prev ? '<i class="pk-on">前の夜</i>' : ''}</button>`;
 }).join('');
@@ -5282,7 +5293,7 @@ const rows = list.map(id => {
 const B = BUILDS[id], on = id === N.build, pic = ART[B.pic] || ART[C.art] || '';
 return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
 <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub">特性 ${esc(B.trait || C.trait)}</span>
+<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub"><i>特性 ${esc(B.trait || C.trait)}</i></span>
 <span class="pk-text">${esc(B.text)}</span>
 <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
 }).join('');
@@ -5890,7 +5901,8 @@ const fe = document.querySelector('#deco .dc-frame'); if (fe) fe.after(c);
 const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
 edgeGlow('big'); sePlay('hit', { vol: .9, rate: .6 });
 }, T(200));
-setTimeout(() => { m.classList.remove('broken'); qCollect('m3', 3); }, T(760));   // +3 は もとの印にもどって コイン+3
+setTimeout(() => { m.classList.remove('broken'); qCollect('m3', 3); }, T(760));
+setTimeout(() => { if (typeof koeMore === 'function') koeMore('wow'); }, T(420));   // オーバーランも すっごーい！（11/22）   // +3 は もとの印にもどって コイン+3
 }
 const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] , candy: ['fx-candy-swirl', 'fx-ame-flower', 'fx-ame-drops', 'fx-ame-ribbon']};   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）
 const RING = { honoka: 'fx-fire-ring', minamo: 'fx-ame-ring', wakaba: 'fx-flowerring', candy: 'fx-candy-ring' };

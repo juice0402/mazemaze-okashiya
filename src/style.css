@@ -858,7 +858,8 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .buff.b-next,.buff.b-clead{border-image-source:var(--ui-buff-pink);color:#5a1028}
 .buff.b-again{border-image-source:var(--ui-buff-ember);color:#3a1204}
 /* 「えらんでいる」の札：ピンクの札 */
-.pk-on.pk-on{background:none;box-shadow:none;border-radius:0;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-pink) 49% 18% 49% 18% fill/10px 11px stretch;padding:0 2px;color:#5a1028}
+.pk-on.pk-on{background:none;box-shadow:none;border-radius:0;border:1px solid transparent;border-image:var(--ui-label) 49% 16.5% fill/50% 1.1em stretch;height:22px;line-height:20px;padding:0 1.3em;font-size:11px;font-weight:700;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}   /* えらんでいる・前の夜（11/22 しょーくん「ほかで使っている枠の絵を」）：ショップの上の段と同じ こげ茶の木の札 ui-label */
+.pk-row.on .pk-on.pk-on{color:var(--gold)}
 /* まぜられるしるし（＋）・ヒントのとじる（×）：丸いボタンの皮 */
 .mx-dot.mx-dot{background:var(--ui-chip-mint) center/100% 100% no-repeat;box-shadow:none;border-radius:50%}
 .tip-x.tip-x{background:var(--ui-round) center/100% 100% no-repeat;color:#5a3418;font-weight:900}

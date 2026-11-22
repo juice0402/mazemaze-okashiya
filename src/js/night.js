@@ -62,6 +62,7 @@ function pickGo() {
   if (!N.pickChef) return pickNext();
   S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
   save(); renderNight();
+  if (typeof koeMore === 'function') koeMore('pick');   // まかせて！（11/22）
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
 /* 今夜のビルドに合わせた夜のはじめ（11/19 わかば：飴ジャムの夜は場がいつも大きなびん・bin＝びんの中の実・jamN＝この夜に作ったジャムの数） */
@@ -522,6 +523,7 @@ function omotenashi() {
   if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
   const res = resolveRound(), q = quota(N.round, S.day);
   busy = true; unsel(); hideKw(); tipEv('bake'); tipClear();
+  if (typeof koeMore === 'function') koeMore('go');   // いっくよー！（11/22）
   shopOut(() => {
     fighting = true; chainNow = (N.field && FIELDS[N.field].chain0) || 0; renderNight();   // 右上の れんさ はラウンドのはじめから数える
     battleIntro(q, () => {

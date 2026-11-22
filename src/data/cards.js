@@ -264,7 +264,7 @@ const BUILDS = {
   },
   /* みなも②（11/19）：キャンディどうしの れんさ（11/21 夜〜 温度は関係ない） */
   candy: {
-    chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-battle', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
+    chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-charge', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
     trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'], extra: ['t:ameito', 't:amering'],   // 温度なし（見た目は ひんやり のまま変わらない）
     bal: [1.10, 1.186], r1: 350, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
   },

@@ -635,7 +635,8 @@ function qOverrun() {
     const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
     edgeGlow('big'); sePlay('hit', { vol: .9, rate: .6 });
   }, T(200));
-  setTimeout(() => { m.classList.remove('broken'); qCollect('m3', 3); }, T(760));   // +3 は もとの印にもどって コイン+3
+  setTimeout(() => { m.classList.remove('broken'); qCollect('m3', 3); }, T(760));
+  setTimeout(() => { if (typeof koeMore === 'function') koeMore('wow'); }, T(420));   // オーバーランも すっごーい！（11/22）   // +3 は もとの印にもどって コイン+3
 }
 /* みなも・わかばの一撃のかざり（11/21 しょーくん「固有エフェクトをさらに追加して派手に」・fx-minamo2・fx-wakaba2）：
    ふつうの一撃は1つ・大きい一撃は3つ（輪を1つ入れる）。くるっと回りながら ふくらんで消える（transform と opacity だけ） */

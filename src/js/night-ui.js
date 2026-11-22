@@ -60,6 +60,13 @@ const KOE_MORE = {
   sp: { honoka: 'hono-ikke', minamo: 'mina-korede', wakaba: 'waka-soree' },
   show: { honoka: 'hono-achi', minamo: ['mina-hieta', 'mina-iikanji'], wakaba: 'waka-jukushita' },   // 11/22 しょーくん「みなもの凍ったときの いい感じ」：冷えた。と かわりばんこ
   max: { honoka: 'hono-max' },   // 11/22 しょーくん「ほのかの火力マックス」：バトルで火力がマックスになったとき（1ラウンドに1回）
+  /* 11/22 しょーくん（夜でまだ声がない場面を4つとも）：tane＝こね生地でパン種が生まれた・chain＝キャンディのれんさが4に（どちらも1ラウンドに1回）・
+     go＝おもてなし！を押した・wow＝1万こえの一撃とオーバーラン・pick＝今夜のビルドをえらんだ（これにする！） */
+  tane: { honoka: ['hono-tane1', 'hono-tane2'] },
+  chain: { minamo: ['mina-chain1', 'mina-chain2'] },
+  go: { honoka: ['hono-go1', 'hono-go2'], minamo: ['mina-go1', 'mina-go2'], wakaba: ['waka-go1', 'waka-go2'] },
+  wow: { honoka: ['hono-wow1', 'hono-wow2'], minamo: ['mina-wow1', 'mina-wow2'], wakaba: ['waka-wow1', 'waka-wow2'] },
+  pick: { honoka: 'hono-pick', minamo: 'mina-pick', wakaba: 'waka-pick' },
 };
 const koeHas = id => !!id && typeof KOE_SRC !== 'undefined' && !!KOE_SRC[id];
 function koeMore(k, perRound) {
@@ -89,11 +96,12 @@ const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた�
 /* ちいさなキャンディ（11/21 夜 しょーくん「温度ゲージがあった所に れんさの回数」）：バトル中の れんさ（ラウンドのはじめは場の chain0・キャンディの発動で のびて、素材や道具で0） */
 let chainNow = 0;
 const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
-function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
+function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); if (n >= 4 && chainNow < 4) koeMore('chain', true); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
 function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
   const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
   setKone(N.kone); heroFor('joy', 900);
+  if (born) koeMore('tane', true);   // パン種できた！（11/22）
   document.querySelectorAll('.tslot .pc.born').forEach(c => floatAt(c.parentNode, 'パン種', 'best'));
   if (!born) toast('調理台がいっぱいで、パン種は生まれなかった');
 }
@@ -211,7 +219,7 @@ function megaHit(ball, kf, at, x1, y1, fly, land, size) {
   setTimeout(() => {   // ドーン
     slowed.forEach(a => { try { a.playbackRate = 1; } catch (e) { /* もう終わった */ } });
     if (app) app.classList.remove('slowmo', 'hitstop');
-    sePlay('boom', { vol: .9 });
+    sePlay('boom', { vol: .9 }); setTimeout(() => koeMore('wow'), 350);   // すっごーい！（11/22）
     ball.remove(); land({ x: x1, y: y1 }); megaBoom({ x: x1, y: y1 });
     const L = fxLayer(), h = document.createElement('i'); h.className = 'fx-hit s-huge'; h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
     L.appendChild(h); setTimeout(() => h.remove(), 520);
@@ -689,7 +697,7 @@ function pickHTML() {
       const C = CHEFS[c], bs = openBuilds().filter(id => BUILDS[id].chef === c), pic = ART[C.art] || '';
       return `<button class="pk-row pkc${c === cur ? ' on' : ''}" data-act="pickC" data-id="${c}">
         <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-        <span class="pk-body"><b class="pk-name">${esc(C.name)}</b><span class="pk-sub">${esc(C.job)}・<wbr>特性 ${esc(C.trait)}</span>
+        <span class="pk-body"><b class="pk-name">${esc(C.name)}</b><span class="pk-sub"><i>${esc(C.job)}</i><i>特性 ${esc(C.trait)}</i></span>
         <span class="pk-tags">${bs.map(id => `<i>${pkBr(BUILDS[id].name)}</i>`).join('')}</span></span>
         <i class="pk-go" aria-hidden="true"></i>${c === prev ? '<i class="pk-on">前の夜</i>' : ''}</button>`;
     }).join('');
@@ -700,7 +708,7 @@ function pickHTML() {
     const B = BUILDS[id], on = id === N.build, pic = ART[B.pic] || ART[C.art] || '';
     return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
       <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub">特性 ${esc(B.trait || C.trait)}</span>
+      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub"><i>特性 ${esc(B.trait || C.trait)}</i></span>
       <span class="pk-text">${esc(B.text)}</span>
       <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
