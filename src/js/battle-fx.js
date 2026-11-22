@@ -396,11 +396,13 @@ function fireWall() {
 }
 /* ちいさなキャンディの夜の大技（11/22 しょーくん「飴がしたから湧いてきたり」）：舞台の下から 飴（コロコロドロップ・ペロペロ・ミント飴など）が
    いっせいに わきあがって ふりそそぐ。動くのは transform と opacity だけ */
-const CANDY_ART = ['card-korodrop', 'card-peroc', 'card-mintame', 'card-ichidrop', 'card-hajike', 'card-shioame'];
+const CANDY_BITS = ['fx-candy-1', 'fx-candy-2', 'fx-candy-3', 'fx-candy-4', 'fx-candy-5', 'fx-candy-6', 'fx-candy-7', 'fx-candy-8', 'fx-candy-9'];   // 描き下ろしの飴のつぶ（11/22）
+const CANDY_ART = ['card-korodrop', 'card-peroc', 'card-mintame', 'card-ichidrop', 'card-hajike', 'card-shioame'];   // つぶの絵がまだないときは カードの絵
+const candyURLs = () => { const b = CANDY_BITS.map(n => ART[n]).filter(Boolean); return b.length ? b : CANDY_ART.map(n => ART[n]).filter(Boolean); };
 function candyFountain(w, r, k) {
   w.innerHTML = '<i class="fw-flash"></i>'; fxLayer().appendChild(w);
   sePlay('star', { vol: .7, rate: 1.25 }); sePlay('wipe', { rate: 1.3, vol: .6 }); [0, 1, 2, 3].forEach(i => setTimeout(() => sePlay('hit', { rate: 2 + i * .3, vol: .3 }), (180 + i * 110) * k));
-  const U = CANDY_ART.map(n => ART[n]).filter(Boolean); if (!U.length || !document.body.animate) { setTimeout(() => w.remove(), 900 * k); return; }
+  const U = candyURLs(); if (!U.length || !document.body.animate) { setTimeout(() => w.remove(), 900 * k); return; }
   for (let i = 0; i < 30; i++) {
     const e = document.createElement('img'), z = 30 + Math.random() * 30, x = r.width * (.03 + Math.random() * .94);
     e.className = 'fw-candy'; e.src = U[i % U.length]; e.alt = '';
@@ -417,7 +419,7 @@ let rainLive = 0;
 function candyRain(n) {
   if (REDUCED || !candyNight() || !document.body.animate) return;
   const st = $('stage'); if (!st) return;
-  const U = CANDY_ART.map(k => ART[k]).filter(Boolean); if (!U.length) return;
+  const U = candyURLs(); if (!U.length) return;
   const r = st.getBoundingClientRect(), m = Math.min(14, 1 + n, 40 - rainLive), L = fxLayer();
   for (let i = 0; i < m; i++) {
     const e = document.createElement('img'), z = 20 + Math.random() * 20 + Math.min(n, 20) * .6, x = r.left + r.width * (.06 + Math.random() * .88);
@@ -558,12 +560,13 @@ function impactFx(p, size) {
   const nt = document.querySelector('.night'); if (nt) replay(nt, big ? 'quake2' : 'quake');   // 画面ぜんぶ（舞台・調理台・おなかの帯）がゆれる
   const w = fxEl('fx-wave' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w.remove(), T(800));   // 額縁をこえて広がる衝撃波
   if (big) { const w2 = fxEl('fx-wave w2' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w2.remove(), T(900)); }
-  const burst = ART['fx-burst-' + chef], slash = ART['fx-slash-' + chef];
-  const cd = document.body.dataset.candy ? ' candy' : '';   // キャンディの夜は 氷の色ではなく 飴の色（11/22・絵の色を回す）
+  const cy = document.body.dataset.candy, fk = cy && ART['fx-burst-candy'] ? 'candy' : chef;   // キャンディの夜は 描き下ろしの飴の絵（11/22）
+  const burst = ART['fx-burst-' + fk], slash = ART['fx-slash-' + fk];
+  const cd = cy && fk !== 'candy' ? ' candy' : '';   // 飴の絵がまだないときは 氷の色を回して 飴の色に
   if (burst) { const b = fxEl('fx-art fx-burst' + cd + (size ? ' s-' + size : ''), p, `<img src="${burst}" alt="">`); setTimeout(() => b.remove(), T(700)); }
   if (slash) { const s = fxEl('fx-art fx-slash' + cd + (size ? ' s-' + size : ''), p, `<img src="${slash}" alt="">`); setTimeout(() => s.remove(), T(560)); }
   /* 数字が当たった瞬間の ぎざぎざの衝撃と、飛び散るかけらの輪（11/21 しょーくん「数字を敵にぶつけた時の大迫力なエフェクト」） */
-  const nh = ART['fx-numhit-' + chef], sc = ART['fx-scatter-' + chef];
+  const nh = ART['fx-numhit-' + fk], sc = ART['fx-scatter-' + fk];
   if (nh) { const n = fxEl('fx-art fx-numhit' + cd + (size ? ' s-' + size : ''), p, `<img src="${nh}" alt="">`); setTimeout(() => n.remove(), T(520)); }
   if (sc) { const c = fxEl('fx-art fx-scatter' + cd + (size ? ' s-' + size : ''), p, `<img src="${sc}" alt="">`); setTimeout(() => c.remove(), T(820)); }
   chefFlourish(chef, p, big ? 3 : 1);
@@ -636,9 +639,10 @@ function qOverrun() {
 }
 /* みなも・わかばの一撃のかざり（11/21 しょーくん「固有エフェクトをさらに追加して派手に」・fx-minamo2・fx-wakaba2）：
    ふつうの一撃は1つ・大きい一撃は3つ（輪を1つ入れる）。くるっと回りながら ふくらんで消える（transform と opacity だけ） */
-const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）
-const RING = { honoka: 'fx-fire-ring', minamo: 'fx-ame-ring', wakaba: 'fx-flowerring' };
+const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] , candy: ['fx-candy-swirl', 'fx-ame-flower', 'fx-ame-drops', 'fx-ame-ribbon']};   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）
+const RING = { honoka: 'fx-fire-ring', minamo: 'fx-ame-ring', wakaba: 'fx-flowerring', candy: 'fx-candy-ring' };
 function chefFlourish(chef, p, n) {
+  if (document.body.dataset.candy && ART['fx-candy-swirl']) chef = 'candy';   // キャンディの夜は 飴のかざり（11/22）
   const L = (FLOURISH[chef] || []).filter(k => ART[k] && !(document.body.dataset.candy && k === 'fx-ice-flower')); if (!L.length || !document.body.animate) return;   // キャンディの夜は 氷の花を出さない
   const keys = n > 1 && ART[RING[chef]] ? [RING[chef], ...L.sort(() => Math.random() - .5).slice(0, n - 1)] : [L[Math.floor(Math.random() * L.length)]];
   keys.forEach((k, i) => {
@@ -747,11 +751,12 @@ function nwArt(urls, dec) {
 function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景をほどいておく）。起動のときは読むだけ
   if (hot && typeof artPack3 === 'function') artPack3();   // まぜた先のカードの絵のまとめ（ためしのページ・11/21 夜）：夜に入ってから読む
   try {
-    const B = BUILDS[build] || BUILDS.cookie, C = CHEFS[B.chef] || {}, chef = (C.art || B.chef || 'honoka');
-    const P = chef === 'minamo' ? POSE_MINAMO : chef === 'wakaba' ? POSE_WAKABA : POSE;
+    const B = BUILDS[build] || BUILDS.cookie, C = CHEFS[B.chef] || {}, chef = build === 'candy' ? 'candy' : (C.art || B.chef || 'honoka');   // キャンディの夜は 飴の絵（11/22・ないものは みなもの絵）
+    const cf = chef === 'candy' ? 'minamo' : chef;
+    const P = cf === 'minamo' ? POSE_MINAMO : cf === 'wakaba' ? POSE_WAKABA : POSE;
     const keys = Object.values(P).map(v => Array.isArray(v) ? v[0] : v);   // シェフの戦闘ポーズ（いちばん大きい絵）
     for (const k of Object.keys(ART)) {
-      if (/^fx-(burst|slash|cutin|wall|crack|shard|numhit|scatter)-/.test(k)) { if (k.includes('-' + chef)) keys.push(k); }
+      if (/^fx-(burst|slash|cutin|wall|crack|shard|numhit|scatter)-/.test(k)) { if (k.includes('-' + chef) || k.includes('-' + cf)) keys.push(k); }
       else if (Object.entries(FLOURISH).some(([c, L]) => c !== chef && L.includes(k)) || Object.entries(RING).some(([c, r]) => c !== chef && r === k)) continue;   // ほかのシェフの一撃のかざりは読まない   // 一撃の衝撃・斬撃・カットインの帯・大技の壁（11/20）は そのシェフの分
       else if (/^fx-/.test(k)) keys.push(k);
       else if (/^(candy|special|jam|burnt)-/.test(k)) keys.push(k);   // まぜてできる★2・★3の絵
@@ -759,10 +764,11 @@ function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景
     const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
     if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy', 'mon-' + mon.id + '-sad');
     for (const [n] of DECO_MOBS) keys.push(n + '-cheer', n + '-jump');   // 賑やかしのモブのポーズちがい（11/21）
-    keys.push('bg-night-' + chef, 'fx-numhit-' + chef, 'fx-scatter-' + chef, ...(FLOURISH[chef] || []), RING[chef] || '');   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
+    if (chef === 'candy') keys.push(...CANDY_BITS);
+    keys.push('bg-night-' + cf, 'fx-numhit-' + chef, 'fx-scatter-' + chef, ...(FLOURISH[chef] || []), RING[chef] || '');   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
     const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
-    const hotSet = hot ? new Set([...Object.values(P).map(v => ART[Array.isArray(v) ? v[0] : v]), ART['bg-night-' + chef] || ART['bg-night'],
-      ...['fx-burst-', 'fx-slash-', 'fx-numhit-', 'fx-scatter-', 'fx-cutin-'].map(k => ART[k + chef]), ...(FLOURISH[chef] || []).map(k => ART[k]), ART[RING[chef]],
+    const hotSet = hot ? new Set([...Object.values(P).map(v => ART[Array.isArray(v) ? v[0] : v]), ART['bg-night-' + cf] || ART['bg-night'], ...(chef === 'candy' ? CANDY_BITS.map(k => ART[k]) : []),
+      ...['fx-burst-', 'fx-slash-', 'fx-numhit-', 'fx-scatter-', 'fx-cutin-'].map(k => ART[k + chef] || ART[k + cf]), ...(FLOURISH[chef] || []).map(k => ART[k]), ART[RING[chef]],
       ...(mon ? ['', '-eat', '-happy'].map(x => ART['mon-' + mon.id + x]) : [])].filter(Boolean)) : null;   // 一撃のはじめで ほどく手間（長い処理）が出ないように、シェフの一撃の絵とお客さんの顔も
     nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）

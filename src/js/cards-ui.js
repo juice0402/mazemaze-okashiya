@@ -57,7 +57,7 @@ const glossI = d => d.star > 1 ? '<i class="pc-gl"></i>' : '';
 /* 味パワーの紋章：炎はほのかだけ。みなも・わかばは描き下ろしの紋章 ui-pow-<シェフ>（届くまでは pw-code のコードの丸）（11/19 しょーくん） */
 function powBadge(dmg) {
   const t = fmt(Math.floor(dmg)), c = chefArt(), pw = c === 'honoka' ? '' : ` pw-${c}${ART['ui-pow-' + c] ? '' : ' pw-code'}`;
-  return `<b class="pc-pow l${Math.min(t.length, 5)}${pw}">${t}</b>`;
+  return `<b class="pc-pow l${Math.min(t.length, 7)}${pw}"><span>${t}</span></b>`;   // 数は紋章のクリーム色の丸のまんなかに（11/22・style-battle.css の .pc-pow）
 }
 /* カードの形（mini と huge は同じ形で大きさだけちがう）。紙は1つの効果を1行で、上から大事な2つまで */
 /* カードの効果の文（11/19 しょーくん「ゼンゼロみたいに1つの文」）：紙に出す文と、大きく見たときの文は同じ。フィールドは短い札の文（FIELDS の chips）。

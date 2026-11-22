@@ -64,6 +64,9 @@
 | src/js/main.js | 画面の切りかえ render（prologue・morning・day・night・result）・タイトル・タップの表 ACTS（朝と昼のボタンは MORNING_ACTS・DAY_ACTS をまぜる）・つづきの用意 resume・boot（hot のつづき）・押したときの光 pressFx・夜/朝/昼/まとめの切りかえの幕 wipe（ギンガムのタイル・ぜんぶのせシップの pixWipe の形） | |
 
 ## みなも（11/19・大作の飴細工）
+- 光る演出の絵（黒い背景）の取りこみ：`python3 -I tools/glow_art.py <PNG> <列>x<行> <上限px> <名前…>`（明るさで すけに・名前を - にしたマスは取らない・11/22）
+- ちいさなキャンディの夜の演出（11/22）：body の data-candy・battle-fx.js の candyFountain・candyRain・CANDY_BITS・FLOURISH.candy・impactFx の fk（飴の絵がなければ みなもの絵の色を回す）
+- 味パワーの紋章（11/22）：cards-ui.js の powBadge（数は span）・style-battle.css の最後の「味パワーの紋章」（--ar・--px・--py・--fz・字は2倍で書いて transform で半分）。調理台の★は左上
 - 数字合わせ（11/21 夜 しょーくん「昼を完璧に〔ハート30〕・ビルドも完璧に運用した 上手な夜の最終スコアが どのビルドも50万くらい」）：`IDEAL=1 HEARTS=30 node tools/bot.mjs 600 all 20`（大作は `TK=6`）の 夜の合計 90% が 45〜56万。むずかしさは `SUM=1 HEARTS=5 … 20`（満タン r2 2〜3割・r9 4〜5割）と `R1=1 HEARTS=0 … 1`（半分に届く5割すこし）。★2・★3でふえる倍率は cards.js の FIN_STAR（kone・done・chain・ripe・jam・sai）。`JS='…'` で数字をためしに変えてはかれる
 - ビルドの特性（11/21 夜 しょーくん「パンビルドに火力は必要ない」「れんさ飴ビルドも温度は関係ない」）：cards.js の BUILDS の heat（off＝メーターを使わない・start＝夜のはじめの値〔見た目だけ〕）と drop（そのビルドのショップに出さない共通のカード）・extra（そのビルドだけの道具：こね台・発酵かご／飴の糸・飴のわっか）・trait（ビルドえらびの特性）・heatOf が シェフの heat に重ねる。パン生地（d.pan）は焼かない・焦げない・焼き加減なし（night.js の焼き・cookMul・やきごて）
 - cards.js：飴の温度 TEMP・育つ数 GROW・SIZE_MAX・sizeMul（完成×5）／MATS の cat ame（amedai〜nobashi・fx の taisaku・done・doneRally・doneFin・grow）とみなもの素材5／TOOLS の yusen〜amebell／FIELDS の oonabe・kobo（slow）／CHEFS.minamo（heat＝word・of・names・start・cool。ほのかは field）・chefNow()・heatOf()／BUILDS.taisaku（mate＝仲間が来てから）／d.grow・d.meter（board の cook は生地の焼き加減・大作の大きさ。c.ice＝固まる）
