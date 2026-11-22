@@ -32,6 +32,7 @@ function startNight() {
   if (!S.today) S.today = newDay(S.day);
   const mon = nightMonster(), id = MONSTERS[mon].id;
   Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
+  S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
   const open = openBuilds();
   S.night = {
     mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS, rolls: ROUND1_ROLLS,

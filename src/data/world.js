@@ -26,8 +26,11 @@ function nightMonster() {
   const nw = MONSTERS.findIndex(m => m.from && S.day >= m.from && !S.seenMon.includes(m.id));
   if (nw >= 0) return nw;
   const reg = MONSTERS.filter(m => !m.rare && (m.from || 1) <= S.day);
-  const y = S.yesterday ? reg.findIndex(m => m.id === S.yesterday.mon) : -1;   // きのうの子の次（同じ子が続かない）
-  return MONSTERS.indexOf(reg[y >= 0 ? (y + 1) % reg.length : (S.day - 1) % reg.length]);
+  /* いちばん長く来ていない子（11/22：前は「きのうの子の次」で、新しい子のあとは いつもスライムにもどり、クラゲ・トカゲ・ひよこが来なくなっていた）。
+     来た日は S.seen['ml:<id>']（startNight が入れる）。きのうの子は続けない */
+  const last = m => (S.seen && S.seen['ml:' + m.id]) || 0, yid = S.yesterday && S.yesterday.mon;
+  const pool = reg.length > 1 ? reg.filter(m => m.id !== yid) : reg;
+  return MONSTERS.indexOf(pool.reduce((a, m) => last(m) < last(a) ? m : a));
 }
 
 /* お金（11/18 しょーくん「現実の値段っぽく。売値・原価・モンスターのお金のバランスが崩れないように」）

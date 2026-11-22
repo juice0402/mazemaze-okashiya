@@ -2736,8 +2736,9 @@ if (r >= 0 && S.yesterday && S.yesterday.mood >= 3) return r;
 const nw = MONSTERS.findIndex(m => m.from && S.day >= m.from && !S.seenMon.includes(m.id));
 if (nw >= 0) return nw;
 const reg = MONSTERS.filter(m => !m.rare && (m.from || 1) <= S.day);
-const y = S.yesterday ? reg.findIndex(m => m.id === S.yesterday.mon) : -1;   // きのうの子の次（同じ子が続かない）
-return MONSTERS.indexOf(reg[y >= 0 ? (y + 1) % reg.length : (S.day - 1) % reg.length]);
+const last = m => (S.seen && S.seen['ml:' + m.id]) || 0, yid = S.yesterday && S.yesterday.mon;
+const pool = reg.length > 1 ? reg.filter(m => m.id !== yid) : reg;
+return MONSTERS.indexOf(pool.reduce((a, m) => last(m) < last(a) ? m : a));
 }
 const START_MONEY = 1000;    // はじめのお金（プロローグ「お財布、さみしい」）
 const YEN_PER_VALUE = 7;
@@ -4267,6 +4268,7 @@ S.phase = 'night'; frameCracks = [];   // オーバーランの額縁のひび�
 if (!S.today) S.today = newDay(S.day);
 const mon = nightMonster(), id = MONSTERS[mon].id;
 Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
+S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
 const open = openBuilds();
 S.night = {
 mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS, rolls: ROUND1_ROLLS,
