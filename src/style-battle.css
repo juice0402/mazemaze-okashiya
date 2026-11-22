@@ -380,7 +380,7 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 .pk-cards{display:flex;gap:5px;height:clamp(32px,30%,48px);margin-top:2px}
 .pk-mini{flex:none;height:100%;aspect-ratio:5/7}
 .pk-tags{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:2px}
-.pk-tags i{font-style:normal;font-size:11px;line-height:1.2;color:#5a3404;padding:0 2px;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/10px 11px stretch;white-space:nowrap}
+.pk-tags i{font-style:normal;font-size:11px;font-weight:700;height:22px;line-height:20px;color:#5a3404;padding:0 12px 0 21px;border:1px solid transparent;border-image:var(--ui-buff-gold) 49% 11% 49% 20% fill/11px 11px 11px 20px stretch;white-space:nowrap;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}   /* ビルドの札は カードの効果と同じリボン（ui-buff-gold・11/22 しょーくん「どこかから引っ張ってきて」） */
 .pk-go{flex:none;align-self:center;width:10px;height:10px;border:solid #b07a4a;border-width:0 3px 3px 0;rotate:-45deg;margin:0 4px 0 0}
 .pk-row .pk-on{right:12px;top:-15px}
 .pk-pager{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;font-size:12px;font-weight:800;color:#fff2d8;text-shadow:0 1px 0 rgba(42,20,8,.8)}
