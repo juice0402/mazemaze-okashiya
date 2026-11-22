@@ -107,6 +107,7 @@ function renderDay() {
       <div class="d-cust" id="dCust"></div>
       ${dayStageFront()}
       <div class="d-jar" id="dJar">${jarHTML()}</div>
+      <span class="m-wallet d-wallet" id="dWallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span></span>
       ${tip ? `<p class="d-tip">${esc(tip)}</p>` : ''}
     </div>
     <div class="dcase${pre ? ' pre' : ''}" id="dCase" style="--rows:${rows}">${caseHTML(pre)}</div>
@@ -262,7 +263,7 @@ function dMateDue() {
 function dMateVisit(R, m) {
   R.mated = 1;
   const T = S.today, it = S.shelf.find(s => s.key === m.key && s.n > 0), price = candyOf(m.key).price;   // 売り切れのマスをえらばない（11/19：同じお菓子が2マスのとき n がマイナスになった）
-  it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
+  it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++; dWallet(price);
   if (it.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   S.seen['mate:' + m.id] = S.day; save();
   dCaseUpdate(); mSe('door');
@@ -330,6 +331,20 @@ function dM13Run(v) {
   S.seen.m13 = S.day; save();
   talk(STORY.m13, () => { dScene = null; dSkip = 0; v.sc = 2; save(); });
 }
+/* 昼のお財布（11/22 夜 しょーくん「昼のお金の重要性も出たから、お昼の間もお財布を左上に」）：舞台の左上に朝と同じ .m-wallet（ui-label の札）。
+   売れたらその場で数をふやして、お財布が少しはねる・下から「+○円」がふわっと上がって消える（動くのは transform と opacity だけ） */
+function dWallet(add) {
+  const w = $('dWallet'); if (!w) return;
+  w.querySelector('b').textContent = fmt(S.money);
+  if (REDUCED || !add) return;
+  w.classList.remove('bump'); void w.offsetWidth; w.classList.add('bump');
+  const st = $('dstage'); if (!st) return;
+  const p = document.createElement('i');
+  p.className = 'd-plus'; p.textContent = '+' + fmt(add) + '円';
+  p.style.setProperty('--dy', (st.querySelectorAll('.d-plus').length * 14) + 'px');   // 2こ・3こ買ったときは少しずらす
+  p.addEventListener('animationend', () => p.remove());
+  st.appendChild(p);
+}
 /* そのお菓子が棚にあと何こ（同じお菓子が2マス以上あってもぜんぶ数える） */
 const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
 /* 買う：すきな素材が入ったお菓子（看板が先・なければ高いほう）→ ハート。なければ OTHER_BUY の人がほかのを1こ */
@@ -342,7 +357,7 @@ function serve(v) {
   else if (items.length && ((v.reg && v.reg !== 'koge') || Math.random() < OTHER_BUY)) s = pick(items);   // 常連さんの場面の日は、かならず何か買う
   if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
   const price = decoPrice(s.key);   // かざりのセット効果で値段+1割（11/21）
-  s.n--; S.money += price; T.sales += price; T.served++;
+  s.n--; S.money += price; T.sales += price; T.served++; dWallet(price);
   if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   if (love) { S.rep += 1 + decoRepAdd(s.key); T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + decoRegMul(v.c); }   // 常連さんの段は、種類ごとのハートの合計で（かざり5つで2倍）
   dDecoSold(s);
@@ -391,7 +406,7 @@ function dServeMore(v) {
   }
   if (!s) return null;
   const price = decoPrice(s.key);
-  s.n--; S.money += price; T.sales += price; dDecoSold(s);
+  s.n--; S.money += price; T.sales += price; dDecoSold(s); dWallet(price);
   if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
   v.res.got = [...got, s.key];
   if (kind === 'pair') { T.pairs = (T.pairs || 0) + 1; S.seen['ai:' + tag.p.id] = S.seen['ai:' + tag.p.id] || S.day; }
