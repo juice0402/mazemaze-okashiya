@@ -182,12 +182,13 @@ function taneFx() { document.querySelectorAll('.tslot .pc.born').forEach(c => fl
 /* 数字をかぞえ上げる（ms のあいだ） */
 function countUp(el, from, to, ms, f = fmt) {
   if (!el) return;
-  if (REDUCED || ms < 60 || from === to) { el.textContent = f(to); return; }
+  const put = el.dataset.dg != null && typeof numSet === 'function' ? s => numSet(el, s) : s => { if (el.textContent !== s) el.textContent = s; };   // 数字の絵（data-dg・11/22）
+  if (REDUCED || ms < 60 || from === to) { put(f(to)); return; }
   const t0 = performance.now();
   let last = 0;   // 11/19 書きかえは30こま/秒まで・同じ字なら書かない（字を変えるたびに舞台ぜんぶの計算がはしる）
   const tick = now => {
     const t = Math.min(1, (now - t0) / ms);
-    if (t >= 1 || now - last >= 32) { last = now; const s = f(Math.floor(from + (to - from) * (1 - Math.pow(1 - t, 3)))); if (el.textContent !== s) el.textContent = s; }
+    if (t >= 1 || now - last >= 32) { last = now; put(f(Math.floor(from + (to - from) * (1 - Math.pow(1 - t, 3))))); }
     if (t < 1) requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);

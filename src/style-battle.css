@@ -234,6 +234,16 @@
   text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
 .fx-dmg.s-big{font-size:min(50px,12vw)}
 .fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
+/* ダメージの数字の絵（.dgs・battle-fx.js の numSet・11/22）：字の絵を1つずつ並べる。ふちと光は絵にあるので、字のふちと影はなし・光は drop-shadow（動かさない） */
+.dgs{display:inline-flex;align-items:flex-end;-webkit-text-stroke:0;text-shadow:none!important;color:transparent}
+.dgs .dg{display:block;height:1.1em;width:auto;margin:0 -.05em;flex:none}
+.dgs .num-1{margin:0 -.02em}
+.dgs :is(.num-comma,.num-dot){height:.42em;margin:0 -.04em -.06em}
+.dgs :is(.num-man,.num-oku,.num-cho,.num-kei){height:1.02em;margin-left:.02em}
+.fx-dmg.dgs{filter:drop-shadow(0 3px 0 rgba(42,12,2,.85)) drop-shadow(0 0 10px rgba(255,140,40,.85))}
+.fx-dmg.s-huge.dgs{filter:brightness(1.1) saturate(1.15) drop-shadow(0 4px 0 rgba(42,12,2,.9)) drop-shadow(0 0 16px rgba(255,170,40,.95))}
+.fh-num>b.dgs{filter:drop-shadow(0 3px 0 rgba(42,12,2,.8)) drop-shadow(0 0 9px rgba(255,170,50,.75))}
+.fh-num.fin>b.dgs{filter:brightness(1.1) drop-shadow(0 3px 0 rgba(42,12,2,.8)) drop-shadow(0 0 12px rgba(255,200,80,.9))}
 @keyframes dmgfly{0%{opacity:0;transform:scale(2.8) rotate(-10deg)}16%{opacity:1;transform:scale(1) rotate(-4deg)}24%{transform:scale(1.12) rotate(-4deg)}32%{transform:scale(1) rotate(-4deg)}78%{opacity:1;transform:translateY(-20px) rotate(-4deg)}100%{opacity:0;transform:translateY(-38px) scale(.92) rotate(-4deg)}}
 
 @media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.fchip.pop{animation-duration:.01s}.tiles .pc.tile.dough .pc-win::after{animation:none}}

@@ -930,6 +930,15 @@ animation:pillar .9s cubic-bezier(.2,.8,.3,1) forwards}
 text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
 .fx-dmg.s-big{font-size:min(50px,12vw)}
 .fx-dmg.s-huge{font-size:min(66px,15vw);color:#ffe066;-webkit-text-stroke-width:7px}
+.dgs{display:inline-flex;align-items:flex-end;-webkit-text-stroke:0;text-shadow:none!important;color:transparent}
+.dgs .dg{display:block;height:1.1em;width:auto;margin:0 -.05em;flex:none}
+.dgs .num-1{margin:0 -.02em}
+.dgs :is(.num-comma,.num-dot){height:.42em;margin:0 -.04em -.06em}
+.dgs :is(.num-man,.num-oku,.num-cho,.num-kei){height:1.02em;margin-left:.02em}
+.fx-dmg.dgs{filter:drop-shadow(0 3px 0 rgba(42,12,2,.85)) drop-shadow(0 0 10px rgba(255,140,40,.85))}
+.fx-dmg.s-huge.dgs{filter:brightness(1.1) saturate(1.15) drop-shadow(0 4px 0 rgba(42,12,2,.9)) drop-shadow(0 0 16px rgba(255,170,40,.95))}
+.fh-num>b.dgs{filter:drop-shadow(0 3px 0 rgba(42,12,2,.8)) drop-shadow(0 0 9px rgba(255,170,50,.75))}
+.fh-num.fin>b.dgs{filter:brightness(1.1) drop-shadow(0 3px 0 rgba(42,12,2,.8)) drop-shadow(0 0 12px rgba(255,200,80,.9))}
 @keyframes dmgfly{0%{opacity:0;transform:scale(2.8) rotate(-10deg)}16%{opacity:1;transform:scale(1) rotate(-4deg)}24%{transform:scale(1.12) rotate(-4deg)}32%{transform:scale(1) rotate(-4deg)}78%{opacity:1;transform:translateY(-20px) rotate(-4deg)}100%{opacity:0;transform:translateY(-38px) scale(.92) rotate(-4deg)}}
 @media (prefers-reduced-motion:reduce){.dc,.tf,.tglow::before,.night .stage .mon{animation:none}.tsparks,.embers{display:none}.pc.pon1,.pc.pon2,.pc.pon3,.fchip.pop{animation-duration:.01s}.tiles .pc.tile.dough .pc-win::after{animation:none}}
 .tipb{position:fixed;left:0;top:0;z-index:44;max-width:240px;padding:7px 24px 8px 11px;border-radius:13px;background:var(--cream);color:var(--ink);border:2px solid #5a3418;box-shadow:0 3px 0 rgba(42,20,8,.45),0 8px 18px rgba(0,0,0,.35);font-size:min(12.5px,3.25vw);font-weight:700;line-height:1.5;cursor:pointer;transform-origin:0 100%;-webkit-tap-highlight-color:transparent}
@@ -4916,12 +4925,13 @@ return `<span class="bin-in" aria-label="びんの実 ${N.bin.length}">${dots}</
 function taneFx() { document.querySelectorAll('.tslot .pc.born').forEach(c => floatAt(c.parentNode, 'パン種', 'best')); }
 function countUp(el, from, to, ms, f = fmt) {
 if (!el) return;
-if (REDUCED || ms < 60 || from === to) { el.textContent = f(to); return; }
+const put = el.dataset.dg != null && typeof numSet === 'function' ? s => numSet(el, s) : s => { if (el.textContent !== s) el.textContent = s; };   // 数字の絵（data-dg・11/22）
+if (REDUCED || ms < 60 || from === to) { put(f(to)); return; }
 const t0 = performance.now();
 let last = 0;   // 11/19 書きかえは30こま/秒まで・同じ字なら書かない（字を変えるたびに舞台ぜんぶの計算がはしる）
 const tick = now => {
 const t = Math.min(1, (now - t0) / ms);
-if (t >= 1 || now - last >= 32) { last = now; const s = f(Math.floor(from + (to - from) * (1 - Math.pow(1 - t, 3)))); if (el.textContent !== s) el.textContent = s; }
+if (t >= 1 || now - last >= 32) { last = now; put(f(Math.floor(from + (to - from) * (1 - Math.pow(1 - t, 3))))); }
 if (t < 1) requestAnimationFrame(tick);
 };
 requestAnimationFrame(tick);
@@ -5900,9 +5910,17 @@ if (!m._base) m._base = m.getAttribute('src');
 if (m.getAttribute('src') !== u) m.src = u;
 clearTimeout(m._ft); m._ft = setTimeout(() => { if (m.isConnected) m.src = m._base; }, ms);
 }
+const NUM_KEY = { ',': 'num-comma', '.': 'num-dot', '万': 'num-man', '億': 'num-oku', '兆': 'num-cho', '京': 'num-kei' };
+const numKey = ch => NUM_KEY[ch] || (ch >= '0' && ch <= '9' ? 'num-' + ch : '');
+const numArt = () => !!ART['num-0'];
+function numHTML(s) { return [...s].map(ch => { const k = numKey(ch); return k && ART[k] ? `<img class="dg ${k}" src="${ART[k]}" alt="">` : esc(ch); }).join(''); }
+function numSet(el, s) {
+if (!el || el.dataset.s === s) return; el.dataset.s = s;
+if (numArt()) { el.classList.add('dgs'); el.innerHTML = numHTML(s); el.setAttribute('aria-label', s); } else el.textContent = s;
+}
 function dmgNum(dmg, size, p) {
 const nt = document.querySelector('.night'), R = nt ? nt.getBoundingClientRect() : { left: 0, width: innerWidth, top: 0 };
-const e = document.createElement('b'); e.className = 'fx-dmg' + (size ? ' s-' + size : ''); e.textContent = fmt(dmg);
+const e = document.createElement('b'); e.className = 'fx-dmg' + (size ? ' s-' + size : ''); numSet(e, fmt(dmg));
 fxLayer().appendChild(e);
 const w = e.offsetWidth, x = p ? p.x : R.left + R.width / 2;
 e.style.left = Math.max(R.left + w / 2 + 6, Math.min(R.left + R.width - w / 2 - 6, x)) + 'px';
@@ -5928,7 +5946,7 @@ setTimeout(done, ms);
 }
 function flyHub(e, hot) {
 const b = hubPoint(); if (!b) return {};
-const a = spot(e.i) || b, el = fxEl('flyhub' + (hot ? ' hot' : ''), b, `<span class="fh-ico">${artImg(e.cid)}</span><b class="fh-num"><b>0</b></b>`);
+const a = spot(e.i) || b, el = fxEl('flyhub' + (hot ? ' hot' : ''), b, `<span class="fh-ico">${artImg(e.cid)}</span><b class="fh-num"><b data-dg>0</b></b>`);
 const H = { el, num: el.querySelector('.fh-num'), shown: false };
 arcFly(el, { x: a.x - b.x, y: a.y - b.y }, { x: 0, y: 0 }, T(330), 46, .45, 1, () => { el.classList.add('land'); ringAt(el.firstElementChild, 'r-gold'); sparkBurst(el.firstElementChild, 6, 'all', .6); });
 return H;
@@ -5942,7 +5960,7 @@ if (/^×/.test(String(c.b || ''))) { H.mk = (H.mk || 0) + 1; sePlay('mult'); }  
 sePlay('hit', { rate: Math.min(2, Math.pow(1.12, H.mk || 0)), vol: .7 });
 if (H.num) {
 const n = H.num.firstElementChild;
-if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); n.textContent = fmt(Math.floor(c.v)); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(380)); }
+if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); numSet(n, fmt(Math.floor(c.v))); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(380)); }
 replay(H.num, 'bump');
 numGrow(H, /^×/.test(String(c.b || '')));   // 数字が育つ：札がすいこまれるたびに大きく・倍々は光の輪と画面のふち（11/19）
 }
@@ -6095,7 +6113,7 @@ setTimeout(() => { const qb = document.querySelector('.quota'); if (qb) replay(q
 function hubFin(H, dmg) {
 if (!H.num) return;
 const n = H.num.firstElementChild; H.shown = true;
-H.num.classList.add('in', 'fin'); n.textContent = fmt(dmg); replay(H.num, 'bump');
+H.num.classList.add('in', 'fin'); numSet(n, fmt(dmg)); replay(H.num, 'bump');
 ringAt(n, 'r-gold');
 }
 function chipPop(at, c) {
@@ -6174,7 +6192,8 @@ else if (/^(candy|special|jam|burnt)-/.test(k)) keys.push(k);   // まぜてで�
 }
 const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
 if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy', 'mon-' + mon.id + '-sad');
-for (const [n] of DECO_MOBS) keys.push(n + '-cheer', n + '-jump');   // 賑やかしのモブのポーズちがい（11/21）
+for (const [n] of DECO_MOBS) keys.push(n + '-cheer', n + '-jump');
+keys.push(...Object.keys(ART).filter(k => k.startsWith('num-')));   // ダメージの数字の絵（11/22）   // 賑やかしのモブのポーズちがい（11/21）
 if (chef === 'candy') keys.push(...CANDY_BITS);
 keys.push('bg-night-' + cf, 'fx-numhit-' + chef, 'fx-scatter-' + chef, ...(FLOURISH[chef] || []), RING[chef] || '');   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
 const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];

@@ -468,9 +468,20 @@ function monFace(m, face, ms) {
   clearTimeout(m._ft); m._ft = setTimeout(() => { if (m.isConnected) m.src = m._base; }, ms);
 }
 /* ダメージの数字：額縁の外へはみ出してよい（画面の中には収める） */
+/* ダメージの数字の絵（11/22 しょーくん「ダメージの数字、1〜9とか万とかも、描き下ろしで世界観に合致するように」・art-irai num-font）：
+   num-0〜num-9・num-comma・num-dot・num-man・num-oku・num-cho・num-kei を1文字ずつ並べる。絵がないときは今までの字。
+   numSet(el, '1.2万') で書く（同じ字なら書かない＝countUp の 30こま/秒 でも軽い）。数字をかぞえ上げる所は data-dg をつける（night-ui.js の countUp が numSet を使う） */
+const NUM_KEY = { ',': 'num-comma', '.': 'num-dot', '万': 'num-man', '億': 'num-oku', '兆': 'num-cho', '京': 'num-kei' };
+const numKey = ch => NUM_KEY[ch] || (ch >= '0' && ch <= '9' ? 'num-' + ch : '');
+const numArt = () => !!ART['num-0'];
+function numHTML(s) { return [...s].map(ch => { const k = numKey(ch); return k && ART[k] ? `<img class="dg ${k}" src="${ART[k]}" alt="">` : esc(ch); }).join(''); }
+function numSet(el, s) {
+  if (!el || el.dataset.s === s) return; el.dataset.s = s;
+  if (numArt()) { el.classList.add('dgs'); el.innerHTML = numHTML(s); el.setAttribute('aria-label', s); } else el.textContent = s;
+}
 function dmgNum(dmg, size, p) {
   const nt = document.querySelector('.night'), R = nt ? nt.getBoundingClientRect() : { left: 0, width: innerWidth, top: 0 };
-  const e = document.createElement('b'); e.className = 'fx-dmg' + (size ? ' s-' + size : ''); e.textContent = fmt(dmg);
+  const e = document.createElement('b'); e.className = 'fx-dmg' + (size ? ' s-' + size : ''); numSet(e, fmt(dmg));
   fxLayer().appendChild(e);
   const w = e.offsetWidth, x = p ? p.x : R.left + R.width / 2;
   e.style.left = Math.max(R.left + w / 2 + 6, Math.min(R.left + R.width - w / 2 - 6, x)) + 'px';
@@ -504,7 +515,7 @@ function arcFly(el, f, t, ms, lift, s0, s1, done) {
 /* 1. メダルが舞台へ：タイルから舞台のまんなかの上へヒュッ。返すのは {el, num}（数字は最初の札が着いたら出る） */
 function flyHub(e, hot) {
   const b = hubPoint(); if (!b) return {};
-  const a = spot(e.i) || b, el = fxEl('flyhub' + (hot ? ' hot' : ''), b, `<span class="fh-ico">${artImg(e.cid)}</span><b class="fh-num"><b>0</b></b>`);
+  const a = spot(e.i) || b, el = fxEl('flyhub' + (hot ? ' hot' : ''), b, `<span class="fh-ico">${artImg(e.cid)}</span><b class="fh-num"><b data-dg>0</b></b>`);
   const H = { el, num: el.querySelector('.fh-num'), shown: false };
   arcFly(el, { x: a.x - b.x, y: a.y - b.y }, { x: 0, y: 0 }, T(330), 46, .45, 1, () => { el.classList.add('land'); ringAt(el.firstElementChild, 'r-gold'); sparkBurst(el.firstElementChild, 6, 'all', .6); });
   return H;
@@ -519,7 +530,7 @@ function chipFly(e, c, H) {
     sePlay('hit', { rate: Math.min(2, Math.pow(1.12, H.mk || 0)), vol: .7 });
     if (H.num) {
       const n = H.num.firstElementChild;
-      if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); n.textContent = fmt(Math.floor(c.v)); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(380)); }
+      if (c.v != null) { if (!H.shown) { H.shown = true; H.num.classList.add('in'); numSet(n, fmt(Math.floor(c.v))); } else countUp(n, Math.floor(c.p || 0), Math.floor(c.v), T(380)); }
       replay(H.num, 'bump');
       numGrow(H, /^×/.test(String(c.b || '')));   // 数字が育つ：札がすいこまれるたびに大きく・倍々は光の輪と画面のふち（11/19）
     }
@@ -694,7 +705,7 @@ function orbsToBelly(dmg, q) {
 function hubFin(H, dmg) {
   if (!H.num) return;
   const n = H.num.firstElementChild; H.shown = true;
-  H.num.classList.add('in', 'fin'); n.textContent = fmt(dmg); replay(H.num, 'bump');
+  H.num.classList.add('in', 'fin'); numSet(n, fmt(dmg)); replay(H.num, 'bump');
   ringAt(n, 'r-gold');
 }
 /* ほかのカードへの効果の札：タイル（か要素）の上にぽんと出て、上へ消える */
@@ -787,7 +798,8 @@ function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景
     }
     const mon = S.night && S.night.mon != null ? MONSTERS[S.night.mon] : null;
     if (mon) keys.push('mon-' + mon.id, 'mon-' + mon.id + '-eat', 'mon-' + mon.id + '-happy', 'mon-' + mon.id + '-sad');
-    for (const [n] of DECO_MOBS) keys.push(n + '-cheer', n + '-jump');   // 賑やかしのモブのポーズちがい（11/21）
+    for (const [n] of DECO_MOBS) keys.push(n + '-cheer', n + '-jump');
+    keys.push(...Object.keys(ART).filter(k => k.startsWith('num-')));   // ダメージの数字の絵（11/22）   // 賑やかしのモブのポーズちがい（11/21）
     if (chef === 'candy') keys.push(...CANDY_BITS);
     keys.push('bg-night-' + cf, 'fx-numhit-' + chef, 'fx-scatter-' + chef, ...(FLOURISH[chef] || []), RING[chef] || '');   // シェフごとの夜の背景・数字の衝撃（11/21・絵があるときだけ）
     const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map(id => 'b:' + id)];
