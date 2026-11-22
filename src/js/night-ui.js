@@ -99,7 +99,7 @@ const KOE_MORE = {
   tane: { honoka: ['hono-tane1', 'hono-tane2'] },
   chain: { minamo: ['mina-chain1', 'mina-chain2'] },
   go: { honoka: ['hono-go1', 'hono-go2'], minamo: ['mina-go1', 'mina-go2'], wakaba: ['waka-go1', 'waka-go2'] },
-  wow: { honoka: ['hono-wow1', 'hono-wow2'], minamo: ['mina-wow1', 'mina-wow2'], wakaba: ['waka-wow1', 'waka-wow2'] },
+  wow: { honoka: ['hono-wow1', 'hono-wow2'], minamo: ['mina-wow1', 'mina-wow2'], wakaba: ['waka-wow1', 'waka-wow2'] },   // 11/22 その3：hono-tane1（パン種できた！）・mina-chain1（前にノイズ）・mina-wow1（「今の」を「こんの」と読んだ→かなで）は作りなおし中（ファイルがないあいだは koeHas で とばす）
   pick: { honoka: 'hono-pick', minamo: 'mina-pick', wakaba: 'waka-pick' },
 };
 const koeHas = id => !!id && typeof KOE_SRC !== 'undefined' && !!KOE_SRC[id];
