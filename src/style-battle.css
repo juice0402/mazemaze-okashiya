@@ -374,13 +374,14 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 .pk-row:not(.pkc) .pk-fig img{top:2%;height:200%}
 .pk-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px;container-type:inline-size}
 .pk-name{font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.1;color:#7a1a0c;word-break:keep-all;overflow-wrap:anywhere}
+.pk-name small{margin-left:8px;font-family:var(--font);font-size:11px;font-weight:700;color:#7a5a4a;white-space:nowrap}   /* シェフの職業は名前のとなり（11/22 小さい画面で飴ジャムの札が枠にかぶった＝行を1つへらす） */
 .pk-sub{font-size:11px;line-height:1.3;color:#7a5a4a}
 .pk-sub>i{font-style:normal;display:inline-block;white-space:nowrap;margin-right:.6em}   /* 「職業」と「特性 〇〇」は それぞれ1かたまり（とちゅうで折らない・11/22 しょーくん「改行の位置も意識して」） */
 .pk-text{font-size:11px;line-height:1.35;font-weight:500;color:#4a2814;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .pk-cards{display:flex;gap:5px;height:clamp(32px,30%,48px);margin-top:2px}
 .pk-mini{flex:none;height:100%;aspect-ratio:5/7}
-.pk-tags{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:2px}
-.pk-tags i{font-style:normal;font-size:11px;font-weight:700;height:22px;line-height:20px;color:#5a3404;padding:0 12px 0 21px;border:1px solid transparent;border-image:var(--ui-buff-gold) 49% 11% 49% 20% fill/11px 11px 11px 20px stretch;white-space:nowrap;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}   /* ビルドの札は カードの効果と同じリボン（ui-buff-gold・11/22 しょーくん「どこかから引っ張ってきて」） */
+.pk-tags{display:flex;flex-wrap:wrap;gap:3px 5px;margin-top:2px}
+.pk-tags i{font-style:normal;font-size:10.5px;font-weight:700;height:21px;line-height:19px;color:#5a3404;padding:0 10px 0 19px;border:1px solid transparent;border-image:var(--ui-buff-gold) 49% 11% 49% 20% fill/11px 11px 11px 20px stretch;white-space:nowrap;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}   /* ビルドの札は カードの効果と同じリボン（ui-buff-gold・11/22 しょーくん「どこかから引っ張ってきて」） */
 .pk-go{flex:none;align-self:center;width:10px;height:10px;border:solid #b07a4a;border-width:0 3px 3px 0;rotate:-45deg;margin:0 4px 0 0}
 .pk-row .pk-on{right:12px;top:-15px}
 .pk-pager{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;font-size:12px;font-weight:800;color:#fff2d8;text-shadow:0 1px 0 rgba(42,20,8,.8)}
@@ -388,7 +389,8 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 .tiles.pk-hide{display:none}
 @container (max-height:119px){.pk-text{-webkit-line-clamp:2}}   /* 行の中の高さ（ふちと余白をのぞく）で見る */
 @container (max-height:95px){.pk-text{-webkit-line-clamp:1}.pk-cards{height:30px}}
-@container (max-height:76px){.pk-row:not(.pkc) .pk-sub{display:none}}   /* えらぶ画面では調理台を出さない＝舞台を下まで広げて、行を大きく（11/22 しょーくん「1ページに3〜4人入るくらい広げていい」） */
+@container (max-height:76px){.pk-row:not(.pkc) .pk-sub{display:none}}
+@container (max-height:86px){.pkc .pk-tags{gap:2px 5px}.pkc .pk-tags i{height:19px;line-height:17px}.pkc .pk-body{gap:1px}}   /* えらぶ画面では調理台を出さない＝舞台を下まで広げて、行を大きく（11/22 しょーくん「1ページに3〜4人入るくらい広げていい」） */
 /* ==== わかばの夜（11/19）：火力・温度のメーターはない（くだものはカードの絵で育つ）。飴ジャムの夜の場は大きなびん：入っている実を下に小さく並べる（コードの仮） ==== */
 .night[data-chef="wakaba"] .heat-label,.night[data-chef="wakaba"] .heat-bar,.night[data-chef="wakaba"] .embers{display:none}
 .fslot .bin-in{position:absolute;left:4%;right:4%;bottom:5%;display:flex;justify-content:center;gap:3%;z-index:4;pointer-events:none}

@@ -697,7 +697,7 @@ function pickHTML() {
       const C = CHEFS[c], bs = openBuilds().filter(id => BUILDS[id].chef === c), pic = ART[C.art] || '';
       return `<button class="pk-row pkc${c === cur ? ' on' : ''}" data-act="pickC" data-id="${c}">
         <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-        <span class="pk-body"><b class="pk-name">${esc(C.name)}</b><span class="pk-sub"><i>${esc(C.job)}</i><i>特性 ${esc(C.trait)}</i></span>
+        <span class="pk-body"><b class="pk-name">${esc(C.name)}<small>${esc(C.job)}</small></b><span class="pk-sub"><i>特性 ${esc(C.trait)}</i></span>
         <span class="pk-tags">${bs.map(id => `<i>${pkBr(BUILDS[id].name)}</i>`).join('')}</span></span>
         <i class="pk-go" aria-hidden="true"></i>${c === prev ? '<i class="pk-on">前の夜</i>' : ''}</button>`;
     }).join('');
