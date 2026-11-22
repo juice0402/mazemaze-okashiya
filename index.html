@@ -1865,8 +1865,11 @@ background:conic-gradient(from 135deg at 50% 0,#e8607a 0 90deg,transparent 0) 0 
 .m-fc .fc-ic,.m-fc .hico{display:block;flex:none;width:1.35em;height:1.35em;max-width:none;object-fit:contain}
 .fc-face{display:block;flex:none;width:22px;height:22px;border-radius:50%;background:#f6e6cc center 12%/190% auto no-repeat;box-shadow:0 0 0 1.5px #f4d9a2}
 .fc-face.none{background:#e9d4b0}
-.fc-card{position:relative;display:grid;gap:3px;justify-items:start;padding:22px 18px 14px;min-width:180px;background:var(--ui-forecast,#fff4dc) center/100% 100% no-repeat;color:#4a2f1f;font-size:12px;line-height:1.3}
-.fc-card .fc-ttl{justify-self:center;font-size:12.5px;color:#9b4a1c}
+.fc-card{position:relative;isolation:isolate;display:grid;gap:3px;justify-items:start;padding:30px 18px 14px;min-width:180px;color:#4a2f1f;font-size:12px;line-height:1.3}
+.fc-card::before,.fc-card::after{content:"";position:absolute;left:0;right:0;z-index:-1;pointer-events:none;background:var(--ui-forecast,#fff4dc) no-repeat}
+.fc-card::before{top:0;bottom:30px;background-position:center top;background-size:100% auto}
+.fc-card::after{bottom:0;height:42px;background-position:center bottom;background-size:100% auto;-webkit-mask-image:linear-gradient(transparent,#000 12px);mask-image:linear-gradient(transparent,#000 12px)}
+.fc-card .fc-ttl{justify-self:start;font-size:12.5px;color:#9b4a1c}
 .fc-card .fc-row{display:flex;align-items:center;gap:6px}
 .fc-card .fc-ic{width:28px;height:28px;object-fit:contain;max-width:none}
 .fc-card .fc-ev{font-weight:700}
