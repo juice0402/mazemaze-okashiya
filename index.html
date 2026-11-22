@@ -2461,7 +2461,7 @@ chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minam
 bal: [2.97, 1.123], r1: 190, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
-chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-charge', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
+chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', seen: 'm13', pic: 'minamo-charge', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
 trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'], extra: ['t:ameito', 't:amering'],   // 温度なし（見た目は ひんやり のまま変わらない）
 bal: [1.10, 1.186], r1: 260, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
 },
@@ -2470,7 +2470,7 @@ chef: 'wakaba', name: 'くだものケーキ', from: 11, mate: 'wakaba', pic: 'w
 bal: [1.13, 1.235], r1: 300, doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
 },
 jam: {
-chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。実3つで★3のジャムに',
+chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', seen: 'm14', pic: 'wakaba-support', text: '場はいつも大きなびん。実3つで★3のジャムに',
 bal: [1.64, 1.10], r1: 210, doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
 },
 };
@@ -3112,14 +3112,25 @@ prologue: [
 'ほのか【やる気】：だいじょうぶ！おいしいお菓子があれば、お客さんは来てくれる！',
 'ほのか【やる気】：よーし、さっそく仕込みだ！',
 ],
-miChef: () => { try { return !!(N && BUILDS[N.build] && BUILDS[N.build].chef === 'minamo'); } catch (e) { return false; } },
+chefBuild: () => { try { return (N && N.build) || ''; } catch (e) { return ''; } },
+chefNow: () => { try { const b = BUILDS[STORY.chefBuild()]; return b && (b.chef === 'minamo' || b.chef === 'wakaba') ? b.chef : ''; } catch (e) { return ''; } },
+miChef: () => STORY.chefNow() === 'minamo',
+wkChef: () => STORY.chefNow() === 'wakaba',
+chefTalk: {
+taisaku: { seen: 'miChef', first: 'miFirst', say: 'nightMiSay', last: ['ほのか【わくわく】：今夜は、みなもちゃんの番だね！', 'みなも【真剣】：……まかせて。大作、作る'] },
+candy: { seen: 'miCandy', first: 'candyFirst', say: 'nightCandySay', last: ['ほのか【わくわく】：今夜は、みなもちゃんの番だね！', 'みなも【真剣】：……まかせて。ちいさいの、つなぐ'] },
+fruitcake: { seen: 'wkChef', first: 'wkFirst', say: 'nightWkSay', last: ['ほのか【わくわく】：今夜は、わかばさんの番だね！', 'わかば【まかせて】：うふふ、まかせてねぇ。実、育てるわよぉ'] },
+jam: { seen: 'wkJam', first: 'jamFirst', say: 'nightJamSay', last: ['ほのか【わくわく】：今夜は、わかばさんの番だね！', 'わかば【まかせて】：うふふ。大きなびん、用意したわよぉ'] },
+},
+chefTalkNow: () => (STORY.chefNow() && STORY.chefTalk[STORY.chefBuild()]) || null,
+sayNow: () => { const C = STORY.chefTalkNow(); return (C && STORY[C.say]) || STORY.nightSay; },
 evening(rec) {
-const L = STORY.eveningBase(rec);
-if (rec.day === 1 || !STORY.miChef()) return L;
-if (L.length) return [...L.slice(0, -1), 'ほのか【わくわく】：今夜は、みなもちゃんの番だね！', 'みなも【真剣】：……まかせて。大作、作る'];
-if (S.seen.miChef) return [];
-S.seen.miChef = S.day;   // はじめての夜の会話（一枚絵 cg-minamo）は、新しいモンスターの来店とかさならない夜に1回（11/21）
-return STORY.miFirst;
+const L = STORY.eveningBase(rec), C = STORY.chefTalkNow();
+if (rec.day === 1 || !C) return L;
+if (L.length) return [...L.slice(0, -1), ...C.last];
+if (S.seen[C.seen]) return [];
+S.seen[C.seen] = S.day;   // はじめての夜の会話（みなもの大作は一枚絵 cg-minamo）は、新しいモンスターの来店とかさならない夜に1回（11/21）
+return STORY[C.first];
 },
 miFirst: [
 '（夕方。みなもが、飴の鍋に火を入れる）',
@@ -3135,6 +3146,41 @@ miFirst: [
 'ほのか【考える】：あたためて育てて、最後に冷やす……',
 'ほのか【やる気】：よーし、わたしは応援係だ！',
 'みなも【ジト目】：……声、大きい',
+],
+candyFirst: [
+'（夕方。みなもが、小さな飴をころころ丸めている）',
+'みなも【真剣】：……今夜は、ちいさいの',
+'ほのか【わくわく】：ちっちゃいキャンディ、かわいい！',
+'みなも【すまし】：……キャンディは、つなぐ',
+'みなも【真剣】：続けて並べると、れんさ。つなぐほど強い',
+'ほのか【考える】：キャンディを、とぎれずに……',
+'みなも【照れ】：……ひとつずつは、ちいさい。でも',
+'みなも【すまし】：……たくさんで、おなかいっぱい',
+'ほのか【やる気】：よーし、わたしは応援係だ！',
+'みなも【ジト目】：……声、大きい',
+],
+wkFirst: [
+'（夕方。わかばが、畑のかごをどさっと置く）',
+'わかば【うふふ】：今夜は、わたしが作るわねぇ',
+'ほのか【わくわく】：わかばさんのケーキ、見たい！',
+'わかば【まかせて】：くだものはねぇ、育てるのがだいじなの',
+'わかば【うふふ】：ラウンドごとに、実が育っていくのよぉ',
+'わかば【ないしょ】：熟した実を、★2のケーキにのせると……',
+'わかば【よろこび】：★3のくだものケーキの、できあがり',
+'ほのか【考える】：育てて、熟したら、のせる……',
+'ほのか【やる気】：よーし、わたしは応援係だ！',
+'わかば【あらあら】：あらあら、元気ねぇ',
+],
+jamFirst: [
+'（夕方。わかばが、大きなびんをカウンターに置く）',
+'わかば【うふふ】：今夜は、飴ジャムにするわねぇ',
+'ほのか【わくわく】：わぁ、大きなびん！',
+'わかば【まかせて】：このびんにねぇ、実を入れていくの',
+'わかば【わくわく】：3つ入ったら、★3のジャムになるのよぉ',
+'ほのか【考える】：びんに、実を3つ……',
+'わかば【うふふ】：とろーり、つやつやに仕上げるわよぉ',
+'ほのか【ドヤ】：味見係は、まかせて！',
+'わかば【あらあら】：あらあら、つまみ食いはだめよぉ',
 ],
 eveningBase(rec) {
 if (rec.day === 1) return [
@@ -3271,6 +3317,21 @@ nightMiSay: [null,
 ['みなも【すまし】：……悪くない', 'みなも【照れ】：……よろこんでた。たぶん', 'ほのか【うれしい】：みなもちゃんの飴、きれいだった！'],
 ['みなも【照れ】：……いい、大作だった', 'みなも【すまし】：……完成。おなかいっぱい', 'ほのか【感動】：みなもちゃん、すごーい！'],
 ],
+nightCandySay: [null,
+['みなも【しょんぼり】：……れんさ、とぎれた', 'みなも【考える】：……もっと、続けて並べないと', 'ほのか【やる気】：次は、ぜったいつながるよ！'],
+['みなも【すまし】：……悪くない', 'みなも【照れ】：……ちいさいの、よろこんでた', 'ほのか【うれしい】：みなもちゃんの飴、かわいかった！'],
+['みなも【照れ】：……ぜんぶ、つながった', 'みなも【すまし】：……ちいさいのでも、おなかいっぱい', 'ほのか【感動】：れんさ、すごかったー！'],
+],
+nightWkSay: [null,
+['わかば【こまり顔】：あらあら、まだ実が若かったわねぇ', 'わかば【しんみり】：熟すまで、待ってあげないとねぇ', 'ほのか【やる気】：次は、ぜったい熟すよ！'],
+['わかば【うふふ】：うふふ、よろこんでたわねぇ', 'わかば【よろこび】：いい実が、育ってたわぁ', 'ほのか【うれしい】：わかばさんのケーキ、おいしそうだった！'],
+['わかば【よろこび】：あらあら、おなかぽんぽんねぇ', 'わかば【うふふ】：くだもの、まるごと実ったわぁ', 'ほのか【感動】：わかばさん、すごーい！'],
+],
+nightJamSay: [null,
+['わかば【こまり顔】：あらあら、びんがまだ半分ねぇ', 'わかば【しんみり】：実が3つそろうまで、もう少しねぇ', 'ほのか【やる気】：次は、びんいっぱいにしよう！'],
+['わかば【うふふ】：うふふ、とろーりできたわねぇ', 'わかば【よろこび】：つやつやで、よろこんでたわぁ', 'ほのか【うれしい】：飴ジャム、きらきらだった！'],
+['わかば【よろこび】：あらあら、びんがからっぽねぇ', 'わかば【うふふ】：うふふ、ぜんぶ食べてくれたわぁ', 'ほのか【感動】：飴ジャム、大成功だー！'],
+],
 nightMate: {
 minamo: [null, 'みなも：……次は、もっと焼ける', 'みなも：……悪くない', 'みなも：……いい、おもてなしだった'],
 wakaba: [null, 'わかば：あらあら、次はきっと大丈夫よぉ', 'わかば：うふふ、よろこんでたわねぇ', 'わかば：あらあら、おなかぽんぽんねぇ'],
@@ -3320,7 +3381,7 @@ const give = m === 1 ? '（' + g + 'ひとつと、コインを少し置いて�
 const mi = STORY.mate('minamo');
 if (rec.newMon) {
 const head = [(m >= 3 ? '（おなかいっぱいの' : m === 2 ? '（まんぞくそうな' : '（もうちょっと食べたそうな') + nm + '）',
-nm + '：' + vc[m], give, (STORY.miChef() ? STORY.nightMiSay : STORY.nightSay)[m][0]];
+nm + '：' + vc[m], give, STORY.sayNow()[m][0]];
 if (rec.mon === 'hitsuji') return [...head,
 'ほのか【うっとり】：ひつじホイップ……ふわっふわ！',
 'ほのか【わくわく】：明日は、これでなに作ろうかな！'];
@@ -3358,8 +3419,8 @@ if (rec.mon === 'risu') return [...head,
 ...(mi ? ['みなも【ジト目】：……はじけてる。お店じゅう', 'ほのか【わくわく】：今日は、ポップコーン祭りだね！']
 : ['ほのか【わくわく】：お店じゅう、ポップコーン祭りだー！'])];
 }
-const mc = STORY.miChef(), say = [...(mc ? STORY.nightMiSay : STORY.nightSay)[m]];   // みなもがシェフの夜は、みなもが主役のひとこと
-for (const id of ['minamo', 'wakaba']) if (STORY.mate(id) && !(mc && id === 'minamo')) say.push(STORY.nightMate[id][m]);
+const ch = STORY.chefNow(), say = [...STORY.sayNow()[m]];   // 仲間がシェフの夜は、その子が主役のひとこと（11/22 わかばも）
+for (const id of ['minamo', 'wakaba']) if (STORY.mate(id) && id !== ch) say.push(STORY.nightMate[id][m]);
 return [nm + '：' + vc[m], give, pick(say)];
 },
 morning(rec, yest) {
@@ -3380,6 +3441,11 @@ return ['ほのか【わくわく】：このミントで、さわやかなお�
 if (STORY.mate('minamo') && S.day >= ((typeof BUILDS === 'object' && BUILDS.kone && BUILDS.kone.from) || 8) && !S.seen.m9) {
 S.seen.m9 = S.day; S.seen.scDay = S.day;
 return STORY.m9;
+}
+if (STORY.mate('minamo') && STORY.mate('wakaba') && S.day >= ((typeof BUILDS === 'object' && BUILDS.jam && BUILDS.jam.from) || 17)
+&& S.seen.m13 && S.seen.m13 < S.day && !S.seen.m14) {
+S.seen.m14 = S.day; S.seen.scDay = S.day;
+return STORY.m14;
 }
 for (const t of M_TOOLS) if (!S.seen['u:' + t.id] && STORY.mate(t.by) && S.day >= STORY.mateDay(t.by) + 1 + t.after) { S.seen['u:' + t.id] = S.day; return STORY.toolTalk[t.id](); }
 if (rec.day === 2 && S.stock.zeri && !S.seen.m5) {
@@ -3559,6 +3625,60 @@ m9: [
 'みなも【照れ】：……でも、いい生地',
 'ほのか【ドヤ】：待つのはにがてだけど、こねるのは負けない！',
 '（ほのかの新しいビルド「こね生地」が使えるようになった！）',
+],
+m13: [
+'（昼のお店。カウンターのよこに、みなもの飴細工の白鳥が飾ってある）',
+'（常連さんの妖精の子、ルルが、白鳥をじーっと見ている）',
+'ルル：わぁ……とりさん、きれい！',
+'ルル：これ、たべていい？',
+'みなも【すまし】：……だめ。飾り',
+'ルル：……そっかぁ',
+'（ルル、しょんぼり）',
+'ほのか【考える】：みなもちゃん、なにか作ってあげられない？',
+'みなも【考える】：……飴細工は、時間がかかる',
+'わかば【うふふ】：あらあら。ちいさいのでいいんじゃないかしらねぇ',
+'みなも【びっくり】：……ちいさいの',
+'（みなもが飴をくるくるっと丸めて、小さな鳥の形に）',
+'みなも【照れ】：……はい',
+'ルル：わぁ！ちっちゃいとりさん！',
+'（ルル、ぱくっ）',
+'ルル：あまーい！おねえちゃん、ありがとう！',
+'（ルル、羽をぱたぱたさせて、よろこんでいる）',
+'みなも：…………',
+'ほのか【びっくり】：みなもちゃん、いま笑った？',
+'みなも【そっぽ】：……笑ってない',
+'わかば【うふふ】：うふふ。笑ってたわねぇ',
+'みなも【考える】：……見せるための飴しか、作ってこなかった',
+'みなも【照れ】：食べて、うれしい。……それも、飴',
+'ほのか【うれしい】：うん！みなもちゃんの飴、みんなに食べてほしい！',
+'みなも【真剣】：……ちいさいの、もっと作ってみる',
+'（みなもの新しいビルド「ちいさなキャンディ」が使えるようになった！）',
+],
+m14: [
+'（朝のキッチン。わかばが、畑のくだものをかごいっぱいに持ってくる）',
+'わかば【よろこび】：畑のいちご、たくさんとれたのよぉ',
+'ほのか【わくわく】：わぁ、つやつや！',
+'わかば【こまり顔】：でもねぇ、ひとりだとジャムにするしかなくて',
+'わかば【しんみり】：毎年、食べきれなかったのよねぇ',
+'みなも【考える】：……かして',
+'（みなもが水あめをとかして、ジャムの鍋にとろりと流しこむ）',
+'みなも【真剣】：……飴ジャム',
+'ほのか【びっくり】：きらきらだー！びんの中が、宝石みたい！',
+'わかば【おどろき】：あらあら……',
+'（わかば、ひとくち味見。とろーり）',
+'わかば【よろこび】：つやつやで、じゅわっ……',
+'わかば【しんみり】：わたしのくだものが、こんなふうになるなんてねぇ',
+'わかば【うふふ】：ひとりじゃ、思いつかなかったわぁ',
+'みなも【すまし】：……くだもの、いい。飴が、生きる',
+'ほのか【やる気】：わたしもやるー！',
+'（もくもくの煙）',
+'ほのか【あちゃー】：あちゃー……',
+'みなも【ジト目】：……飴も、焦げる',
+'わかば【うふふ】：うふふ。ほのかちゃんらしいわねぇ',
+'わかば【わくわく】：これからは、3人の合作ねぇ',
+'ほのか【うれしい】：うん！まぜまぜおかし屋の、合作だ！',
+'みなも【ジト目】：……声、大きい',
+'（わかばの新しいビルド「飴ジャム」が使えるようになった！）',
 ],
 yestMon: {
 slime: {
@@ -3975,7 +4095,9 @@ return fc && typeof fc === 'object' && CUST[fc.c] ? [...L, STORY.fcLine(fc)] : L
 fcLine: fc => fc.ev ? `あしたは${FC_EV_NM[fc.ev]}みたい！` : 'あしたは、いいお天気みたい。',   // 日記の紙は右にちびのシールがあるので短く（くわしくは まとめの札 fcCardHTML と朝の札）
 diaryBase(rec) {
 if (rec.day === 1) return ['お店をひらいた日。お客さんは' + rec.visitors + '人。', '夜にスライムが来た。ゼリー、何に使おうかな？'];
-if (S.seen.m9 === rec.day) return ['みなもちゃんに、パン種を教わった。', 'こねすぎて、うでがパンパン。楽しい！'];   // ⑨の日（紙に入るよう少しちぢめた）
+if (S.seen.m9 === rec.day) return ['みなもちゃんに、パン種を教わった。', 'こねすぎて、うでがパンパン。楽しい！'];
+if (S.seen.m13 === rec.day) return ['みなもちゃんの飴で、ルルちゃん笑顔！', 'みなもちゃんも笑ってた。ぜったい！'];   // ⑬の日（11/22・紙の1行18文字くらい）
+if (S.seen.m14 === rec.day) return ['わかばさんのいちごで、飴ジャム！', 'わたしのは焦げた。でもみんな笑った。'];   // ⑭の日   // ⑨の日（紙に入るよう少しちぢめた）
 if (STORY.mateDay('wakaba') === rec.day) return ['わかばさんが仲間になった！', 'お店が、もっとにぎやかになりそう。'];
 if (STORY.mateDay('minamo') === rec.day) return ['みなもちゃんが仲間になった！', 'クールだけど、たぶんすごくやさしい。'];
 const many = rec.visitors >= 6, few = rec.visitors && rec.served * 2 < rec.visitors;
@@ -6700,6 +6822,7 @@ addEventListener('resize', () => { if (TIP) requestAnimationFrame(tipDraw); });
 /* src/js/talk.js */
 
 const TALKERS = {
+lulu: { name: 'ルル', side: 'r', faces: { ふつう: 'cust-kodomo', うれしい: 'cust-kodomo-happy', しょんぼり: 'cust-kodomo-sad' } },
 honoka: { name: 'ほのか', side: 'l', flip: true, faces: {
 ふつう: 'honoka', うれしい: 'honoka-joy', びっくり: 'honoka-surprise', しょんぼり: 'honoka-oops',
 やる気: 'honoka-yaruki', あちゃー: 'honoka-achaa', 不安: 'honoka-fuan', くやしい: 'honoka-kuyashii', わくわく: 'honoka-wakuwaku',
@@ -7527,7 +7650,8 @@ R.soroi = soroiRows(shelfSlots().slots).flatMap(x => x.mats);   // おそろい�
 const fc = fcGet(S.day);   // 予報どおりの日（11/21・前の日の閉店で決めてある）
 if (!R.ev && fc.ev) R.ev = fc.ev;   // 昼のできごと（11/19）
 const E = dEv(R);
-const fx = dRegDue(), first = (E && E.first) || [], n = Math.max(2, custCount() + ((E && E.add) || 0));   // 常連さん（11/19）：来る日は2人目か、できごとのお客さんのあと
+const m13 = dM13Due(); if (m13) S.seen.scDay = S.day;   // ⑬の日（11/22）：常連さんの場面はなし・ルルを2人目に（dM13Run）
+const fx = m13 ? { c: 'kodomo', vr: 1, reg: 'm13' } : dRegDue(), first = (E && E.first) || [], n = Math.max(2, custCount() + ((E && E.add) || 0));   // 常連さん（11/19）：来る日は2人目か、できごとのお客さんのあと
 R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) }, fc);
 R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
 dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad', ...(x.duo ? ['cust-' + x.duo] : [])]; }));   // 今日のお客さんの顔を先に読む
@@ -7670,6 +7794,7 @@ return { c: w.c, vr: w.vr, reg: k + ':' + g(k) };
 const regKey = v => v.reg === 'pair' ? 'otona' : v.reg === 'koge' ? 'gakusei' : v.reg.split(':')[0];   // 場面の常連さん（名前は STORY.reg[regKey].name）
 const dRegLines = reg => reg === 'pair' ? STORY.regPair : reg === 'koge' ? STORY.regKoge : (() => { const [c, k] = reg.split(':'); return ((STORY.reg[c] || {}).st || [])[+k]; })();
 function dRegRun(v) {
+if (v.reg === 'm13') return dM13Run(v);
 const L = dRegLines(v.reg);
 if (!L || !L.length) { v.sc = 2; return; }
 dScene = v; v.sc = 1; dSkip = Infinity;   // お店のひとことの割りこみを止める
@@ -7693,6 +7818,16 @@ for (const k of ['dBub', 'dBub2']) { const b = $(k); if (b) b.className = 'cu-bu
 if (v.reg === 'pair') S.seen['rg:pair'] = S.day;
 else if (v.reg !== 'koge') { const [c, k] = v.reg.split(':'); S.seen['rg:' + c] = +k + 1; S.seen['rgd:' + c] = S.day; }
 save();
+}
+function dM13Due() {
+if (S.seen.m13 || S.seen.scDay === S.day || !STORY.mate('minamo') || !STORY.mate('wakaba') || !custOpen('kodomo')) return false;
+const from = (typeof BUILDS === 'object' && BUILDS.candy && BUILDS.candy.from) || 14;
+return S.day >= from && ((S.seen['rg:kodomo'] || 0) >= 3 || S.day >= from + 3);
+}
+function dM13Run(v) {
+dScene = v; v.sc = 1; dSkip = Infinity;
+S.seen.m13 = S.day; save();
+talk(STORY.m13, () => { dScene = null; dSkip = 0; v.sc = 2; save(); });
 }
 const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
 function serve(v) {

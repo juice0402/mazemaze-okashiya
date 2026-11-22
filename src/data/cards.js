@@ -273,7 +273,7 @@ const BUILDS = {
   },
   /* みなも②（11/19）：キャンディどうしの れんさ（11/21 夜〜 温度は関係ない） */
   candy: {
-    chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-charge', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
+    chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', seen: 'm13', pic: 'minamo-charge', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
     trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'], extra: ['t:ameito', 't:amering'],   // 温度なし（見た目は ひんやり のまま変わらない）
     bal: [1.10, 1.186], r1: 260, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
   },
@@ -284,7 +284,7 @@ const BUILDS = {
   },
   /* わかば②（11/19）：bin＝場がいつも大きなびん（フィールドは出ない）。くだもの3つで★3のジャムが生まれる */
   jam: {
-    chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。実3つで★3のジャムに',
+    chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', seen: 'm14', pic: 'wakaba-support', text: '場はいつも大きなびん。実3つで★3のジャムに',
     bal: [1.64, 1.10], r1: 210, doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
   },
 };

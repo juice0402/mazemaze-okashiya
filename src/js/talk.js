@@ -10,6 +10,8 @@
    文字は1文字ずつ出る。タップで全部出す → もう1回タップで次。右上のスキップで最後まで飛ばす
    話す人の名前・立ち絵は下の TALKERS（新しい人・表情は、昼のチャットが「リーダーへのお願い」で） ==== */
 const TALKERS = {
+  /* 常連さんの妖精の子 ルル（11/22 H-035・物語⑬で顔を出す）：お客さんの絵 cust-kodomo の1まいめ */
+  lulu: { name: 'ルル', side: 'r', faces: { ふつう: 'cust-kodomo', うれしい: 'cust-kodomo-happy', しょんぼり: 'cust-kodomo-sad' } },
   honoka: { name: 'ほのか', side: 'l', flip: true, faces: {
     ふつう: 'honoka', うれしい: 'honoka-joy', びっくり: 'honoka-surprise', しょんぼり: 'honoka-oops',
     やる気: 'honoka-yaruki', あちゃー: 'honoka-achaa', 不安: 'honoka-fuan', くやしい: 'honoka-kuyashii', わくわく: 'honoka-wakuwaku',
