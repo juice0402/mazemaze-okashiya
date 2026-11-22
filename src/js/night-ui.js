@@ -15,7 +15,7 @@ function setHeat(h) {
     lab.textContent = H.names[h];   // ほのかの0は「火なし」（字は灰色の h0）
     lab.className = 'heat-label h' + h;
   }
-  if (chefArt() === 'minamo') { st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる（キャンディの夜は ひんやり のまま）
+  if (chefArt() === 'minamo') { if (candyNight()) { st.dataset.t = 'c'; return; } st.dataset.t = h; return tempFx(h); }   // キャンディの夜は 飴の空気（data-t=c・雪や霜は出さない）   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる（キャンディの夜は ひんやり のまま）
   st.dataset.z = h;
   heatFx(h);   // 調理台の下の炎（battle-fx.js・火なしのときは出ない）
 }
@@ -79,7 +79,7 @@ const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた�
 /* ちいさなキャンディ（11/21 夜 しょーくん「温度ゲージがあった所に れんさの回数」）：バトル中の れんさ（ラウンドのはじめは場の chain0・キャンディの発動で のびて、素材や道具で0） */
 let chainNow = 0;
 const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
-function setChain(n) { if (n === chainNow) return; chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
+function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
 function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
   const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
@@ -679,6 +679,7 @@ function renderNight() {
   if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
   N = S.night;
   document.body.dataset.chef = chefArt();   // シェフごとの見た目（紋章・一撃の色）。fx の層は body の下なので body につける（11/19）
+  document.body.dataset.candy = candyNight() ? '1' : '';   // ちいさなキャンディの夜は 氷ではなく 飴の演出（11/22 しょーくん「冷気関係なくなったから 氷のエフェクトじゃなくて」）
   const mon = MONSTERS[N.mon];   // 上の札はラウンドだけ（場の名前は 11/19 にやめた・しょーくん「ビルド表記もいらない。ウェーブだけでOK」）
   let body = '';
   const rec = S.today, after = N.stage === 'end' || N.stage === 'thanks', happy = after && rec.mood >= 2;
@@ -693,7 +694,7 @@ function renderNight() {
     const shop = N.stage === 'shop';
     const H = heatOf();
     const ca = chefArt();
-    body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? N.heat : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+    body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? (candyNight() ? 'c' : N.heat) : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
         `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;

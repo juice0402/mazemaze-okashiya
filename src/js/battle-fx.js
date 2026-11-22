@@ -384,6 +384,7 @@ function fireWall() {
   let h = '<i class="fw-flash"></i>';
   if (ch === 'honoka') h += `<div class="fw-art">${img('fx-wall-honoka-a', 'fa')}${img('fx-wall-honoka-b', 'fb')}</div>`;
   else if (ch === 'wakaba') h += `<div class="fw-art back">${img('fx-wall-wakaba-back')}</div><div class="fw-art front">${img('fx-wall-wakaba-front')}</div>`;
+  else if (document.body.dataset.candy) return candyFountain(w, r, k);   // ちいさなキャンディの夜：下から飴が わきあがる（11/22）
   else h += `<div class="fw-art ice">${img('fx-wall-minamo')}${[[6, 22, -14, .62], [46, 8, 20, .7], [24, 44, 168, .58]].map(([x, y, rt, sc], i) =>
       `<img class="fw-crack" src="${ART['fx-crack-minamo'] || ''}" alt="" style="left:${x}%;top:${y}%;--r:${rt}deg;--s:${sc};--d:${i}">`).join('')}</div><i class="fw-iflash"></i>`;
   w.innerHTML = h; fxLayer().appendChild(w);
@@ -392,6 +393,41 @@ function fireWall() {
     setTimeout(() => { if (w.isConnected) iceShatter(w, r); }, 900 * k);   // パリーン
   }
   setTimeout(() => w.remove(), (ch === 'minamo' ? 1800 : 1300) * k);
+}
+/* ちいさなキャンディの夜の大技（11/22 しょーくん「飴がしたから湧いてきたり」）：舞台の下から 飴（コロコロドロップ・ペロペロ・ミント飴など）が
+   いっせいに わきあがって ふりそそぐ。動くのは transform と opacity だけ */
+const CANDY_ART = ['card-korodrop', 'card-peroc', 'card-mintame', 'card-ichidrop', 'card-hajike', 'card-shioame'];
+function candyFountain(w, r, k) {
+  w.innerHTML = '<i class="fw-flash"></i>'; fxLayer().appendChild(w);
+  sePlay('star', { vol: .7, rate: 1.25 }); sePlay('wipe', { rate: 1.3, vol: .6 }); [0, 1, 2, 3].forEach(i => setTimeout(() => sePlay('hit', { rate: 2 + i * .3, vol: .3 }), (180 + i * 110) * k));
+  const U = CANDY_ART.map(n => ART[n]).filter(Boolean); if (!U.length || !document.body.animate) { setTimeout(() => w.remove(), 900 * k); return; }
+  for (let i = 0; i < 30; i++) {
+    const e = document.createElement('img'), z = 30 + Math.random() * 30, x = r.width * (.03 + Math.random() * .94);
+    e.className = 'fw-candy'; e.src = U[i % U.length]; e.alt = '';
+    Object.assign(e.style, { left: x - z / 2 + 'px', top: r.height + 'px', width: z + 'px' }); w.appendChild(e);
+    const up = r.height * (.45 + Math.random() * .5), dx = (Math.random() - .5) * 120, rt = (Math.random() - .5) * 540, d0 = i * 22;
+    e.animate([{ transform: 'translate(0,0) rotate(0deg) scale(.6)', opacity: 0 }, { transform: `translate(${dx * .2}px,${-up * .4}px) rotate(${rt * .3}deg) scale(1)`, opacity: 1, offset: .2 },
+      { transform: `translate(${dx * .7}px,${-up}px) rotate(${rt * .7}deg) scale(1.05)`, opacity: 1, offset: .55 },
+      { transform: `translate(${dx}px,${-up * .55}px) rotate(${rt}deg) scale(.9)`, opacity: 0 }], { duration: (1100 + Math.random() * 400) * k, delay: d0 * k, easing: 'cubic-bezier(.2,.8,.4,1)', fill: 'both' });
+  }
+  setTimeout(() => w.remove(), 1900 * k);
+}
+/* れんさが のびるたびに、舞台の上から飴がふってくる（11/22 しょーくん「コンボ数に応じて上から飴が降ってきたり」）：れんさの数だけ（14こまで・画面にあるのは40こまで） */
+let rainLive = 0;
+function candyRain(n) {
+  if (REDUCED || !candyNight() || !document.body.animate) return;
+  const st = $('stage'); if (!st) return;
+  const U = CANDY_ART.map(k => ART[k]).filter(Boolean); if (!U.length) return;
+  const r = st.getBoundingClientRect(), m = Math.min(14, 1 + n, 40 - rainLive), L = fxLayer();
+  for (let i = 0; i < m; i++) {
+    const e = document.createElement('img'), z = 20 + Math.random() * 20 + Math.min(n, 20) * .6, x = r.left + r.width * (.06 + Math.random() * .88);
+    e.className = 'crain'; e.src = U[Math.floor(Math.random() * U.length)]; e.alt = '';
+    Object.assign(e.style, { left: x - z / 2 + 'px', top: r.top - z + 'px', width: z + 'px' }); L.appendChild(e); rainLive++;
+    const fall = r.height * (.55 + Math.random() * .45), sw = (Math.random() - .5) * 40, rt = (Math.random() - .5) * 400, ms = T(900 + Math.random() * 500);
+    e.animate([{ transform: 'translate(0,0) rotate(0deg)', opacity: 0 }, { transform: `translate(${sw * .3}px,${fall * .15}px) rotate(${rt * .15}deg)`, opacity: 1, offset: .12 },
+      { transform: `translate(${sw}px,${fall}px) rotate(${rt}deg)`, opacity: 0 }], { duration: ms, delay: i * 40, easing: 'cubic-bezier(.45,.05,.8,.6)', fill: 'both' });
+    setTimeout(() => { e.remove(); rainLive--; }, ms + i * 40 + 40);
+  }
 }
 /* パリーン：氷の層を消して、かけら（fx-shard-minamo-1〜6）を層のあちこちから はじけ飛ばす */
 function iceShatter(w, r) {
@@ -523,12 +559,13 @@ function impactFx(p, size) {
   const w = fxEl('fx-wave' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w.remove(), T(800));   // 額縁をこえて広がる衝撃波
   if (big) { const w2 = fxEl('fx-wave w2' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w2.remove(), T(900)); }
   const burst = ART['fx-burst-' + chef], slash = ART['fx-slash-' + chef];
-  if (burst) { const b = fxEl('fx-art fx-burst' + (size ? ' s-' + size : ''), p, `<img src="${burst}" alt="">`); setTimeout(() => b.remove(), T(700)); }
-  if (slash) { const s = fxEl('fx-art fx-slash' + (size ? ' s-' + size : ''), p, `<img src="${slash}" alt="">`); setTimeout(() => s.remove(), T(560)); }
+  const cd = document.body.dataset.candy ? ' candy' : '';   // キャンディの夜は 氷の色ではなく 飴の色（11/22・絵の色を回す）
+  if (burst) { const b = fxEl('fx-art fx-burst' + cd + (size ? ' s-' + size : ''), p, `<img src="${burst}" alt="">`); setTimeout(() => b.remove(), T(700)); }
+  if (slash) { const s = fxEl('fx-art fx-slash' + cd + (size ? ' s-' + size : ''), p, `<img src="${slash}" alt="">`); setTimeout(() => s.remove(), T(560)); }
   /* 数字が当たった瞬間の ぎざぎざの衝撃と、飛び散るかけらの輪（11/21 しょーくん「数字を敵にぶつけた時の大迫力なエフェクト」） */
   const nh = ART['fx-numhit-' + chef], sc = ART['fx-scatter-' + chef];
-  if (nh) { const n = fxEl('fx-art fx-numhit' + (size ? ' s-' + size : ''), p, `<img src="${nh}" alt="">`); setTimeout(() => n.remove(), T(520)); }
-  if (sc) { const c = fxEl('fx-art fx-scatter' + (size ? ' s-' + size : ''), p, `<img src="${sc}" alt="">`); setTimeout(() => c.remove(), T(820)); }
+  if (nh) { const n = fxEl('fx-art fx-numhit' + cd + (size ? ' s-' + size : ''), p, `<img src="${nh}" alt="">`); setTimeout(() => n.remove(), T(520)); }
+  if (sc) { const c = fxEl('fx-art fx-scatter' + cd + (size ? ' s-' + size : ''), p, `<img src="${sc}" alt="">`); setTimeout(() => c.remove(), T(820)); }
   chefFlourish(chef, p, big ? 3 : 1);
   const W = innerWidth, H = innerHeight;   // 画面のはしまで飛ぶ火花（額縁の外へ）
   sparkBurst(p, big ? 18 : 10, 'all', Math.max(W, H) / 120);
@@ -602,7 +639,7 @@ function qOverrun() {
 const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）
 const RING = { honoka: 'fx-fire-ring', minamo: 'fx-ame-ring', wakaba: 'fx-flowerring' };
 function chefFlourish(chef, p, n) {
-  const L = (FLOURISH[chef] || []).filter(k => ART[k]); if (!L.length || !document.body.animate) return;
+  const L = (FLOURISH[chef] || []).filter(k => ART[k] && !(document.body.dataset.candy && k === 'fx-ice-flower')); if (!L.length || !document.body.animate) return;   // キャンディの夜は 氷の花を出さない
   const keys = n > 1 && ART[RING[chef]] ? [RING[chef], ...L.sort(() => Math.random() - .5).slice(0, n - 1)] : [L[Math.floor(Math.random() * L.length)]];
   keys.forEach((k, i) => {
     const ring = k === RING[chef], a = Math.random() * Math.PI * 2, d = ring ? 0 : 50 + Math.random() * 40;

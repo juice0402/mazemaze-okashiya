@@ -742,7 +742,7 @@ filter:drop-shadow(0 3px 3px rgba(0,0,0,.5));animation:dchop 1.7s ease-in-out in
 .m-hitsuji{right:15%;height:14cqh;max-width:16%}
 .m-tokage{left:22%;height:10cqh;max-width:13%}
 .m-hiyoko{right:31%;height:10cqh;max-width:12%}
-.m-kurage{left:58%;top:20cqh;bottom:auto;height:9cqh;max-width:12%;animation:dcfloat 3.2s ease-in-out infinite}
+.m-kurage{left:auto;right:2px;top:17cqh;bottom:auto;height:9cqh;max-width:12%;animation:dcfloat 3.2s ease-in-out infinite}
 @keyframes dcfloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12%) rotate(4deg)}}
 .dc.tmp{opacity:.95}
 .deco.shop .dc-chibi{height:20cqh}
@@ -1312,6 +1312,15 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .dc-crack .ck-line{fill:none;stroke:#1d0f06;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 .6px 0 rgba(233,183,122,.55))}
 .dc-crack.new{animation:ckin .3s cubic-bezier(.2,1.6,.4,1)}
 @keyframes ckin{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
+body[data-candy="1"]{--chefc:255,140,196}
+.fx-art.candy img{filter:hue-rotate(125deg) saturate(1.35) brightness(1.05)}
+.fw-candy,.crain{position:absolute;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(60,20,40,.35))}
+.stage[data-t="c"] .aq-frost,.tiles[data-t="c"] .tcold,.tiles[data-t="c"] .tsteam{display:none}
+.stage[data-t="c"] .aqua .aq-p,.stage[data-t="c"] .aqua.art .aq-p,.stage[data-t="c"] .aqua.art .aq-p.c{top:auto;bottom:-4%;width:calc(10px * var(--s));height:calc(10px * var(--s));border-radius:50%;clip-path:none;box-shadow:0 0 6px 1px rgba(255,255,255,.55);animation-name:aqrise;
+background:radial-gradient(circle at 35% 30%,#fff 0 18%,#ff9cc8 40%,#e0508c 78%)}
+.stage[data-t="c"] .aqua .aq-p:nth-child(3n+1){background:radial-gradient(circle at 35% 30%,#fff 0 18%,#ffe28a 40%,#f0a828 78%)}
+.stage[data-t="c"] .aqua .aq-p:nth-child(3n+2){background:radial-gradient(circle at 35% 30%,#fff 0 18%,#a8f0d0 40%,#3cb488 78%)}
+.stage[data-t="c"] .aq-st,.stage[data-t="c"] .aq-warm{display:none}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -2416,26 +2425,27 @@ if (A.cat === 'burnt') return 'k:' + (A.star + 1);
 if (A.cat === 'tool') return A.star === 1 ? 'u:' + ids.join('+') : 'w:' + ids.join('|');
 return A.star === 1 ? 'o:' + recipeKey(A.mats[0], B.mats[0]) : 's:' + ids.join('|');
 }
+const nx = v => String(Math.round(v * 100) / 100);
 function fxList(fx, star = 1) {
 const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-if (fx.taisaku) p.push(`完成×${fx.done}`);
-if (fx.lead) p.push(`スタート：×${fx.lead}`);
-if (fx.candyLead) p.push(`スタート：キャンディ×${fx.candyLead}`);
-if (fx.sai) p.push(`アンカー：サイコー毎×${fx.sai + FIN_STAR.sai * (star - 1)}`);
-if (fx.fin) p.push(`アンカー：合計×${fx.fin}`);
-if (fx.chainFin) p.push(`アンカー：れんさ毎 合計×+${chainFinOf(fx, star)}`);
+if (fx.taisaku) p.push(`完成×${nx(fx.done)}`);
+if (fx.lead) p.push(`スタート：×${nx(fx.lead)}`);
+if (fx.candyLead) p.push(`スタート：キャンディ×${nx(fx.candyLead)}`);
+if (fx.sai) p.push(`アンカー：サイコー毎×${nx(fx.sai + FIN_STAR.sai * (star - 1))}`);
+if (fx.fin) p.push(`アンカー：合計×${nx(fx.fin)}`);
+if (fx.chainFin) p.push(`アンカー：れんさ毎 合計+${pct(chainFinOf(fx, star))}`);
 if (fx.doneFin) p.push(`アンカー：完成×+${doneFinOf(fx, star)}`);
-if (fx.koneFin) p.push(`アンカー：こね毎 合計×+${koneFinOf(fx, star)}`);
-if (fx.ripeFin) p.push(`アンカー：熟した実毎×${ripeFinOf(fx, star)}`);
-if (fx.jamFin) p.push(`アンカー：ジャム毎 合計×+${jamFinOf(fx, star)}`);
-if (fx.jamLead) p.push(`スタート：ジャム×${fx.jamLead}`);
+if (fx.koneFin) p.push(`アンカー：こね毎 合計+${pct(koneFinOf(fx, star))}`);
+if (fx.ripeFin) p.push(`アンカー：熟した実毎×${nx(ripeFinOf(fx, star))}`);
+if (fx.jamFin) p.push(`アンカー：ジャム毎 合計+${pct(jamFinOf(fx, star))}`);
+if (fx.jamLead) p.push(`スタート：ジャム×${nx(fx.jamLead)}`);
 if (fx.rollGrow) p.push('スタート：実ぜんぶ育つ');
-if (fx.tartFruit) p.push(`となりが実で×${fx.tartFruit}`);
+if (fx.tartFruit) p.push(`となりが実で×${nx(fx.tartFruit)}`);
 if (fx.fruitAgain) p.push('右が実なら2回');
 if (fx.perGrow) p.push(`実が育つと+${f(fx.perGrow)}`);
 if (fx.binNow) p.push(`びんの実毎に+${f(fx.binNow)}`);
 if (fx.perJam) p.push(`ジャム毎に+${f(fx.perJam)}`);
-if (fx.shine) p.push(`右のジャム×${fx.shine}`);
+if (fx.shine) p.push(`右のジャム×${nx(fx.shine)}`);
 if (fx.toro) p.push('熟した実は2つ分');
 if (fx.rally) p.push(`スタート：主役ぜんぶ+${f(fx.rally)}`);
 if (fx.doneRally) p.push(`スタート：主役+${f(fx.doneRally)}`);
@@ -2445,7 +2455,7 @@ if (fx.perChain) p.push(`れんさ毎に+${f(fx.perChain)}`);
 if (fx.petit) p.push(`ちいさな飴${fx.petit}こ`);
 if (fx.link) p.push(`両どなり飴で れんさ+${fx.link}`);
 if (fx.coldAgain) p.push('2回発動');
-if (fx.next) p.push(`次の主役×${fx.next}`);
+if (fx.next) p.push(`次の主役×${nx(fx.next)}`);
 if (fx.nb) p.push(`右2枚+${f(fx.nb)}`);
 if (fx.again) p.push(`右がもう${fx.again}回`);
 if (fx.koneUp) p.push(`発動：こね+${fx.koneUp}`);
@@ -2458,7 +2468,7 @@ if (fx.grow && !(fx.chainUp && candyNight())) p.push(`右の大作：大きさ+$
 if (fx.chainUp && candyNight()) p.push(`れんさ+${fx.chainUp}`);
 if (fx.water) p.push(`右の実：育つ+${fx.water}`);
 if (fx.fert) p.push('実ぜんぶ もう1段');
-if (fx.scare) p.push(`右2枚の実×${fx.scare}`);
+if (fx.scare) p.push(`右2枚の実×${nx(fx.scare)}`);
 if (fx.basket) p.push(`次に実が${fx.basket}枚`);
 if (fx.soon) p.push('育つと右がもう1回');
 if (fx.heat && !heatOf().off) p.push(`${heatOf().word}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`);
@@ -2474,27 +2484,27 @@ const doneFinOf = (fx, star = 1) => fx.doneFin + FIN_STAR.done * (star - 1);
 const chainFinOf = (fx, star = 1) => fx.chainFin + FIN_STAR.chain * (star - 1);
 const ripeFinOf = (fx, star = 1) => fx.ripeFin + FIN_STAR.ripe * (star - 1);
 const jamFinOf = (fx, star = 1) => fx.jamFin + FIN_STAR.jam * (star - 1);
-const pct = v => `${Math.round(v * 100)}%`;
+const pct = v => `${Math.round(v * 1000) / 10}%`;   // 2.5% のような小数1けたも（11/22）
 function fxLong(fx, star = 1) {
 const m = STAR_MUL[star] || 1, f = v => Math.floor(v * m * 10) / 10, p = [];
-if (fx.taisaku) p.push(['', `{完成}して 冷えたら 味パワー×${fx.done}`]);
-if (fx.lead) p.push(['スタート', `味パワー×${fx.lead}`]);
-if (fx.candyLead) p.push(['スタート', `キャンディ ぜんぶ×${fx.candyLead}`]);
-if (fx.sai) p.push(['アンカー', `{サイコー}の生地 1枚ごとに×${fx.sai + FIN_STAR.sai * (star - 1)}`]);
-if (fx.fin) p.push(['アンカー', `味パワーの 合計×${fx.fin}`]);
+if (fx.taisaku) p.push(['', `{完成}して 冷えたら 味パワー×${nx(fx.done)}`]);
+if (fx.lead) p.push(['スタート', `味パワー×${nx(fx.lead)}`]);
+if (fx.candyLead) p.push(['スタート', `キャンディ ぜんぶ×${nx(fx.candyLead)}`]);
+if (fx.sai) p.push(['アンカー', `{サイコー}の生地 1枚ごとに×${nx(fx.sai + FIN_STAR.sai * (star - 1))}`]);
+if (fx.fin) p.push(['アンカー', `味パワーの 合計×${nx(fx.fin)}`]);
 if (fx.chainFin) p.push(['アンカー', `{れんさ}1につき 合計+${pct(chainFinOf(fx, star))}`]);
 if (fx.doneFin) p.push(['アンカー', `{完成}1つにつき 合計+${pct(doneFinOf(fx, star))}`]);
 if (fx.koneFin) p.push(['アンカー', `{こね}1回につき 合計+${pct(koneFinOf(fx, star))}`]);
-if (fx.ripeFin) p.push(['アンカー', `{熟した実}1つにつき ×${ripeFinOf(fx, star)}`]);
+if (fx.ripeFin) p.push(['アンカー', `{熟した実}1つにつき ×${nx(ripeFinOf(fx, star))}`]);
 if (fx.jamFin) p.push(['アンカー', `{ジャム}1つにつき 合計+${pct(jamFinOf(fx, star))}`]);
-if (fx.jamLead) p.push(['スタート', `ジャム ぜんぶ×${fx.jamLead}`]);
+if (fx.jamLead) p.push(['スタート', `ジャム ぜんぶ×${nx(fx.jamLead)}`]);
 if (fx.rollGrow) p.push(['スタート', '{実}が ぜんぶ1段育つ']);
-if (fx.tartFruit) p.push(['', `となりが{実}なら 味パワー×${fx.tartFruit}`]);
+if (fx.tartFruit) p.push(['', `となりが{実}なら 味パワー×${nx(fx.tartFruit)}`]);
 if (fx.fruitAgain) p.push(['', '右が{実}なら もう1回発動']);
 if (fx.perGrow) p.push(['', `{実}が育つ たびに+${f(fx.perGrow)}`]);
 if (fx.binNow) p.push(['', `びんの実 1つにつき+${f(fx.binNow)}`]);
 if (fx.perJam) p.push(['', `作った{ジャム} 1つにつき+${f(fx.perJam)}`]);
-if (fx.shine) p.push(['', `右のジャムの 味パワー×${fx.shine}`]);
+if (fx.shine) p.push(['', `右のジャムの 味パワー×${nx(fx.shine)}`]);
 if (fx.toro) p.push(['', '{熟した実}は びんに2つ分']);
 if (fx.madeJam) p.push(['', '入れた実の 効果がのる']);
 if (fx.fruitCake) p.push(['', '{熟した実}の 効果がのる']);
@@ -2506,7 +2516,7 @@ if (fx.perChain) p.push(['', `{れんさ}1 につき+${f(fx.perChain)}`]);
 if (fx.petit) p.push(['', `小さな飴を ${fx.petit}こ飛ばす`]);
 if (fx.link) p.push(['', `両どなりが キャンディなら {れんさ}+${fx.link}`]);
 if (fx.coldAgain) p.push(['', 'もう1回発動する']);   // 11/21 夜〜 キャンディは温度なし（前は ひんやり以下なら）
-if (fx.next) p.push(['', `次の主役の 味パワー×${fx.next}`]);
+if (fx.next) p.push(['', `次の主役の 味パワー×${nx(fx.next)}`]);
 if (fx.nb) p.push(['', `右2枚の 味パワー+${f(fx.nb)}`]);
 if (fx.again) p.push(['', `右を もう${fx.again}回発動`]);
 if (fx.koneUp) p.push(['', `{こね}た回数+${fx.koneUp}`]);
@@ -2519,7 +2529,7 @@ if (fx.grow && !(fx.chainUp && candyNight())) p.push(['', `右の大作の 大�
 if (fx.chainUp && candyNight()) p.push(['', `{れんさ}+${fx.chainUp}（ここで 切れない）`]);
 if (fx.water) p.push(['', `右の{実}が ${fx.water}段育つ`]);
 if (fx.fert) p.push(['', 'ラウンドの終わりに {実}がぜんぶ 1段育つ']);
-if (fx.scare) p.push(['', `右2枚の {実}の効果×${fx.scare}`]);
+if (fx.scare) p.push(['', `右2枚の {実}の効果×${nx(fx.scare)}`]);
 if (fx.basket) p.push(['', `次のショップに 花が${fx.basket}枚`]);
 if (fx.soon) p.push(['', '{青い実}になると 右をもう1回発動']);
 if (fx.heat) { const H = heatOf(); if (!H.none && !H.off) p.push(['', `${H.of ? H.of + ' ' : ''}{${H.word}}${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}段`]); }   // ほのかは「火力+1段」（11/21：火力は鉄板がなくても上がる＝「鉄板の」をつけない）
@@ -4634,7 +4644,7 @@ if (bar && !H.off) {   // こね生地・ちいさなキャンディ（11/21 夜
 lab.textContent = H.names[h];   // ほのかの0は「火なし」（字は灰色の h0）
 lab.className = 'heat-label h' + h;
 }
-if (chefArt() === 'minamo') { st.dataset.t = h; return tempFx(h); }   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる（キャンディの夜は ひんやり のまま）
+if (chefArt() === 'minamo') { if (candyNight()) { st.dataset.t = 'c'; return; } st.dataset.t = h; return tempFx(h); }   // キャンディの夜は 飴の空気（data-t=c・雪や霜は出さない）   // 飴の温度（battle-fx.js）・舞台の空気 .aqua も data-t で変わる（キャンディの夜は ひんやり のまま）
 st.dataset.z = h;
 heatFx(h);   // 調理台の下の炎（battle-fx.js・火なしのときは出ない）
 }
@@ -4689,7 +4699,7 @@ const koneOn = () => N && N.build === 'kone';
 const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}">こね <b>${N.kone}</b></span>` : '';   // 字はラウンドの札と同じ（11/21 夜 しょーくん「ラウンド表記と同じく文字の大きさや中央揃えも」）
 let chainNow = 0;
 const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
-function setChain(n) { if (n === chainNow) return; chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
+function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
 function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
 const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
@@ -5215,6 +5225,7 @@ function renderNight() {
 if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
 N = S.night;
 document.body.dataset.chef = chefArt();   // シェフごとの見た目（紋章・一撃の色）。fx の層は body の下なので body につける（11/19）
+document.body.dataset.candy = candyNight() ? '1' : '';   // ちいさなキャンディの夜は 氷ではなく 飴の演出（11/22 しょーくん「冷気関係なくなったから 氷のエフェクトじゃなくて」）
 const mon = MONSTERS[N.mon];   // 上の札はラウンドだけ（場の名前は 11/19 にやめた・しょーくん「ビルド表記もいらない。ウェーブだけでOK」）
 let body = '';
 const rec = S.today, after = N.stage === 'end' || N.stage === 'thanks', happy = after && rec.mood >= 2;
@@ -5229,7 +5240,7 @@ body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood
 const shop = N.stage === 'shop';
 const H = heatOf();
 const ca = chefArt();
-body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? N.heat : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? (candyNight() ? 'c' : N.heat) : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
 `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
 <div class="bar">${barHTML()}</div>
 ${viewerHTML()}`;
@@ -5591,6 +5602,7 @@ w.style.setProperty('--k', k);
 let h = '<i class="fw-flash"></i>';
 if (ch === 'honoka') h += `<div class="fw-art">${img('fx-wall-honoka-a', 'fa')}${img('fx-wall-honoka-b', 'fb')}</div>`;
 else if (ch === 'wakaba') h += `<div class="fw-art back">${img('fx-wall-wakaba-back')}</div><div class="fw-art front">${img('fx-wall-wakaba-front')}</div>`;
+else if (document.body.dataset.candy) return candyFountain(w, r, k);   // ちいさなキャンディの夜：下から飴が わきあがる（11/22）
 else h += `<div class="fw-art ice">${img('fx-wall-minamo')}${[[6, 22, -14, .62], [46, 8, 20, .7], [24, 44, 168, .58]].map(([x, y, rt, sc], i) =>
 `<img class="fw-crack" src="${ART['fx-crack-minamo'] || ''}" alt="" style="left:${x}%;top:${y}%;--r:${rt}deg;--s:${sc};--d:${i}">`).join('')}</div><i class="fw-iflash"></i>`;
 w.innerHTML = h; fxLayer().appendChild(w);
@@ -5599,6 +5611,38 @@ if (ch === 'minamo') {
 setTimeout(() => { if (w.isConnected) iceShatter(w, r); }, 900 * k);   // パリーン
 }
 setTimeout(() => w.remove(), (ch === 'minamo' ? 1800 : 1300) * k);
+}
+const CANDY_ART = ['card-korodrop', 'card-peroc', 'card-mintame', 'card-ichidrop', 'card-hajike', 'card-shioame'];
+function candyFountain(w, r, k) {
+w.innerHTML = '<i class="fw-flash"></i>'; fxLayer().appendChild(w);
+sePlay('star', { vol: .7, rate: 1.25 }); sePlay('wipe', { rate: 1.3, vol: .6 }); [0, 1, 2, 3].forEach(i => setTimeout(() => sePlay('hit', { rate: 2 + i * .3, vol: .3 }), (180 + i * 110) * k));
+const U = CANDY_ART.map(n => ART[n]).filter(Boolean); if (!U.length || !document.body.animate) { setTimeout(() => w.remove(), 900 * k); return; }
+for (let i = 0; i < 30; i++) {
+const e = document.createElement('img'), z = 30 + Math.random() * 30, x = r.width * (.03 + Math.random() * .94);
+e.className = 'fw-candy'; e.src = U[i % U.length]; e.alt = '';
+Object.assign(e.style, { left: x - z / 2 + 'px', top: r.height + 'px', width: z + 'px' }); w.appendChild(e);
+const up = r.height * (.45 + Math.random() * .5), dx = (Math.random() - .5) * 120, rt = (Math.random() - .5) * 540, d0 = i * 22;
+e.animate([{ transform: 'translate(0,0) rotate(0deg) scale(.6)', opacity: 0 }, { transform: `translate(${dx * .2}px,${-up * .4}px) rotate(${rt * .3}deg) scale(1)`, opacity: 1, offset: .2 },
+{ transform: `translate(${dx * .7}px,${-up}px) rotate(${rt * .7}deg) scale(1.05)`, opacity: 1, offset: .55 },
+{ transform: `translate(${dx}px,${-up * .55}px) rotate(${rt}deg) scale(.9)`, opacity: 0 }], { duration: (1100 + Math.random() * 400) * k, delay: d0 * k, easing: 'cubic-bezier(.2,.8,.4,1)', fill: 'both' });
+}
+setTimeout(() => w.remove(), 1900 * k);
+}
+let rainLive = 0;
+function candyRain(n) {
+if (REDUCED || !candyNight() || !document.body.animate) return;
+const st = $('stage'); if (!st) return;
+const U = CANDY_ART.map(k => ART[k]).filter(Boolean); if (!U.length) return;
+const r = st.getBoundingClientRect(), m = Math.min(14, 1 + n, 40 - rainLive), L = fxLayer();
+for (let i = 0; i < m; i++) {
+const e = document.createElement('img'), z = 20 + Math.random() * 20 + Math.min(n, 20) * .6, x = r.left + r.width * (.06 + Math.random() * .88);
+e.className = 'crain'; e.src = U[Math.floor(Math.random() * U.length)]; e.alt = '';
+Object.assign(e.style, { left: x - z / 2 + 'px', top: r.top - z + 'px', width: z + 'px' }); L.appendChild(e); rainLive++;
+const fall = r.height * (.55 + Math.random() * .45), sw = (Math.random() - .5) * 40, rt = (Math.random() - .5) * 400, ms = T(900 + Math.random() * 500);
+e.animate([{ transform: 'translate(0,0) rotate(0deg)', opacity: 0 }, { transform: `translate(${sw * .3}px,${fall * .15}px) rotate(${rt * .15}deg)`, opacity: 1, offset: .12 },
+{ transform: `translate(${sw}px,${fall}px) rotate(${rt}deg)`, opacity: 0 }], { duration: ms, delay: i * 40, easing: 'cubic-bezier(.45,.05,.8,.6)', fill: 'both' });
+setTimeout(() => { e.remove(); rainLive--; }, ms + i * 40 + 40);
+}
 }
 function iceShatter(w, r) {
 w.classList.add('shat'); sePlay('star', { rate: 1.6, vol: .8 }); sePlay('hit', { rate: 3, vol: .5 });
@@ -5711,11 +5755,12 @@ const nt = document.querySelector('.night'); if (nt) replay(nt, big ? 'quake2' :
 const w = fxEl('fx-wave' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w.remove(), T(800));   // 額縁をこえて広がる衝撃波
 if (big) { const w2 = fxEl('fx-wave w2' + (size ? ' s-' + size : ''), p, ''); setTimeout(() => w2.remove(), T(900)); }
 const burst = ART['fx-burst-' + chef], slash = ART['fx-slash-' + chef];
-if (burst) { const b = fxEl('fx-art fx-burst' + (size ? ' s-' + size : ''), p, `<img src="${burst}" alt="">`); setTimeout(() => b.remove(), T(700)); }
-if (slash) { const s = fxEl('fx-art fx-slash' + (size ? ' s-' + size : ''), p, `<img src="${slash}" alt="">`); setTimeout(() => s.remove(), T(560)); }
+const cd = document.body.dataset.candy ? ' candy' : '';   // キャンディの夜は 氷の色ではなく 飴の色（11/22・絵の色を回す）
+if (burst) { const b = fxEl('fx-art fx-burst' + cd + (size ? ' s-' + size : ''), p, `<img src="${burst}" alt="">`); setTimeout(() => b.remove(), T(700)); }
+if (slash) { const s = fxEl('fx-art fx-slash' + cd + (size ? ' s-' + size : ''), p, `<img src="${slash}" alt="">`); setTimeout(() => s.remove(), T(560)); }
 const nh = ART['fx-numhit-' + chef], sc = ART['fx-scatter-' + chef];
-if (nh) { const n = fxEl('fx-art fx-numhit' + (size ? ' s-' + size : ''), p, `<img src="${nh}" alt="">`); setTimeout(() => n.remove(), T(520)); }
-if (sc) { const c = fxEl('fx-art fx-scatter' + (size ? ' s-' + size : ''), p, `<img src="${sc}" alt="">`); setTimeout(() => c.remove(), T(820)); }
+if (nh) { const n = fxEl('fx-art fx-numhit' + cd + (size ? ' s-' + size : ''), p, `<img src="${nh}" alt="">`); setTimeout(() => n.remove(), T(520)); }
+if (sc) { const c = fxEl('fx-art fx-scatter' + cd + (size ? ' s-' + size : ''), p, `<img src="${sc}" alt="">`); setTimeout(() => c.remove(), T(820)); }
 chefFlourish(chef, p, big ? 3 : 1);
 const W = innerWidth, H = innerHeight;   // 画面のはしまで飛ぶ火花（額縁の外へ）
 sparkBurst(p, big ? 18 : 10, 'all', Math.max(W, H) / 120);
@@ -5779,7 +5824,7 @@ setTimeout(() => { m.classList.remove('broken'); qCollect('m3', 3); }, T(760)); 
 const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）
 const RING = { honoka: 'fx-fire-ring', minamo: 'fx-ame-ring', wakaba: 'fx-flowerring' };
 function chefFlourish(chef, p, n) {
-const L = (FLOURISH[chef] || []).filter(k => ART[k]); if (!L.length || !document.body.animate) return;
+const L = (FLOURISH[chef] || []).filter(k => ART[k] && !(document.body.dataset.candy && k === 'fx-ice-flower')); if (!L.length || !document.body.animate) return;   // キャンディの夜は 氷の花を出さない
 const keys = n > 1 && ART[RING[chef]] ? [RING[chef], ...L.sort(() => Math.random() - .5).slice(0, n - 1)] : [L[Math.floor(Math.random() * L.length)]];
 keys.forEach((k, i) => {
 const ring = k === RING[chef], a = Math.random() * Math.PI * 2, d = ring ? 0 : 50 + Math.random() * 40;

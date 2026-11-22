@@ -21,7 +21,7 @@
 .m-hitsuji{right:15%;height:14cqh;max-width:16%}
 .m-tokage{left:22%;height:10cqh;max-width:13%}
 .m-hiyoko{right:31%;height:10cqh;max-width:12%}
-.m-kurage{left:58%;top:20cqh;bottom:auto;height:9cqh;max-width:12%;animation:dcfloat 3.2s ease-in-out infinite}
+.m-kurage{left:auto;right:2px;top:17cqh;bottom:auto;height:9cqh;max-width:12%;animation:dcfloat 3.2s ease-in-out infinite}   /* 空のクラゲは 右の額縁に沿って（11/22 しょーくん「空に浮いてるクラゲも枠に沿った位置に」・前は まんなかの空 left 58%） */
 @keyframes dcfloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12%) rotate(4deg)}}
 .dc.tmp{opacity:.95}
 /* ショップのあいだは、考えるほのかとモブがショップの下のすみに（カードと値札をかくさない） */
@@ -704,3 +704,13 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .dc-crack .ck-line{fill:none;stroke:#1d0f06;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 .6px 0 rgba(233,183,122,.55))}
 .dc-crack.new{animation:ckin .3s cubic-bezier(.2,1.6,.4,1)}
 @keyframes ckin{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
+/* ちいさなキャンディの夜（11/22 しょーくん「冷気関係なくなったから、氷のエフェクトじゃなくて 固有の演出」）：舞台は 雪と霜ではなく 色とりどりの飴の空気・一撃の絵は 氷の色を回して 飴の色に・大技は下から飴がわきあがる（battle-fx.js の candyFountain）・れんさで上から飴がふる（candyRain） */
+body[data-candy="1"]{--chefc:255,140,196}
+.fx-art.candy img{filter:hue-rotate(125deg) saturate(1.35) brightness(1.05)}
+.fw-candy,.crain{position:absolute;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(60,20,40,.35))}
+.stage[data-t="c"] .aq-frost,.tiles[data-t="c"] .tcold,.tiles[data-t="c"] .tsteam{display:none}
+.stage[data-t="c"] .aqua .aq-p,.stage[data-t="c"] .aqua.art .aq-p,.stage[data-t="c"] .aqua.art .aq-p.c{top:auto;bottom:-4%;width:calc(10px * var(--s));height:calc(10px * var(--s));border-radius:50%;clip-path:none;box-shadow:0 0 6px 1px rgba(255,255,255,.55);animation-name:aqrise;
+  background:radial-gradient(circle at 35% 30%,#fff 0 18%,#ff9cc8 40%,#e0508c 78%)}
+.stage[data-t="c"] .aqua .aq-p:nth-child(3n+1){background:radial-gradient(circle at 35% 30%,#fff 0 18%,#ffe28a 40%,#f0a828 78%)}
+.stage[data-t="c"] .aqua .aq-p:nth-child(3n+2){background:radial-gradient(circle at 35% 30%,#fff 0 18%,#a8f0d0 40%,#3cb488 78%)}
+.stage[data-t="c"] .aq-st,.stage[data-t="c"] .aq-warm{display:none}
