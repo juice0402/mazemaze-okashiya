@@ -78,6 +78,8 @@ function act(a) { return dropCard(a[0], a[1]); }
 function smartShop() {
   let rolls = 0;
   if (taiNight()) taiSell();
+  /* 1ラウンド目の無料の入れかえ（11/22〜 3まい＋無料2回）：まぜて★2にできる組がなければ引きなおす */
+  if (N.round === 1) while (N.rolls > 0 && !N.shop.some((a, i) => N.shop.some((b, j) => j > i && a && b && mixable(cardDef(a), cardDef(b))))) reroll();
   for (let step = 0; step < 40; step++) {
     const base = arrange(), list = actions(); let best = null, bv = -1;
     for (const a of list) {
@@ -86,7 +88,7 @@ function smartShop() {
       back(t); if (v > bv) { bv = v; best = a; }
     }
     if (best && bv > base * 0.98) { act(best); continue; }
-    if (N.round > 1 && N.coins >= REROLL + 3 && rolls < 3) { reroll(); rolls++; continue; }
+    if (N.round > 1 && (N.free > 0 || (N.coins >= REROLL + 3 && rolls < 3))) { reroll(); rolls++; continue; }
     if (best && N.round === 1 && N.picks > 0) { act(best); continue; }   // 1ラウンド目の無料はつかいきる
     break;
   }

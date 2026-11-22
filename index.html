@@ -2447,29 +2447,29 @@ const heatOf = () => { let b = 'cookie'; try { b = (N && N.build) || 'cookie'; }
 const BUILDS = {
 cookie: {
 chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text: '天板で焼いて サイコーに。アンカーで倍々',
-bal: [1.13, 1.155], r1: 420, doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
+bal: [1.13, 1.155], r1: 310, doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
 },
 kone: {
 chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: '生地をこねて パン種をふやす。こねた回数で爆発',
 trait: 'こね', heat: { off: 1, start: 0 }, drop: ['t:maki', 't:hiokoshi', 't:mizu', 't:yakigote'], extra: ['t:konedai', 't:hakko'],   // 火力なし（パンは焼かない・焦げない）
-bal: [0.58, 1.51], r1: 620, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
+bal: [0.58, 1.51], r1: 490, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
 },
 taisaku: {
 chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて育て、冷えたら本気。★3を冷やせば最強',
-bal: [2.97, 1.123], r1: 220, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
+bal: [2.97, 1.123], r1: 190, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
 },
 candy: {
 chef: 'minamo', name: 'ちいさなキャンディ', from: 14, mate: 'minamo', pic: 'minamo-charge', text: 'キャンディを続けて並べて れんさ。つなぐほど強い',
 trait: 'れんさ', heat: { off: 1, start: 2 }, drop: ['t:yusen', 't:pot', 't:korimizu'], extra: ['t:ameito', 't:amering'],   // 温度なし（見た目は ひんやり のまま変わらない）
-bal: [1.10, 1.186], r1: 350, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
+bal: [1.10, 1.186], r1: 260, doughs: ['m:korodrop', 'm:hajike', 'm:peroc', 'm:ichidrop', 'm:candybin', 'm:mintame'], fields: ['dairiseki', 'yatai'], show: ['m:candybin', 'm:hajike', 'b:dairiseki'],
 },
 fruitcake: {
 chef: 'wakaba', name: 'くだものケーキ', from: 11, mate: 'wakaba', pic: 'wakaba-battle', text: 'くだものを育てて、熟した実を★2のケーキにのせると★3',
-bal: [1.13, 1.235], r1: 400, doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
+bal: [1.13, 1.235], r1: 300, doughs: ['m:sponge', 'm:tart', 'm:roll', 'm:deco', 'm:chiffon', 'm:hachiroll'], fields: ['nobi', 'suku', 'decodai'], show: ['m:tart', 'm:apple2', 'b:suku'],
 },
 jam: {
 chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。実3つで★3のジャムに',
-bal: [1.64, 1.10], doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
+bal: [1.64, 1.10], r1: 210, doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
 },
 };
 const candyNight = () => { try { return !!N && N.build === 'candy'; } catch (e) { return false; } };
