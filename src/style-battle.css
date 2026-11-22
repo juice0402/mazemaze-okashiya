@@ -148,7 +148,7 @@
 .debris.gold{background:#ffe066;box-shadow:0 0 6px 2px rgba(255,214,80,.9)}
 .zudon{position:absolute;translate:-50% 0;font-family:var(--disp);font-weight:400;font-size:30px;white-space:nowrap;color:#fff3c0;-webkit-text-stroke:5px #6a1a04;paint-order:stroke fill;text-shadow:0 4px 0 #3a1004,0 0 16px rgba(255,170,40,.9);animation:zudon .9s cubic-bezier(.2,1.6,.4,1) forwards}
 @keyframes zudon{0%{opacity:0;transform:scale(2.4) rotate(-12deg)}20%{opacity:1;transform:scale(1) rotate(-6deg)}75%{opacity:1;transform:translateY(-8px) rotate(-6deg)}100%{opacity:0;transform:translateY(-22px) rotate(-6deg)}}
-.buffs{position:absolute;left:50%;top:-11px;z-index:5;translate:-50% 0;display:flex;gap:2px;pointer-events:none}
+.buffs{position:absolute;left:50%;bottom:calc(100% - 9px);z-index:5;translate:-50% 0;display:flex;flex-direction:column-reverse;align-items:center;gap:1px;pointer-events:none}   /* 11/22 しょーくん「×2とか＋100がたくさんつくとカードにかぶる・縦に並べたら」：カードの上のふちから上へ1つずつ積む（前は横に1列） */
 .buff{font-style:normal;font-family:var(--disp);font-weight:400;font-size:10.5px;line-height:1;white-space:nowrap;padding:3px 5px 2px;border-radius:7px;color:#fff;
   background:var(--bc);box-shadow:0 0 0 1.5px #2a1408,0 0 9px 2px var(--bc);animation:buffin .4s cubic-bezier(.2,1.8,.4,1) backwards}
 .buff.b-next{--bc:#e8467a}.buff.b-nb,.buff.b-rally{--bc:#d89a10;color:#2a1408}.buff.b-again{--bc:#e8781e}
@@ -851,3 +851,7 @@ body[data-candy="1"]{--chefc:255,140,196}
    札の木の色を下じきにして、つなぎ目から うしろが見えないように（ラウンド・コイン・入れかえ・こね・オーブンの上・まとめのヒント・お財布・えらんでいる の札） */
 :is(.ov-top>span,.sh-ttl.sh-ttl,.sh-coin.sh-coin,.mo-hint.mo-hint,.md-tip.md-tip,.d-tip.d-tip,.m-wallet.m-wallet,.kone-n.kone-n,.pk-on.pk-on,.sh-roll.sh-roll.pill.pill){background:linear-gradient(#6b3418,#6b3418) center/calc(100% - 1.2em) calc(100% - 4px) no-repeat}
 .sh-top .sh-roll.sh-roll.pill{background:linear-gradient(#6b3418,#6b3418) center/calc(100% - 1.2em) calc(100% - 4px) no-repeat!important}   /* ボタンの皮は background:none!important なので（style.css の button.pill） */
+
+/* 調理台のカードは 舞台（戦闘の枠）より前（11/22 しょーくん「カードが跳ねるモーションが戦闘の枠より下にあって見切れる・場のカードは戦闘の枠より前に」）：
+   はねる・回る（pon2・pon3）と 上に積んだ札が 舞台の草・ちびたち・額縁にかくれない。iPhone は 3D で回るカードを z-index ではなく奥行きでならべることがあるので、調理台を1まいの層にする（translateZ） */
+.night .tiles{z-index:9;transform:translateZ(0)}
