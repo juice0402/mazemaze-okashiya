@@ -134,7 +134,8 @@ function openDay() {
     const fc = fcGet(S.day);   // 予報どおりの日（11/21・前の日の閉店で決めてある）
     if (!R.ev && fc.ev) R.ev = fc.ev;   // 昼のできごと（11/19）
     const E = dEv(R);
-    const fx = dRegDue(), first = (E && E.first) || [], n = Math.max(2, custCount() + ((E && E.add) || 0));   // 常連さん（11/19）：来る日は2人目か、できごとのお客さんのあと
+    const m13 = dM13Due(); if (m13) S.seen.scDay = S.day;   // ⑬の日（11/22）：常連さんの場面はなし・ルルを2人目に（dM13Run）
+    const fx = m13 ? { c: 'kodomo', vr: 1, reg: 'm13' } : dRegDue(), first = (E && E.first) || [], n = Math.max(2, custCount() + ((E && E.add) || 0));   // 常連さん（11/19）：来る日は2人目か、できごとのお客さんのあと
     R.plan = custPlan(n, R.kanban, R.soroi, first, fx && { ...fx, i: Math.min(n - 1, Math.max(first.length, 1)) }, fc);
     R.len = Math.max(DAY_MS, R.plan.length * D_SLOT);
     dPreload(R.plan.flatMap(x => { const b = 'cust-' + x.c + (x.vr > 1 ? '-' + x.vr : ''); return [b, b + '-happy', b + '-sad', ...(x.duo ? ['cust-' + x.duo] : [])]; }));   // 今日のお客さんの顔を先に読む
@@ -291,6 +292,7 @@ function dRegDue() {
 const regKey = v => v.reg === 'pair' ? 'otona' : v.reg === 'koge' ? 'gakusei' : v.reg.split(':')[0];   // 場面の常連さん（名前は STORY.reg[regKey].name）
 const dRegLines = reg => reg === 'pair' ? STORY.regPair : reg === 'koge' ? STORY.regKoge : (() => { const [c, k] = reg.split(':'); return ((STORY.reg[c] || {}).st || [])[+k]; })();
 function dRegRun(v) {
+  if (v.reg === 'm13') return dM13Run(v);
   const L = dRegLines(v.reg);
   if (!L || !L.length) { v.sc = 2; return; }
   dScene = v; v.sc = 1; dSkip = Infinity;   // お店のひとことの割りこみを止める
@@ -314,6 +316,19 @@ function dRegEnd(v) {
   if (v.reg === 'pair') S.seen['rg:pair'] = S.day;
   else if (v.reg !== 'koge') { const [c, k] = v.reg.split(':'); S.seen['rg:' + c] = +k + 1; S.seen['rgd:' + c] = S.day; }
   save();
+}
+/* ---------- ⑬ ある昼：ちいさなキャンディ（11/22）：みなもとわかばが仲間で、BUILDS.candy.from（14日目）から。ルル（妖精の子の1まいめ）の段3のあと
+   （段3がまだでも from＋3日目からは、そのまま）。開店のとき（openDay）に決めて、2人目のお客さんにルルを入れる（custPlan の fix）
+   ルルが来たら会話（talk の窓・営業は止まる）→ S.seen.m13＝その日 → そのあとルルは、すきな味を見て買う（常連さんの日と同じで、かならず買う） ---------- */
+function dM13Due() {
+  if (S.seen.m13 || S.seen.scDay === S.day || !STORY.mate('minamo') || !STORY.mate('wakaba') || !custOpen('kodomo')) return false;
+  const from = (typeof BUILDS === 'object' && BUILDS.candy && BUILDS.candy.from) || 14;
+  return S.day >= from && ((S.seen['rg:kodomo'] || 0) >= 3 || S.day >= from + 3);
+}
+function dM13Run(v) {
+  dScene = v; v.sc = 1; dSkip = Infinity;
+  S.seen.m13 = S.day; save();
+  talk(STORY.m13, () => { dScene = null; dSkip = 0; v.sc = 2; save(); });
 }
 /* そのお菓子が棚にあと何こ（同じお菓子が2マス以上あってもぜんぶ数える） */
 const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
