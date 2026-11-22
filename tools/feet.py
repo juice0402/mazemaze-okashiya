@@ -16,9 +16,8 @@ POSES = {
     'minamo': 'battle charge atk atk2 atk3 heatup heatdown special win support shonbori bikkuri',
     'wakaba': 'battle charge atk atk2 atk3 grow jar special win support komari odoroki',
 }
-FIX = {   # 目で見て合わせた（11/19）：たき火の石・鉄板の脚が足もとの帯に入る絵
+FIX = {   # 目で見て合わせた（11/19）：たき火の石が足もとの帯に入る絵（honoka-field は 11/22 に天板を持つ絵になって、足もとに道具がなくなった）
     'honoka-heatup': {'fx': .32, 'sw': .32},   # 足だけに影（たき火は石の上）
-    'honoka-field': {'fx': .44, 'sw': .38},    # 足と鉄板の脚をいっしょに
 }
 
 # 人の大きさ（11/22 しょーくん「モーションが変わっても人の大きさで揃えてある？」「絵の大きさじゃなくて人の大きさは同じ？」）：
@@ -30,7 +29,7 @@ FIX = {   # 目で見て合わせた（11/19）：たき火の石・鉄板の脚
 CHEF = {'honoka': 1.0, 'minamo': 1.18, 'wakaba': 1.2}
 REL = {
     'honoka-charge': .96, 'honoka-atk1': 1.02, 'honoka-atk2': 1.04, 'honoka-atk3': 1.1, 'honoka-special': 1.1, 'honoka-win': .92,
-    'honoka-heatup': 1.05, 'honoka-field': 1.02, 'honoka-burnt': .96, 'honoka-joy': 1.05, 'honoka-surprise': 1.05, 'honoka-oops': 1.05,
+    'honoka-heatup': 1.05, 'honoka-burnt': .96, 'honoka-joy': 1.05, 'honoka-surprise': 1.05, 'honoka-oops': 1.05,
     'minamo-charge': 1.02, 'minamo-atk': 1.02, 'minamo-atk2': 1.1, 'minamo-atk3': 1.1, 'minamo-special': 1.15, 'minamo-support': 1.03,
     'minamo-shonbori': .97, 'minamo-bikkuri': .96,
     'wakaba-charge': 1.08, 'wakaba-atk': 1.02, 'wakaba-atk2': 1.12, 'wakaba-atk3': 1.12, 'wakaba-special': 1.1, 'wakaba-grow': 1.05,
