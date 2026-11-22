@@ -5,7 +5,7 @@
   （11/19 しょーくん「絵によって、影とキャラクターの距離がバラバラ」→ 影の大きさも足のひらき方に合わせる）
 - 足もとに道具（たき火の石・鉄板の脚）があって、まんなかがずれる絵は FIX で1まいずつ合わせる（目で見て決めた）
 - night-ui.js の heroVars がこの表で、どのポーズでも足が同じ高さに立つように下げ、影を足もとに出す
-- 新しいポーズの絵を足したら、POSES に名前を足して、もう一度かける
+- 新しいポーズの絵を足したら、POSES に名前を足して、もう一度かける（人の大きさがちがう絵は REL も足す）
 """
 import colorsys, json, pathlib
 from PIL import Image
@@ -19,6 +19,22 @@ POSES = {
 FIX = {   # 目で見て合わせた（11/19）：たき火の石・鉄板の脚が足もとの帯に入る絵
     'honoka-heatup': {'fx': .32, 'sw': .32},   # 足だけに影（たき火は石の上）
     'honoka-field': {'fx': .44, 'sw': .38},    # 足と鉄板の脚をいっしょに
+}
+
+# 人の大きさ（11/22 しょーくん「モーションが変わっても人の大きさで揃えてある？」「絵の大きさじゃなくて人の大きさは同じ？」）：
+# 絵ごとに人が描かれた大きさがちがう（みなもの大技の白鳥・わかばのつるの絵などは、人が1〜2割小さい）。舞台では どの絵も同じ高さで出すので、
+# 絵ごとに かける倍率 sc を持つ＝ CHEF（シェフどうし）× REL（そのシェフの立ち絵 battle にくらべた、その絵の人の大きさの逆数）。
+# REL のはかり方：顔の大きさ（立ち絵の顔を型にして、大きさを変えながら いちばん合う所をさがす＝OpenCV のテンプレートマッチ）と、
+#   まっすぐ立った絵は頭から足までの高さ。顔を同じ倍率で切りぬいて並べ、目で見て同じ大きさになるのを確かめた（scratchpad の facecmp）
+# CHEF：ほのかは顔と上半身が大きく、みなもは背が高くて顔が小さい絵。背の高さをそろえる（みなも 1.0）と顔をそろえる（1.4）のあいだ（かけ算のまんなか）
+CHEF = {'honoka': 1.0, 'minamo': 1.18, 'wakaba': 1.2}
+REL = {
+    'honoka-charge': .96, 'honoka-atk1': 1.02, 'honoka-atk2': 1.04, 'honoka-atk3': 1.1, 'honoka-special': 1.1, 'honoka-win': .92,
+    'honoka-heatup': 1.05, 'honoka-field': 1.02, 'honoka-burnt': .96, 'honoka-joy': 1.05, 'honoka-surprise': 1.05, 'honoka-oops': 1.05,
+    'minamo-charge': 1.02, 'minamo-atk': 1.02, 'minamo-atk2': 1.1, 'minamo-atk3': 1.1, 'minamo-special': 1.15, 'minamo-support': 1.03,
+    'minamo-shonbori': .97, 'minamo-bikkuri': .96,
+    'wakaba-charge': 1.08, 'wakaba-atk': 1.02, 'wakaba-atk2': 1.12, 'wakaba-atk3': 1.12, 'wakaba-special': 1.1, 'wakaba-grow': 1.05,
+    'wakaba-jar': 1.05, 'wakaba-win': 1.05, 'wakaba-support': 1.05, 'wakaba-komari': 1.03,
 }
 
 
@@ -51,9 +67,10 @@ for chef, names in POSES.items():
         if f.exists():
             v = measure(f); fix = FIX.get(f'{chef}-{p}', {})
             v[1] = fix.get('fx', v[1]); v[3] = fix.get('sw', v[3])
+            v.append(round(CHEF[chef] * REL.get(f'{chef}-{p}', 1), 3))
             out[f'{chef}-{p}'] = v
 js = ('/* 自動で作るファイル（python3 -I tools/feet.py）・手で直さない\n'
-      '   シェフの戦闘ポーズの足もと：名前 → [fp＝足の下のすき間（絵の高さの割合）, fx＝足もとのまんなか（横の割合）, ca＝横÷たて, sw＝影の横の半分（高さの割合）] */\n'
+      '   シェフの戦闘ポーズの足もと：名前 → [fp＝足の下のすき間（絵の高さの割合）, fx＝足もとのまんなか（横の割合）, ca＝横÷たて, sw＝影の横の半分（高さの割合）, sc＝人の大きさをそろえる倍率（CHEF×REL）] */\n'
       'const FEET = ' + json.dumps(out, separators=(',', ':')) + ';\n')
 (ROOT / 'src/data/feet.js').write_text(js)
 print('src/data/feet.js', len(out))

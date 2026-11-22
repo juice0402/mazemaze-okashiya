@@ -534,10 +534,10 @@ const chefArt = () => chefNow().art || 'honoka';
 function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip, n } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka, n: '' }; }
 /* 足もと（11/19 しょーくん「描写されてるものの位置で足元を合わせて」・影も）：src/data/feet.js（tools/feet.py）の表で、
    どのポーズでも描かれた足が同じ高さに立つように下げる（--fp）。影 .chef-sh は足もとのまんなか（--fx）に。#stage に置いてシェフと影の両方が使う */
-/* シェフごとの絵の大きさ（11/22 しょーくん「ほのかに比べると、みなもとわかばって絵が小さい」）：みなも・わかばの絵は ほのかより顔と体が 2割ほど小さく描かれている（顔のはば・あごまでの長さで はかった）。
-   舞台の --ch（シェフの高さ）にかける。足もと・影・まわりの空気も --ch で決まるので いっしょに大きくなる */
-const CHEF_SC = { minamo: 1.18, wakaba: 1.2 };
-function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8, .23]; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]};--sw:${f[3]};--sc:${CHEF_SC[String(n).split('-')[0]] || 1}`; }
+/* 人の大きさ（11/22 しょーくん「ほのかに比べると、みなもとわかばって絵が小さい」「モーションが変わっても人の大きさで揃えてある？」）：
+   feet.js の5つめ sc＝絵ごとの倍率（シェフどうし CHEF × その絵の人の大きさ REL・tools/feet.py）を --sc に置き、舞台の --ch（シェフの高さ）にかける。
+   足もと・影も --ch で決まるので いっしょに変わる。まわりの空気（霧）は ポーズで大きさがゆれないように、立ち絵の倍率 --scb を使う */
+function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8, .23, 1], b = FEET[String(n).split('-')[0] + '-battle']; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]};--sw:${f[3]};--sc:${f[4] || 1};--scb:${(b && b[4]) || 1}`; }
 function heroSetVars(n, flip) { const st = $('stage'); if (st) for (const kv of heroVars(n, flip).split(';')) { const [k, v] = kv.split(':'); st.style.setProperty(k, v); } }
 function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="chef${ART[chefArt()] ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="chef" data-chef="${chefArt()}" src="${h.src}" alt="${esc(C.job + ' ' + C.name)}">`; }
 /* 絵と足もと（--fp・影）は いっしょに変える（11/21 しょーくん「新しい立ち絵の影と脚の位置関係がおかしい」）：
