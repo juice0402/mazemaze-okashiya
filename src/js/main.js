@@ -56,8 +56,8 @@ const ACTS = {
   bake: () => omotenashi(),
   pickB: el => pickBuild(el.dataset.id),   // 夕方のシェフ・ビルドえらび（11/18）
   pickGo: () => pickGo(),
-  pickC: el => pickChef(el.dataset.id),
-  pickX: el => pickX(el.dataset.id),   // 追加カードの着脱（11/22）   // シェフ → ビルド（11/22）
+  pickC: el => pickChef(el.dataset.id),   // シェフ → ビルド（11/22）
+  ichi: el => ichiPick(el.dataset.id),   // 夜市（11/22 夜）
   pickBack: () => pickBack(),
   pickNext: () => pickNext(),
   pkPage: el => pickPageGo(+el.dataset.d),
@@ -97,7 +97,7 @@ function boot(data) {
   render();
 }
 /* 自分の音を鳴らすボタンは tap を重ねない（買う・入れかえ・せっていのオンオフ） */
-const NO_TAP = { buy: 1, reroll: 1, optSet: 1 };
+const NO_TAP = { buy: 1, reroll: 1, optSet: 1, ichi: 1 };   // ichi＝夜市（買う音は ichiPick）
 /* 押したときの光（ぜんぶのせシップの fxBuy の形）：ボタンの形の白い輪が広がって消える。画面を描きなおしても残るよう body に出す */
 function pressFx(el) {
   if (REDUCED || !el.matches('.big,.bake,.pill,.go2,.sub,.vclose')) return;

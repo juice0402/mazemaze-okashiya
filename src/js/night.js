@@ -35,7 +35,8 @@ function startNight() {
   S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
   const open = openBuilds();
   S.night = {
-    mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: kaisoGive('coin'), picks: ROUND1_PICKS, rolls: ROUND1_ROLLS, free: kaisoGive('roll'),   // coins・free＝お店の改装（11/22・free は2ラウンド目からの無料の入れかえ）
+    mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 || ichiList().length ? 'pick' : 'arrive',   // えらぶ画面はビルドが2つ以上か、夜市に素材があるとき（11/22 夜）
+    round: 1, coins: kaisoGive('coin'), picks: ROUND1_PICKS, rolls: ROUND1_ROLLS, free: kaisoGive('roll'), ichi: [],   // coins・free＝お店の改装（11/22・free は2ラウンド目からの無料の入れかえ）・ichi＝夜市で買った素材（その夜だけ）
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     sel: null, view: false, last: null,
     build: open.includes(S.build) ? S.build : open[0], kone: 0, pickChef: null, pkPage: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
@@ -46,14 +47,15 @@ function startNight() {
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
-/* 追加カードをつける・はずす（11/22 しょーくん「一度アンロックしたら着脱」）：えらぶ画面のビルドの一覧の下。つけられるのは改装の枠の数まで */
-function pickX(id) {
-  if (N.stage !== 'pick' || !S.extra.includes(id)) return;
-  const on = extraWorn();
-  if (on.includes(id)) S.extraOn = on.filter(x => x !== id);
-  else if (on.length >= extraSlots()) return toast(extraSlots() ? 'つけられるのは ' + extraSlots() + 'まいまで' : 'お店の改装で つけられるようになるよ');
-  else S.extraOn = [...on, id];
-  save(); pickRender();   // 押した音は main.js の tap
+/* 夜市（11/22 夜 しょーくん）：えらぶ画面のビルドの一覧の下。タップで買う（お店のお金 ICHI_PRICE）・もう一度タップでやめる（えらぶ画面のあいだは もどる）。3まいまで */
+function ichiPick(id) {
+  if (N.stage !== 'pick' || !ichiList().includes(id)) return;
+  N.ichi = N.ichi || [];
+  if (N.ichi.includes(id)) { N.ichi = N.ichi.filter(x => x !== id); S.money += ICHI_PRICE; }
+  else if (N.ichi.length >= ICHI_N) return toast('夜市で買えるのは ' + ICHI_N + 'まいまで');
+  else if (S.money < ICHI_PRICE) return toast('お金がたりない');
+  else { N.ichi = [...N.ichi, id]; S.money -= ICHI_PRICE; sePlay('buy'); save(); return pickRender(); }
+  sePlay('tap'); save(); pickRender();
 }
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
 /* シェフ → ビルド（11/22）：pickChef＝そのシェフのビルドの一覧へ（前の夜とちがうシェフなら、そのシェフの1つめのビルドをえらんでおく）・pickBack＝シェフの一覧へ・pickNext＝いまのシェフのビルドの一覧へ */
@@ -106,9 +108,7 @@ function poolList() {
   for (const cid of C.common) if (!(B.drop || []).includes(cid)) L.push([cid, 2]);
   for (const cid of B.extra || []) L.push([cid, 2]);   // extra＝そのビルドだけの道具（11/21 夜 こね台・発酵かご／飴の糸・飴のわっか）   // drop＝そのビルドで使わない共通のカード（11/21 夜 こね生地の火力・キャンディの温度）
   for (const id of B.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
-  const dr = MONSTERS[N.mon].drop;
-  if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
-  if (N.round >= 2) for (const id of extraWorn()) if (id !== dr) L.push(['m:' + id, 1.5]);   // つけた追加カード（11/22・world.js の extraWorn）
+  for (const id of N.ichi || []) L.push(['m:' + id, 2]);   // 夜市で買ったふしぎな素材（11/22 夜〜 その夜のお客さんの素材がタダで出るのは やめた）
   return L;
 }
 function draw1(L) {

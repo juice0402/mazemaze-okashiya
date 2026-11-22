@@ -34,26 +34,24 @@ function nightMonster() {
 }
 
 /* お店の改装（11/22 しょーくん「お金の使いみち・ずっと続くローグライト」→ 10段で完成・朝の雑貨屋で買う〔画面は昼のチャット〕）。
-   段ごとに決まったごほうび：coin＝夜のはじめのコイン・roll＝毎夜の無料の入れかえ（2ラウンド目から）・slot＝追加カードの枠。値段と数字はぽぽちの仮 */
+   段ごとに決まったごほうび：coin＝夜のはじめのコイン・roll＝毎夜の無料の入れかえ（2ラウンド目から）。値段と数字はぽぽちの仮 */
 const KAISO = [
-  { price: 3000, give: { coin: 3 } }, { price: 5000, give: { slot: 1 } }, { price: 8000, give: { roll: 1 } },
-  { price: 12000, give: { coin: 3 } }, { price: 16000, give: { slot: 1 } }, { price: 20000, give: { roll: 1 } },
-  { price: 25000, give: { coin: 3 } }, { price: 30000, give: { slot: 1 } }, { price: 36000, give: { roll: 1 } },
-  { price: 45000, give: { coin: 3 } },
+  { price: 3000, give: { coin: 2 } }, { price: 5000, give: { roll: 1 } }, { price: 8000, give: { coin: 2 } },
+  { price: 12000, give: { roll: 1 } }, { price: 16000, give: { coin: 2 } }, { price: 20000, give: { roll: 1 } },
+  { price: 25000, give: { coin: 2 } }, { price: 30000, give: { roll: 1 } }, { price: 36000, give: { coin: 2 } },
+  { price: 45000, give: { roll: 1 } },
 ];
 const kaisoLv = () => Math.max(0, Math.min(KAISO.length, (S && S.kaiso) | 0));   // いまの段（0〜10）
 const kaisoGive = k => KAISO.slice(0, kaisoLv()).reduce((s, x) => s + (x.give[k] || 0), 0);   // その段までのごほうびの合計
 const kaisoNext = () => KAISO[kaisoLv()] || null;   // 次の段（完成なら null）
-const KAISO_WORD = { coin: n => '夜のはじめのコイン+' + n, roll: n => '夜の無料の入れかえ+' + n, slot: n => '追加カードの枠+' + n };
+const KAISO_WORD = { coin: n => '夜のはじめのコイン+' + n, roll: n => '夜の無料の入れかえ+' + n };
 const kaisoText = st => Object.entries(st.give).map(([k, n]) => KAISO_WORD[k](n)).join('・');   // 雑貨屋に出す文
 function kaisoBuy() { const st = kaisoNext(); if (!st || S.money < st.price) return false; S.money -= st.price; S.kaiso = kaisoLv() + 1; save(); return true; }
-/* 追加カード（11/22 しょーくん「レアな追加カード（素材）を買えるように・一度アンロックしたら着脱」）：いちど来たお客さんのふしぎな素材を
-   朝の雑貨屋で1まいずつ買う → 夜のビルドをえらぶ画面で 改装の枠の数までつける → つけたカードは どの夜もショップに出る（2ラウンド目から・night.js の poolList） */
-const EXTRA_PRICE = 4000;
-const extraList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 雑貨屋に並ぶ素材
-const extraSlots = () => kaisoGive('slot');
-const extraWorn = () => (S.extraOn || []).filter(id => (S.extra || []).includes(id)).slice(0, extraSlots());   // いま つけている素材
-function extraBuy(id) { if (!extraList().includes(id) || S.extra.includes(id) || S.money < EXTRA_PRICE) return false; S.money -= EXTRA_PRICE; S.extra.push(id); save(); return true; }
+/* 夜市（11/22 夜 しょーくん「モンスター素材を有限に・夜市で3枚までビルドに組みこむ・永続的にお金を使う用途」）：
+   いちど来たお客さんのふしぎな素材を、夜のビルドをえらぶ画面で 毎晩 お金で買う（3まいまで）→ その夜のデッキに入る（ショップに出る・その夜だけ）。
+   その夜のお客さんの素材がタダでショップに出るのは やめた（夜市だけ）。値段はぽぽちの仮 */
+const ICHI_N = 3, ICHI_PRICE = 1000;
+const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶ素材
 
 /* お金（11/18 しょーくん「現実の値段っぽく。売値・原価・モンスターのお金のバランスが崩れないように」）
    お菓子1こ：ふつう200〜300円・モンスター素材入り400〜600円（cards.js の recipeOf の price＝材料の value×YEN_PER_VALUE）

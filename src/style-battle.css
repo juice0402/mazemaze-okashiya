@@ -873,15 +873,18 @@ body[data-candy="1"]{--chefc:255,140,196}
 .bintro.fin .bi-t{font-size:min(50px,calc(11.5cqw - 3px))}   /* 舞台の幅の8割に入る（11/22 しょーくん「ごちそうさまのテキストちゃんと画面内に入り切ってる？」→ 前は vw で、10万こえの金の字が はみ出していた） */
 .bintro.fin.gold .bi-t{font-size:min(58px,calc(12.6cqw - 1px));letter-spacing:1px;color:#ffe066;text-shadow:0 4px 0 #3a1004,0 0 26px rgba(255,210,80,1)}
 @media (prefers-reduced-motion:reduce){.night.quake4,.night.quake5{animation:none}}
-/* 追加カードと自己ベスト（11/22 しょーくん）：えらぶ画面のビルドの一覧の下に 持っている追加カード（タップで つける・はずす）・ビルドの行に ベスト・夜の結果に こうしん */
+/* 夜市と自己ベスト（11/22 しょーくん）：えらぶ画面のビルドの一覧の下に 夜市（タップで買う・やめる）・ビルドの行に ベスト・夜の結果に こうしん */
 .pk-best{color:#a8380a;font-weight:800}
 .pk-ex{flex:none;display:flex;flex-direction:column;gap:4px;padding:2px 6px 4px;border:10px solid transparent;border-image:var(--ui-strip) 30 fill/10px stretch;color:#4a2814}
 .pk-ex-ttl{margin:0;font-family:var(--disp);font-weight:400;font-size:14px;color:#7a1a0c}
-.pk-ex-ttl small{margin-left:8px;font-family:var(--font);font-size:11px;font-weight:700;color:#7a5a4a}
+.pk-ex-ttl{display:flex;align-items:baseline;gap:8px}
+.pk-ex-ttl small{font-family:var(--font);font-size:11px;font-weight:700;color:#7a5a4a}
+.pk-ex-wal{margin-left:auto;font-family:var(--font);font-size:11px;font-weight:800;color:#5a3404;white-space:nowrap}
 .pk-ex-row{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px;scrollbar-width:none}
 .pk-ex-row::-webkit-scrollbar{display:none}
-button.pk-xc{position:relative;flex:none;width:44px;aspect-ratio:5/7;padding:0;border:0;background:none;box-shadow:none;opacity:.6;transition:transform .15s,opacity .15s}
+button.pk-xc{position:relative;flex:none;width:44px;aspect-ratio:5/7;padding:0;border:0;background:none;box-shadow:none;transition:transform .15s,opacity .15s}
 button.pk-xc.on{opacity:1;filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 7px rgba(255,190,80,.8))}
 button.pk-xc:active{transform:scale(.94)}
+button.pk-xc.poor{opacity:.4}
 .pk-xc .pk-xon{position:absolute;left:50%;right:auto;top:-12px;translate:-50% 0;height:18px;line-height:16px;padding:0 .9em;font-size:9.5px}
 .end-best{margin:-4px 0 4px;font-family:var(--disp);font-weight:400;font-size:15px;color:#ffe08a;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill}

@@ -786,14 +786,16 @@ function pickHTML() {
       <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
   const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
-  return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${pkExtraHTML()}${trial}</div>`;
+  return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${pkIchiHTML()}${trial}</div>`;
 }
-/* 追加カードの着脱（11/22 しょーくん）：持っている追加カードを並べ、タップで つける・はずす（枠は改装の数まで）。持っていなければ出さない */
-function pkExtraHTML() {
-  if (!S.extra.length) return '';
-  const on = extraWorn(), n = extraSlots();
-  return `<div class="pk-ex"><p class="pk-ex-ttl">追加カード <small>${n ? `つける ${on.length}/${n}` : 'お店の改装で つけられる'}</small></p>
-    <div class="pk-ex-row">${S.extra.map(id => `<button class="pk-xc${on.includes(id) ? ' on' : ''}" data-act="pickX" data-id="${esc(id)}" aria-pressed="${on.includes(id)}">${cardMini('m:' + id)}${on.includes(id) ? '<i class="pk-on pk-xon">つけた</i>' : ''}</button>`).join('')}</div></div>`;
+/* 夜市（11/22 夜 しょーくん「モンスター素材を有限に・夜市で3枚までビルドに組みこむ」）：いちど来たお客さんのふしぎな素材を並べ、タップで買う・やめる。
+   買った素材は その夜のデッキに入る（night.js の poolList）。並ぶ素材がなければ出さない */
+function pkIchiHTML() {
+  const list = ichiList(); if (!list.length) return '';
+  const on = N.ichi || [];
+  return `<div class="pk-ex"><p class="pk-ex-ttl">夜市 <small>${on.length}/${ICHI_N}まい・1まい ${fmt(ICHI_PRICE)}円</small><span class="pk-ex-wal">お財布 ${fmt(S.money)}円</span></p>
+    <div class="pk-ex-row">${list.map(id => { const b = on.includes(id), poor = !b && (S.money < ICHI_PRICE || on.length >= ICHI_N);
+      return `<button class="pk-xc${b ? ' on' : ''}${poor ? ' poor' : ''}" data-act="ichi" data-id="${esc(id)}" aria-pressed="${b}" aria-label="${esc(MATS[id].short)}">${cardMini('m:' + id)}${b ? '<i class="pk-on pk-xon">買った</i>' : ''}</button>`; }).join('')}</div></div>`;
 }
 
 /* ---------- 夜の画面 ---------- */
