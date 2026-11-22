@@ -20,8 +20,9 @@ const STUB = { renderNight: '()=>{}', toast: '()=>{}', save: '()=>{}', cutIn: '(
   talkOpen: '()=>{}', talkClose: '()=>{}', talkStart: '()=>{}', sfx: '()=>{}', render: '()=>{}', renderMorning: '()=>{}', openDay: '()=>{}',
   cardSpot: '()=>null', busy: 'false', fighting: 'false', dealAnim: 'false', resultAnim: 'false', bSpeed: '1' };
 const DOM = { getElementById: () => null, querySelector: () => null, querySelectorAll: () => [], createElement: () => ({ style: {}, classList: { add() {}, remove() {}, toggle() {} }, appendChild() {} }), documentElement: { style: { setProperty() {} } }, body: { dataset: {}, appendChild() {} } };
-const ctx = { console, Math, JSON, Date, setTimeout: f => 0, clearTimeout() {}, document: DOM, window: {}, localStorage: { getItem: () => null, setItem() {}, removeItem() {} }, matchMedia: () => ({ matches: false }), requestAnimationFrame: () => 0, navigator: {} };
-vm.createContext(ctx);
+// やりなおすたびに新しい箱（同じ箱で2回読むと const が「もうある」でこわれる・11/22）
+const newCtx = () => vm.createContext({ console, Math, JSON, Date, setTimeout: f => 0, clearTimeout() {}, document: DOM, window: {}, location: { protocol: 'https:', href: '', search: '', hash: '' }, localStorage: { getItem: () => null, setItem() {}, removeItem() {} }, matchMedia: () => ({ matches: false }), requestAnimationFrame: () => 0, navigator: {} });
+let ctx = newCtx();
 let src = 'var ART = {}, TRIAL = true;\n';   // ビルドが入れる ART と TRIAL（ボットはぜんぶのビルドを使える）
 for (const f of FILES) src += readFileSync(join(root, f), 'utf8') + '\n';
 // 画面の関数：src にあれば上書き、なければ var で作る
@@ -29,7 +30,7 @@ const UI = Object.entries(STUB).map(([k, v]) => `${k} = ${v};`).join('\n');   //
 let tries = 0, extra = '';
 for (;;) {
   try { vm.runInContext(src + '\n' + UI + '\n' + extra, ctx, { filename: 'game.js' }); break; }
-  catch (e) { const m = /^(\w+) is not defined/.exec(e.message); if (!m || ++tries > 30) throw e; extra += `var ${m[1]} = () => {};\n`; console.log('（空にした：' + m[1] + '）'); }
+  catch (e) { const m = /^(\w+) is not defined/.exec(e.message); if (!m || ++tries > 30) throw e; extra += `var ${m[1]} = () => {};\n`; console.log('（空にした：' + m[1] + '）'); ctx = newCtx(); }
 }
 
 const DRIVER = String.raw`
