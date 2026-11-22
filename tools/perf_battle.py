@@ -40,7 +40,7 @@ with sync_playwright() as p:
     m=lambda: {x['name']:x['value'] for x in cdp.send('Performance.getMetrics')['metrics']}
     m0=m(); out['heap_after_start_MB']=round(m0['JSHeapUsedSize']/1e6,1)
     # 夜へ
-    ev(f"localStorage.clear(); S = newState(); S.day = 20; S.today = newDay(20); startNight()"); pg.wait_for_timeout(2500)
+    ev(f"localStorage.clear(); S = newState(); S.day = 20; S.seen['mate:minamo'] = 5; S.seen['mate:wakaba'] = 10; S.seen.m9 = 8; S.today = newDay(20); startNight()"); pg.wait_for_timeout(2500)   # 仲間がいないと みなも・わかばのビルドがえらべない（11/22）
     ev(f"talkClose(true); if (N.stage === 'pick') {{ pickBuild('{BUILD}'); pickGo(); }}"); pg.wait_for_timeout(2500)
     ev("""talkClose(true); document.querySelectorAll('.talk').forEach(e=>e.remove());
       const B = BUILDS[N.build], C = CHEFS[B.chef], ones = [...new Set([...B.doughs, ...C.common])];
@@ -50,6 +50,7 @@ with sync_playwright() as p:
       const pick = [...S3.slice(0, 2), ...T2.slice(0, 3)];
       N.board = pick.slice(0, 5).map(cid => ({ cid, cook: 3 })); N.picks = 0; N.stage = 'shop'; renderNight();""")
     pg.wait_for_timeout(2000)
+    out['build_used']=ev("return N.build + ' ' + N.board.filter(Boolean).length")
     ev("""window.__fr = []; let last = performance.now(); const loop = t => { window.__fr.push(t - last); last = t; if (window.__frOn) requestAnimationFrame(loop); }; window.__frOn = true; requestAnimationFrame(loop);
       window.__lt = []; try { new PerformanceObserver(l => l.getEntries().forEach(e => window.__lt.push(e.duration))).observe({ entryTypes: ['longtask'] }); } catch (e) {}""")
     cdp.send('Profiler.enable'); cdp.send('Profiler.setSamplingInterval',{'interval':500}); cdp.send('Profiler.start')
