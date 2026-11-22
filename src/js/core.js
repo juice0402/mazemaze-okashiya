@@ -125,6 +125,7 @@ function newState() {
     hearts: {}, regulars: [],      // お客さんのハートと常連さん（前の昼の形）
     seenMon: [],                   // 来たことのあるモンスター（はじめて来た日は newMon）
     seen: {},                      // 見た物語の場面（prologue など）
+    kaiso: 0, extra: [], extraOn: [], best: {},   // お店の改装の段（0〜10）・追加カード（持っている・つけている素材 id）・ビルドごとの自己ベスト（11/22・world.js の KAISO）
     night: null, morning: null, dayRun: null,
     today: null, yesterday: null,  // 1日の記録（newDay）と、きのうの記録
     opt: { bgm: true, se: true },  // せってい（11/19 H-034・しょーくん「タイトルとまとめの画面だけ」）：BGM・効果音（声とジングルもふくむ）
@@ -149,10 +150,12 @@ function sanitize(o) {
   if (o.v !== VER) return null;
   const d = newState();
   for (const k in d) if (o[k] === undefined) o[k] = d[k];
-  for (const k of ['shelf', 'seenMon', 'regulars']) if (!Array.isArray(o[k])) o[k] = [];
-  for (const k of ['stock', 'goods', 'seen', 'hearts', 'recipes']) if (!o[k] || typeof o[k] !== 'object') o[k] = {};
+  for (const k of ['shelf', 'seenMon', 'regulars', 'extra', 'extraOn']) if (!Array.isArray(o[k])) o[k] = [];
+  for (const k of ['stock', 'goods', 'seen', 'hearts', 'recipes', 'best']) if (!o[k] || typeof o[k] !== 'object') o[k] = {};
   if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
   for (const k of ['money', 'rep', 'shelfMax']) if (!Number.isFinite(o[k])) o[k] = d[k];
+  o.kaiso = Number.isFinite(o.kaiso) ? Math.max(0, Math.min(10, Math.floor(o.kaiso))) : 0;
+  o.extra = o.extra.filter(id => MATS[id] && MATS[id].fushigi); o.extraOn = o.extraOn.filter(id => o.extra.includes(id));
   if (!BUILDS[o.build]) o.build = 'cookie';
   if (!o.opt || typeof o.opt !== 'object') o.opt = {};
   for (const k of ['bgm', 'se']) o.opt[k] = o.opt[k] !== false;

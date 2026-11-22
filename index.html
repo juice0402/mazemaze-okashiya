@@ -1443,6 +1443,17 @@ font-size:calc(var(--W) * var(--fz) * 2);-webkit-text-stroke:calc(var(--W) * var
 .bintro.fin .bi-t{font-size:min(50px,calc(11.5cqw - 3px))}
 .bintro.fin.gold .bi-t{font-size:min(58px,calc(12.6cqw - 1px));letter-spacing:1px;color:#ffe066;text-shadow:0 4px 0 #3a1004,0 0 26px rgba(255,210,80,1)}
 @media (prefers-reduced-motion:reduce){.night.quake4,.night.quake5{animation:none}}
+.pk-best{color:#a8380a;font-weight:800}
+.pk-ex{flex:none;display:flex;flex-direction:column;gap:4px;padding:2px 6px 4px;border:10px solid transparent;border-image:var(--ui-strip) 30 fill/10px stretch;color:#4a2814}
+.pk-ex-ttl{margin:0;font-family:var(--disp);font-weight:400;font-size:14px;color:#7a1a0c}
+.pk-ex-ttl small{margin-left:8px;font-family:var(--font);font-size:11px;font-weight:700;color:#7a5a4a}
+.pk-ex-row{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px;scrollbar-width:none}
+.pk-ex-row::-webkit-scrollbar{display:none}
+button.pk-xc{position:relative;flex:none;width:44px;aspect-ratio:5/7;padding:0;border:0;background:none;box-shadow:none;opacity:.6;transition:transform .15s,opacity .15s}
+button.pk-xc.on{opacity:1;filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 7px rgba(255,190,80,.8))}
+button.pk-xc:active{transform:scale(.94)}
+.pk-xc .pk-xon{position:absolute;left:50%;right:auto;top:-12px;translate:-50% 0;height:18px;line-height:16px;padding:0 .9em;font-size:9.5px}
+.end-best{margin:-4px 0 4px;font-family:var(--disp);font-weight:400;font-size:15px;color:#ffe08a;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -2177,6 +2188,7 @@ rep: 0,                        // お店の評判（昼のハートでたまる�
 hearts: {}, regulars: [],      // お客さんのハートと常連さん（前の昼の形）
 seenMon: [],                   // 来たことのあるモンスター（はじめて来た日は newMon）
 seen: {},                      // 見た物語の場面（prologue など）
+kaiso: 0, extra: [], extraOn: [], best: {},   // お店の改装の段（0〜10）・追加カード（持っている・つけている素材 id）・ビルドごとの自己ベスト（11/22・world.js の KAISO）
 night: null, morning: null, dayRun: null,
 today: null, yesterday: null,  // 1日の記録（newDay）と、きのうの記録
 opt: { bgm: true, se: true },  // せってい（11/19 H-034・しょーくん「タイトルとまとめの画面だけ」）：BGM・効果音（声とジングルもふくむ）
@@ -2200,10 +2212,12 @@ if (o.v === 4) o = fromV4(o);
 if (o.v !== VER) return null;
 const d = newState();
 for (const k in d) if (o[k] === undefined) o[k] = d[k];
-for (const k of ['shelf', 'seenMon', 'regulars']) if (!Array.isArray(o[k])) o[k] = [];
-for (const k of ['stock', 'goods', 'seen', 'hearts', 'recipes']) if (!o[k] || typeof o[k] !== 'object') o[k] = {};
+for (const k of ['shelf', 'seenMon', 'regulars', 'extra', 'extraOn']) if (!Array.isArray(o[k])) o[k] = [];
+for (const k of ['stock', 'goods', 'seen', 'hearts', 'recipes', 'best']) if (!o[k] || typeof o[k] !== 'object') o[k] = {};
 if (!Number.isFinite(o.day) || o.day < 1) o.day = 1;
 for (const k of ['money', 'rep', 'shelfMax']) if (!Number.isFinite(o[k])) o[k] = d[k];
+o.kaiso = Number.isFinite(o.kaiso) ? Math.max(0, Math.min(10, Math.floor(o.kaiso))) : 0;
+o.extra = o.extra.filter(id => MATS[id] && MATS[id].fushigi); o.extraOn = o.extraOn.filter(id => o.extra.includes(id));
 if (!BUILDS[o.build]) o.build = 'cookie';
 if (!o.opt || typeof o.opt !== 'object') o.opt = {};
 for (const k of ['bgm', 'se']) o.opt[k] = o.opt[k] !== false;
@@ -2740,6 +2754,23 @@ const last = m => (S.seen && S.seen['ml:' + m.id]) || 0, yid = S.yesterday && S.
 const pool = reg.length > 1 ? reg.filter(m => m.id !== yid) : reg;
 return MONSTERS.indexOf(pool.reduce((a, m) => last(m) < last(a) ? m : a));
 }
+const KAISO = [
+{ price: 3000, give: { coin: 3 } }, { price: 5000, give: { slot: 1 } }, { price: 8000, give: { roll: 1 } },
+{ price: 12000, give: { coin: 3 } }, { price: 16000, give: { slot: 1 } }, { price: 20000, give: { roll: 1 } },
+{ price: 25000, give: { coin: 3 } }, { price: 30000, give: { slot: 1 } }, { price: 36000, give: { roll: 1 } },
+{ price: 45000, give: { coin: 3 } },
+];
+const kaisoLv = () => Math.max(0, Math.min(KAISO.length, (S && S.kaiso) | 0));   // いまの段（0〜10）
+const kaisoGive = k => KAISO.slice(0, kaisoLv()).reduce((s, x) => s + (x.give[k] || 0), 0);   // その段までのごほうびの合計
+const kaisoNext = () => KAISO[kaisoLv()] || null;   // 次の段（完成なら null）
+const KAISO_WORD = { coin: n => '夜のはじめのコイン+' + n, roll: n => '夜の無料の入れかえ+' + n, slot: n => '追加カードの枠+' + n };
+const kaisoText = st => Object.entries(st.give).map(([k, n]) => KAISO_WORD[k](n)).join('・');   // 雑貨屋に出す文
+function kaisoBuy() { const st = kaisoNext(); if (!st || S.money < st.price) return false; S.money -= st.price; S.kaiso = kaisoLv() + 1; save(); return true; }
+const EXTRA_PRICE = 4000;
+const extraList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 雑貨屋に並ぶ素材
+const extraSlots = () => kaisoGive('slot');
+const extraWorn = () => (S.extraOn || []).filter(id => (S.extra || []).includes(id)).slice(0, extraSlots());   // いま つけている素材
+function extraBuy(id) { if (!extraList().includes(id) || S.extra.includes(id) || S.money < EXTRA_PRICE) return false; S.money -= EXTRA_PRICE; S.extra.push(id); save(); return true; }
 const START_MONEY = 1000;    // はじめのお金（プロローグ「お財布、さみしい」）
 const YEN_PER_VALUE = 7;
 const MOODS = [
@@ -4271,7 +4302,7 @@ Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
 S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
 const open = openBuilds();
 S.night = {
-mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS, rolls: ROUND1_ROLLS,
+mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: kaisoGive('coin'), picks: ROUND1_PICKS, rolls: ROUND1_ROLLS, free: kaisoGive('roll'),   // coins・free＝お店の改装（11/22・free は2ラウンド目からの無料の入れかえ）
 board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
 sel: null, view: false, last: null,
 build: open.includes(S.build) ? S.build : open[0], kone: 0, pickChef: null, pkPage: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
@@ -4280,6 +4311,14 @@ S.today.belly = nightHP(S.day, S.night.build);   // おなかはビルドで変�
 N = S.night; if (new Set(open.map(id => BUILDS[id].chef)).size === 1) N.pickChef = BUILDS[N.build].chef;   // シェフが1人なら はじめからビルドの一覧（11/22）
 nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
 save(); render();
+}
+function pickX(id) {
+if (N.stage !== 'pick' || !S.extra.includes(id)) return;
+const on = extraWorn();
+if (on.includes(id)) S.extraOn = on.filter(x => x !== id);
+else if (on.length >= extraSlots()) return toast(extraSlots() ? 'つけられるのは ' + extraSlots() + 'まいまで' : 'お店の改装で つけられるようになるよ');
+else S.extraOn = [...on, id];
+save(); pickRender();   // 押した音は main.js の tap
 }
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
 function pickChef(c) {
@@ -4328,6 +4367,7 @@ for (const cid of B.extra || []) L.push([cid, 2]);   // extra＝そのビルド�
 for (const id of B.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
 const dr = MONSTERS[N.mon].drop;
 if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
+if (N.round >= 2) for (const id of extraWorn()) if (id !== dr) L.push(['m:' + id, 1.5]);   // つけた追加カード（11/22・world.js の extraWorn）
 return L;
 }
 function draw1(L) {
@@ -4438,7 +4478,8 @@ if (busy || N.stage !== 'shop') return;
 if (N.round === 1) {   // 1ラウンド目は 無料で2回（rolls）
 if (!(N.rolls > 0)) return toast('無料の入れかえは もうないよ');
 N.rolls--;
-} else {
+} else if (N.free > 0) N.free--;   // お店の改装の無料の入れかえ（11/22）
+else {
 if (N.coins < REROLL) return toast('コインがたりない');
 N.coins -= REROLL;
 }
@@ -4802,7 +4843,9 @@ const M = MONSTERS[N.mon], belly = nightHP(S.day), mood = moodOf(N.score, belly)
 S.stock[M.drop] = (S.stock[M.drop] || 0) + R.mats;
 S.money += R.coins;
 if (!S.seenMon.includes(M.id)) S.seenMon.push(M.id);
-Object.assign(S.today, { score: N.score, belly, mood, gifts: { [M.drop]: R.mats }, coins: R.coins });
+const best = N.score > (S.best[N.build] || 0);   // 自己ベスト（11/22 しょーくん）
+if (best) S.best[N.build] = N.score;
+Object.assign(S.today, { score: N.score, belly, mood, gifts: { [M.drop]: R.mats }, coins: R.coins, best });
 N.stage = 'thanks';
 save(); renderNight();
 }
@@ -5416,7 +5459,9 @@ function shopHTML() {
 const r1 = N.round === 1, list = N.shop;
 const rr = N.rolls > 0;   // 1ラウンド目の無料の入れかえ（11/22 しょーくん「最初はリロールの存在に気づかない人も多い・リロールの札を定期的に揺らして・初回のショップだけ」→ 残っているあいだ .nudge で ゆれる）
 const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span><button class="pill sub sh-roll${rr ? ' nudge' : ''}" data-act="reroll" ${rr ? '' : 'disabled'}>入れかえ <small>無料${N.rolls || 0}</small></button>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
-: `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
+: `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span>` + (N.free > 0   // お店の改装の無料の入れかえ（11/22）
+? `<button class="pill sub sh-roll" data-act="reroll">入れかえ <small>無料${N.free}</small></button>`
+: `<button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`);   // 11/18「2けたで改行される」→ コインは絵と数字だけ
 const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
 return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
 <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
@@ -5480,12 +5525,18 @@ const rows = list.map(id => {
 const B = BUILDS[id], on = id === N.build, pic = ART[B.pic] || ART[C.art] || '';
 return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
 <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub"><i>特性 ${esc(B.trait || C.trait)}</i></span>
+<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub"><i>特性 ${esc(B.trait || C.trait)}</i>${S.best[id] ? `<i class="pk-best">ベスト ${fmt(S.best[id])}</i>` : ''}</span>
 <span class="pk-text">${esc(B.text)}</span>
 <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
 }).join('');
 const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
-return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
+return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${pkExtraHTML()}${trial}</div>`;
+}
+function pkExtraHTML() {
+if (!S.extra.length) return '';
+const on = extraWorn(), n = extraSlots();
+return `<div class="pk-ex"><p class="pk-ex-ttl">追加カード <small>${n ? `つける ${on.length}/${n}` : 'お店の改装で つけられる'}</small></p>
+<div class="pk-ex-row">${S.extra.map(id => `<button class="pk-xc${on.includes(id) ? ' on' : ''}" data-act="pickX" data-id="${esc(id)}" aria-pressed="${on.includes(id)}">${cardMini('m:' + id)}${on.includes(id) ? '<i class="pk-on pk-xon">つけた</i>' : ''}</button>`).join('')}</div></div>`;
 }
 function pickRender() {
 const ov = document.querySelector('.pickov'), bar = document.querySelector('section.night > .bar');
@@ -5507,7 +5558,7 @@ const rec = S.today, after = N.stage === 'end' || N.stage === 'thanks', happy = 
 if (N.stage === 'end') {
 const R = MOODS[rec.mood] || MOODS[1];
 body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood >= 3 ? 'おなかいっぱい！' : R.name + '！'}</h2>
-<p class="bignum">${fmt(rec.score)}</p><p>${esc(mon.name)}が おなかいっぱいになるのは ${fmt(rec.belly)}</p>
+<p class="bignum">${fmt(rec.score)}</p>${rec.best ? '<p class="end-best">自己ベスト こうしん！</p>' : ''}<p>${esc(mon.name)}が おなかいっぱいになるのは ${fmt(rec.belly)}</p>
 <p class="end-mood"><b>${R.name}</b>のお礼</p>
 <div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div><div class="got coin"><span><i class="cn"></i>コイン ${fmt(R.coins)}円</span></div></div>
 </div><button class="big" data-act="toResult">1日のまとめへ</button>`;
@@ -8220,7 +8271,8 @@ reroll: () => reroll(),
 bake: () => omotenashi(),
 pickB: el => pickBuild(el.dataset.id),   // 夕方のシェフ・ビルドえらび（11/18）
 pickGo: () => pickGo(),
-pickC: el => pickChef(el.dataset.id),   // シェフ → ビルド（11/22）
+pickC: el => pickChef(el.dataset.id),
+pickX: el => pickX(el.dataset.id),   // 追加カードの着脱（11/22）   // シェフ → ビルド（11/22）
 pickBack: () => pickBack(),
 pickNext: () => pickNext(),
 pkPage: el => pickPageGo(+el.dataset.d),

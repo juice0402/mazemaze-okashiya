@@ -704,7 +704,9 @@ function shopHTML() {
   const r1 = N.round === 1, list = N.shop;
   const rr = N.rolls > 0;   // 1ラウンド目の無料の入れかえ（11/22 しょーくん「最初はリロールの存在に気づかない人も多い・リロールの札を定期的に揺らして・初回のショップだけ」→ 残っているあいだ .nudge で ゆれる）
   const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>まい</span><button class="pill sub sh-roll${rr ? ' nudge' : ''}" data-act="reroll" ${rr ? '' : 'disabled'}>入れかえ <small>無料${N.rolls || 0}</small></button>`   // 11/20 しょーくん「入れかえと同じ枠に・無料3枚みたいなカウント」
-    : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span><button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`;   // 11/18「2けたで改行される」→ コインは絵と数字だけ
+    : `<span class="sh-coin" aria-label="コイン ${N.coins}"><i></i><b>${N.coins}</b></span>` + (N.free > 0   // お店の改装の無料の入れかえ（11/22）
+      ? `<button class="pill sub sh-roll" data-act="reroll">入れかえ <small>無料${N.free}</small></button>`
+      : `<button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`);   // 11/18「2けたで改行される」→ コインは絵と数字だけ
   const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
   return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
     <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
@@ -779,12 +781,19 @@ function pickHTML() {
     const B = BUILDS[id], on = id === N.build, pic = ART[B.pic] || ART[C.art] || '';
     return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
       <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub"><i>特性 ${esc(B.trait || C.trait)}</i></span>
+      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub"><i>特性 ${esc(B.trait || C.trait)}</i>${S.best[id] ? `<i class="pk-best">ベスト ${fmt(S.best[id])}</i>` : ''}</span>
       <span class="pk-text">${esc(B.text)}</span>
       <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
   const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
-  return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
+  return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${pkExtraHTML()}${trial}</div>`;
+}
+/* 追加カードの着脱（11/22 しょーくん）：持っている追加カードを並べ、タップで つける・はずす（枠は改装の数まで）。持っていなければ出さない */
+function pkExtraHTML() {
+  if (!S.extra.length) return '';
+  const on = extraWorn(), n = extraSlots();
+  return `<div class="pk-ex"><p class="pk-ex-ttl">追加カード <small>${n ? `つける ${on.length}/${n}` : 'お店の改装で つけられる'}</small></p>
+    <div class="pk-ex-row">${S.extra.map(id => `<button class="pk-xc${on.includes(id) ? ' on' : ''}" data-act="pickX" data-id="${esc(id)}" aria-pressed="${on.includes(id)}">${cardMini('m:' + id)}${on.includes(id) ? '<i class="pk-on pk-xon">つけた</i>' : ''}</button>`).join('')}</div></div>`;
 }
 
 /* ---------- 夜の画面 ---------- */
@@ -810,7 +819,7 @@ function renderNight() {
   if (N.stage === 'end') {
     const R = MOODS[rec.mood] || MOODS[1];
     body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood >= 3 ? 'おなかいっぱい！' : R.name + '！'}</h2>
-        <p class="bignum">${fmt(rec.score)}</p><p>${esc(mon.name)}が おなかいっぱいになるのは ${fmt(rec.belly)}</p>
+        <p class="bignum">${fmt(rec.score)}</p>${rec.best ? '<p class="end-best">自己ベスト こうしん！</p>' : ''}<p>${esc(mon.name)}が おなかいっぱいになるのは ${fmt(rec.belly)}</p>
         <p class="end-mood"><b>${R.name}</b>のお礼</p>
         <div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div><div class="got coin"><span><i class="cn"></i>コイン ${fmt(R.coins)}円</span></div></div>
       </div><button class="big" data-act="toResult">1日のまとめへ</button>`;

@@ -35,7 +35,7 @@ function startNight() {
   S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
   const open = openBuilds();
   S.night = {
-    mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS, rolls: ROUND1_ROLLS,
+    mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: kaisoGive('coin'), picks: ROUND1_PICKS, rolls: ROUND1_ROLLS, free: kaisoGive('roll'),   // coins・free＝お店の改装（11/22・free は2ラウンド目からの無料の入れかえ）
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     sel: null, view: false, last: null,
     build: open.includes(S.build) ? S.build : open[0], kone: 0, pickChef: null, pkPage: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
@@ -46,6 +46,15 @@ function startNight() {
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
+/* 追加カードをつける・はずす（11/22 しょーくん「一度アンロックしたら着脱」）：えらぶ画面のビルドの一覧の下。つけられるのは改装の枠の数まで */
+function pickX(id) {
+  if (N.stage !== 'pick' || !S.extra.includes(id)) return;
+  const on = extraWorn();
+  if (on.includes(id)) S.extraOn = on.filter(x => x !== id);
+  else if (on.length >= extraSlots()) return toast(extraSlots() ? 'つけられるのは ' + extraSlots() + 'まいまで' : 'お店の改装で つけられるようになるよ');
+  else S.extraOn = [...on, id];
+  save(); pickRender();   // 押した音は main.js の tap
+}
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
 /* シェフ → ビルド（11/22）：pickChef＝そのシェフのビルドの一覧へ（前の夜とちがうシェフなら、そのシェフの1つめのビルドをえらんでおく）・pickBack＝シェフの一覧へ・pickNext＝いまのシェフのビルドの一覧へ */
 function pickChef(c) {
@@ -99,6 +108,7 @@ function poolList() {
   for (const id of B.fields) if (id !== N.field) L.push(['b:' + id, 1.5]);
   const dr = MONSTERS[N.mon].drop;
   if ((N.round >= 3 || N.met > 0) && MATS[dr].fx) L.push(['m:' + dr, 2]);   // モンスターのふしぎな素材（レアの素材は夜のカードにしない）
+  if (N.round >= 2) for (const id of extraWorn()) if (id !== dr) L.push(['m:' + id, 1.5]);   // つけた追加カード（11/22・world.js の extraWorn）
   return L;
 }
 function draw1(L) {
@@ -217,7 +227,8 @@ function reroll() {
   if (N.round === 1) {   // 1ラウンド目は 無料で2回（rolls）
     if (!(N.rolls > 0)) return toast('無料の入れかえは もうないよ');
     N.rolls--;
-  } else {
+  } else if (N.free > 0) N.free--;   // お店の改装の無料の入れかえ（11/22）
+  else {
     if (N.coins < REROLL) return toast('コインがたりない');
     N.coins -= REROLL;
   }
@@ -620,7 +631,9 @@ function endNight() {
   S.stock[M.drop] = (S.stock[M.drop] || 0) + R.mats;
   S.money += R.coins;
   if (!S.seenMon.includes(M.id)) S.seenMon.push(M.id);
-  Object.assign(S.today, { score: N.score, belly, mood, gifts: { [M.drop]: R.mats }, coins: R.coins });
+  const best = N.score > (S.best[N.build] || 0);   // 自己ベスト（11/22 しょーくん）
+  if (best) S.best[N.build] = N.score;
+  Object.assign(S.today, { score: N.score, belly, mood, gifts: { [M.drop]: R.mats }, coins: R.coins, best });
   N.stage = 'thanks';
   save(); renderNight();
 }
