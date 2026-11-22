@@ -43,6 +43,13 @@
 @keyframes dcjump{40%{transform:translateY(-22%) scale(.94,1.08)}75%{transform:scale(1.06,.94)}}
 @keyframes dcjump2{0%{transform:scale(1.1,.85)}35%{transform:translateY(-45%) scale(.92,1.1) rotate(-6deg)}60%{transform:translateY(-38%) rotate(6deg)}82%{transform:scale(1.1,.88)}100%{transform:none}}
 @keyframes dcscare{0%,100%{transform:none}20%,60%{transform:translateX(-5%) scale(1.04,.94)}40%,80%{transform:translateX(5%) scale(1.04,.94)}}
+/* spin＝1万こえ・オーバーラン：とびあがって くるっと1回転・spin2＝10万こえ：2回転（11/22 しょーくん「フレームの賑やかしも盛り上がりに応じてアクション」）。回るあいだは体のまんなかで回す */
+.deco:is(.spin,.spin2) .dc{transform-origin:50% 55%;animation:dcspin .95s cubic-bezier(.3,.9,.4,1) both;animation-delay:calc(var(--k,0) * 55ms)}
+.deco.spin2 .dc{animation-name:dcspin2;animation-duration:1.2s}
+@keyframes dcspin{0%{transform:scale(1.12,.84)}22%{transform:translateY(-42%) scale(.94,1.06) rotate(0deg)}68%{transform:translateY(-46%) rotate(360deg)}86%{transform:scale(1.1,.88) rotate(360deg)}100%{transform:rotate(360deg)}}
+@keyframes dcspin2{0%{transform:scale(1.15,.82)}20%{transform:translateY(-55%) scale(.94,1.06) rotate(0deg)}72%{transform:translateY(-62%) rotate(720deg)}88%{transform:scale(1.12,.86) rotate(720deg)}100%{transform:rotate(720deg)}}
+/* ふだんの ぴょこぴょこも、夜が盛り上がるほど はやく（data-hype＝night-ui.js の auraCap） */
+.deco[data-hype="2"] .dc:not(.m-kurage){animation-duration:1.45s}.deco[data-hype="3"] .dc:not(.m-kurage){animation-duration:1.25s}.deco[data-hype="4"] .dc:not(.m-kurage){animation-duration:1.05s}
 /* 額縁と段のぶん、ほのか・モンスター・火力のメーターを少し上へ */
 /* 大きいほのか（11/18 しょーくん「いつまで見てても飽きない戦闘シーン」・えらぶ質問）：舞台の左に大きく。ちびほのかはショップのときだけ */
 /* 11/19 しょーくん「モンスターとキャラが少し近い・それぞれもう少し小さくして距離を」：シェフは高さで決める（--ch・絵はどれも760の高さなので同じ大きさ）。
@@ -714,6 +721,13 @@ body[data-chef="wakaba"]{--chefc:190,230,110}
 .dc-crack .ck-lit{fill:none;stroke:#e9b77a;stroke-width:1.2;stroke-linejoin:round;opacity:.85}
 .dc-crack .ck-line{fill:none;stroke:#1d0f06;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 .6px 0 rgba(233,183,122,.55))}
 .dc-crack.new{animation:ckin .3s cubic-bezier(.2,1.6,.4,1)}
+/* 描きおろしの こわれた額縁（battle-fx.js の frameBreakHTML）：絵の木のふちを 額縁の右のふちに重ねる。欠けた所・穴のうしろは こげ茶のすき間。上下は うすくして なじませる */
+.dc-brk{position:absolute;translate:0 -50%;pointer-events:none;-webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
+.dc-brk::before{content:"";position:absolute;left:var(--bl);right:var(--br);top:6%;bottom:6%;background:radial-gradient(70% 50% at 50% 50%,#0c0502,#2a1308 80%);box-shadow:inset 0 0 4px 2px rgba(0,0,0,.8)}
+.dc-brk.crack::before{display:none}
+.dc-brk img{position:relative;display:block;width:100%;height:100%;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.55))}
+.dc-brk.new{animation:ckin .3s cubic-bezier(.2,1.6,.4,1)}
+.qwood{position:absolute;height:auto;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
 @keyframes ckin{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
 /* ちいさなキャンディの夜（11/22 しょーくん「冷気関係なくなったから、氷のエフェクトじゃなくて 固有の演出」）：舞台は 雪と霜ではなく 色とりどりの飴の空気・一撃の絵は 氷の色を回して 飴の色に・大技は下から飴がわきあがる（battle-fx.js の candyFountain）・れんさで上から飴がふる（candyRain） */
 body[data-candy="1"]{--chefc:255,140,196}
@@ -805,3 +819,10 @@ body[data-candy="1"]{--chefc:255,140,196}
 .ca-front[data-k=leaf] .cp{width:calc(13px * var(--s));height:calc(13px * var(--s));animation:caLeaf calc(var(--t) * 2) ease-in-out var(--d) infinite}
 @keyframes caLeaf{0%{opacity:0;transform:translate(0,0) rotate(0deg)}20%{opacity:.9}100%{opacity:0;transform:translate(calc((var(--x) - .5) * 60px),calc(var(--ch) * -.6)) rotate(220deg)}}
 @media (prefers-reduced-motion:reduce){.cp,.cf{display:none!important}.cm,.cw{animation:none;opacity:.6}.cm2,.cm3{display:none}}
+/* うったときのカードの動き（night-ui.js の sellFx・11/22 しょーくん「カードを売った時の動きがなくて サックリしすぎ」）：カードが くるっと回ってコインへ → コインが はじける */
+.sellcard{position:absolute;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.sellcard .sc-in{aspect-ratio:5/7}.sellcard .pc{width:100%;height:100%}
+.sellcoin{position:absolute;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c8,var(--gold) 50%,#b97a12);box-shadow:0 0 0 1.5px #5a2a04,0 0 6px 2px rgba(255,214,110,.7)}
+.sh-coin{position:relative}
+.sh-coin.bump{animation:kbshake .5s ease-out}
+.sh-coin .float{top:-8px}

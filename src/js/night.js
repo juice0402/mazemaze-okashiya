@@ -199,14 +199,16 @@ function binIn(p) {
 }
 /* うる・もどす（1ラウンド目の★1は「もどす」＝無料の枠がもどる） */
 function sellValue(d) { return d.tane || (N.round === 1 && d.star === 1 && d.cat !== 'burnt') ? 0 : SELL[d.star]; }
-function sellAt(p) {
+function sellAt(p, at) {   // at＝ドラッグで はなした所（{x,y,w}）。なければ そのカードの場所から（night-ui.js の sellFx）
   if (busy || N.stage !== 'shop' || !p) return;
   if (p.where === 'field' && fixedField()) return toast('大きなびんは うれない');
   const c = p.where === 'field' ? (N.field ? { cid: 'b:' + N.field } : null) : cardAt(p); if (!c || p.where === 'shop') return;
-  const d = cardDef(c.cid), v = sellValue(d);
+  const d = cardDef(c.cid), v = sellValue(d), was = N.coins;
+  const from = at || cardSpot(p) || (p.where === 'field' ? spot(document.querySelector('.fslot .pc')) : null);
   if (v) N.coins += v; else if (!d.tane) N.picks = Math.min(ROUND1_PICKS, N.picks + 1);   // パン種は0コイン（無料の枠ももどらない）
   if (p.where === 'field') N.field = null; else N.board[p.i] = null;
-  unsel(); tipEv('sell'); sePlay(v ? 'coin' : 'card', { vol: .7 }); save(); renderNight();
+  unsel(); tipEv('sell'); sePlay('card', { vol: .6 }); save(); renderNight();
+  sellFx(c, from, v, was);
 }
 function sell() { sellAt(N.sel); }
 function reroll() {
@@ -278,7 +280,7 @@ function dropCard(p, q, from) {
   if (P.kind === 'mix') doMix(p, q, from);
   else if (P.kind === 'buy') buy(p.i, q.where === 'board' ? q : null);
   else if (P.kind === 'move') moveTo(p.i, q.i);
-  else if (P.kind === 'sell') sellAt(p);
+  else if (P.kind === 'sell') sellAt(p, from && from[0]);
   else if (P.kind === 'bin') binIn(p);
   return true;
 }

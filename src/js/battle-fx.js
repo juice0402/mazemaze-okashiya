@@ -165,7 +165,8 @@ function decoHTML(mode) {
     return src ? `<img class="dc dc-mob ${cls}${slot(n)}${ART[n] ? '' : ' tmp'}" data-mob="${n}" style="--k:${k}" src="${src}" alt="">` : '';
   }).join('');
   const pose = mode === 'shop' ? 'think' : mode === 'win' ? 'cheer' : 'sit';
-  return `<div class="deco ${mode}" id="deco" aria-hidden="true">
+  const hype = typeof auraCap === 'function' && N && N.round ? auraCap() : 0;   // 盛り上がり（ラウンドとバトル）で ちびたちの ぴょこぴょこが はやくなる（11/22）
+  return `<div class="deco ${mode}" id="deco" data-hype="${hype}" aria-hidden="true">
     <i class="dc-ledge"></i>${grassSVG()}
     <i class="dc-frame"></i>${frameCrackHTML()}
     <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}<i class="dc-corner bl"></i><i class="dc-corner br"></i><i class="dc-medal"></i></div>`;   // メダルは額縁の下まんなか（11/20・モブの前）
@@ -177,12 +178,16 @@ function decoChibi(pose, ms) {
   el.src = chibiSrc(pose); clearTimeout(chibiT);
   if (ms) chibiT = setTimeout(() => { if (el.isConnected) el.src = chibiSrc('sit'); }, ms);
 }
-/* みんなで反応：hop（小さく）・jump（大よろこび）・scare（びくっ） */
+/* みんなで反応：hop（小さく）・jump（大よろこび）・scare（びくっ）・spin（1万こえ・オーバーラン＝とびあがって くるっと1回転）・spin2（10万こえ＝2回転）
+   （11/22 しょーくん「フレームの賑やかしも盛り上がりに応じてアクション。1万以上のダメージで くるっと1回転とか」） */
 let decoT = 0;
+const DECO_KINDS = ['hop', 'jump', 'scare', 'spin', 'spin2'];
 function decoReact(kind, ms = 700) {
   const d = $('deco'); if (!d || REDUCED) return;
-  d.classList.remove('hop', 'jump', 'scare'); void d.offsetWidth; d.classList.add(kind);
-  decoMobs(kind === 'jump' ? '-jump' : kind === 'hop' ? '-cheer' : '');
+  if ((d.classList.contains('spin') || d.classList.contains('spin2')) && (kind === 'hop' || kind === 'jump')) return;   // 回っているとちゅうは小さな反応で止めない
+  d.classList.remove(...DECO_KINDS); void d.offsetWidth; d.classList.add(kind);
+  decoMobs(kind === 'jump' || kind === 'spin' || kind === 'spin2' ? '-jump' : kind === 'hop' ? '-cheer' : '');
+  if (kind === 'spin' || kind === 'spin2') decoChibi('cheer', 1400);
   clearTimeout(decoT); decoT = setTimeout(() => { d.classList.remove(kind); decoMobs(''); }, ms);
 }
 /* モブのポーズちがい（11/21 しょーくん「枠に出てくる賑やかしちびキャラのバリエーションもほしい」）：
@@ -586,7 +591,19 @@ function megaBoom(p) {
    枠まで一瞬貫通するような衝撃波が出て、枠が少し壊れる」）：帯の右はしから光の筋 → +3の印が こなごな → 衝撃波が右へ → 額縁の右に当たって ひびと木くず。
    ひびは その夜のあいだ残る（frameCracks＝額縁の上からの割合・3つまで・startNight で空に）。+3 は こわれたあと もとの印（とった形）にもどる。動くのは transform と opacity だけ */
 let frameCracks = [];
-const frameCrackHTML = () => frameCracks.map((y, i) => `<i class="dc-crack" style="top:${(y * 100).toFixed(1)}%;--cv:${i % 2}">${CRACK_SVG}</i>`).join('');
+/* 描きおろしの こわれた額縁（11/22 しょーくん「枠に入る亀裂がダサい・描き下ろしじゃないから しょぼく見える。本当の亀裂に加えて、破壊された木材も」・fx-frame-break）：
+   1回め＝ひび（fx-fbreak-crack）→ 2回め＝内がわが欠ける（chip）→ 3回め＝穴（hole）と、同じ所が だんだんこわれる。絵は額縁の右の木のふちと同じ たて長の木で、
+   W・H＝絵の大きさ・sl/sr＝絵の中の木のふちの左右（px）。木のふちを 舞台の額縁の右のふち（border-image の 74→20px のうち 木は35px ぶん＝約9.5px）より少し太い 12px にあわせる。
+   欠けた所・穴のうしろは こげ茶のすき間（.dc-brk::before）。上下は うすくして額縁になじませる */
+const FBREAK = [{ k: 'crack', W: 192, H: 527, sl: 58, sr: 180 }, { k: 'chip', W: 174, H: 526, sl: 51, sr: 173 }, { k: 'hole', W: 186, H: 529, sl: 45, sr: 171 }];
+function frameBreakHTML(i, y, fresh) {
+  const B = FBREAK[Math.min(i, 2)], src = ART['fx-fbreak-' + B.k];
+  if (!src) return `<i class="dc-crack${fresh ? ' new' : ''}" style="top:${(y * 100).toFixed(1)}%;--cv:${i % 2}">${CRACK_SVG}</i>`;
+  const w = 12 * B.W / (B.sr - B.sl), r = .8 - (B.W - B.sr) / B.W * w;
+  return `<i class="dc-brk ${B.k}${fresh ? ' new' : ''}" style="top:${(y * 100).toFixed(1)}%;right:${r.toFixed(1)}px;width:${w.toFixed(1)}px;aspect-ratio:${B.W}/${B.H};--bl:${(B.sl / B.W * 100).toFixed(1)}%;--br:${((B.W - B.sr) / B.W * 100).toFixed(1)}%"><img src="${src}" alt=""></i>`;
+}
+const frameCrackHTML = () => frameCracks.length ? frameBreakHTML(frameCracks.length - 1, frameCracks[0], false) : '';   // 同じ所が だんだんこわれる（いちばん新しい こわれ方だけ出す）
+const WOOD = ['fx-wood-splinter', 'fx-wood-splinter', 'fx-wood-chunk', 'fx-wood-trim', 'fx-wood-chips'];
 const CRACK_SVG = '<svg viewBox="0 0 30 48" aria-hidden="true"><path class="ck-hole" d="M30 15 L23 18 L20 23 L24 27 L19 31 L22 35 L30 34 Z"/><path class="ck-lit" d="M23 18 L20 23 L24 27 L19 31 L22 35"/>'
   + '<path class="ck-line" d="M21 22 L15 19 L10 21 L6 16 M15 19 L14 12 L11 7 M20 30 L13 33 L9 40 M13 33 L7 32 M22 35 L18 42 L19 47 M24 17 L22 9 L25 3"/></svg>';
 function qOverrun() {
@@ -620,18 +637,24 @@ function qOverrun() {
   setTimeout(() => {
     const p = { x: hitX, y, w: 20, h: 20 };
     const f = document.createElement('i'); f.className = 'qimpact'; f.style.left = hitX + 'px'; f.style.top = y + 'px'; L.appendChild(f); setTimeout(() => f.remove(), T(500));
-    for (let k = 0; k < 9; k++) {
-      const s = document.createElement('i'); s.className = 'qsplint'; s.style.left = hitX + 'px'; s.style.top = y + (Math.random() - .5) * 14 + 'px'; L.appendChild(s);
-      const a = Math.PI + (Math.random() - .5) * 2.6, d = 30 + Math.random() * 60;   // 画面の中（左・上下）へ とびちる
-      s.animate([{ transform: `translate(0,0) rotate(${Math.random() * 180}deg)`, opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d + 30}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }], { duration: T(600 + Math.random() * 300), easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'forwards' });
-      setTimeout(() => s.remove(), T(950));
+    const woodArt = WOOD.every(k => ART[k]);
+    for (let k = 0; k < (woodArt ? 11 : 9); k++) {   // 木のかけら：描きおろしの破片・かたまり・金のふちのかけら・木くず（なければ 茶色の小さな四角）
+      let s;
+      if (woodArt) { s = document.createElement('img'); s.src = ART[WOOD[k % WOOD.length]]; s.alt = ''; s.className = 'qwood'; s.style.width = (k % WOOD.length === 4 ? 20 : 11 + Math.random() * 9).toFixed(0) + 'px'; }
+      else { s = document.createElement('i'); s.className = 'qsplint'; }
+      s.style.left = hitX + 'px'; s.style.top = y + (Math.random() - .5) * 14 + 'px'; L.appendChild(s);
+      const a = Math.PI + (Math.random() - .5) * 2.6, d = 34 + Math.random() * 70, dx = Math.cos(a) * d, dy = Math.sin(a) * d, r0 = Math.random() * 180, r1 = r0 + (Math.random() - .5) * 900;   // 画面の中（左・上下）へ とびちって、放物線で落ちる
+      s.animate([{ transform: `translate(-50%,-50%) translate(0,0) rotate(${r0}deg) scale(.6)`, opacity: 1 }, { transform: `translate(-50%,-50%) translate(${dx * .6}px,${dy * .6 - 14}px) rotate(${(r0 + r1) / 2}deg) scale(1)`, opacity: 1, offset: .45 },
+        { transform: `translate(-50%,-50%) translate(${dx}px,${dy + 70}px) rotate(${r1}deg) scale(.9)`, opacity: 0 }], { duration: T(700 + Math.random() * 350), easing: 'cubic-bezier(.25,.6,.5,1)', fill: 'forwards' });
+      setTimeout(() => s.remove(), T(1100));
     }
     sparkBurst(p, 10, 'all', .8);
-    if (fx && frameCracks.length < 3) {
-      const yp = Math.max(.04, Math.min(.96, (y - fx.top) / fx.height)); frameCracks.push(yp);
-      const c = document.createElement('i'); c.className = 'dc-crack new'; c.style.top = (yp * 100).toFixed(1) + '%'; c.style.setProperty('--cv', (frameCracks.length - 1) % 2); c.innerHTML = CRACK_SVG;
-      const fe = document.querySelector('#deco .dc-frame'); if (fe) fe.after(c);
+    if (fx && frameCracks.length < 3) {   // 同じ所が ひび → 欠ける → 穴（3回まで）
+      const yp = frameCracks.length ? frameCracks[0] : Math.max(.04, Math.min(.96, (y - fx.top) / fx.height)); frameCracks.push(yp);
+      const fe = document.querySelector('#deco .dc-frame');
+      if (fe) { document.querySelectorAll('#deco .dc-brk,#deco .dc-crack').forEach(e => e.remove()); fe.insertAdjacentHTML('afterend', frameBreakHTML(frameCracks.length - 1, yp, true)); }
     }
+    decoReact('spin', 1100);   // 枠のちびたちも くるっと（11/22 しょーくん「フレームの賑やかしも盛り上がりに応じてアクション」）
     const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
     edgeGlow('big'); sePlay('hit', { vol: .9, rate: .6 });
   }, T(200));

@@ -202,7 +202,8 @@ function hitFx(dmg, q, proj, mega) {   // proj＝舞台に飛んできた数字�
   const land = p => {
     if (proj) proj.remove();
     monReact(size ? 'hitbig' : 'hit'); dmgNum(dmg, size, p);
-    decoReact(size ? 'jump' : 'hop', size ? 800 : 500);
+    if (dmg >= MEGA_HIT) decoReact(dmg >= MEGA_HIT * 10 ? 'spin2' : 'spin', dmg >= MEGA_HIT * 10 ? 1300 : 1100);   // 1万こえは 枠のちびたちが くるっと1回転・10万こえは2回転（11/22）
+    else decoReact(size ? 'jump' : 'hop', size ? 800 : 500);
     if (size) decoChibi('cheer', 1400);
     impactFx(p, size);   // 11/19 しょーくん「攻撃の迫力が見たい」「枠外にも演出」：画面いっぱいの光・額縁をこえる衝撃波・斬撃・ゆれ
     if (size === 'huge') fireWall();
@@ -436,6 +437,36 @@ function cardSpot(p) {
   if (!el) return null;
   const r = el.getBoundingClientRect();
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: el.offsetWidth };
+}
+/* うったときのカードの動き（11/22 しょーくん「カードを売った時とかのカードの動きがないから、ちょっとサックリしすぎ」）：
+   カードが ぴょんと浮いて くるっと回りながら 右上のコインへ すいこまれる → コインが はじけて「+2」・コインの数が ぽんっと ふえる（それまでは前の数）。
+   0コイン（もどす・パン種）は ショップの上へ ふわっと帰って消える。動くのは transform と opacity だけ */
+function sellFx(c, from, v, was) {
+  const coin = document.querySelector('.sh-coin'), num = coin && coin.querySelector('b');
+  const done = () => { if (num) num.textContent = N.coins; if (coin) { replay(coin, 'bump'); if (v) floatAt(coin, '+' + v, 'cookup'); } if (v) sePlay('coin', { vol: .75 }); };
+  if (!from || REDUCED || !document.body.animate) return done();
+  if (v && num) num.textContent = was;   // 着くまでは前の数
+  const to = v && coin ? spot(coin.querySelector('i') || coin) : spot(document.querySelector('.shopov .shcard') || document.querySelector('.shopov'));
+  if (!to) return done();
+  const w = Math.max(40, from.w || 60), el = fxEl('sellcard', from, `<div class="sc-in" style="width:${w}px">${cardTile(c.cid, { cook: c.cook || 0 })}</div>`);
+  const dx = to.x - from.x, dy = to.y - from.y, ms = T(v ? 620 : 520);
+  el.animate([{ transform: 'translate(-50%,-50%) scale(1) rotate(0deg)', opacity: 1 },
+    { transform: 'translate(-50%,-50%) translate(0,-16px) scale(1.08) rotate(-8deg)', opacity: 1, offset: .2 },
+    { transform: `translate(-50%,-50%) translate(${dx * .55}px,${dy * .55 - 30}px) scale(.62) rotate(${v ? 120 : -20}deg)`, opacity: 1, offset: .6 },
+    { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(${v ? .12 : .4}) rotate(${v ? 300 : -30}deg)`, opacity: v ? .9 : 0 }],
+  { duration: ms, easing: 'cubic-bezier(.35,.1,.45,1)', fill: 'forwards' });
+  setTimeout(() => {
+    el.remove(); done();
+    if (!v) return;
+    for (let k = 0; k < 7; k++) {   // コインが はじける
+      const q = document.createElement('i'); q.className = 'sellcoin'; q.style.left = to.x + 'px'; q.style.top = to.y + 'px'; fxLayer().appendChild(q);
+      const a = (k / 7) * Math.PI * 2 + Math.random() * .6, d = 18 + Math.random() * 16;
+      q.animate([{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: `translate(-50%,-50%) translate(${Math.cos(a) * d}px,${Math.sin(a) * d - 6}px) scale(1)`, opacity: 1, offset: .5 },
+        { transform: `translate(-50%,-50%) translate(${Math.cos(a) * d * 1.3}px,${Math.sin(a) * d + 14}px) scale(.7)`, opacity: 0 }], { duration: T(520), easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => q.remove(), T(560));
+    }
+    sparkBurst(to, 8, 'gold', .6);
+  }, ms);
 }
 const SPARK = ['#fff6d8', '#ffd45a', '#ff9a3c', '#ffe9a8', '#8fe0c0', '#ff8f6a'];
 function mixFx(from, ca, cb, cr, to, done) {
