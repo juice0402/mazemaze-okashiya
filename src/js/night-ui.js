@@ -32,7 +32,7 @@ const KOE_END = { honoka: ['hono-yatta', 'hono-achaa'], minamo: ['mina-yoshi', '
    11/22 しょーくん「ショップ画面でキャラクターみんな、悩んでるボイスが流れてない気がする」→ 前は「8秒なにもしない」で、さわるたびに数えなおし・鳴ったら次のラウンドは休み＝ほとんど鳴らなかった。
    いまは ショップが出てから4秒で、毎ラウンド1回（つかんでいる・会話・大きく見ている・ヒントの声のあいだは少し待つ）。さわっても数えなおさない */
 /* 11/22 しょーくん「考え中の読み上げバリエーションを増やそう・キャラの性格に合わせて3種類くらい」：んー に3つずつ足して、毎回ちがう声（すぐ前と同じ声は続けない・ファイルのない声は使わない） */
-const KOE_THINK = { honoka: ['hono-uun', 'hono-think1', 'hono-think2', 'hono-think3'], minamo: ['mina-uun', 'mina-think1', 'mina-think2', 'mina-think3'], wakaba: ['waka-uun', 'waka-think1', 'waka-think2', 'waka-think3'] };
+const KOE_THINK = { honoka: ['hono-uun', 'hono-think1', 'hono-think2', 'hono-think3'], minamo: ['mina-uun', 'mina-think1', 'mina-think2', 'mina-think3'], wakaba: ['waka-uun', 'waka-think1', 'waka-think3'] };   // waka-think2（あらあら、迷っちゃうわぁ）は しょーくんが「使わない」
 function thinkKoe() {
   const L = (KOE_THINK[chefArt()] || []).filter(koeHas), c = L.filter(n => n !== thinkKoe.last);
   const n = (c.length ? c : L)[Math.floor(Math.random() * (c.length || L.length))]; if (!n) return;
