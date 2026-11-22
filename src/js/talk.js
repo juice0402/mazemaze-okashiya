@@ -80,6 +80,7 @@ function talk(lines, done, opt = {}) {
   $('app').appendChild(el);
   TK = { el, L, i: -1, done, face: {}, timer: 0, full: true };
   el.addEventListener('click', e => {
+    if (!TK || TK.el !== el) return;   // 会話をとじたあと（消えていくあいだ）の 早いタップは何もしない（11/22 リリース前の点検：TK が null でエラー）
     if (e.target.closest('.tk-skip')) { pressFx(e.target.closest('.tk-skip')); return talkClose(); }
     if (!TK.full) { talkFinish(); return; }
     talkNext();
