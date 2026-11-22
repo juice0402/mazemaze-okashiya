@@ -530,17 +530,20 @@ function omotenashi() {
   if (!N.board.some(Boolean) && canPlace()) return toast('調理台にカードを置いてから おもてなししよう');   // 置けるカードがないとき（コイン0で調理台が空）は、空のままでも進める（11/19 点検：買う→うるをくり返すと先へ進めなくなっていた）
   if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
   const res = resolveRound(), q = quota(N.round, S.day);
-  busy = true; unsel(); hideKw(); tipEv('bake'); tipClear();
+  busy = true; unsel(); hideKw(); tipEv('bake'); tipClear(); if (typeof roundOver !== 'undefined') roundOver = false;
   if (typeof koeMore === 'function') koeMore('go');   // いっくよー！（11/22）
   shopOut(() => {
     fighting = true; chainNow = (N.field && FIELDS[N.field].chain0) || 0; renderNight();   // 右上の れんさ はラウンドのはじめから数える
     battleIntro(q, () => {
-      let k = 0, run = 0;
+      let k = 0, run = 0, top = 0;
       const step = () => {
-        if (k >= res.ev.length) return setTimeout(() => finishRound(res), T(950));
+        if (k >= res.ev.length) {   // さいごのラウンドは、オーバーランか1万こえの一撃があれば フィナーレ（10万こえは もう一段上・battle-fx.js の finale）
+          const lv = N.round >= ROUNDS && typeof finale === 'function' ? (top >= MEGA_HIT * 10 ? 2 : top >= MEGA_HIT || roundOver ? 1 : 0) : 0;
+          return setTimeout(() => lv ? finale(lv, () => finishRound(res)) : finishRound(res), T(lv ? 700 : 950));
+        }
         const e = res.ev[k];
         if (e.type === 'act' && !e.again && !e.cut && cardDef(e.cid).star === 3) { e.cut = true; return setTimeout(step, cutIn(e.cid, 'スペシャル発動！', false)); }
-        k++; run += e.dmg || 0;
+        k++; run += e.dmg || 0; top = Math.max(top, e.dmg || 0);
         setTimeout(step, T(showEvent(e, run, q)));
       };
       step();

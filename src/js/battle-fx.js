@@ -617,7 +617,82 @@ const frameCrackHTML = () => frameCracks.length ? frameBreakHTML(frameCracks.len
 const WOOD = ['fx-wood-splinter', 'fx-wood-splinter', 'fx-wood-chunk', 'fx-wood-trim', 'fx-wood-chips'];
 const CRACK_SVG = '<svg viewBox="0 0 30 48" aria-hidden="true"><path class="ck-hole" d="M30 15 L23 18 L20 23 L24 27 L19 31 L22 35 L30 34 Z"/><path class="ck-lit" d="M23 18 L20 23 L24 27 L19 31 L22 35"/>'
   + '<path class="ck-line" d="M21 22 L15 19 L10 21 L6 16 M15 19 L14 12 L11 7 M20 30 L13 33 L9 40 M13 33 L7 32 M22 35 L18 42 L19 47 M24 17 L22 9 L25 3"/></svg>';
+/* ---------- さいごのラウンドのフィナーレ（11/22 しょーくん「最終のラウンドでゲージを突き破るか、1万ダメージを超えたら、ド派手な演出で終了して欲しい。
+   賑やかしの敵キャラを手前とか左右に吹っ飛ばして、戦闘の枠も揺らすレベル」「10万超えの時はさらにもう一段上」）：night.js の omotenashi の さいごの一撃のあと。
+   lv1（オーバーラン・1万こえ）＝ドーン → 枠のちびたちが 左右と手前へ ふっとぶ（額縁の外の #fxl に写して飛ばす）→ 枠ごと大きくゆれる → 「ごちそうさま！」の帯
+   lv2（10万こえ）＝炎の壁とドーンが2回・ちびたちは もっと大きく手前へ・ゆれも長い・額縁の両がわから木のかけら・コインの雨・金の帯。動くのは transform と opacity だけ ---------- */
+let roundOver = false;   // このラウンドに オーバーランした（qOverrun）。omotenashi で もどす
+function decoBlow(power) {
+  const d = $('deco'); if (!d) return;
+  const r = d.getBoundingClientRect(), cx = r.left + r.width / 2, L = fxLayer();
+  [...d.querySelectorAll('img.dc')].forEach((el, i) => {
+    const b = el.getBoundingClientRect(); if (!b.width || getComputedStyle(el).display === 'none') return;
+    const c = document.createElement('img'); c.src = el.currentSrc || el.src; c.alt = ''; c.className = 'blowdc';
+    c.style.left = b.left + 'px'; c.style.top = b.top + 'px'; c.style.width = b.width + 'px'; c.style.height = b.height + 'px';
+    L.appendChild(c); el.style.visibility = 'hidden';
+    const x = b.left + b.width / 2, side = x < cx ? -1 : 1, front = power > 1 ? i % 3 !== 2 : i % 3 === 1;   // 手前へ（大きくなって消える）・左右へ（回りながら画面の外へ）
+    const dx = front ? side * (30 + Math.random() * 70) : side * (r.width * .55 + 60 + Math.random() * 90), dy = front ? 50 + Math.random() * 70 : -(90 + Math.random() * 140);
+    const sc = front ? (power > 1 ? 5.2 : 3.4) : 1.15, rot = side * (front ? 160 + Math.random() * 200 : 420 + Math.random() * 540), ms = T((front ? 820 : 1000) + Math.random() * 260);
+    c.animate([{ transform: 'translate(0,0) rotate(0) scale(1)', opacity: 1 },
+      { transform: `translate(${dx * .45}px,${dy * .55 - (front ? 0 : 40)}px) rotate(${rot * .4}deg) scale(${1 + (sc - 1) * .45})`, opacity: 1, offset: .42 },
+      { transform: `translate(${dx}px,${dy}px) rotate(${rot}deg) scale(${sc})`, opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.75,.35,1)', fill: 'forwards' });
+    setTimeout(() => c.remove(), ms + 40);
+  });
+}
+function finaleBand(text, gold) {
+  const st = $('stage'); if (!st) return;
+  const ms = T(gold ? 1900 : 1500), el = document.createElement('div');
+  el.className = 'bintro fin' + (gold ? ' gold' : ''); el.style.setProperty('--bd', ms + 'ms');
+  el.innerHTML = `<i class="bi-band"></i><p class="bi-t">${text}</p>`;
+  st.appendChild(el); setTimeout(() => el.remove(), ms);
+}
+function edgeWood(n) {   // 額縁の左右のふちから 木のかけらが とびちる（lv2）
+  const fr = document.querySelector('#deco .dc-frame'); if (!fr || !WOOD.every(k => ART[k])) return;
+  const R = fr.getBoundingClientRect(), L = fxLayer();
+  for (let k = 0; k < n; k++) {
+    const left = k % 2 === 0, x = left ? R.left + 6 : R.right - 6, y = R.top + R.height * (.15 + Math.random() * .7);
+    const s = document.createElement('img'); s.src = ART[WOOD[k % WOOD.length]]; s.alt = ''; s.className = 'qwood'; s.style.width = (12 + Math.random() * 10).toFixed(0) + 'px';
+    s.style.left = x + 'px'; s.style.top = y + 'px'; L.appendChild(s);
+    const dx = (left ? -1 : 1) * (30 + Math.random() * 60), dy = -20 - Math.random() * 50, r1 = (Math.random() - .5) * 900;
+    s.animate([{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 1 }, { transform: `translate(-50%,-50%) translate(${dx * .6}px,${dy}px) rotate(${r1 / 2}deg)`, opacity: 1, offset: .4 },
+      { transform: `translate(-50%,-50%) translate(${dx}px,${dy + 140}px) rotate(${r1}deg) scale(.9)`, opacity: 0 }], { duration: T(1000 + Math.random() * 400), easing: 'cubic-bezier(.25,.6,.5,1)', fill: 'forwards' });
+    setTimeout(() => s.remove(), T(1450));
+  }
+}
+function coinRain(n) {
+  const st = $('stage'); if (!st) return;
+  const R = st.getBoundingClientRect(), L = fxLayer();
+  for (let k = 0; k < n; k++) {
+    const q = document.createElement('i'); q.className = 'sellcoin'; q.style.left = (R.left + R.width * Math.random()) + 'px'; q.style.top = (R.top - 10) + 'px'; L.appendChild(q);
+    const ms = T(900 + Math.random() * 700), d = T(Math.random() * 600);
+    q.animate([{ transform: 'translate(-50%,-50%) translateY(0) rotate(0)', opacity: 0 }, { opacity: 1, offset: .1 }, { transform: `translate(-50%,-50%) translateY(${R.height * (.7 + Math.random() * .4)}px) rotate(${(Math.random() - .5) * 720}deg)`, opacity: 0 }],
+      { duration: ms, delay: d, easing: 'cubic-bezier(.4,0,.8,.6)', fill: 'both' });
+    setTimeout(() => q.remove(), ms + d + 50);
+  }
+}
+function finaleBoom(p, flash) {   // megaBoom の白い光なし版も（ちびたちが ふっとぶのが光でかくれないように）
+  if (flash) { const f = document.createElement('i'); f.className = 'fx-megaflash'; fxLayer().appendChild(f); setTimeout(() => f.remove(), T(700)); }
+  const w = fxEl('fx-wave s-huge mega', p, ''); setTimeout(() => w.remove(), T(1000));
+  setTimeout(() => { const w2 = fxEl('fx-wave w2 s-huge mega', p, ''); setTimeout(() => w2.remove(), T(1100)); }, T(140));
+  if (flash) edgeGlow('big');
+}
+function finale(lv, done) {
+  if (REDUCED || !document.body.animate || !$('stage')) return done();
+  const mon = $('mon'), p = spot(mon) || spot($('stage')), nt = document.querySelector('.night'), big = lv > 1;
+  const shake = () => { if (nt) { nt.classList.remove('quake3', 'quake4', 'quake5'); void nt.offsetWidth; nt.classList.add(big ? 'quake5' : 'quake4'); } };
+  if (big) { fireWall(); sePlay('boom', { vol: .9, rate: .8 }); }
+  const t0 = T(big ? 380 : 60);
+  setTimeout(() => {   // ドーン：モンスターから衝撃 → ちびたちが ふっとぶ・枠ごとゆれる
+    finaleBoom(p, big); sePlay('boom', { vol: 1 }); monReact('hitbig'); heroPose('win', T(big ? 2600 : 2000));
+    sparkBurst(p, big ? 28 : 18, 'all', big ? 1.8 : 1.3); shake();
+    setTimeout(() => decoBlow(lv), T(big ? 260 : 90));   // 白い光が引いてから（光でかくれない）
+  }, t0);
+  if (big) setTimeout(() => { finaleBoom(spot($('stage')), false); sePlay('boom', { vol: .9, rate: 1.15 }); shake(); edgeWood(14); coinRain(22); }, t0 + T(700));
+  setTimeout(() => { finaleBand('ごちそうさま！', big); sePlay('manzoku', { vol: .8 }); }, t0 + T(big ? 1050 : 650));
+  setTimeout(() => { if (nt) nt.classList.remove('quake4', 'quake5'); done(); }, t0 + T(big ? 3000 : 2250));
+}
 function qOverrun() {
+  roundOver = true;
   const m = document.querySelector('.quota .qmk.m3'), bar = document.querySelector('.quota .qbar'), fr = document.querySelector('#deco .dc-frame');
   if (!m || !bar) return;
   if (REDUCED || !document.body.animate) return qCollect('m3', 3);
