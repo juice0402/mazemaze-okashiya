@@ -16,6 +16,9 @@ const AURA_N = 12;
 const AURA_ART = { fire: ['fx-aura-fire', 'fx-ember'], kone: ['fx-aura-kone', 'fx-aura-kone'], cold: ['fx-aura-cold', 'fx-snow'], candy: ['fx-aura-candy', 'fx-twinkle'], leaf: ['fx-aura-leaf', 'fx-leaf'] };
 const auraBackHTML = () => '<i class="ca-back" id="caBack"><i class="cm cm1"></i><i class="cm cm2"></i><i class="cm cm3"></i></i>';
 const auraFrontHTML = () => `<i class="ca-front" id="caFront"><i class="cw cw1"></i><i class="cw cw2"></i>${[1, 2, 3].map(n => `<i class="cf cf${n}"><i></i></i>`).join('')}${Array.from({ length: AURA_N }, (_, i) => `<i class="cp" style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
+/* 盛り上がりの上限（11/22 しょーくん「最初は表示されないようにして、徐々に盛り上がっていく感じに」）：
+   1ラウンド目のバトルの前は0・2〜3ラウンド目は1・4〜5は2・6から3。バトルのあいだ（カードが動いているあいだ）は +1（9ラウンド目のバトルでいちばん強い4） */
+const auraCap = () => Math.min(4, (N.round <= 1 ? 0 : Math.min(3, Math.floor(N.round / 2))) + (fighting ? 1 : 0));
 const ripeNow = () => N.board.filter(c => { if (!c) return false; const d = cardDef(c.cid); return (d.fruit && d.stage === RIPE) || (d.fx && d.fx.fruitCake); }).length;
 function auraSync(o = {}) {
   const b = $('caBack'), f = $('caFront'); if (!b || !f || !N) return;
@@ -27,6 +30,7 @@ function auraSync(o = {}) {
     if (candyNight()) { k = 'candy'; const n = o.chain != null ? o.chain : chainNow; lv = n <= 0 ? 0 : n < 3 ? 1 : n < 5 ? 2 : n < 7 ? 3 : 4; }
     else { k = 'cold'; const tp = o.heat != null ? o.heat : N.heat; lv = tp <= 1 ? 4 : tp === 2 ? 2 : 0; }
   } else if (c === 'wakaba') { k = 'leaf'; lv = 1 + Math.min(3, ripeNow()); }
+  lv = Math.min(lv, auraCap());   // 夜のはじめは出さずに、ラウンドとバトルで だんだん盛り上がる
   if (b.dataset.k !== k) {   // 絵は種類が変わったときだけ入れる（絵がまだないときは、コードの光と粒＝data-art なし）
     const A = AURA_ART[k], ok = A && ART[A[0]] && ART[A[1]];
     for (const e of [b, f]) { e.dataset.art = ok ? '1' : ''; if (ok) { e.style.setProperty('--am', `url("${ART[A[0]]}")`); e.style.setProperty('--ap', `url("${ART[A[1]]}")`); } if (ok && k === 'leaf') e.style.setProperty('--af', `url("${ART['fx-fairy'] || ART[A[1]]}")`); }
@@ -530,7 +534,10 @@ const chefArt = () => chefNow().art || 'honoka';
 function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip, n } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka, n: '' }; }
 /* 足もと（11/19 しょーくん「描写されてるものの位置で足元を合わせて」・影も）：src/data/feet.js（tools/feet.py）の表で、
    どのポーズでも描かれた足が同じ高さに立つように下げる（--fp）。影 .chef-sh は足もとのまんなか（--fx）に。#stage に置いてシェフと影の両方が使う */
-function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8, .23]; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]};--sw:${f[3]}`; }
+/* シェフごとの絵の大きさ（11/22 しょーくん「ほのかに比べると、みなもとわかばって絵が小さい」）：みなも・わかばの絵は ほのかより顔と体が 2割ほど小さく描かれている（顔のはば・あごまでの長さで はかった）。
+   舞台の --ch（シェフの高さ）にかける。足もと・影・まわりの空気も --ch で決まるので いっしょに大きくなる */
+const CHEF_SC = { minamo: 1.18, wakaba: 1.2 };
+function heroVars(n, flip) { const f = FEET[n] || [0, .45, .8, .23]; return `--fp:${f[0]};--fx:${flip ? 1 - f[1] : f[1]};--ca:${f[2]};--sw:${f[3]};--sc:${CHEF_SC[String(n).split('-')[0]] || 1}`; }
 function heroSetVars(n, flip) { const st = $('stage'); if (st) for (const kv of heroVars(n, flip).split(';')) { const [k, v] = kv.split(':'); st.style.setProperty(k, v); } }
 function heroImg(k) { const h = heroPick(k), C = chefNow(); return `<img class="chef${ART[chefArt()] ? ' hi' : ''}${h.flip ? ' flip' : ''}" id="chef" data-chef="${chefArt()}" src="${h.src}" alt="${esc(C.job + ' ' + C.name)}">`; }
 /* 絵と足もと（--fp・影）は いっしょに変える（11/21 しょーくん「新しい立ち絵の影と脚の位置関係がおかしい」）：

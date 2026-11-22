@@ -48,7 +48,7 @@
 /* 11/19 しょーくん「モンスターとキャラが少し近い・それぞれもう少し小さくして距離を」：シェフは高さで決める（--ch・絵はどれも760の高さなので同じ大きさ）。
    足もとは描かれた足の位置で合わせる（--fp＝足の下のすき間・src/data/feet.js）・影 .chef-sh・.mon-sh。舞台を container にして cqw・cqh を舞台の大きさに */
 .night .stage{container-type:size}
-.night .stage .chef,.night .stage .chef-sh{--ch:min(59cqw,53cqh)}
+.night .stage .chef,.night .stage .chef-sh{--ch:calc(min(59cqw,53cqh) * var(--sc, 1))}   /* --sc＝シェフごとの絵の大きさ（night-ui.js の CHEF_SC・11/22 しょーくん「ほのかに比べると、みなもとわかばの絵が小さい」） */
 .night .stage .chef{left:1cqw;bottom:calc(12cqh - var(--fp, 0) * var(--ch));height:var(--ch);width:auto;max-height:none;max-width:none;transform-origin:50% calc(100% - var(--fp, 0) * 100%);transition:translate .22s cubic-bezier(.2,.9,.3,1.25),scale .22s cubic-bezier(.2,.9,.3,1.25),rotate .22s ease-out}
 .deco.battle .dc-chibi,.deco.win .dc-chibi,.stage:not(.st-shop) .deco.shop .dc-chibi{display:none}   /* ちびほのかはショップのときだけ（来店の会話・お礼・結果は大きいほのか） */
 .night .stage .mon{bottom:14%}   /* 11/21 しょーくん「敵が上すぎる・同じ空間にいるように見えない」：22%→14%（シェフの足 12cqh と同じ床・少しだけ奥） */
@@ -753,12 +753,12 @@ body[data-candy="1"]{--chefc:255,140,196}
    うしろ .ca-back＝立ちのぼる霧 .cm（cm1 はシェフのうしろで息をする・cm2/cm3 は左右から下→上へ流れて消える）・
    前 .ca-front＝足もと・腰を横にただよう うすい霧 .cw・粒 .cp・わかばの妖精 .cf。強さ data-lv 1〜4・種類 data-k・絵があれば data-art=1（--am＝霧・--ap＝粒・--af＝妖精）。
    絵がないとき（data-art なし）は、コードのやわらかい光と粒。動くのは transform と opacity だけ ==== */
-.ca-back,.ca-front{--ch:min(59cqw,53cqh);position:absolute;left:calc(1cqw - var(--ch) * .2);bottom:calc(12cqh - var(--ch) * .06);width:calc(var(--ch) * (var(--ca, .8) + .4));height:calc(var(--ch) * 1.4);--gxn:calc((var(--ca, .8) * var(--fx, .45) + .2) / (var(--ca, .8) + .4));--gx:calc(var(--gxn) * 100%);pointer-events:none;display:none;--ao:.5}
+.ca-back,.ca-front{--ch:calc(min(59cqw,53cqh) * var(--sc, 1));position:absolute;left:calc(1cqw - var(--ch) * .2);bottom:calc(12cqh - var(--ch) * .06);width:calc(var(--ch) * (var(--ca, .8) + .4));height:calc(var(--ch) * 1.4);--gxn:calc((var(--ca, .8) * var(--fx, .45) + .2) / (var(--ca, .8) + .4));--gx:calc(var(--gxn) * 100%);pointer-events:none;display:none;--ao:0}
 .ca-back{z-index:1}
 .ca-front{z-index:3}
-.ca-back[data-k]:not([data-k=""]):not([data-lv="0"]),.ca-front[data-k]:not([data-k=""]):not([data-lv="0"]){display:block}
+.ca-back[data-k]:not([data-k=""]),.ca-front[data-k]:not([data-k=""]){display:block;opacity:var(--ao);transition:opacity 1.6s ease}   /* 強さは うつわの opacity（11/22 しょーくん「最初は出さずに、徐々に盛り上がっていく」→ ふわっと こくなる・うすくなる） */
 .stage.st-shop:not(.st-out) :is(.ca-back,.ca-front),.stage.st-pick :is(.ca-back,.ca-front){display:none}
-:is(.ca-back,.ca-front)[data-lv="1"]{--ao:.5}:is(.ca-back,.ca-front)[data-lv="2"]{--ao:.68}:is(.ca-back,.ca-front)[data-lv="3"]{--ao:.85}:is(.ca-back,.ca-front)[data-lv="4"]{--ao:1}
+:is(.ca-back,.ca-front)[data-lv="0"]{--ao:0}:is(.ca-back,.ca-front)[data-lv="1"]{--ao:.5}:is(.ca-back,.ca-front)[data-lv="2"]{--ao:.68}:is(.ca-back,.ca-front)[data-lv="3"]{--ao:.85}:is(.ca-back,.ca-front)[data-lv="4"]{--ao:1}
 .ca-back>i,.ca-front>i{position:absolute;display:block}
 /* 霧（うしろ）：絵があれば絵・なければ やわらかい光 */
 .cm{bottom:0;background:var(--am) 50% 100%/100% 100% no-repeat;opacity:0}
@@ -767,17 +767,17 @@ body[data-candy="1"]{--chefc:255,140,196}
 .cm2,.cm3{width:62%;height:86%;animation:cmRise 5.2s linear infinite}
 .cm2{left:calc(var(--gx) - 70%)}
 .cm3{left:calc(var(--gx) + 8%);animation-name:cmRiseR;animation-delay:-2.6s}
-@keyframes cmBreath{0%,100%{opacity:calc(var(--ao) * var(--mo, 1) * .55);transform:translateX(-2.5%) scale(.97,.95)}50%{opacity:calc(var(--ao) * var(--mo, 1) * .8);transform:translateX(2.5%) scale(1.03,1.04)}}
-@keyframes cmRise{0%{opacity:0;transform:translate(4%,10%) scale(.85)}25%{opacity:calc(var(--ao) * var(--mo, 1) * .85)}70%{opacity:calc(var(--ao) * var(--mo, 1) * .6)}100%{opacity:0;transform:translate(-6%,-22%) scale(1.12)}}
-@keyframes cmRiseR{0%{opacity:0;transform:translate(-4%,10%) scale(-.85,.85)}25%{opacity:calc(var(--ao) * var(--mo, 1) * .85)}70%{opacity:calc(var(--ao) * var(--mo, 1) * .6)}100%{opacity:0;transform:translate(6%,-22%) scale(-1.12,1.12)}}
+@keyframes cmBreath{0%,100%{opacity:calc(var(--mo, 1) * .55);transform:translateX(-2.5%) scale(.97,.95)}50%{opacity:calc(var(--mo, 1) * .8);transform:translateX(2.5%) scale(1.03,1.04)}}
+@keyframes cmRise{0%{opacity:0;transform:translate(4%,10%) scale(.85)}25%{opacity:calc(var(--mo, 1) * .85)}70%{opacity:calc(var(--mo, 1) * .6)}100%{opacity:0;transform:translate(-6%,-22%) scale(1.12)}}
+@keyframes cmRiseR{0%{opacity:0;transform:translate(-4%,10%) scale(-.85,.85)}25%{opacity:calc(var(--mo, 1) * .85)}70%{opacity:calc(var(--mo, 1) * .6)}100%{opacity:0;transform:translate(6%,-22%) scale(-1.12,1.12)}}
 :is(.ca-back,.ca-front)[data-lv="1"] :is(.cm2,.cm3,.cw,.cf2,.cf3),:is(.ca-back,.ca-front)[data-lv="2"] :is(.cm2,.cm3,.cw2,.cf3),:is(.ca-back,.ca-front)[data-lv="3"] .cw2{display:none}
 /* 霧（前）：足もとと腰を横にただよう。シェフにかかるので うすく */
 .cw{background:var(--am) 50% 50%/100% 100% no-repeat;opacity:0}
 .ca-front:not([data-art="1"]) .cw{background:radial-gradient(50% 50% at 50% 50%,var(--ag),transparent 72%)}
 .cw1{left:calc(var(--gx) - 48%);bottom:-2%;width:96%;height:20%;animation:cwDrift 7s ease-in-out infinite alternate}
 .cw2{left:calc(var(--gx) - 40%);bottom:24%;width:80%;height:18%;animation:cwDriftR 9s ease-in-out -3s infinite alternate}
-@keyframes cwDrift{0%{opacity:calc(var(--ao) * var(--mo, 1) * .14);transform:translateX(-14%) scale(1,.9)}50%{opacity:calc(var(--ao) * var(--mo, 1) * .28)}100%{opacity:calc(var(--ao) * var(--mo, 1) * .14);transform:translateX(14%) scale(1.1,1)}}
-@keyframes cwDriftR{0%{opacity:calc(var(--ao) * var(--mo, 1) * .1);transform:translateX(12%) scale(-1,.9)}50%{opacity:calc(var(--ao) * var(--mo, 1) * .2)}100%{opacity:calc(var(--ao) * var(--mo, 1) * .1);transform:translateX(-12%) scale(-1.1,1)}}
+@keyframes cwDrift{0%{opacity:calc(var(--mo, 1) * .14);transform:translateX(-14%) scale(1,.9)}50%{opacity:calc(var(--mo, 1) * .28)}100%{opacity:calc(var(--mo, 1) * .14);transform:translateX(14%) scale(1.1,1)}}
+@keyframes cwDriftR{0%{opacity:calc(var(--mo, 1) * .1);transform:translateX(12%) scale(-1,.9)}50%{opacity:calc(var(--mo, 1) * .2)}100%{opacity:calc(var(--mo, 1) * .1);transform:translateX(-12%) scale(-1.1,1)}}
 /* 粒：下からのぼって消える（絵があれば絵） */
 .cp{left:calc((var(--gxn) - .3 + var(--x) * .6) * 100%);bottom:4%;width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:var(--pc, #fff);box-shadow:0 0 6px 2px var(--pg, rgba(255,255,255,.6));opacity:0;animation:caRise var(--t) linear var(--d) infinite}
 .ca-front[data-art="1"] .cp{border-radius:0;box-shadow:none;background:var(--ap) 50% 50%/contain no-repeat;width:calc(11px * var(--s));height:calc(11px * var(--s))}
@@ -804,4 +804,4 @@ body[data-candy="1"]{--chefc:255,140,196}
 .ca-back[data-k=leaf],.ca-front[data-k=leaf]{--ag:rgba(170,235,140,.75);--pc:#eaffd8;--pg:rgba(140,220,110,.85)}
 .ca-front[data-k=leaf] .cp{width:calc(13px * var(--s));height:calc(13px * var(--s));animation:caLeaf calc(var(--t) * 2) ease-in-out var(--d) infinite}
 @keyframes caLeaf{0%{opacity:0;transform:translate(0,0) rotate(0deg)}20%{opacity:.9}100%{opacity:0;transform:translate(calc((var(--x) - .5) * 60px),calc(var(--ch) * -.6)) rotate(220deg)}}
-@media (prefers-reduced-motion:reduce){.cp,.cf{display:none!important}.cm,.cw{animation:none;opacity:calc(var(--ao) * .7)}.cm2,.cm3{display:none}}
+@media (prefers-reduced-motion:reduce){.cp,.cf{display:none!important}.cm,.cw{animation:none;opacity:.6}.cm2,.cm3{display:none}}
