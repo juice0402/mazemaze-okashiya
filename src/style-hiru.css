@@ -166,6 +166,12 @@
 .d-jar .jar-fill{transition:transform .5s cubic-bezier(.2,.8,.3,1)}
 .d-jar.bump{animation:jbump .4s ease-out}
 @keyframes jbump{40%{transform:scale(.84)}100%{transform:scale(.72)}}
+/* 昼のお財布（11/22 夜）：朝と同じ .m-wallet の札（左上）。売れたら はねる・下から「+○円」がお財布へ上がって消える（day.js の dWallet） */
+.d-wallet{z-index:6;transform-origin:25% 50%}
+.d-wallet.bump{animation:dwBump .38s ease-out}
+@keyframes dwBump{40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.d-plus{position:absolute;left:30px;top:calc(50px + var(--dy,0px));z-index:6;font-style:normal;font-family:var(--disp);font-size:13px;line-height:1;color:var(--brass-hi);background:rgba(36,19,10,.82);border:1px solid var(--brass);border-radius:999px;padding:3px 8px 2px;white-space:nowrap;pointer-events:none;animation:dwPlus 1.1s ease-out forwards}
+@keyframes dwPlus{0%{transform:translateY(10px);opacity:0}18%{transform:translateY(4px);opacity:1}70%{opacity:1}100%{transform:translateY(-14px);opacity:0}}
 .d-tip{position:absolute;left:50%;bottom:20%;z-index:5;margin:0;white-space:nowrap;font-size:13px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.85);border:1.5px solid var(--brass);border-radius:999px;padding:6px 14px;animation:tipbob 1.6s ease-in-out infinite}
 @keyframes tipbob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
 /* お客さん：まんなかのドアから入ってきて、正面のカウンターへ。胸から下はカウンターのかげ */

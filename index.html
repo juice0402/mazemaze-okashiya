@@ -1741,6 +1741,11 @@ button.ich-it .ich-tag.up em{color:#6a2a7a}
 .d-jar .jar-fill{transition:transform .5s cubic-bezier(.2,.8,.3,1)}
 .d-jar.bump{animation:jbump .4s ease-out}
 @keyframes jbump{40%{transform:scale(.84)}100%{transform:scale(.72)}}
+.d-wallet{z-index:6;transform-origin:25% 50%}
+.d-wallet.bump{animation:dwBump .38s ease-out}
+@keyframes dwBump{40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.d-plus{position:absolute;left:30px;top:calc(50px + var(--dy,0px));z-index:6;font-style:normal;font-family:var(--disp);font-size:13px;line-height:1;color:var(--brass-hi);background:rgba(36,19,10,.82);border:1px solid var(--brass);border-radius:999px;padding:3px 8px 2px;white-space:nowrap;pointer-events:none;animation:dwPlus 1.1s ease-out forwards}
+@keyframes dwPlus{0%{transform:translateY(10px);opacity:0}18%{transform:translateY(4px);opacity:1}70%{opacity:1}100%{transform:translateY(-14px);opacity:0}}
 .d-tip{position:absolute;left:50%;bottom:20%;z-index:5;margin:0;white-space:nowrap;font-size:13px;font-weight:700;color:var(--milk);background:rgba(36,19,10,.85);border:1.5px solid var(--brass);border-radius:999px;padding:6px 14px;animation:tipbob 1.6s ease-in-out infinite}
 @keyframes tipbob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
 .d-cust{position:absolute;inset:0;z-index:2}
@@ -7735,6 +7740,7 @@ ${dayStageBg(sign)}
 <div class="d-cust" id="dCust"></div>
 ${dayStageFront()}
 <div class="d-jar" id="dJar">${jarHTML()}</div>
+<span class="m-wallet d-wallet" id="dWallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span></span>
 ${tip ? `<p class="d-tip">${esc(tip)}</p>` : ''}
 </div>
 <div class="dcase${pre ? ' pre' : ''}" id="dCase" style="--rows:${rows}">${caseHTML(pre)}</div>
@@ -7877,7 +7883,7 @@ return null;
 function dMateVisit(R, m) {
 R.mated = 1;
 const T = S.today, it = S.shelf.find(s => s.key === m.key && s.n > 0), price = candyOf(m.key).price;   // 売り切れのマスをえらばない（11/19：同じお菓子が2マスのとき n がマイナスになった）
-it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++;
+it.n--; S.money += price; T.sales += price; T.visitors++; T.served++; S.rep++; T.hearts++; dWallet(price);
 if (it.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
 S.seen['mate:' + m.id] = S.day; save();
 dCaseUpdate(); mSe('door');
@@ -7939,6 +7945,18 @@ dScene = v; v.sc = 1; dSkip = Infinity;
 S.seen.m13 = S.day; save();
 talk(STORY.m13, () => { dScene = null; dSkip = 0; v.sc = 2; save(); });
 }
+function dWallet(add) {
+const w = $('dWallet'); if (!w) return;
+w.querySelector('b').textContent = fmt(S.money);
+if (REDUCED || !add) return;
+w.classList.remove('bump'); void w.offsetWidth; w.classList.add('bump');
+const st = $('dstage'); if (!st) return;
+const p = document.createElement('i');
+p.className = 'd-plus'; p.textContent = '+' + fmt(add) + '円';
+p.style.setProperty('--dy', (st.querySelectorAll('.d-plus').length * 14) + 'px');   // 2こ・3こ買ったときは少しずらす
+p.addEventListener('animationend', () => p.remove());
+st.appendChild(p);
+}
 const dLeft = key => S.shelf.reduce((a, s) => a + (s.key === key ? s.n : 0), 0);
 function serve(v) {
 const T = S.today, R = S.dayRun, items = S.shelf.filter(s => s.n > 0);
@@ -7949,7 +7967,7 @@ else if (v.called && R.kanban && dLeft(R.kanban) > 0) { love = true; s = items.f
 else if (items.length && ((v.reg && v.reg !== 'koge') || Math.random() < OTHER_BUY)) s = pick(items);   // 常連さんの場面の日は、かならず何か買う
 if (!s) return { kind: 'none', say: STORY.custSay(v.c, 'none') };
 const price = decoPrice(s.key);   // かざりのセット効果で値段+1割（11/21）
-s.n--; S.money += price; T.sales += price; T.served++;
+s.n--; S.money += price; T.sales += price; T.served++; dWallet(price);
 if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
 if (love) { S.rep += 1 + decoRepAdd(s.key); T.hearts++; S.seen['rh:' + v.c] = (S.seen['rh:' + v.c] || 0) + decoRegMul(v.c); }   // 常連さんの段は、種類ごとのハートの合計で（かざり5つで2倍）
 dDecoSold(s);
@@ -7994,7 +8012,7 @@ if (!s) v.mk = (v.mk || 0) + 1;   // 相手がもうない：次の買い方へ
 }
 if (!s) return null;
 const price = decoPrice(s.key);
-s.n--; S.money += price; T.sales += price; dDecoSold(s);
+s.n--; S.money += price; T.sales += price; dDecoSold(s); dWallet(price);
 if (s.key === T.kanban && dLeft(T.kanban) <= 0) T.kanbanSoldOut = true;
 v.res.got = [...got, s.key];
 if (kind === 'pair') { T.pairs = (T.pairs || 0) + 1; S.seen['ai:' + tag.p.id] = S.seen['ai:' + tag.p.id] || S.day; }
