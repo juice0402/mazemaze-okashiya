@@ -1970,6 +1970,15 @@ const pick = a => a[rand(a.length)];
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+if (location.protocol === 'file:' && window.XMLHttpRequest) {
+const nf = window.fetch ? window.fetch.bind(window) : null;
+const xhr = u => new Promise((ok, ng) => {
+const x = new XMLHttpRequest(); x.open('GET', String(u)); x.responseType = 'arraybuffer';
+x.onload = () => (x.status === 200 || x.status === 0) && x.response && x.response.byteLength ? ok({ ok: true, status: 200, arrayBuffer: () => Promise.resolve(x.response) }) : ng(new Error('xhr ' + x.status));
+x.onerror = () => ng(new Error('xhr')); x.send();
+});
+window.fetch = (u, o) => (nf ? nf(u, o).then(r => r.ok ? r : Promise.reject(new Error(r.status))) : Promise.reject(new Error('no fetch'))).catch(() => xhr(u));
+}
 const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
 function artPackLoad(P, flag, after) {
 if (!P || artBlobs[flag]) return; artBlobs[flag] = 1;

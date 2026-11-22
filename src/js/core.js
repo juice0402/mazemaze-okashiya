@@ -7,6 +7,17 @@ const pick = a => a[rand(a.length)];
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+/* アプリ（iOS の ios-kobo は index.html を file:// で開く）：fetch がファイルを読めないとき、XMLHttpRequest で読みなおす（11/22 リリース前の点検）。
+   曲・効果音・声は fetch → decodeAudioData なので、読めないと音が出ない。http(s) のページ（ゲーム工房・ためしのページ）では何もしない */
+if (location.protocol === 'file:' && window.XMLHttpRequest) {
+  const nf = window.fetch ? window.fetch.bind(window) : null;
+  const xhr = u => new Promise((ok, ng) => {
+    const x = new XMLHttpRequest(); x.open('GET', String(u)); x.responseType = 'arraybuffer';
+    x.onload = () => (x.status === 200 || x.status === 0) && x.response && x.response.byteLength ? ok({ ok: true, status: 200, arrayBuffer: () => Promise.resolve(x.response) }) : ng(new Error('xhr ' + x.status));
+    x.onerror = () => ng(new Error('xhr')); x.send();
+  });
+  window.fetch = (u, o) => (nf ? nf(u, o).then(r => r.ok ? r : Promise.reject(new Error(r.status))) : Promise.reject(new Error('no fetch'))).catch(() => xhr(u));
+}
 
 /* 絵（11/19〜）：ART は 名前 → assets/art/<ファイル>?v=… の表（tools/build.mjs）。絵はページに埋めこまず、使うときにブラウザが読む。
    起動のときは、どの画面にも出る UI の絵（ui-*）とタイトルの絵（title-*）だけ先に読んでおく（待つのは長くて1.5秒） */
