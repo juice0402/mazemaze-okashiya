@@ -72,6 +72,8 @@ function thinkKoe() {
 }
 const THINK_MS = 4000;
 let thinkT = 0, thinkKey = '', thinkDone = '';
+/* チュートリアルの声が出たラウンドは「考え中」の声を出さない（11/22 しょーくん「最初のチュートリアルの読み上げが出た時だけ、悩んでる時の読み上げは無し」・tips.js の tipNext から） */
+function thinkSkip() { if (!N) return; thinkDone = S.day + ':' + N.round; clearTimeout(thinkT); thinkKey = ''; }
 function thinkArm() {
   if (!N || N.stage !== 'shop' || fighting) return;
   const key = S.day + ':' + N.round;

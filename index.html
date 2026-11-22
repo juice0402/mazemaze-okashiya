@@ -4819,6 +4819,7 @@ thinkKoe.last = n; koePlay(n);
 }
 const THINK_MS = 4000;
 let thinkT = 0, thinkKey = '', thinkDone = '';
+function thinkSkip() { if (!N) return; thinkDone = S.day + ':' + N.round; clearTimeout(thinkT); thinkKey = ''; }
 function thinkArm() {
 if (!N || N.stage !== 'shop' || fighting) return;
 const key = S.day + ':' + N.round;
@@ -6324,7 +6325,7 @@ const TIPS = [
 { id: 'shop1', at: 'shop', on: ['buy', 'mix'], text: ['カードを 下の調理台へ ドラッグ！', '今夜は 3まい 無料だよ'],
 when: () => N.round === 1 && !N.field && !N.board.some(Boolean) && tipBuy() >= 0 },
 { id: 'bake', at: 'shop', on: ['bake'], text: ['準備ができたら', 'おもてなし！を おしてね'],
-when: () => N.board.some(Boolean) && (N.round > 1 || N.picks === 0 || !N.shop.some(Boolean)) },
+when: () => N.board.some(Boolean) },   // 11/22 しょーくん「2回目のショップで出ていた『準備ができたら…』は、1回目の配置後に並べて読み上げる」→ はじめて置いたら すぐ（前は 無料の3まいを使いきってから＝まぜのヒントが先に出て、2ラウンド目にずれていた）
 { id: 'mix', at: 'shop', on: ['mix'], text: ['まぜ の札がついたカードは', 'かさねると まぜまぜ！★が上がるよ'],
 when: () => !!tipMix() },
 ];
@@ -6357,7 +6358,8 @@ TIP = { t, fresh: true, at: Date.now() };
 S.seen['t:' + t.id] = 1; save();
 tipDraw(); decoReact('hop', 500);
 const v = 'hono-tip-' + t.id;
-if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v, { prio: 2 });   // ヒントの声は ほかの声より先（11/22）
+if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v, { prio: 2, queue: true });   // ヒントの声は ほかの声より先（11/22）
+if (typeof koeHas === 'function' && koeHas(v) && typeof thinkSkip === 'function') thinkSkip();   // ヒントの声が出たラウンドは「考え中」の声なし（11/22 しょーくん）
 }
 function tipEv(kind) {
 if (TIP && (TIP.t.on.includes(kind) || TIP.t.on.includes('*'))) { TIP = null; tipClear(); }
@@ -7985,7 +7987,10 @@ const ctx = seCtx(); if (!ctx || !seOn()) return;
 const t = ctx.currentTime, pr = o.prio || 1;
 if (t - seA.koeAt < KOE_GAP && pr <= seA.koePr) return;
 if (t < seA.koeEnd - 0.05) {
-if (pr <= seA.koePr) return;
+if (pr <= seA.koePr) {   // 同じ大事さの声が鳴っている：queue なら そのあとに続けて読む（ヒント「ドラッグ！」→「準備ができたら…」・11/22）
+if (o.queue) { const q = { ...o, queue: false }; setTimeout(() => koePlay(id, q), (seA.koeEnd - t) * 1000 + 200); }
+return;
+}
 try { if (seA.koeSrc) seA.koeSrc.stop(); } catch (e) { /* もう止まっている */ }
 }
 const tok = ++seA.koeTok; seA.koeAt = t; seA.koePr = pr; seA.koeEnd = t + 2;   // 読みこむあいだも ほかの声を待たせる

@@ -80,7 +80,10 @@ function koePlay(id, o = {}) {
   const t = ctx.currentTime, pr = o.prio || 1;
   if (t - seA.koeAt < KOE_GAP && pr <= seA.koePr) return;
   if (t < seA.koeEnd - 0.05) {
-    if (pr <= seA.koePr) return;
+    if (pr <= seA.koePr) {   // 同じ大事さの声が鳴っている：queue なら そのあとに続けて読む（ヒント「ドラッグ！」→「準備ができたら…」・11/22）
+      if (o.queue) { const q = { ...o, queue: false }; setTimeout(() => koePlay(id, q), (seA.koeEnd - t) * 1000 + 200); }
+      return;
+    }
     try { if (seA.koeSrc) seA.koeSrc.stop(); } catch (e) { /* もう止まっている */ }
   }
   const tok = ++seA.koeTok; seA.koeAt = t; seA.koePr = pr; seA.koeEnd = t + 2;   // 読みこむあいだも ほかの声を待たせる

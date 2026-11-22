@@ -9,7 +9,7 @@ const TIPS = [
   { id: 'shop1', at: 'shop', on: ['buy', 'mix'], text: ['カードを 下の調理台へ ドラッグ！', '今夜は 3まい 無料だよ'],
     when: () => N.round === 1 && !N.field && !N.board.some(Boolean) && tipBuy() >= 0 },
   { id: 'bake', at: 'shop', on: ['bake'], text: ['準備ができたら', 'おもてなし！を おしてね'],
-    when: () => N.board.some(Boolean) && (N.round > 1 || N.picks === 0 || !N.shop.some(Boolean)) },
+    when: () => N.board.some(Boolean) },   // 11/22 しょーくん「2回目のショップで出ていた『準備ができたら…』は、1回目の配置後に並べて読み上げる」→ はじめて置いたら すぐ（前は 無料の3まいを使いきってから＝まぜのヒントが先に出て、2ラウンド目にずれていた）
   { id: 'mix', at: 'shop', on: ['mix'], text: ['まぜ の札がついたカードは', 'かさねると まぜまぜ！★が上がるよ'],
     when: () => !!tipMix() },
 ];
@@ -50,7 +50,8 @@ function tipNext() {
   tipDraw(); decoReact('hop', 500);
   /* ヒントの声（11/22 しょーくん「チュートリアルもテキストに加えて軽い文章ボイス」）：ほのか（Leda）が吹き出しの文を読む。音のファイルがなければ鳴らさない */
   const v = 'hono-tip-' + t.id;
-  if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v, { prio: 2 });   // ヒントの声は ほかの声より先（11/22）
+  if (typeof koeHas === 'function' && koeHas(v) && typeof koePlay === 'function') koePlay(v, { prio: 2, queue: true });   // ヒントの声は ほかの声より先（11/22）
+  if (typeof koeHas === 'function' && koeHas(v) && typeof thinkSkip === 'function') thinkSkip();   // ヒントの声が出たラウンドは「考え中」の声なし（11/22 しょーくん）
 }
 /* 操作をしたら呼ぶ（buy・mix・sell・move・reroll・bake・next）。そのヒントの操作なら、とじる */
 function tipEv(kind) {
