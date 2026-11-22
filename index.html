@@ -951,7 +951,12 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .kone-n.bump b{display:inline-block;animation:kbnum .5s cubic-bezier(.2,1.8,.4,1)}
 @keyframes kbshake{0%{transform:none}15%{transform:scale(1.16) rotate(-6deg)}35%{transform:scale(1.12) rotate(5deg)}55%{transform:scale(1.06) rotate(-3deg)}75%{transform:scale(1.02) rotate(1deg)}100%{transform:none}}
 @keyframes kbnum{0%{transform:none}30%{transform:scale(1.7) translateY(-1px)}100%{transform:none}}
-.night .stage .chef[data-pose]:not([data-pose=stance]){animation:none}
+.night .stage .chef{animation:chefIdle 3.4s ease-in-out infinite}
+.night .stage .chef[data-pose]:not([data-pose=stance]){animation-duration:2.2s}
+.night .stage .chef.flip{animation-name:chefIdleF}
+.night .stage .chef.act{animation:act .3s ease-out}
+@keyframes chefIdle{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-.5%) scale(1.008,1.02)}}
+@keyframes chefIdleF{0%,100%{transform:translateY(0) scale(-1,1)}50%{transform:translateY(-.5%) scale(-1.008,1.02)}}
 .chef[data-pose=charge]{translate:-3% 0;scale:.96 1.03}
 .chef[data-pose=atk1]{translate:9% 0}
 .chef[data-pose=atk2]{translate:14% 0;rotate:3deg}
@@ -1341,6 +1346,40 @@ font-size:calc(var(--W) * var(--fz) * 2);-webkit-text-stroke:calc(var(--W) * var
 .pc.tile .pc-pow.pc-pow{--W:42cqw;--sw:.07;left:auto;right:1cqw;top:1cqw}
 .pc.tile .pc-pow.pc-pow.pw-minamo:not(.pw-code){--W:50cqw;right:0;top:3cqw}
 .pc.tile .pc-star.pc-star,.pc.tile:has(.cook) .pc-star.pc-star{left:5cqw;right:auto;top:4cqw;bottom:auto;font-size:14cqw;text-align:left}
+.ca-back,.ca-front{--ch:min(59cqw,53cqh);position:absolute;left:1cqw;bottom:12cqh;width:calc(var(--ch) * var(--ca, .8));height:var(--ch);pointer-events:none;display:none}
+.ca-back{z-index:1;left:calc(1cqw - var(--ch) * .16);bottom:calc(12cqh - var(--ch) * .04);width:calc(var(--ch) * (var(--ca, .8) + .32));height:calc(var(--ch) * 1.1);--gx:calc((var(--ca, .8) * var(--fx, .45) + .16) / (var(--ca, .8) + .32) * 100%)}
+.ca-front{z-index:3}
+.ca-back[data-k]:not([data-k=""]):not([data-lv="0"]),.ca-front[data-k]:not([data-k=""]):not([data-lv="0"]){display:block}
+.stage.st-shop:not(.st-out) :is(.ca-back,.ca-front),.stage.st-pick :is(.ca-back,.ca-front){display:none}
+.ca-back{--ao:.5;background:radial-gradient(44% 46% at var(--gx) 52%,var(--ag),var(--ag2, transparent) 52%,transparent 76%);opacity:var(--ao);animation:caGlow 2.6s ease-in-out infinite}
+.ca-back[data-lv="1"]{--ao:.5}.ca-back[data-lv="2"]{--ao:.7}.ca-back[data-lv="3"]{--ao:.88}.ca-back[data-lv="4"]{--ao:1}
+@keyframes caGlow{0%,100%{opacity:calc(var(--ao) * .6);transform:scale(.95)}50%{opacity:var(--ao);transform:scale(1.05)}}
+.ca-back[data-k=fire][data-lv="3"]~.chef{filter:drop-shadow(0 0 2px rgba(255,205,100,.9)) drop-shadow(0 0 7px rgba(255,120,20,.6))}
+.ca-back[data-k=fire][data-lv="4"]~.chef{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 14px rgba(255,80,0,.95))}
+.ca-back[data-k=kone][data-lv="1"]~.chef{filter:drop-shadow(0 0 2px rgba(255,60,40,.75))}
+.ca-back[data-k=kone][data-lv="2"]~.chef{filter:drop-shadow(0 0 2px rgba(255,60,40,.9)) drop-shadow(0 0 6px rgba(255,30,20,.5))}
+.ca-back[data-k=kone][data-lv="3"]~.chef{filter:drop-shadow(0 0 2.5px rgba(255,70,45,.95)) drop-shadow(0 0 9px rgba(255,25,15,.7))}
+.ca-back[data-k=kone][data-lv="4"]~.chef{filter:drop-shadow(0 0 3px #ff6a48) drop-shadow(0 0 13px rgba(255,20,10,.9))}
+.ca-back[data-k=cold][data-lv="2"]~.chef{filter:drop-shadow(0 0 2.5px rgba(225,247,255,.85))}
+.ca-back[data-k=cold][data-lv="4"]~.chef{filter:drop-shadow(0 0 2.5px rgba(235,250,255,.95)) drop-shadow(0 0 9px rgba(140,205,255,.75))}
+.ca-back[data-k=candy][data-lv="3"]~.chef{filter:drop-shadow(0 0 2.5px rgba(255,200,240,.9)) drop-shadow(0 0 8px rgba(150,225,255,.55))}
+.ca-back[data-k=candy][data-lv="4"]~.chef{filter:drop-shadow(0 0 3px rgba(255,215,245,.95)) drop-shadow(0 0 11px rgba(160,230,255,.8))}
+.ca-front>i{position:absolute;left:calc((var(--fx, .45) - .28 + var(--x) * .56) * 100%);bottom:4%;width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:var(--ap);box-shadow:0 0 6px 2px var(--apg);opacity:0;animation:caRise var(--t) linear var(--d) infinite}
+.ca-front[data-lv="1"]>i:nth-child(n+4),.ca-front[data-lv="2"]>i:nth-child(n+7),.ca-front[data-lv="3"]>i:nth-child(n+11){display:none}
+@keyframes caRise{0%{opacity:0;transform:translate(0,0) scale(1)}15%{opacity:1}100%{opacity:0;transform:translate(calc((var(--x) - .5) * 34px),calc(var(--ch) * -.72)) scale(.35)}}
+.ca-back[data-k=fire]{--ag:rgba(255,165,60,.85);--ag2:rgba(255,110,30,.35);background:radial-gradient(52% 16% at var(--gx) 94%,rgba(255,150,40,.9),transparent 80%),radial-gradient(44% 46% at var(--gx) 52%,var(--ag),var(--ag2) 52%,transparent 76%)}
+.ca-front[data-k=fire]{--ap:#fff0b8;--apg:rgba(255,120,20,.95)}
+.ca-front[data-k=fire]>i{width:calc(5px * var(--s));height:calc(6.5px * var(--s));border-radius:50% 50% 45% 45%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 60%,#fff 0 22%,#ffe27a 45%,#ff8a1e 100%);box-shadow:0 0 5px 2px rgba(255,140,20,.95),0 0 12px 4px rgba(255,80,0,.5)}
+.ca-back[data-k=kone]{--ag:rgba(255,40,30,.9);--ag2:rgba(255,80,40,.45)}
+.ca-front[data-k=kone]>i{width:calc(3px * var(--s));height:calc(14px * var(--s));border-radius:3px;--ap:#ff8a6a;--apg:rgba(255,30,10,.9)}
+.ca-front[data-k=kone]>i{animation-duration:calc(var(--t) * .7)}
+.ca-back[data-k=cold]{--ag:rgba(180,230,255,.85);background:radial-gradient(56% 18% at var(--gx) 94%,var(--ag),transparent 75%),radial-gradient(44% 46% at var(--gx) 52%,rgba(190,235,255,.4),transparent 74%)}
+.ca-front[data-k=cold]>i{width:calc(3.5px * var(--s));height:calc(3.5px * var(--s));--ap:#f2fbff;--apg:rgba(160,215,255,.85);animation-duration:calc(var(--t) * 1.7)}
+.ca-back[data-k=candy]{background:linear-gradient(105deg,transparent 12%,rgba(255,140,215,.65) 30%,rgba(140,230,255,.6) 50%,rgba(255,240,150,.55) 68%,transparent 86%);-webkit-mask-image:radial-gradient(46% 44% at var(--gx) 45%,#000 30%,transparent 75%);mask-image:radial-gradient(46% 44% at var(--gx) 45%,#000 30%,transparent 75%);animation:caAurora 3.2s ease-in-out infinite}
+@keyframes caAurora{0%,100%{opacity:calc(var(--ao) * .6);transform:translateX(-6%) skewX(-4deg)}50%{opacity:var(--ao);transform:translateX(6%) skewX(4deg)}}
+.ca-front[data-k=candy]>i{left:calc((var(--fx, .45) - .3 + var(--x) * .6) * 100%);bottom:calc(14% + var(--y) * 70%);width:calc(9px * var(--s));height:calc(9px * var(--s));border-radius:0;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);box-shadow:none;background:linear-gradient(135deg,#fff,#ffc6ea 50%,#b8ecff);animation:caTwinkle calc(var(--t) * .9) ease-in-out var(--d) infinite}
+@keyframes caTwinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@media (prefers-reduced-motion:reduce){.ca-front{display:none!important}.ca-back{animation:none}}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -4683,8 +4722,23 @@ save(); renderNight();
 /* src/js/night-ui.js */
 
 const ORD = ['①', '②', '③', '④', '⑤'];
+const AURA_N = 14;
+const auraFrontHTML = () => `<i class="ca-front" id="caFront">${Array.from({ length: AURA_N }, (_, i) => `<i style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
+function auraSync(o = {}) {
+const b = $('caBack'), f = $('caFront'); if (!b || !f || !N) return;
+const c = chefArt(); let k = '', lv = 0;
+if (c === 'honoka') {
+if (heatOf().off) { k = 'kone'; const n = o.kone != null ? o.kone : (N.kone || 0); lv = n <= 0 ? 0 : n < 4 ? 1 : n < 8 ? 2 : n < 12 ? 3 : 4; }
+else { k = 'fire'; lv = Math.max(0, Math.min(4, o.heat != null ? o.heat : N.heat)); }
+} else if (c === 'minamo') {
+if (candyNight()) { k = 'candy'; const n = o.chain != null ? o.chain : chainNow; lv = n <= 0 ? 0 : n < 3 ? 1 : n < 5 ? 2 : n < 7 ? 3 : 4; }
+else { k = 'cold'; const tp = o.heat != null ? o.heat : N.heat; lv = tp <= 1 ? 4 : tp === 2 ? 2 : 0; }
+}
+for (const e of [b, f]) { if (e.dataset.k !== k) e.dataset.k = k; if (e.dataset.lv !== String(lv)) e.dataset.lv = lv; }
+}
 function setHeat(h) {
 const bar = $('heatBar'), lab = $('heatLabel'), st = $('stage'); if (!st) return;
+auraSync({ heat: h });
 const H = heatOf();   // ほのかの火力も みなもの飴の温度も、場がなくても効く（11/20 ほのかも）
 if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
 if (bar && !H.off) {   // こね生地・ちいさなキャンディ（11/21 夜）はメーターなし（右上は こね・れんさ の数だけ）
@@ -4760,8 +4814,8 @@ const koneOn = () => N && N.build === 'kone';
 const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた回数 ${N.kone}">こね <b>${N.kone}</b></span>` : '';   // 字はラウンドの札と同じ（11/21 夜 しょーくん「ラウンド表記と同じく文字の大きさや中央揃えも」）
 let chainNow = 0;
 const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
-function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); if (n >= 4 && chainNow < 4) koeMore('chain', true); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
-function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
+function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); if (n >= 4 && chainNow < 4) koeMore('chain', true); chainNow = n; auraSync({ chain: n }); document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
+function setKone(n) { auraSync({ kone: n }); document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
 const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
 setKone(N.kone); heroFor('joy', 900);
@@ -5332,7 +5386,7 @@ const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundE
 const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
 $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
 <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
-<i class="chef-sh"></i>${heroImg(hk)}
+<i class="ca-back" id="caBack"></i><i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
 <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
 ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>

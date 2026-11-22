@@ -6,8 +6,26 @@ const ORD = ['①', '②', '③', '④', '⑤'];
 
 /* ---------- 演出 ---------- */
 /* 鉄板の火力（1〜4）。フィールドがないと焼けないので、光らせない */
+/* キャラのまわりの空気（11/22 しょーくん「火力や冷たさに応じて キャラの周りに火の粉や冷気を纏う」「連鎖はキラキラのオーロラ・パン生地は赤いオーラ」）：
+   ほのかの火力クッキー＝火の粉（火力 0〜4）・こね生地＝赤いオーラ（この夜にこねた回数）・みなもの大作＝冷気（ひえひえ＝強い・ひんやり＝弱い）・ちいさなキャンディ＝オーロラとキラキラ（れんさ）。
+   #caBack＝シェフのうしろの光・#caFront＝シェフの前の粒（AURA_N こ・強さ data-lv 0〜4 で見せる数が変わる）。動くのは transform と opacity だけ（style-battle.css の「キャラのまわりの空気」） */
+const AURA_N = 14;
+const auraFrontHTML = () => `<i class="ca-front" id="caFront">${Array.from({ length: AURA_N }, (_, i) => `<i style="--x:${((i * 37) % 100 / 100).toFixed(2)};--y:${((i * 53) % 100 / 100).toFixed(2)};--d:${(-((i * .61) % 2.4)).toFixed(2)}s;--t:${(1.7 + (i * 7 % 10) / 10).toFixed(1)}s;--s:${(.7 + (i * 3 % 5) / 10).toFixed(1)}"></i>`).join('')}</i>`;
+function auraSync(o = {}) {
+  const b = $('caBack'), f = $('caFront'); if (!b || !f || !N) return;
+  const c = chefArt(); let k = '', lv = 0;
+  if (c === 'honoka') {
+    if (heatOf().off) { k = 'kone'; const n = o.kone != null ? o.kone : (N.kone || 0); lv = n <= 0 ? 0 : n < 4 ? 1 : n < 8 ? 2 : n < 12 ? 3 : 4; }
+    else { k = 'fire'; lv = Math.max(0, Math.min(4, o.heat != null ? o.heat : N.heat)); }
+  } else if (c === 'minamo') {
+    if (candyNight()) { k = 'candy'; const n = o.chain != null ? o.chain : chainNow; lv = n <= 0 ? 0 : n < 3 ? 1 : n < 5 ? 2 : n < 7 ? 3 : 4; }
+    else { k = 'cold'; const tp = o.heat != null ? o.heat : N.heat; lv = tp <= 1 ? 4 : tp === 2 ? 2 : 0; }
+  }
+  for (const e of [b, f]) { if (e.dataset.k !== k) e.dataset.k = k; if (e.dataset.lv !== String(lv)) e.dataset.lv = lv; }
+}
 function setHeat(h) {
   const bar = $('heatBar'), lab = $('heatLabel'), st = $('stage'); if (!st) return;
+  auraSync({ heat: h });
   const H = heatOf();   // ほのかの火力も みなもの飴の温度も、場がなくても効く（11/20 ほのかも）
   if (H.none) return;   // わかば（11/19）：メーターはない（くだものはカードの絵で育つ）
   if (bar && !H.off) {   // こね生地・ちいさなキャンディ（11/21 夜）はメーターなし（右上は こね・れんさ の数だけ）
@@ -96,8 +114,8 @@ const koneBadge = () => koneOn() ? `<span class="kone-n" aria-label="こねた�
 /* ちいさなキャンディ（11/21 夜 しょーくん「温度ゲージがあった所に れんさの回数」）：バトル中の れんさ（ラウンドのはじめは場の chain0・キャンディの発動で のびて、素材や道具で0） */
 let chainNow = 0;
 const chainBadge = () => candyNight() ? `<span class="kone-n chain-n" aria-label="れんさ ${chainNow}">れんさ <b>${chainNow}</b></span>` : '';
-function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); if (n >= 4 && chainNow < 4) koeMore('chain', true); chainNow = n; document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
-function setKone(n) { document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
+function setChain(n) { if (n === chainNow) return; if (n > chainNow) candyRain(n); if (n >= 4 && chainNow < 4) koeMore('chain', true); chainNow = n; auraSync({ chain: n }); document.querySelectorAll('.chain-n').forEach(el => { el.querySelector('b').textContent = n; el.setAttribute('aria-label', 'れんさ ' + n); replay(el, 'bump'); }); }
+function setKone(n) { auraSync({ kone: n }); document.querySelectorAll('.kone-n').forEach(el => { el.querySelector('b').textContent = n; replay(el, 'bump'); }); }
 function kneadFx(i, add, born) {
   const slot = tslot(i); if (slot) floatAt(slot, `こね+${add}`, 'cookup');
   setKone(N.kone); heroFor('joy', 900);
@@ -745,7 +763,7 @@ function renderNight() {
   const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
     <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>
-      <i class="chef-sh"></i>${heroImg(hk)}
+      <i class="ca-back" id="caBack"></i><i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
