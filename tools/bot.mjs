@@ -1,6 +1,7 @@
 // 夜のおもてなしのボット（数字合わせ用・11/19）：ゲームの src をそのまま読み、画面の関数は空にして、9ラウンドを何回も遊ぶ
 // node tools/bot.mjs [回数=60] [ビルド=ぜんぶ] [日=1]
 //   IDEAL=1：夜の合計（ほぼ★3で固めた夜のまんなか＝理想の最終スコア）
+//   ICHI=kakao,zeri：夜市で買った素材（ふしぎな素材）を、その夜のデッキに入れて遊ぶ
 //   R1=1：ラウンド1だけ（★2 がスタートかアンカーにある夜の味パワーと、おなかの半分に届く割合）
 //   smart＝すこし賢い（まぜる・買う・入れかえを、その場の味パワーが上がる順に・並びも入れかえて一番いい形に）
 //   weak ＝ビルドを組めない人（買えるものを順に置くだけ・まぜるのは目の前でできるときだけ・並べかえない）
@@ -106,7 +107,7 @@ function weakShop() {
 function sim(build, day, smart) {
   S = newState(); S.day = day; S.today = newDay(day); S.seen = S.seen || {}; S.seen['mate:minamo'] = 1; S.seen['mate:wakaba'] = 1; S.seen.m9 = 1;
   S.today.hearts = HEARTS_;
-  startNight(); N = S.night; N.stage = 'pick'; pickBuild(build); pickGo(); N = S.night; N.stage = 'shop';
+  startNight(); N = S.night; N.ichi = ICHI_.slice(); N.stage = 'pick'; pickBuild(build); pickGo(); N = S.night; N.stage = 'shop';
   const out = [];
   for (let r = 1; r <= ROUNDS; r++) {
     N.stage = 'shop';
@@ -124,6 +125,7 @@ function sim(build, day, smart) {
 `;
 vm.runInContext(DRIVER, ctx, { filename: 'driver.js' });
 vm.runInContext(`HEARTS_ = ${HEARTS};`, ctx);
+vm.runInContext(`ICHI_ = ${JSON.stringify((process.env.ICHI || '').split(',').filter(Boolean))};`, ctx);   // ICHI=kakao,zeri：夜市で買った素材をその夜のデッキに入れる（11/22 夜・夜市の素材の強さくらべ）
 if (process.env.TK) vm.runInContext(`TK_ = ${+process.env.TK};`, ctx);
 // BAL=kone:0.7:1.1,cookie:1:1.05 … で、ビルドの強さの曲線（BUILDS の bal）をためしに変える
 if (process.env.JS) vm.runInContext(process.env.JS, ctx);   // JS='MATS.candybin.fx.chainFin = 0.02' など：ためしに数字を変えてはかる（11/21 夜）
@@ -134,7 +136,12 @@ const f = n => n >= 1e4 ? (n / 1e4).toFixed(n >= 1e5 ? 0 : 1) + '万' : String(M
 for (const b of builds) {
   const sm = [], wk = [];
   const run = smart => { for (let t = 0; ; t++) { try { return vm.runInContext(`sim(${JSON.stringify(b)}, ${DAY}, ${smart})`, ctx); } catch (e) { const m = /^(\w+) is not defined/.exec(e.message); if (!m || t > 30) throw e; vm.runInContext(`${m[1]} = () => 0;`, ctx); console.log('（空にした：' + m[1] + '）'); } } };
-  for (let k = 0; k < RUNS; k++) { sm.push(run(true)); wk.push(run(false)); }
+  for (let k = 0; k < RUNS; k++) { sm.push(run(true)); if (!process.env.TOT) wk.push(run(false)); }
+  if (process.env.TOT) {   // TOT=1：夜の合計（smart だけ）の平均と 50/75%（ICHI＝夜市の素材の強さくらべ用・11/22 夜）
+    const all = sm.map(x => x.reduce((u, v) => u + v, 0)), mean = all.reduce((u, v) => u + v, 0) / all.length;
+    console.log(`${b}\t${Math.round(mean)}\t${pct(all, .5)}\t${pct(all, .75)}`);
+    continue;
+  }
   if (process.env.R1) {   // R1=1：ラウンド1だけ（11/20 ねらい：昼のハート0で ★2 をスタートかアンカーに置いた夜の まんなか ≒ おなかの半分）
     const q = vm.runInContext(`quota(1, ${DAY}, ${JSON.stringify(b)})`, ctx), e = sm.filter(x => x.s2 === 1).map(x => x[0]);
     const hit = a => Math.round(a.filter(v => v >= q / 2).length / Math.max(1, a.length) * 100);

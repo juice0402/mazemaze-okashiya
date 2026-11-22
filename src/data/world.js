@@ -54,10 +54,11 @@ function kaisoBuy() { const st = kaisoNext(); if (!st || S.money < st.price) ret
    「来店の前に寄る」「品ごと＋たまに大安売り」「毎晩4品だけ」。ページは ichi.js。値段と割合はぽぽちの仮 */
 const ICHI_N = 3, ICHI_SHOW = 4;
 const ICHI_MUL = [0.7, 0.85, 1, 1, 1.2, 1.4], ICHI_SALE_P = 0.15, ICHI_SALE = 0.5;   // 品ごとの値段のゆれ（その日のもとの値段に かける）・大安売りの夜（約7晩に1回・ぜんぶ半額）
-/* もとの値段はお店が育つほど上がる（11/22 夜 しょーくん「ちょうど3枚買い続ければお金が減っていくくらいに」）：22日通しの1日のかせぎ（昼の売上＋夜のお礼）の
-   ほぼ1/3 に、ゆれと大安売りをならして 3まいで 1.1倍くらい。2日目 950円・5日目 1,950円・10日目 3,000円・20日目 3,850円・30日目 4,100円（上は4,200円） */
-const ICHI_TOP = 4200, ICHI_TAU = 8;
-const ichiBase = day => Math.round(ICHI_TOP * (1 - Math.exp(-day / ICHI_TAU)) / 50) * 50;
+/* もとの値段は いつも同じ（11/22 夜 しょーくん「最初はすごく高いカードって印象で、家具とか揃えてきてようやく1枚買えるようになってくる感じで、終盤に価格を合わせる」
+   「昼の収入で毎日3枚買い続けたら永久にプラマイゼロ」・夜のお礼のお金はなし）：家具をそろえた終盤（40日目〜・棚12マス）の1日のかせぎ（昼の売上−仕入れ）が 約7,700〜9,000円
+   → ゆれと大安売りをならした3まいが ほぼ同じ。2日目（かせぎ 約1,400円）は2日ぶん・10日目（約3,600円）で1日1まい。改装（合計20万円）は買わない日の貯金で */
+const ICHI_PRICE = 3000;
+const ichiBase = () => ICHI_PRICE;
 const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶことのある素材
 /* その夜の仕入れ：日にちで決まる（読みなおしても同じ）。{ sale, items:[{ id, price, tag:'sale'|'down'|'up'|'' }] } */
 function ichiStock(day = S.day) {
@@ -76,15 +77,15 @@ function ichiStock(day = S.day) {
 /* お金（11/18 しょーくん「現実の値段っぽく。売値・原価・モンスターのお金のバランスが崩れないように」）
    お菓子1こ：ふつう200〜300円・モンスター素材入り400〜600円（cards.js の recipeOf の price＝材料の value×YEN_PER_VALUE）
    基本素材の仕入れ（原価）は売値の3割くらい＝1回分（3こ）で材料1つ 80〜150円（中身と値段は昼のチャットの hiru.js）
-   序盤の1日の売上は1,500円くらい。モンスターのお礼のコインは、その1〜5割 */
+   序盤の1日の売上は1,500円くらい。夜のお礼は素材だけ（11/22 夜〜 お金は昼だけ） */
 const START_MONEY = 1000;    // はじめのお金（プロローグ「お財布、さみしい」）
 const YEN_PER_VALUE = 7;
 /* おもてなしの満足（味パワーの合計が、おなかいっぱいの量 nightHP のどれだけか）→ お礼。いつも少しはくれる */
 const MOODS = [
   null,
-  { name: 'ちょっと満足', mats: 1, coins: 200 },
-  { name: '満足', mats: 2, coins: 400 },
-  { name: '大満足', mats: 3, coins: 800 },
+  { name: 'ちょっと満足', mats: 1 },   // お礼は素材だけ（11/22 夜 しょーくん「夜のバトルで勝っても、お金の報酬をもらえないように」＝お金は昼だけ）
+  { name: '満足', mats: 2 },
+  { name: '大満足', mats: 3 },
 ];
 const moodOf = (score, belly) => score >= belly ? 3 : score >= belly * 0.5 ? 2 : 1;
 

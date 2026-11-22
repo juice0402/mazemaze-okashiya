@@ -40,7 +40,6 @@ function renderResult() {
     <div class="panel tight sum">
       <div class="sum-row"><dl>
         <dt>お昼の売上</dt><dd>${fmt(T.sales)}円</dd>
-        <dt>お礼のコイン</dt><dd>${fmt(T.coins)}円</dd>
         <dt>おもてなし</dt><dd class="sum-om">${mon ? `<span>${esc(mon.name)}</span>${mood ? `<span>${mood.name}</span>` : ''}` : 'なし'}</dd>
         <dt>もらった素材</dt><dd>${gifts || 'なし'}</dd>
       </dl>${jarHTML()}</div>

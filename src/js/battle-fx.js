@@ -613,13 +613,13 @@ function megaBoom(p) {
 let frameCracks = [];
 /* 描きおろしの こわれた額縁（11/22 しょーくん「枠に入る亀裂がダサい・描き下ろしじゃないから しょぼく見える。本当の亀裂に加えて、破壊された木材も」・fx-frame-break）：
    1回め＝ひび（fx-fbreak-crack）→ 2回め＝内がわが欠ける（chip）→ 3回め＝穴（hole）と、同じ所が だんだんこわれる。絵は額縁の右の木のふちと同じ たて長の木で、
-   W・H＝絵の大きさ・sl/sr＝絵の中の木のふちの左右（px）。木のふちを 舞台の額縁の右のふち（border-image の 74→20px のうち 木は35px ぶん＝約9.5px）より少し太い 12px にあわせる。
+   W・H＝絵の大きさ・sl/sr＝絵の中の木のふちの左右（px）。木のふちを 舞台の額縁の右のふち（border-image の 74→20px のうち 木は35px ぶん＝約9.5px・外のはしは 0.5px あく）と同じ所・同じ太さにあわせる。
    欠けた所・穴のうしろは こげ茶のすき間（.dc-brk::before）。上下は うすくして額縁になじませる */
 const FBREAK = [{ k: 'crack', W: 192, H: 527, sl: 58, sr: 180 }, { k: 'chip', W: 174, H: 526, sl: 51, sr: 173 }, { k: 'hole', W: 186, H: 529, sl: 45, sr: 171 }];
 function frameBreakHTML(i, y, fresh) {
   const B = FBREAK[Math.min(i, 2)], src = ART['fx-fbreak-' + B.k];
   if (!src) return `<i class="dc-crack${fresh ? ' new' : ''}" style="top:${(y * 100).toFixed(1)}%;--cv:${i % 2}">${CRACK_SVG}</i>`;
-  const w = 12 * B.W / (B.sr - B.sl), r = .8 - (B.W - B.sr) / B.W * w;
+  const w = 9.5 * B.W / (B.sr - B.sl), r = .5 - (B.W - B.sr) / B.W * w;   // 11/22 夜 しょーくん「木枠がズレてた」：絵の木（金のふち＋三つ編み）を額縁の木と同じ 9.5px・外のはし 0.5px にそろえた（前は 12px で金のふちが内がわに3pxずれていた）
   return `<i class="dc-brk ${B.k}${fresh ? ' new' : ''}" style="top:${(y * 100).toFixed(1)}%;right:${r.toFixed(1)}px;width:${w.toFixed(1)}px;aspect-ratio:${B.W}/${B.H};--bl:${(B.sl / B.W * 100).toFixed(1)}%;--br:${((B.W - B.sr) / B.W * 100).toFixed(1)}%"><img src="${src}" alt=""></i>`;
 }
 const frameCrackHTML = () => frameCracks.length ? frameBreakHTML(frameCracks.length - 1, frameCracks[0], false) : '';   // 同じ所が だんだんこわれる（いちばん新しい こわれ方だけ出す）

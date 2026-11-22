@@ -627,21 +627,20 @@ function coolDown() {
   return N.heat !== h0 ? [h0, N.heat] : null;
 }
 /* おもてなしの結果：満足（MOODS）で、モンスター素材（倉庫へ・次の朝から使える）とお礼のコイン（お店のお金）をくれる */
-/* 夜の結果の音（11/19 H-034）：お礼のコイン・大満足はジングルと よろこぶ声・ちょっと満足は しょんぼりの声 */
+/* 夜の結果の音（11/19 H-034）：お礼の素材・大満足はジングルと よろこぶ声・ちょっと満足は しょんぼりの声 */
 function nightEndSnd() {
   const m = S.today.mood, L = KOE_END[chefArt()] || [];
-  setTimeout(() => sePlay('coin'), 650);
+  setTimeout(() => sePlay('drop'), 650);   // 素材をもらう音（11/22 夜〜 お礼のコインはなし）
   if (m >= 3) { jgPlay('jg-manzoku'); if (L[0]) setTimeout(() => koePlay(L[0]), 400); }
   else if (m <= 1) { jgPlay('jg-dame'); if (L[1]) setTimeout(() => koePlay(L[1]), 400); }   // だめだったときのジングル（11/21 司令塔・音は昼のチャットの assets/bgm/jg-dame.mp3）
 }
 function endNight() {
   const M = MONSTERS[N.mon], belly = nightHP(S.day), mood = moodOf(N.score, belly), R = MOODS[mood];
   S.stock[M.drop] = (S.stock[M.drop] || 0) + R.mats;
-  S.money += R.coins;
   if (!S.seenMon.includes(M.id)) S.seenMon.push(M.id);
   const best = N.score > (S.best[N.build] || 0);   // 自己ベスト（11/22 しょーくん）
   if (best) S.best[N.build] = N.score;
-  Object.assign(S.today, { score: N.score, belly, mood, gifts: { [M.drop]: R.mats }, coins: R.coins, best });
+  Object.assign(S.today, { score: N.score, belly, mood, gifts: { [M.drop]: R.mats }, coins: 0, best });
   N.stage = 'thanks';
   save(); renderNight();
 }

@@ -815,7 +815,7 @@ function renderNight() {
     body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood >= 3 ? 'おなかいっぱい！' : R.name + '！'}</h2>
         <p class="bignum">${fmt(rec.score)}</p>${rec.best ? '<p class="end-best">自己ベスト こうしん！</p>' : ''}<p>${esc(mon.name)}が おなかいっぱいになるのは ${fmt(rec.belly)}</p>
         <p class="end-mood"><b>${R.name}</b>のお礼</p>
-        <div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div><div class="got coin"><span><i class="cn"></i>コイン ${fmt(R.coins)}円</span></div></div>
+        <div class="gotrow"><div class="got"><img src="${matURL(mon.drop)}" alt=""><span>${esc(MATS[mon.drop].short)} ×${R.mats}</span></div></div>
       </div><button class="big" data-act="toResult">1日のまとめへ</button>`;
   } else {
     const shop = N.stage === 'shop';
