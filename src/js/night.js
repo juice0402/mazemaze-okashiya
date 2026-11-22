@@ -37,16 +37,29 @@ function startNight() {
     mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     sel: null, view: false, last: null,
-    build: open.includes(S.build) ? S.build : open[0], kone: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
+    build: open.includes(S.build) ? S.build : open[0], kone: 0, pickChef: null, pkPage: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
   };
   S.today.belly = nightHP(S.day, S.night.build);   // おなかはビルドで変わる（11/19・world.js の quota）
-  N = S.night; nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
+  N = S.night; if (new Set(open.map(id => BUILDS[id].chef)).size === 1) N.pickChef = BUILDS[N.build].chef;   // シェフが1人なら はじめからビルドの一覧（11/22）
+  nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
-function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; nightPrep(); nightWarm(id, true); save(); renderNight(); }
+function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); renderNight(); }
+/* シェフ → ビルド（11/22）：pickChef＝そのシェフのビルドの一覧へ（前の夜とちがうシェフなら、そのシェフの1つめのビルドをえらんでおく）・pickBack＝シェフの一覧へ・pickNext＝いまのシェフのビルドの一覧へ */
+function pickChef(c) {
+  if (N.stage !== 'pick' || !CHEFS[c]) return;
+  const bs = openBuilds().filter(id => BUILDS[id].chef === c); if (!bs.length) return;
+  N.pickChef = c; N.pkPage = 0;
+  if (!bs.includes(N.build)) { N.build = bs[0]; nightPrep(); nightWarm(N.build, true); }
+  save(); renderNight();
+}
+function pickBack() { if (N.stage !== 'pick') return; N.pickChef = null; N.pkPage = 0; save(); renderNight(); }
+function pickNext() { if (N.stage === 'pick') pickChef(BUILDS[N.build] ? BUILDS[N.build].chef : 'honoka'); }
+function pickPageGo(d) { if (N.stage !== 'pick') return; N.pkPage = Math.max(0, (N.pkPage || 0) + d); renderNight(); }
 function pickGo() {
   if (N.stage !== 'pick') return;
+  if (!N.pickChef) return pickNext();
   S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
   save(); renderNight();
 }

@@ -938,21 +938,10 @@ text-shadow:0 4px 0 #3a0c02,0 0 18px rgba(255,140,40,.95);animation:dmgfly 1.05s
 .stage.st-pick .ov-top,.stage.st-pick .ov-heat{visibility:hidden}
 .stage.st-pick .dc-chibi{display:none}
 .pk-ttl{flex:none;margin:0;text-align:center;font-family:var(--disp);font-size:17px;letter-spacing:2px;color:#ffe9b0;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill;text-shadow:0 2px 0 #2a0c02}
-.pk-list{flex:1;min-height:0;display:flex;gap:10px;align-items:stretch;justify-content:center}
-button.pk-card{position:relative;flex:1 1 0;max-width:200px;min-width:0;display:flex;flex-direction:column;padding:0;border:16px solid transparent;border-radius:0;border-image:var(--ui-panel) 70 fill/16px stretch;background:none;box-shadow:none;color:#4a2814;text-align:left;font-weight:700;filter:brightness(.78) saturate(.75);transition:filter .2s,transform .2s}
-button.pk-card.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 10px rgba(255,190,80,.85));transform:translateY(-3px)}
-button.pk-card:active:not(:disabled){transform:scale(.97);box-shadow:none}
-.pk-pic{flex:1 1 0;min-height:56px;position:relative;margin:-6px -6px 6px;border-radius:9px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#fff3d6,#e9c48e)}
-.pk-pic img{position:absolute;left:50%;top:2%;height:175%;max-width:none;transform:translateX(-50%)}
-.pk-body{flex:none;display:flex;flex-direction:column;gap:4px}
-.pk-name{font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.1;color:#7a1a0c}
-.pk-chef{font-size:11px;color:#7a5a4a}
-.pk-cards{display:flex;gap:4px}
 .pk-mini{flex:1;min-width:0;aspect-ratio:5/7}
 .pk-mini .pc{width:100%;height:100%}
 .pk-mini :is(.pc-name,.pc-attr,.pc-text,.pc-pow,.pc-cost,.pc-star){display:none}
 .pk-mini .pc-win{bottom:5.5cqw}
-.pk-text{font-size:11.5px;line-height:1.4;color:#4a2814}
 .pk-on{position:absolute;right:-10px;top:-14px;padding:2px 8px;border-radius:999px;font-style:normal;font-size:11px;font-weight:900;color:#fff;background:#d8503a;box-shadow:0 0 0 2px #fff4e0,0 2px 0 rgba(0,0,0,.35)}
 .pk-trial{flex:none;margin:0;text-align:center;font-size:10.5px;color:#fff0d8;text-shadow:0 1px 0 #2a170c}
 .kone-n{flex:none;display:inline-flex;justify-content:center;align-items:center;gap:2px;font-family:inherit;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0;white-space:nowrap;color:var(--milk);text-shadow:1px 1px 0 #2a170c,-1px 1px 0 #2a170c}
@@ -1040,23 +1029,32 @@ animation:tmist 12s ease-in-out infinite alternate}
 .fx-petit img{width:100%;height:100%;object-fit:contain;rotate:var(--pr,0deg)}
 .a-clead{--ac:#ff8fd0}
 .buff.b-clead{--bc:#d4549a}
-.pk-list.many{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(0,1fr);gap:8px}
-.pk-list.many button.pk-card{max-width:none;flex-direction:row;border-width:12px;border-image-width:12px}
-.pk-list.many .pk-pic{flex:0 0 38%;min-height:0;margin:-4px 6px -4px -4px}
-.pk-list.many .pk-pic img{height:190%}
-.pk-list.many .pk-body{flex:1 1 0;min-width:0;gap:2px;justify-content:center}
-.pk-list.many .pk-name{font-size:14px}
-.pk-list.many .pk-chef{font-size:10px}
-.pk-list.many .pk-cards{display:none}
-.pk-list.many .pk-text{font-size:10.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.pk-list.many .pk-on{right:auto;left:50%;translate:-50% 0;top:-23px;font-size:10px}
-.pk-name,.pk-chef{word-break:keep-all;overflow-wrap:anywhere}
-.pk-list.many .pk-pic{flex-basis:34%}
-.pk-list.many button.pk-card{container-type:size}
-@container (max-height:118px){.pk-list.many .pk-text{-webkit-line-clamp:3}}
-@container (max-height:104px){.pk-list.many .pk-text{-webkit-line-clamp:2}}
-@container (max-height:90px){.pk-list.many .pk-chef{display:none}}
 .pk-on{white-space:nowrap}
+.pk-head{flex:none;position:relative;display:flex;align-items:center;justify-content:center;min-height:26px}
+.pk-head .pk-ttl{padding:0 64px}
+.pk-back{position:absolute;left:0;top:50%;translate:0 -50%;padding:3px 10px;font-size:11px;min-height:0}
+.pk-rows{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+button.pk-row{position:relative;flex:0 1 150px;min-height:0;container-type:size;display:flex;align-items:stretch;gap:9px;padding:2px 8px 2px 2px;border:10px solid transparent;border-radius:0;border-image:var(--ui-strip) 30 fill/10px stretch;background:none;box-shadow:none;color:#4a2814;text-align:left;font-weight:700;transition:transform .15s,filter .2s}
+button.pk-row:active:not(:disabled){transform:scale(.98);box-shadow:none}
+button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(255,190,80,.8))}
+.pk-fig{flex:0 0 27%;position:relative;overflow:hidden;border-radius:8px;background:radial-gradient(circle at 50% 32%,#fff5de,#ecc996)}
+.pk-fig img{position:absolute;left:50%;top:4%;height:230%;max-width:none;transform:translateX(-50%)}
+.pk-row:not(.pkc) .pk-fig img{top:2%;height:200%}
+.pk-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px;container-type:inline-size}
+.pk-name{font-family:var(--disp);font-weight:400;font-size:17px;line-height:1.1;color:#7a1a0c;word-break:keep-all;overflow-wrap:anywhere}
+.pk-sub{font-size:11px;line-height:1.3;color:#7a5a4a;word-break:keep-all;overflow-wrap:anywhere}
+.pk-text{font-size:11px;line-height:1.35;font-weight:500;color:#4a2814;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pk-cards{display:flex;gap:5px;height:clamp(34px,32%,52px);margin-top:2px}
+.pk-mini{flex:none;height:100%;aspect-ratio:5/7}
+.pk-tags{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:2px}
+.pk-tags i{font-style:normal;font-size:11px;line-height:1.2;color:#5a3404;padding:0 2px;border:solid transparent;border-width:3px 9px 4px;border-image:var(--ui-chip-gold) 49% 18% 49% 18% fill/10px 11px stretch;white-space:nowrap}
+.pk-go{flex:none;align-self:center;width:10px;height:10px;border:solid #b07a4a;border-width:0 3px 3px 0;rotate:-45deg;margin:0 4px 0 0}
+.pk-row .pk-on{right:10px;top:-14px}
+.pk-pager{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;font-size:12px;font-weight:800;color:#fff2d8;text-shadow:0 1px 0 rgba(42,20,8,.8)}
+.pk-pager .pill{padding:3px 12px;min-height:0;font-size:12px}
+.tiles.pk-hide{display:none}
+@container (max-height:118px){.pk-text{-webkit-line-clamp:1}.pk-cards{height:30px}}
+@container (max-height:96px){.pk-row:not(.pkc) .pk-sub{display:none}}
 .night[data-chef="wakaba"] .heat-label,.night[data-chef="wakaba"] .heat-bar,.night[data-chef="wakaba"] .embers{display:none}
 .fslot .bin-in{position:absolute;left:4%;right:4%;bottom:5%;display:flex;justify-content:center;gap:3%;z-index:4;pointer-events:none}
 .fslot .bin-in>*{width:28%;aspect-ratio:1;border-radius:50%;flex:none}
@@ -4153,15 +4151,27 @@ S.night = {
 mon, field: null, heat: START_HEAT, call: false, stage: open.length > 1 ? 'pick' : 'arrive', round: 1, coins: 0, picks: ROUND1_PICKS,
 board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
 sel: null, view: false, last: null,
-build: open.includes(S.build) ? S.build : open[0], kone: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
+build: open.includes(S.build) ? S.build : open[0], kone: 0, pickChef: null, pkPage: 0,   // build＝今夜のビルド（11/18）・kone＝この夜にこねた回数（こね生地）
 };
 S.today.belly = nightHP(S.day, S.night.build);   // おなかはビルドで変わる（11/19・world.js の quota）
-N = S.night; nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
+N = S.night; if (new Set(open.map(id => BUILDS[id].chef)).size === 1) N.pickChef = BUILDS[N.build].chef;   // シェフが1人なら はじめからビルドの一覧（11/22）
+nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
 save(); render();
 }
-function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; nightPrep(); nightWarm(id, true); save(); renderNight(); }
+function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); renderNight(); }
+function pickChef(c) {
+if (N.stage !== 'pick' || !CHEFS[c]) return;
+const bs = openBuilds().filter(id => BUILDS[id].chef === c); if (!bs.length) return;
+N.pickChef = c; N.pkPage = 0;
+if (!bs.includes(N.build)) { N.build = bs[0]; nightPrep(); nightWarm(N.build, true); }
+save(); renderNight();
+}
+function pickBack() { if (N.stage !== 'pick') return; N.pickChef = null; N.pkPage = 0; save(); renderNight(); }
+function pickNext() { if (N.stage === 'pick') pickChef(BUILDS[N.build] ? BUILDS[N.build].chef : 'honoka'); }
+function pickPageGo(d) { if (N.stage !== 'pick') return; N.pkPage = Math.max(0, (N.pkPage || 0) + d); renderNight(); }
 function pickGo() {
 if (N.stage !== 'pick') return;
+if (!N.pickChef) return pickNext();
 S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
 save(); renderNight();
 }
@@ -5201,7 +5211,7 @@ const s = N.sel, c = s.where === 'field' ? { cid: 'b:' + N.field } : cardAt(s);
 return `<button class="pill sub" data-act="sell">${sellLabel(cardDef(c.cid))}</button>`;
 }
 function barHTML() {
-if (N.stage === 'pick') return '<button class="bake" data-act="pickGo">これにする！</button>';
+if (N.stage === 'pick') return N.pickChef ? '<button class="bake" data-act="pickGo">これにする！</button>' : '<button class="bake" data-act="pickNext">つぎへ</button>';
 if (fighting) return `<button class="pill sub spd${bSpeed > 1 ? ' on' : ''}" data-act="spd">${spdLabel()}</button>`;   // バトル中は、はやおくり
 return `<button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>おもてなし！</button>`;
 }
@@ -5246,17 +5256,38 @@ if (window.ResizeObserver) { shopRO = new ResizeObserver(fit); shopRO.observe(sc
 if (document.fonts && document.fonts.status !== 'loaded') document.fonts.ready.then(() => sc.isConnected && fit());   // 字の読みこみのあとも はかりなおす
 }
 const pkBr = nm => (String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]).map(esc).join('<wbr>').replace(/の(?!<wbr>|$)/g, 'の<wbr>');   // 「の」のあとでも折れる（11/21：大作の飴細工が「飴細／工」で折れていた）
+const pkPer = () => (innerHeight >= 740 ? 4 : 3);
+const pkChefs = () => [...new Set(openBuilds().map(id => BUILDS[id].chef))];
+function pkPage(items) {
+const per = pkPer(), pages = Math.max(1, Math.ceil(items.length / per)), pg = Math.min(pages - 1, Math.max(0, N.pkPage || 0));
+return { list: items.slice(pg * per, pg * per + per), pager: pages > 1 ? `<div class="pk-pager"><button class="pill sub" data-act="pkPage" data-d="-1" ${pg ? '' : 'disabled'} aria-label="まえのページ">◀</button><span>${pg + 1} / ${pages}</span><button class="pill sub" data-act="pkPage" data-d="1" ${pg < pages - 1 ? '' : 'disabled'} aria-label="つぎのページ">▶</button></div>` : '' };
+}
 function pickHTML() {
-const list = openBuilds().map(id => {
-const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;
-return `<button class="pk-card${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
-<span class="pk-pic">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(B.trait || C.trait)}</span>
-<span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
-<span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
+const chefs = pkChefs(), cur = BUILDS[N.build] ? BUILDS[N.build].chef : chefs[0], prev = BUILDS[S.build] ? BUILDS[S.build].chef : '';   // cur＝いま えらんでいる・prev＝前の夜のシェフ
+const trial = TRIAL ? '<p class="pk-trial">ためしのページ：本番では、こね生地は⑨のあと・みなもと わかばは仲間になった次の夜から</p>' : '';
+if (!N.pickChef) {
+const { list, pager } = pkPage(chefs);
+const rows = list.map(c => {
+const C = CHEFS[c], bs = openBuilds().filter(id => BUILDS[id].chef === c), pic = ART[C.art] || '';
+return `<button class="pk-row pkc${c === cur ? ' on' : ''}" data-act="pickC" data-id="${c}">
+<span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
+<span class="pk-body"><b class="pk-name">${esc(C.name)}</b><span class="pk-sub">${esc(C.job)}・<wbr>特性 ${esc(C.trait)}</span>
+<span class="pk-tags">${bs.map(id => `<i>${pkBr(BUILDS[id].name)}</i>`).join('')}</span></span>
+<i class="pk-go" aria-hidden="true"></i>${c === prev ? '<i class="pk-on">前の夜</i>' : ''}</button>`;
 }).join('');
-return `<div class="pickov"><p class="pk-ttl">今夜の おもてなし</p><div class="pk-list${openBuilds().length >= 4 ? ' many' : ''}">${list}</div>
-${TRIAL ? '<p class="pk-trial">ためしのページ：本番では、こね生地は⑨のあと・みなもと わかばは仲間になった次の夜から</p>' : ''}</div>`;
+return `<div class="pickov"><p class="pk-ttl">今夜の シェフ</p><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
+}
+const C = CHEFS[N.pickChef], { list, pager } = pkPage(openBuilds().filter(id => BUILDS[id].chef === N.pickChef));
+const rows = list.map(id => {
+const B = BUILDS[id], on = id === N.build, pic = ART[B.pic] || ART[C.art] || '';
+return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
+<span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
+<span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub">特性 ${esc(B.trait || C.trait)}</span>
+<span class="pk-text">${esc(B.text)}</span>
+<span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
+}).join('');
+const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
+return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
 }
 function renderNight() {
 if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
@@ -5277,7 +5308,7 @@ body = `<div class="panel end m${rec.mood}${happy ? ' win' : ''}"><h2>${rec.mood
 const shop = N.stage === 'shop';
 const H = heatOf();
 const ca = chefArt();
-body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? (candyNight() ? 'c' : N.heat) : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+body = `<div class="tiles${N.stage === 'pick' ? ' pk-hide' : ''}" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? (candyNight() ? 'c' : N.heat) : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
 `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
 <div class="bar">${barHTML()}</div>
 ${viewerHTML()}`;
@@ -7856,6 +7887,10 @@ reroll: () => reroll(),
 bake: () => omotenashi(),
 pickB: el => pickBuild(el.dataset.id),   // 夕方のシェフ・ビルドえらび（11/18）
 pickGo: () => pickGo(),
+pickC: el => pickChef(el.dataset.id),   // シェフ → ビルド（11/22）
+pickBack: () => pickBack(),
+pickNext: () => pickNext(),
+pkPage: el => pickPageGo(+el.dataset.d),
 next: () => nextRound(),
 openShop: () => goDay(),
 toEvening: () => goEvening(),

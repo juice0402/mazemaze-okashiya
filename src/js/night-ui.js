@@ -616,7 +616,7 @@ function sellBtn() {
   return `<button class="pill sub" data-act="sell">${sellLabel(cardDef(c.cid))}</button>`;
 }
 function barHTML() {
-  if (N.stage === 'pick') return '<button class="bake" data-act="pickGo">これにする！</button>';
+  if (N.stage === 'pick') return N.pickChef ? '<button class="bake" data-act="pickGo">これにする！</button>' : '<button class="bake" data-act="pickNext">つぎへ</button>';
   if (fighting) return `<button class="pill sub spd${bSpeed > 1 ? ' on' : ''}" data-act="spd">${spdLabel()}</button>`;   // バトル中は、はやおくり
   return `<button class="bake" data-act="bake" ${busy || N.stage !== 'shop' ? 'disabled' : ''}>おもてなし！</button>`;
 }
@@ -671,17 +671,41 @@ function shopFit() {
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：カードを並べる・毎晩・前の夜のビルドがえらばれている）。カードはシェフの絵・ビルドの名前・特性・代表のカード3まい・ひとこと */
 /* ビルドの名前の折り目：かたかなのかたまりの前後だけ（11/19 点検：「くだものケ／ーキ」「火力クッキ／ー」と ことばのとちゅうで折れていた。CSS は keep-all） */
 const pkBr = nm => (String(nm).match(/[ァ-ヶー]+|[^ァ-ヶー]+/g) || [String(nm)]).map(esc).join('<wbr>').replace(/の(?!<wbr>|$)/g, 'の<wbr>');   // 「の」のあとでも折れる（11/21：大作の飴細工が「飴細／工」で折れていた）
+/* 11/22 しょーくん「後々キャラもビルドも追加していく予定だから、キャラ選択→ビルド選択に」「レシピ帳みたいなレイアウトで横長・縦に列挙・左にキャラの姿・ビルドの特徴やキーカード3枚」「1ページに3〜4人・3〜4ビルド」：
+   N.pickChef がないとき＝シェフの一覧（さわると そのシェフのビルドへ）・あるとき＝そのシェフのビルドの一覧（さわって えらぶ → これにする！）。
+   シェフが1人だけの夜は、はじめからビルドの一覧。行は紙の行（.ms-good と同じ ui-strip の皮）。多いときはページ（PK_PER こずつ） */
+const pkPer = () => (innerHeight >= 740 ? 4 : 3);
+const pkChefs = () => [...new Set(openBuilds().map(id => BUILDS[id].chef))];
+function pkPage(items) {
+  const per = pkPer(), pages = Math.max(1, Math.ceil(items.length / per)), pg = Math.min(pages - 1, Math.max(0, N.pkPage || 0));
+  return { list: items.slice(pg * per, pg * per + per), pager: pages > 1 ? `<div class="pk-pager"><button class="pill sub" data-act="pkPage" data-d="-1" ${pg ? '' : 'disabled'} aria-label="まえのページ">◀</button><span>${pg + 1} / ${pages}</span><button class="pill sub" data-act="pkPage" data-d="1" ${pg < pages - 1 ? '' : 'disabled'} aria-label="つぎのページ">▶</button></div>` : '' };
+}
 function pickHTML() {
-  const list = openBuilds().map(id => {
-    const B = BUILDS[id], C = CHEFS[B.chef], on = id === N.build, pic = ART[B.pic] || ART.honoka;
-    return `<button class="pk-card${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
-      <span class="pk-pic">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-chef">${esc(C.name)}・<wbr>特性 ${esc(B.trait || C.trait)}</span>
-      <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span>
-      <span class="pk-text">${esc(B.text)}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
+  const chefs = pkChefs(), cur = BUILDS[N.build] ? BUILDS[N.build].chef : chefs[0], prev = BUILDS[S.build] ? BUILDS[S.build].chef : '';   // cur＝いま えらんでいる・prev＝前の夜のシェフ
+  const trial = TRIAL ? '<p class="pk-trial">ためしのページ：本番では、こね生地は⑨のあと・みなもと わかばは仲間になった次の夜から</p>' : '';
+  if (!N.pickChef) {
+    const { list, pager } = pkPage(chefs);
+    const rows = list.map(c => {
+      const C = CHEFS[c], bs = openBuilds().filter(id => BUILDS[id].chef === c), pic = ART[C.art] || '';
+      return `<button class="pk-row pkc${c === cur ? ' on' : ''}" data-act="pickC" data-id="${c}">
+        <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
+        <span class="pk-body"><b class="pk-name">${esc(C.name)}</b><span class="pk-sub">${esc(C.job)}・<wbr>特性 ${esc(C.trait)}</span>
+        <span class="pk-tags">${bs.map(id => `<i>${pkBr(BUILDS[id].name)}</i>`).join('')}</span></span>
+        <i class="pk-go" aria-hidden="true"></i>${c === prev ? '<i class="pk-on">前の夜</i>' : ''}</button>`;
+    }).join('');
+    return `<div class="pickov"><p class="pk-ttl">今夜の シェフ</p><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
+  }
+  const C = CHEFS[N.pickChef], { list, pager } = pkPage(openBuilds().filter(id => BUILDS[id].chef === N.pickChef));
+  const rows = list.map(id => {
+    const B = BUILDS[id], on = id === N.build, pic = ART[B.pic] || ART[C.art] || '';
+    return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}" aria-pressed="${on}">
+      <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
+      <span class="pk-body"><b class="pk-name">${pkBr(B.name)}</b><span class="pk-sub">特性 ${esc(B.trait || C.trait)}</span>
+      <span class="pk-text">${esc(B.text)}</span>
+      <span class="pk-cards">${B.show.map(cid => `<span class="pk-mini">${cardMini(cid)}</span>`).join('')}</span></span>${on ? '<i class="pk-on">えらんでいる</i>' : ''}</button>`;
   }).join('');
-  return `<div class="pickov"><p class="pk-ttl">今夜の おもてなし</p><div class="pk-list${openBuilds().length >= 4 ? ' many' : ''}">${list}</div>
-    ${TRIAL ? '<p class="pk-trial">ためしのページ：本番では、こね生地は⑨のあと・みなもと わかばは仲間になった次の夜から</p>' : ''}</div>`;
+  const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
+  return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
 }
 
 /* ---------- 夜の画面 ---------- */
@@ -704,7 +728,7 @@ function renderNight() {
     const shop = N.stage === 'shop';
     const H = heatOf();
     const ca = chefArt();
-    body = `<div class="tiles" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? (candyNight() ? 'c' : N.heat) : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
+    body = `<div class="tiles${N.stage === 'pick' ? ' pk-hide' : ''}" data-chef="${ca}" data-z="${ca === 'honoka' ? N.heat : 0}" data-t="${ca === 'minamo' ? (candyNight() ? 'c' : N.heat) : 0}">${ca === 'minamo' ? tempHTML() : ca === 'wakaba' ? vineHTML() : boardFireHTML()}<button class="tslot fslot${fixedField() ? ' bin' : ''}" data-act="card" ${shop && N.field && !fixedField() ? 'data-drag' : ''} data-drop data-w="field" data-i="0" aria-label="フィールド"><i class="ord">場</i>${N.field ? cardTile('b:' + N.field) : ''}${binHTML()}</button>${N.board.map((c, i) =>
         `<button class="tslot" data-act="card" ${shop && c ? 'data-drag' : ''} data-drop data-w="board" data-i="${i}" aria-label="調理台${i + 1}"><i class="ord">${i + 1}</i>${c ? cardTile(c.cid, { born: c.born, cook: c.cook, ice: c.ice, plus: c.plus }) : ''}${c && shop && mixesWithBoard(c.cid, i) ? '<i class="mx-dot">+</i>' : ''}</button>`).join('')}</div>${traitRowHTML()}
       <div class="bar">${barHTML()}</div>
       ${viewerHTML()}`;
