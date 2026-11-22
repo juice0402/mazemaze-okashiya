@@ -12,6 +12,8 @@
 const TALKERS = {
   /* 常連さんの妖精の子 ルル（11/22 H-035・物語⑬で顔を出す）：お客さんの絵 cust-kodomo の1まいめ */
   lulu: { name: 'ルル', side: 'r', faces: { ふつう: 'cust-kodomo', うれしい: 'cust-kodomo-happy', しょんぼり: 'cust-kodomo-sad' } },
+  /* 夜市の行商人（11/22 夜・ドワーフの女の子・ランタンの夜商人）：名前は STORY.ichiName（昼のチャット）。表情の絵は art-irai の dwarf・dwarf-face */
+  dwarf: { name: (typeof STORY === 'object' && STORY.ichiName) || '行商人', side: 'r', faces: { ふつう: 'dwarf', にっこり: 'dwarf-joy', おどろき: 'dwarf-wow', ウインク: 'dwarf-wink', こまり: 'dwarf-komari' } },
   honoka: { name: 'ほのか', side: 'l', flip: true, faces: {
     ふつう: 'honoka', うれしい: 'honoka-joy', びっくり: 'honoka-surprise', しょんぼり: 'honoka-oops',
     やる気: 'honoka-yaruki', あちゃー: 'honoka-achaa', 不安: 'honoka-fuan', くやしい: 'honoka-kuyashii', わくわく: 'honoka-wakuwaku',

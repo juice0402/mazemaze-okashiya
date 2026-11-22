@@ -19,7 +19,7 @@ TABLE = os.path.join(ROOT, 'assets', 'slim.json')
 
 def big_chara(name):
     """キャラが大きく出る絵（立ち絵・表情・戦闘ポーズ。デフォルメ chibi はのぞく）"""
-    return name.split('-')[0] in ('honoka', 'minamo', 'wakaba') and 'chibi' not in name
+    return name.split('-')[0] in ('honoka', 'minamo', 'wakaba', 'dwarf') and 'chibi' not in name   # dwarf＝夜市の行商人（11/22 夜）
 
 
 def opts(name):
