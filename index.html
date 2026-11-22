@@ -4250,17 +4250,17 @@ N = S.night; if (new Set(open.map(id => BUILDS[id].chef)).size === 1) N.pickChef
 nightPrep(); rollShop(); dealAnim = true; nightWarm(N.build, true);   // 先読み（11/20）・夜のはじめ：ほのかは中火・みなもは あたたか（11/19）・わかばの飴ジャムは場が大きなびん
 save(); render();
 }
-function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); renderNight(); }
+function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
 function pickChef(c) {
 if (N.stage !== 'pick' || !CHEFS[c]) return;
 const bs = openBuilds().filter(id => BUILDS[id].chef === c); if (!bs.length) return;
 N.pickChef = c; N.pkPage = 0;
 if (!bs.includes(N.build)) { N.build = bs[0]; nightPrep(); nightWarm(N.build, true); }
-save(); renderNight();
+save(); pickRender();
 }
-function pickBack() { if (N.stage !== 'pick') return; N.pickChef = null; N.pkPage = 0; save(); renderNight(); }
+function pickBack() { if (N.stage !== 'pick') return; N.pickChef = null; N.pkPage = 0; save(); pickRender(); }
 function pickNext() { if (N.stage === 'pick') pickChef(BUILDS[N.build] ? BUILDS[N.build].chef : 'honoka'); }
-function pickPageGo(d) { if (N.stage !== 'pick') return; N.pkPage = Math.max(0, (N.pkPage || 0) + d); renderNight(); }
+function pickPageGo(d) { if (N.stage !== 'pick') return; N.pkPage = Math.max(0, (N.pkPage || 0) + d); pickRender(); }
 function pickGo() {
 if (N.stage !== 'pick') return;
 if (!N.pickChef) return pickNext();
@@ -5452,6 +5452,15 @@ return `<button class="pk-row${on ? ' on' : ''}" data-act="pickB" data-id="${id}
 }).join('');
 const back = chefs.length > 1 ? '<button class="pill sub pk-back" data-act="pickBack" aria-label="シェフをえらびなおす">◀ シェフ</button>' : '';
 return `<div class="pickov"><div class="pk-head">${back}<p class="pk-ttl">${esc(C.name)}の ビルド</p></div><div class="pk-rows">${rows}</div>${pager}${trial}</div>`;
+}
+function pickRender() {
+const ov = document.querySelector('.pickov'), bar = document.querySelector('section.night > .bar');
+if (!ov || !bar || N.stage !== 'pick') return renderNight();
+const t = document.createElement('div'); t.innerHTML = pickHTML(); const nv = t.firstElementChild;
+if (!nv) return renderNight();
+ov.className = nv.className; ov.innerHTML = nv.innerHTML;
+bar.innerHTML = barHTML();
+document.body.dataset.chef = chefArt(); document.body.dataset.candy = candyNight() ? '1' : '';
 }
 function renderNight() {
 if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから

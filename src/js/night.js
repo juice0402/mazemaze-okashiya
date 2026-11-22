@@ -45,18 +45,18 @@ function startNight() {
   save(); render();
 }
 /* 夕方のシェフ・ビルドえらび（11/18 しょーくん：毎晩・前の夜のビルドがえらばれている。使えるのが1つのうちは出さない） */
-function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); renderNight(); }
+function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
 /* シェフ → ビルド（11/22）：pickChef＝そのシェフのビルドの一覧へ（前の夜とちがうシェフなら、そのシェフの1つめのビルドをえらんでおく）・pickBack＝シェフの一覧へ・pickNext＝いまのシェフのビルドの一覧へ */
 function pickChef(c) {
   if (N.stage !== 'pick' || !CHEFS[c]) return;
   const bs = openBuilds().filter(id => BUILDS[id].chef === c); if (!bs.length) return;
   N.pickChef = c; N.pkPage = 0;
   if (!bs.includes(N.build)) { N.build = bs[0]; nightPrep(); nightWarm(N.build, true); }
-  save(); renderNight();
+  save(); pickRender();
 }
-function pickBack() { if (N.stage !== 'pick') return; N.pickChef = null; N.pkPage = 0; save(); renderNight(); }
+function pickBack() { if (N.stage !== 'pick') return; N.pickChef = null; N.pkPage = 0; save(); pickRender(); }
 function pickNext() { if (N.stage === 'pick') pickChef(BUILDS[N.build] ? BUILDS[N.build].chef : 'honoka'); }
-function pickPageGo(d) { if (N.stage !== 'pick') return; N.pkPage = Math.max(0, (N.pkPage || 0) + d); renderNight(); }
+function pickPageGo(d) { if (N.stage !== 'pick') return; N.pkPage = Math.max(0, (N.pkPage || 0) + d); pickRender(); }
 function pickGo() {
   if (N.stage !== 'pick') return;
   if (!N.pickChef) return pickNext();

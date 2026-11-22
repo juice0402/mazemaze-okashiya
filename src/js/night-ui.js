@@ -788,6 +788,17 @@ function pickHTML() {
 }
 
 /* ---------- 夜の画面 ---------- */
+/* えらぶ画面のタップ（11/22 しょーくん「ビルド選択を連打してると、背景が一瞬透ける」）：画面ぜんぶを作りなおすと、えらぶ画面の板（.pickov）が
+   出てくるアニメ（shopin＝すけた所から）を毎回やりなおして、うしろの舞台が一瞬見えていた。板はそのままにして、中身と下のボタンだけ書きかえる */
+function pickRender() {
+  const ov = document.querySelector('.pickov'), bar = document.querySelector('section.night > .bar');
+  if (!ov || !bar || N.stage !== 'pick') return renderNight();
+  const t = document.createElement('div'); t.innerHTML = pickHTML(); const nv = t.firstElementChild;
+  if (!nv) return renderNight();
+  ov.className = nv.className; ov.innerHTML = nv.innerHTML;
+  bar.innerHTML = barHTML();
+  document.body.dataset.chef = chefArt(); document.body.dataset.candy = candyNight() ? '1' : '';
+}
 function renderNight() {
   if (!nightOk(S.night)) return startNight();   // 前の形のセーブは、その夜をはじめから
   N = S.night;
