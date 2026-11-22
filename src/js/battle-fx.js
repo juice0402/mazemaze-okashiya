@@ -167,7 +167,7 @@ function decoHTML(mode) {
   const pose = mode === 'shop' ? 'think' : mode === 'win' ? 'cheer' : 'sit';
   return `<div class="deco ${mode}" id="deco" aria-hidden="true">
     <i class="dc-ledge"></i>${grassSVG()}
-    <i class="dc-frame"></i>
+    <i class="dc-frame"></i>${frameCrackHTML()}
     <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}<i class="dc-corner bl"></i><i class="dc-corner br"></i><i class="dc-medal"></i></div>`;   // メダルは額縁の下まんなか（11/20・モブの前）
 }
 /* ほのかのデフォルメのポーズをしばらく変える（ms のあと、すわってにこにこへ） */
@@ -541,6 +541,61 @@ function megaBoom(p) {
   setTimeout(() => { const w2 = fxEl('fx-wave w2 s-huge mega', p, ''); setTimeout(() => w2.remove(), T(1100)); }, T(140));
   const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
   edgeGlow('big');
+}
+/* オーバーラン（11/22 しょーくん「+1まで達成してない段階から、一気に+3までゲージをぶち上げた時に、オーバーランして、+3のゲージを破壊して、
+   枠まで一瞬貫通するような衝撃波が出て、枠が少し壊れる」）：帯の右はしから光の筋 → +3の印が こなごな → 衝撃波が右へ → 額縁の右に当たって ひびと木くず。
+   ひびは その夜のあいだ残る（frameCracks＝額縁の上からの割合・3つまで・startNight で空に）。+3 は こわれたあと もとの印（とった形）にもどる。動くのは transform と opacity だけ */
+let frameCracks = [];
+const frameCrackHTML = () => frameCracks.map((y, i) => `<i class="dc-crack" style="top:${(y * 100).toFixed(1)}%;--cv:${i % 2}">${CRACK_SVG}</i>`).join('');
+const CRACK_SVG = '<svg viewBox="0 0 30 48" aria-hidden="true"><path class="ck-hole" d="M30 15 L23 18 L20 23 L24 27 L19 31 L22 35 L30 34 Z"/><path class="ck-lit" d="M23 18 L20 23 L24 27 L19 31 L22 35"/>'
+  + '<path class="ck-line" d="M21 22 L15 19 L10 21 L6 16 M15 19 L14 12 L11 7 M20 30 L13 33 L9 40 M13 33 L7 32 M22 35 L18 42 L19 47 M24 17 L22 9 L25 3"/></svg>';
+function qOverrun() {
+  const m = document.querySelector('.quota .qmk.m3'), bar = document.querySelector('.quota .qbar'), fr = document.querySelector('#deco .dc-frame');
+  if (!m || !bar) return;
+  if (REDUCED || !document.body.animate) return qCollect('m3', 3);
+  const L = fxLayer(), mc = spot(m.querySelector('.qc') || m), br = bar.getBoundingClientRect(), y = mc.y;
+  const fx = fr ? fr.getBoundingClientRect() : null, hitX = fx ? fx.right - 9 : innerWidth - 8;
+  replay(document.querySelector('.quota'), 'over');
+  // 光の筋：帯の右はしから画面の右はしまで一瞬
+  const beam = document.createElement('i'); beam.className = 'qbeam'; beam.style.left = (br.right - 14) + 'px'; beam.style.top = y + 'px'; beam.style.width = (innerWidth - br.right + 40) + 'px'; L.appendChild(beam);
+  beam.animate([{ transform: 'scaleX(0)', opacity: 1 }, { transform: 'scaleX(1)', opacity: 1, offset: .35 }, { transform: 'scaleX(1) scaleY(.2)', opacity: 0 }], { duration: T(520), easing: 'cubic-bezier(.2,.9,.3,1)', fill: 'forwards' });
+  setTimeout(() => beam.remove(), T(560));
+  // +3の印が こなごな（コインの絵を くさび形に切って とばす・右へ多め）
+  m.classList.add('broken');
+  const W = [[50, 50, 50, 0, 100, 0, 100, 30], [50, 50, 100, 30, 100, 75], [50, 50, 100, 75, 100, 100, 55, 100], [50, 50, 55, 100, 0, 100, 0, 70], [50, 50, 0, 70, 0, 25], [50, 50, 0, 25, 0, 0, 50, 0]];
+  W.forEach((pts, k) => {
+    const s = document.createElement('i'); s.className = 'qshard'; s.style.left = mc.x + 'px'; s.style.top = mc.y + 'px';
+    s.style.clipPath = 'polygon(' + pts.reduce((a, v, i) => a + (i % 2 ? ` ${v}%` : (i ? ',' : '') + `${v}%`), '') + ')'; L.appendChild(s);
+    const a = (k / W.length) * Math.PI * 2 - Math.PI / 2 + .5, d = 46 + Math.random() * 40, dx = Math.cos(a) * d + 30, dy = Math.sin(a) * d;
+    s.animate([{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: `translate(${dx}px,${dy + 26}px) rotate(${(Math.random() - .5) * 540}deg) scale(.7)`, opacity: 0 }], { duration: T(700 + Math.random() * 250), easing: 'cubic-bezier(.15,.7,.4,1)', fill: 'forwards' });
+    setTimeout(() => s.remove(), T(1000));
+  });
+  const w = fxEl('fx-wave s-big', mc, ''); setTimeout(() => w.remove(), T(900));
+  sparkBurst(mc, 16, 'all', 1.3); sePlay('boom', { vol: .7, rate: 1.2 });
+  // 衝撃波が右へ走って、額縁をつきぬける
+  const sh = document.createElement('i'); sh.className = 'qshock'; sh.style.left = mc.x + 'px'; sh.style.top = y + 'px'; L.appendChild(sh);
+  sh.animate([{ transform: 'translateX(0) scale(.35,.5)', opacity: 1 }, { transform: `translateX(${hitX - mc.x}px) scale(1,1)`, opacity: 1, offset: .45 }, { transform: `translateX(${hitX - mc.x + 70}px) scale(1.5,1.3)`, opacity: 0 }], { duration: T(460), easing: 'cubic-bezier(.3,.8,.4,1)', fill: 'forwards' });
+  setTimeout(() => sh.remove(), T(500));
+  // 額縁に当たる：光・木くず・ひび（その夜のあいだ残る）・ゆれ
+  setTimeout(() => {
+    const p = { x: hitX, y, w: 20, h: 20 };
+    const f = document.createElement('i'); f.className = 'qimpact'; f.style.left = hitX + 'px'; f.style.top = y + 'px'; L.appendChild(f); setTimeout(() => f.remove(), T(500));
+    for (let k = 0; k < 9; k++) {
+      const s = document.createElement('i'); s.className = 'qsplint'; s.style.left = hitX + 'px'; s.style.top = y + (Math.random() - .5) * 14 + 'px'; L.appendChild(s);
+      const a = Math.PI + (Math.random() - .5) * 2.6, d = 30 + Math.random() * 60;   // 画面の中（左・上下）へ とびちる
+      s.animate([{ transform: `translate(0,0) rotate(${Math.random() * 180}deg)`, opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d + 30}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }], { duration: T(600 + Math.random() * 300), easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'forwards' });
+      setTimeout(() => s.remove(), T(950));
+    }
+    sparkBurst(p, 10, 'all', .8);
+    if (fx && frameCracks.length < 3) {
+      const yp = Math.max(.04, Math.min(.96, (y - fx.top) / fx.height)); frameCracks.push(yp);
+      const c = document.createElement('i'); c.className = 'dc-crack new'; c.style.top = (yp * 100).toFixed(1) + '%'; c.style.setProperty('--cv', (frameCracks.length - 1) % 2); c.innerHTML = CRACK_SVG;
+      const fe = document.querySelector('#deco .dc-frame'); if (fe) fe.after(c);
+    }
+    const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
+    edgeGlow('big'); sePlay('hit', { vol: .9, rate: .6 });
+  }, T(200));
+  setTimeout(() => { m.classList.remove('broken'); qCollect('m3', 3); }, T(760));   // +3 は もとの印にもどって コイン+3
 }
 /* みなも・わかばの一撃のかざり（11/21 しょーくん「固有エフェクトをさらに追加して派手に」・fx-minamo2・fx-wakaba2）：
    ふつうの一撃は1つ・大きい一撃は3つ（輪を1つ入れる）。くるっと回りながら ふくらんで消える（transform と opacity だけ） */

@@ -1296,6 +1296,22 @@ font-family:inherit;font-size:12px;font-weight:700;color:var(--milk);text-shadow
 .sh-top .sh-coin b,.sh-roll.sh-roll small{translate:0 -.75px}
 .sh-price i{translate:0 1.25px}
 .sh-price.sh-price{padding:0 2px 2px 0}
+.quota.over{animation:qover .42s ease-out}
+@keyframes qover{0%,100%{transform:none}15%{transform:translate(2px,-1px) scale(1.03)}30%{transform:translate(-2px,1px) scale(1.02)}50%{transform:translate(1px,0)}70%{transform:translate(-1px,0)}}
+.qmk.broken .qc{opacity:0}
+.qbeam{position:absolute;height:12px;margin-top:-6px;transform-origin:left center;border-radius:6px;background:linear-gradient(90deg,#fff 0%,#fff6c8 30%,rgba(255,206,92,.85) 70%,rgba(255,170,60,0) 100%);box-shadow:0 0 14px 4px rgba(255,214,110,.75)}
+.qshard{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;background:var(--ui-coin) center/contain no-repeat}
+.qshock{position:absolute;width:70px;height:120px;margin:-60px 0 0 -35px;border-radius:50%;border:6px solid rgba(255,255,255,.95);border-left-color:transparent;box-shadow:0 0 16px 6px rgba(255,214,110,.8),inset 0 0 12px 4px rgba(255,236,170,.7)}
+.qimpact{position:absolute;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(255,232,150,.9) 32%,rgba(255,190,80,0) 70%);animation:qimpact .45s ease-out forwards}
+@keyframes qimpact{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.qsplint{position:absolute;width:9px;height:3px;margin:-1.5px 0 0 -4.5px;border-radius:1px;background:linear-gradient(#b07a44,#6b4220);box-shadow:0 0 0 .5px #2a170c}
+.dc-crack{position:absolute;right:-1px;width:30px;height:48px;translate:0 -50%;pointer-events:none;scale:1 calc(1 - var(--cv,0) * 2)}
+.dc-crack svg{width:100%;height:100%;overflow:visible}
+.dc-crack .ck-hole{fill:#1d0f06}
+.dc-crack .ck-lit{fill:none;stroke:#e9b77a;stroke-width:1.2;stroke-linejoin:round;opacity:.85}
+.dc-crack .ck-line{fill:none;stroke:#1d0f06;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 .6px 0 rgba(233,183,122,.55))}
+.dc-crack.new{animation:ckin .3s cubic-bezier(.2,1.6,.4,1)}
+@keyframes ckin{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
 .talk{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;padding:0 10px max(10px,env(safe-area-inset-bottom,0px));animation:tkin .25s ease-out both;cursor:pointer}
 .talk.dim{background:linear-gradient(rgba(20,8,2,.15),rgba(20,8,2,.35) 45%,rgba(20,8,2,.72))}
 .talk.out{animation:tkout .22s ease-in forwards}
@@ -4089,7 +4105,7 @@ let N = null;          // S.night（夜のあいだの状態）
 let busy = false;      // バトルとまぜる演出の間は操作しない
 let fighting = false;  // バトルの間（ショップをとじて、舞台でバトルを見せる）
 function startNight() {
-S.phase = 'night';
+S.phase = 'night'; frameCracks = [];   // オーバーランの額縁のひびは その夜だけ（battle-fx.js）
 if (!S.today) S.today = newDay(S.day);
 const mon = nightMonster(), id = MONSTERS[mon].id;
 Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });
@@ -4889,7 +4905,9 @@ return t;
 function scoreTick(dmg, run, q) {
 if (!$('qfill')) return;
 $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q); qCount(run - dmg, run);
-for (const [f, c, k] of QMK) if (run >= q * f && run - dmg < q * f) setTimeout(() => qCollect(k, c), T(650));   // 半分＝コイン+1・満タン＝+3（+の数が消えかけてから）
+const over = run >= q && run - dmg < q * .5;   // オーバーラン：+1 の前から 一気に+3 をこえた（11/22 しょーくん「+3のゲージを破壊して、枠まで貫通する衝撃波・枠が少し壊れる」）
+for (const [f, c, k] of QMK) if (run >= q * f && run - dmg < q * f) { if (over && k === 'm3') continue; setTimeout(() => qCollect(k, c), T(over ? 300 : 650)); }   // 半分＝コイン+1・満タン＝+3（+の数が消えかけてから）
+if (over) setTimeout(() => qOverrun(), T(430));   // +3 は こわれたあとに もどる（battle-fx.js）
 if (run >= q && run - dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
 }
 const PART_K = l => l === '次の主役' ? 'next' : l === 'となり' ? 'nb' : l === 'スタート' ? 'rally' : l === 'いちばん' ? 'clead' : l === 'きらきら' ? 'shine' : l.startsWith('サイコー') ? 'best' : '';
@@ -5384,7 +5402,7 @@ return src ? `<img class="dc dc-mob ${cls}${slot(n)}${ART[n] ? '' : ' tmp'}" dat
 const pose = mode === 'shop' ? 'think' : mode === 'win' ? 'cheer' : 'sit';
 return `<div class="deco ${mode}" id="deco" aria-hidden="true">
 <i class="dc-ledge"></i>${grassSVG()}
-<i class="dc-frame"></i>
+<i class="dc-frame"></i>${frameCrackHTML()}
 <img class="dc dc-chibi${ART[chibiName(pose)] ? '' : ' tmp'}" id="dcChibi" style="--k:9" src="${chibiSrc(pose)}" alt="">${mobs}<i class="dc-corner bl"></i><i class="dc-corner br"></i><i class="dc-medal"></i></div>`;   // メダルは額縁の下まんなか（11/20・モブの前）
 }
 let chibiT = 0;
@@ -5709,6 +5727,54 @@ const w = fxEl('fx-wave s-huge mega', p, ''); setTimeout(() => w.remove(), T(100
 setTimeout(() => { const w2 = fxEl('fx-wave w2 s-huge mega', p, ''); setTimeout(() => w2.remove(), T(1100)); }, T(140));
 const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
 edgeGlow('big');
+}
+let frameCracks = [];
+const frameCrackHTML = () => frameCracks.map((y, i) => `<i class="dc-crack" style="top:${(y * 100).toFixed(1)}%;--cv:${i % 2}">${CRACK_SVG}</i>`).join('');
+const CRACK_SVG = '<svg viewBox="0 0 30 48" aria-hidden="true"><path class="ck-hole" d="M30 15 L23 18 L20 23 L24 27 L19 31 L22 35 L30 34 Z"/><path class="ck-lit" d="M23 18 L20 23 L24 27 L19 31 L22 35"/>'
++ '<path class="ck-line" d="M21 22 L15 19 L10 21 L6 16 M15 19 L14 12 L11 7 M20 30 L13 33 L9 40 M13 33 L7 32 M22 35 L18 42 L19 47 M24 17 L22 9 L25 3"/></svg>';
+function qOverrun() {
+const m = document.querySelector('.quota .qmk.m3'), bar = document.querySelector('.quota .qbar'), fr = document.querySelector('#deco .dc-frame');
+if (!m || !bar) return;
+if (REDUCED || !document.body.animate) return qCollect('m3', 3);
+const L = fxLayer(), mc = spot(m.querySelector('.qc') || m), br = bar.getBoundingClientRect(), y = mc.y;
+const fx = fr ? fr.getBoundingClientRect() : null, hitX = fx ? fx.right - 9 : innerWidth - 8;
+replay(document.querySelector('.quota'), 'over');
+const beam = document.createElement('i'); beam.className = 'qbeam'; beam.style.left = (br.right - 14) + 'px'; beam.style.top = y + 'px'; beam.style.width = (innerWidth - br.right + 40) + 'px'; L.appendChild(beam);
+beam.animate([{ transform: 'scaleX(0)', opacity: 1 }, { transform: 'scaleX(1)', opacity: 1, offset: .35 }, { transform: 'scaleX(1) scaleY(.2)', opacity: 0 }], { duration: T(520), easing: 'cubic-bezier(.2,.9,.3,1)', fill: 'forwards' });
+setTimeout(() => beam.remove(), T(560));
+m.classList.add('broken');
+const W = [[50, 50, 50, 0, 100, 0, 100, 30], [50, 50, 100, 30, 100, 75], [50, 50, 100, 75, 100, 100, 55, 100], [50, 50, 55, 100, 0, 100, 0, 70], [50, 50, 0, 70, 0, 25], [50, 50, 0, 25, 0, 0, 50, 0]];
+W.forEach((pts, k) => {
+const s = document.createElement('i'); s.className = 'qshard'; s.style.left = mc.x + 'px'; s.style.top = mc.y + 'px';
+s.style.clipPath = 'polygon(' + pts.reduce((a, v, i) => a + (i % 2 ? ` ${v}%` : (i ? ',' : '') + `${v}%`), '') + ')'; L.appendChild(s);
+const a = (k / W.length) * Math.PI * 2 - Math.PI / 2 + .5, d = 46 + Math.random() * 40, dx = Math.cos(a) * d + 30, dy = Math.sin(a) * d;
+s.animate([{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: `translate(${dx}px,${dy + 26}px) rotate(${(Math.random() - .5) * 540}deg) scale(.7)`, opacity: 0 }], { duration: T(700 + Math.random() * 250), easing: 'cubic-bezier(.15,.7,.4,1)', fill: 'forwards' });
+setTimeout(() => s.remove(), T(1000));
+});
+const w = fxEl('fx-wave s-big', mc, ''); setTimeout(() => w.remove(), T(900));
+sparkBurst(mc, 16, 'all', 1.3); sePlay('boom', { vol: .7, rate: 1.2 });
+const sh = document.createElement('i'); sh.className = 'qshock'; sh.style.left = mc.x + 'px'; sh.style.top = y + 'px'; L.appendChild(sh);
+sh.animate([{ transform: 'translateX(0) scale(.35,.5)', opacity: 1 }, { transform: `translateX(${hitX - mc.x}px) scale(1,1)`, opacity: 1, offset: .45 }, { transform: `translateX(${hitX - mc.x + 70}px) scale(1.5,1.3)`, opacity: 0 }], { duration: T(460), easing: 'cubic-bezier(.3,.8,.4,1)', fill: 'forwards' });
+setTimeout(() => sh.remove(), T(500));
+setTimeout(() => {
+const p = { x: hitX, y, w: 20, h: 20 };
+const f = document.createElement('i'); f.className = 'qimpact'; f.style.left = hitX + 'px'; f.style.top = y + 'px'; L.appendChild(f); setTimeout(() => f.remove(), T(500));
+for (let k = 0; k < 9; k++) {
+const s = document.createElement('i'); s.className = 'qsplint'; s.style.left = hitX + 'px'; s.style.top = y + (Math.random() - .5) * 14 + 'px'; L.appendChild(s);
+const a = Math.PI + (Math.random() - .5) * 2.6, d = 30 + Math.random() * 60;   // 画面の中（左・上下）へ とびちる
+s.animate([{ transform: `translate(0,0) rotate(${Math.random() * 180}deg)`, opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d + 30}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }], { duration: T(600 + Math.random() * 300), easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'forwards' });
+setTimeout(() => s.remove(), T(950));
+}
+sparkBurst(p, 10, 'all', .8);
+if (fx && frameCracks.length < 3) {
+const yp = Math.max(.04, Math.min(.96, (y - fx.top) / fx.height)); frameCracks.push(yp);
+const c = document.createElement('i'); c.className = 'dc-crack new'; c.style.top = (yp * 100).toFixed(1) + '%'; c.style.setProperty('--cv', (frameCracks.length - 1) % 2); c.innerHTML = CRACK_SVG;
+const fe = document.querySelector('#deco .dc-frame'); if (fe) fe.after(c);
+}
+const nt = document.querySelector('.night'); if (nt) replay(nt, 'quake3');
+edgeGlow('big'); sePlay('hit', { vol: .9, rate: .6 });
+}, T(200));
+setTimeout(() => { m.classList.remove('broken'); qCollect('m3', 3); }, T(760));   // +3 は もとの印にもどって コイン+3
 }
 const FLOURISH = { honoka: ['fx-fire-flower', 'fx-firebird', 'fx-fire-swirl', 'fx-fire-cookie', 'fx-fire-stars'], minamo: ['fx-ame-flower', 'fx-ice-flower', 'fx-ame-swan', 'fx-ame-drops', 'fx-ame-ribbon'], wakaba: ['fx-bloom', 'fx-fruitrain', 'fx-petalwind', 'fx-vine', 'fx-seed'] };   // ほのかは 11/21 夕方（fx-honoka2：炎の花・火の鳥・炎のうず・クッキーの火の粉・星の火花）
 const RING = { honoka: 'fx-fire-ring', minamo: 'fx-ame-ring', wakaba: 'fx-flowerring' };

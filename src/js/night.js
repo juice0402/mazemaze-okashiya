@@ -28,7 +28,7 @@ let busy = false;      // バトルとまぜる演出の間は操作しない
 let fighting = false;  // バトルの間（ショップをとじて、舞台でバトルを見せる）
 
 function startNight() {
-  S.phase = 'night';
+  S.phase = 'night'; frameCracks = [];   // オーバーランの額縁のひびは その夜だけ（battle-fx.js）
   if (!S.today) S.today = newDay(S.day);
   const mon = nightMonster(), id = MONSTERS[mon].id;
   Object.assign(S.today, { mon: id, newMon: !S.seenMon.includes(id) });

@@ -323,7 +323,9 @@ function showEvent(e, run, q) {
 function scoreTick(dmg, run, q) {
   if (!$('qfill')) return;
   $('qfill').style.width = Math.min(100, run / q * 100) + '%'; qGain(dmg, run, q); qCount(run - dmg, run);
-  for (const [f, c, k] of QMK) if (run >= q * f && run - dmg < q * f) setTimeout(() => qCollect(k, c), T(650));   // 半分＝コイン+1・満タン＝+3（+の数が消えかけてから）
+  const over = run >= q && run - dmg < q * .5;   // オーバーラン：+1 の前から 一気に+3 をこえた（11/22 しょーくん「+3のゲージを破壊して、枠まで貫通する衝撃波・枠が少し壊れる」）
+  for (const [f, c, k] of QMK) if (run >= q * f && run - dmg < q * f) { if (over && k === 'm3') continue; setTimeout(() => qCollect(k, c), T(over ? 300 : 650)); }   // 半分＝コイン+1・満タン＝+3（+の数が消えかけてから）
+  if (over) setTimeout(() => qOverrun(), T(430));   // +3 は こわれたあとに もどる（battle-fx.js）
   if (run >= q && run - dmg < q) { setTimeout(() => replay(document.querySelector('.quota'), 'reach'), T(200)); setTimeout(() => heroPose('win', 900), T(900)); }
 }
 /* 計算の札のデータ：calc＝数字にすいこまれる札（v＝この札のあとの数字・p＝前の数字・src＝効果の元のマス・k＝マスに残った札の種類）
