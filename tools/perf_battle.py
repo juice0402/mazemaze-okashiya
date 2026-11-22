@@ -47,7 +47,7 @@ with sync_playwright() as p:
       const T2 = []; for (const a of ones) for (const b of ones) { try { if (mixable(cardDef(a), cardDef(b))) T2.push(mixCid(a, b)); } catch (e) {} }
       const doughs = T2.filter(c => { try { return cardDef(c).dough; } catch (e) { return false; } });
       const S3 = []; for (const a of doughs) for (const b of doughs) { try { if (mixable(cardDef(a), cardDef(b))) { S3.push(mixCid(a, b)); if (S3.length > 3) break; } } catch (e) {} }
-      const pick = [...S3.slice(0, 2), ...T2.slice(0, 3)];
+      const pick = [...S3.slice(0, 2), ...T2.slice(0, 3), ...B.doughs, ...ones];   // まぜられないビルド（キャンディ）は そのままのカードで5マス
       N.board = pick.slice(0, 5).map(cid => ({ cid, cook: 3 })); N.picks = 0; N.stage = 'shop'; renderNight();""")
     pg.wait_for_timeout(2000)
     out['build_used']=ev("return N.build + ' ' + N.board.filter(Boolean).length")
