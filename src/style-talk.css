@@ -131,7 +131,7 @@
 .opt-cr .url{overflow-wrap:anywhere;word-break:break-all}
 .opt-cr .nw{display:inline-block;white-space:nowrap}   /* （Frank Wen・MIT ライセンス）を とちゅうで折らない（11/21 レイアウトの総デバッグ：「ライ／センス」で折れていた） */
 /* せっていのボタン：タイトルは右上の小さな札・まとめは「次の朝へ」の左（朝の雑貨屋と同じならび） */
-.opt-btn{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:30;padding:6px 14px;font-size:13px}
+.opt-btn{position:absolute;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:30;padding:6px 14px;font-size:13px}
 .r-bar{flex:none;display:flex;align-items:stretch;gap:8px}   /* となりのボタンと同じ高さ（11/21 総デバッグ：せっていが3px低かった） */
 .r-bar .big{flex:1;min-width:0}
 .r-bar .sub{flex:none;padding:12px 20px;font-size:14px}   /* 木のボタンの両はしの くい に字がつかないように（11/21 総デバッグ） */
