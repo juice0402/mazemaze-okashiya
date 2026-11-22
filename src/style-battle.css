@@ -390,7 +390,11 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 @container (max-height:119px){.pk-text{-webkit-line-clamp:2}}   /* 行の中の高さ（ふちと余白をのぞく）で見る */
 @container (max-height:95px){.pk-text{-webkit-line-clamp:1}.pk-cards{height:30px}}
 @container (max-height:76px){.pk-row:not(.pkc) .pk-sub{display:none}}
-@container (max-height:86px){.pkc .pk-tags{gap:2px 5px}.pkc .pk-tags i{height:19px;line-height:17px}.pkc .pk-body{gap:1px}}   /* えらぶ画面では調理台を出さない＝舞台を下まで広げて、行を大きく（11/22 しょーくん「1ページに3〜4人入るくらい広げていい」） */
+/* シェフの行（11/22 しょーくん「ビルドの行は全員2行に」「特性の行はキャラ選択では不要」）：名前と職業の下に、ビルドのリボンを1つずつ縦にならべる */
+.pkc .pk-body{gap:7px}
+.pkc .pk-tags{flex-direction:column;align-items:flex-start;gap:5px;margin-top:0}
+.pkc .pk-tags i{font-size:11px;height:23px;line-height:21px;padding:0 12px 0 21px}
+@container (max-height:86px){.pkc .pk-body{gap:3px}.pkc .pk-tags{gap:2px}.pkc .pk-tags i{height:20px;line-height:18px}}   /* えらぶ画面では調理台を出さない＝舞台を下まで広げて、行を大きく（11/22 しょーくん「1ページに3〜4人入るくらい広げていい」） */
 /* ==== わかばの夜（11/19）：火力・温度のメーターはない（くだものはカードの絵で育つ）。飴ジャムの夜の場は大きなびん：入っている実を下に小さく並べる（コードの仮） ==== */
 .night[data-chef="wakaba"] .heat-label,.night[data-chef="wakaba"] .heat-bar,.night[data-chef="wakaba"] .embers{display:none}
 .fslot .bin-in{position:absolute;left:4%;right:4%;bottom:5%;display:flex;justify-content:center;gap:3%;z-index:4;pointer-events:none}

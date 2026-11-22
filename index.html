@@ -1059,7 +1059,10 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 @container (max-height:119px){.pk-text{-webkit-line-clamp:2}}
 @container (max-height:95px){.pk-text{-webkit-line-clamp:1}.pk-cards{height:30px}}
 @container (max-height:76px){.pk-row:not(.pkc) .pk-sub{display:none}}
-@container (max-height:86px){.pkc .pk-tags{gap:2px 5px}.pkc .pk-tags i{height:19px;line-height:17px}.pkc .pk-body{gap:1px}}
+.pkc .pk-body{gap:7px}
+.pkc .pk-tags{flex-direction:column;align-items:flex-start;gap:5px;margin-top:0}
+.pkc .pk-tags i{font-size:11px;height:23px;line-height:21px;padding:0 12px 0 21px}
+@container (max-height:86px){.pkc .pk-body{gap:3px}.pkc .pk-tags{gap:2px}.pkc .pk-tags i{height:20px;line-height:18px}}
 .night[data-chef="wakaba"] .heat-label,.night[data-chef="wakaba"] .heat-bar,.night[data-chef="wakaba"] .embers{display:none}
 .fslot .bin-in{position:absolute;left:4%;right:4%;bottom:5%;display:flex;justify-content:center;gap:3%;z-index:4;pointer-events:none}
 .fslot .bin-in>*{width:28%;aspect-ratio:1;border-radius:50%;flex:none}
@@ -5284,7 +5287,7 @@ const rows = list.map(c => {
 const C = CHEFS[c], bs = openBuilds().filter(id => BUILDS[id].chef === c), pic = ART[C.art] || '';
 return `<button class="pk-row pkc${c === cur ? ' on' : ''}" data-act="pickC" data-id="${c}">
 <span class="pk-fig">${pic ? `<img src="${pic}" alt="">` : ''}</span>
-<span class="pk-body"><b class="pk-name">${esc(C.name)}<small>${esc(C.job)}</small></b><span class="pk-sub"><i>特性 ${esc(C.trait)}</i></span>
+<span class="pk-body"><b class="pk-name">${esc(C.name)}<small>${esc(C.job)}</small></b>
 <span class="pk-tags">${bs.map(id => `<i>${pkBr(BUILDS[id].name)}</i>`).join('')}</span></span>
 <i class="pk-go" aria-hidden="true"></i>${c === prev ? '<i class="pk-on">前の夜</i>' : ''}</button>`;
 }).join('');
