@@ -249,17 +249,17 @@ const heatOf = () => { let b = 'cookie'; try { b = (N && N.build) || 'cookie'; }
    from＝使えるようになる日（11/18 しょーくん：こね生地は8日目から）。pic＝えらぶ画面の絵・show＝えらぶ画面に出すカード3まい・text＝ひとこと */
 const BUILDS = {
   cookie: {
-    chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text: '鉄板で生地を焼いて、サイコーをそろえる。アンカーで倍々',
+    chef: 'honoka', name: '火力クッキー', from: 1, pic: 'honoka-battle', text: '鉄板で焼いて サイコーに。アンカーで倍々',
     bal: [1.13, 1.155], r1: 420, doughs: ['m:komugi', 'm:dosshiri', 'm:hinoko', 'm:ichiban', 'm:shime', 'm:horoniga'], fields: ['teppan', 'ishigama'], show: ['m:ichiban', 'm:shime', 'b:ishigama'],
   },
   kone: {
-    chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: 'パン生地どうしを こねるほどパン種が生まれる。こねた回数で爆発',
+    chef: 'honoka', name: 'こね生地', from: 8, seen: 'm9', pic: 'honoka-yaruki', text: '生地をこねて パン種をふやす。こねた回数で爆発',
     trait: 'こね', heat: { off: 1, start: 0 }, drop: ['t:maki', 't:hiokoshi', 't:mizu', 't:yakigote'], extra: ['t:konedai', 't:hakko'],   // 火力なし（パンは焼かない・焦げない）
     bal: [0.58, 1.51], r1: 620, doughs: ['m:melonpan', 'm:creampan', 'm:cinnamon', 'm:anpan', 'm:koronet', 'm:tanebin'], fields: ['menbo', 'karumenbo'], show: ['m:koronet', 'm:creampan', 'm:panetane'],
   },
   /* みなも①（11/19）：mate＝その仲間が来てから（昼の⑧で S.seen['mate:minamo']） */
   taisaku: {
-    chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて まぜて育て、冷えたら本気。★3を冷やしたら最強',
+    chef: 'minamo', name: '大作の飴細工', from: 5, mate: 'minamo', pic: 'minamo-battle', text: 'あたためて育て、冷えたら本気。★3を冷やせば最強',
     bal: [2.97, 1.123], r1: 220, doughs: ['m:amedai', 'm:hakucho', 'm:oshiro', 'm:hanakago', 'm:tsuya', 'm:nobashi'], fields: ['oonabe', 'kobo'], show: ['m:oshiro', 'm:tsuya', 'b:oonabe'],
   },
   /* みなも②（11/19）：キャンディどうしの れんさ（11/21 夜〜 温度は関係ない） */
@@ -275,7 +275,7 @@ const BUILDS = {
   },
   /* わかば②（11/19）：bin＝場がいつも大きなびん（フィールドは出ない）。くだもの3つで★3のジャムが生まれる */
   jam: {
-    chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。くだもの3つで★3のジャムが生まれる',
+    chef: 'wakaba', name: '飴ジャム', from: 17, mate: 'wakaba', pic: 'wakaba-support', text: '場はいつも大きなびん。実3つで★3のジャムに',
     bal: [1.64, 1.10], doughs: ['m:garabin', 'm:ichijam', 'm:shimejam', 'm:torojam', 'm:kirakira', 'm:jamnabe'], fields: [], bin: 'oobin', show: ['m:shimejam', 'm:berry2', 'b:oobin'],
   },
 };

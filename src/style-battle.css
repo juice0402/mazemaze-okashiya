@@ -377,7 +377,7 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 .pk-name small{margin-left:8px;font-family:var(--font);font-size:11px;font-weight:700;color:#7a5a4a;white-space:nowrap}   /* シェフの職業は名前のとなり（11/22 小さい画面で飴ジャムの札が枠にかぶった＝行を1つへらす） */
 .pk-sub{font-size:11px;line-height:1.3;color:#7a5a4a}
 .pk-sub>i{font-style:normal;display:inline-block;white-space:nowrap;margin-right:.6em}   /* 「職業」と「特性 〇〇」は それぞれ1かたまり（とちゅうで折らない・11/22 しょーくん「改行の位置も意識して」） */
-.pk-text{font-size:11px;line-height:1.35;font-weight:500;color:#4a2814;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pk-text{font-size:11px;line-height:1.35;font-weight:500;color:#4a2814;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pk-cards{display:flex;gap:5px;height:clamp(32px,30%,48px);margin-top:2px}
 .pk-mini{flex:none;height:100%;aspect-ratio:5/7}
 .pk-tags{display:flex;flex-wrap:wrap;gap:3px 5px;margin-top:2px}
@@ -387,7 +387,6 @@ button.pk-row.on{filter:drop-shadow(0 0 3px #ffe08a) drop-shadow(0 0 9px rgba(25
 .pk-pager{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;font-size:12px;font-weight:800;color:#fff2d8;text-shadow:0 1px 0 rgba(42,20,8,.8)}
 .pk-pager .pill{padding:3px 12px;min-height:0;font-size:12px}
 .tiles.pk-hide{display:none}
-@container (max-height:119px){.pk-text{-webkit-line-clamp:2}}   /* 行の中の高さ（ふちと余白をのぞく）で見る */
 @container (max-height:95px){.pk-text{-webkit-line-clamp:1}.pk-cards{height:30px}}
 @container (max-height:76px){.pk-row:not(.pkc) .pk-sub{display:none}}
 /* シェフの行（11/22 しょーくん「ビルドの行は全員2行に」「特性の行はキャラ選択では不要」）：名前と職業の下に、ビルドのリボンを1つずつ縦にならべる */
