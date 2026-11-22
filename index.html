@@ -3915,6 +3915,18 @@ ponta: { name: 'ポン太', st: [
 ['ポン太：大きくなったら、菓子屋', 'ほのか【うっとり】：お菓子屋さんに……！？', 'ポン太：ほのか姉ちゃんみたいな！'],
 ] },
 },
+kaisoFirst: () => [
+'ほのか【わくわく】：お店が、ちょっとだけぴかぴかになった！',
+'ほのか【やる気】：これで夜のおもてなしも、はじめから少し楽になるはず！',
+...(STORY.mate('minamo') ? ['みなも【すまし】：……床、きれい。悪くない'] : []),
+],
+kaisoDone: () => [
+'ほのか【感動】：お店の改装、ぜんぶ完成ー！',
+'ほのか【うっとり】：はじめは、お客さんもまばらな小さなお店だったのに……',
+...(STORY.mate('wakaba') ? ['わかば【よろこび】：あらあら、すてきなお店になったわねぇ'] : []),
+...(STORY.mate('minamo') ? ['みなも【照れ】：……ここで働けて、よかった'] : []),
+'ほのか【やる気】：よーし、ここからが本番だ！',
+],
 decoSet: {
 fairy: ['ほのか【わくわく】：お花畑みたいなお店！妖精の子、よろこぶかな'],
 fuwa: ['ほのか【うっとり】：ふわっふわ……！けもみみの子、ここで寝ちゃいそう'],
@@ -7178,8 +7190,27 @@ return `<section class="morning mdisp fit" id="msec">
 <div class="m-bar"><button class="sub" data-act="m-kitchen">キッチンへ</button><button class="big" data-act="m-open">お店を開ける</button></div>
 </section>`;
 }
+function mKaisoRow() {
+if (typeof KAISO === 'undefined') return '';
+const lv = kaisoLv(), st = kaisoNext(), c = kaisoGive('coin'), r = kaisoGive('roll');
+const now = [c && 'コイン+' + c, r && '入れかえ+' + r].filter(Boolean).join('・');
+return `<p class="ms-sec">お店の改装<em>${lv}/${KAISO.length}段${now ? '・いま ' + now : ''}</em></p>`
++ `<div class="ms-good mk-row${mGoodIco('good-kaiso') ? ' hasico' : ''}">${mGoodIco('good-kaiso')}<span class="msg-nm">${st ? (lv + 1) + '段目の改装' : '改装、完成！'}</span>`
++ `<span class="msg-tx">${st ? esc(kaisoText(st)) : '夜のはじめから、ずっと楽になる'}</span>`
++ (st ? `<button class="sub" data-act="m-kaiso"${S.money < st.price ? ' disabled' : ''}>${fmt(st.price)}円</button>` : '<span class="msg-done">完成</span>') + '</div>';
+}
+function mKaisoBuy() {
+const st = typeof kaisoNext === 'function' ? kaisoNext() : null; if (!st || mBusy) return;
+if (S.money < st.price) return toast('お財布がたりない……');
+if (!kaisoBuy()) return;
+const lv = kaisoLv(), done = lv >= KAISO.length;
+toast(done ? 'お店の改装、完成！' : `改装${lv}段目！${kaisoText(st)}`);
+renderMorning(); mSe('buy');
+const k = lv === 1 ? 'kaisoFirst' : done ? 'kaisoDone' : null;   // はじめての改装と、完成の日だけ ひとこと（story.js）
+if (k && STORY[k] && !S.seen[k] && !talking()) { S.seen[k] = S.day; save(); talk(STORY[k](), () => {}); }
+}
 function zakkaHTML() {
-const body = `<div class="ms-goods">${['tatekanban', 'showcase'].map(id => {
+const body = `<div class="ms-goods">${mKaisoRow()}<p class="ms-sec">お店のグッズ</p>${['tatekanban', 'showcase'].map(id => {
 const G = GOODS[id] || GOODS.kazari.find(k => k.id === id), p = goodNext(id);
 const lv = id === 'tatekanban' ? S.goods.tatekanban || 0 : id === 'showcase' ? S.goods.showcase || 0 : 0;
 const tx = GOODS[id] ? G.text : '見た目だけ';
@@ -7192,7 +7223,7 @@ return `<section class="morning mzakka fit" id="msec">
 <div class="ms-top"><span class="ms-ttl">雑貨屋</span></div>
 ${body}
 </div></div>
-<div class="mz-foot gingham"><span class="mz-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span></span><p class="mz-hint">立て看板とショーケースは、つぎの日からずっと効くよ</p></div>
+<div class="mz-foot gingham"><span class="mz-wallet"><span>お財布</span><b>${fmt(S.money)}</b><span>円</span></span><p class="mz-hint">改装は今夜から、グッズは次の日から ずっと効くよ</p></div>
 <div class="m-bar"><button class="big" data-act="m-kitchen">キッチンへもどる</button></div>
 </section>`;
 }
@@ -7376,6 +7407,7 @@ const MORNING_ACTS = {
 'm-open': () => mOpen(),
 'm-shop': el => mView(el.dataset.o === '1' ? 'zakka' : 'kitchen'),   // 前の名前（tools/audit.py の m-shop）
 'm-good': el => buyGood(el.dataset.id),
+'m-kaiso': () => mKaisoBuy(),   // お店の改装（11/22）
 'm-deco': el => mDeco(el.dataset.id, el.dataset.off === '1'),
 'm-book': () => { if (!mBusy) mView('book'); },
 'm-aisho': () => mView('aisho'),
