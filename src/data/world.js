@@ -52,8 +52,12 @@ function kaisoBuy() { const st = kaisoNext(); if (!st || S.money < st.price) ret
    その夜のお客さんの素材がタダでショップに出るのは やめた（夜市だけ）。
    11/22 夜 しょーくん「夜市をもっと専用のページに・ドワーフの女の子の行商人が仕入れたモンスター素材・値段はランダムで値上げも値引きも」→ えらぶ質問で
    「来店の前に寄る」「品ごと＋たまに大安売り」「毎晩4品だけ」。ページは ichi.js。値段と割合はぽぽちの仮 */
-const ICHI_N = 3, ICHI_PRICE = 1000, ICHI_SHOW = 4;
-const ICHI_MUL = [0.7, 0.85, 1, 1, 1.2, 1.4], ICHI_SALE_P = 0.15, ICHI_SALE = 0.5;   // 品ごとの値段のゆれ（1,000円に かける）・大安売りの夜（約7晩に1回・ぜんぶ半額）
+const ICHI_N = 3, ICHI_SHOW = 4;
+const ICHI_MUL = [0.7, 0.85, 1, 1, 1.2, 1.4], ICHI_SALE_P = 0.15, ICHI_SALE = 0.5;   // 品ごとの値段のゆれ（その日のもとの値段に かける）・大安売りの夜（約7晩に1回・ぜんぶ半額）
+/* もとの値段はお店が育つほど上がる（11/22 夜 しょーくん「ちょうど3枚買い続ければお金が減っていくくらいに」）：22日通しの1日のかせぎ（昼の売上＋夜のお礼）の
+   ほぼ1/3 に、ゆれと大安売りをならして 3まいで 1.1倍くらい。2日目 950円・5日目 1,950円・10日目 3,000円・20日目 3,850円・30日目 4,100円（上は4,200円） */
+const ICHI_TOP = 4200, ICHI_TAU = 8;
+const ichiBase = day => Math.round(ICHI_TOP * (1 - Math.exp(-day / ICHI_TAU)) / 50) * 50;
 const ichiList = () => MONSTERS.filter(m => !m.rare && S.seenMon.includes(m.id) && MATS[m.drop] && MATS[m.drop].fx).map(m => m.drop);   // 夜市に並ぶことのある素材
 /* その夜の仕入れ：日にちで決まる（読みなおしても同じ）。{ sale, items:[{ id, price, tag:'sale'|'down'|'up'|'' }] } */
 function ichiStock(day = S.day) {
@@ -64,7 +68,7 @@ function ichiStock(day = S.day) {
   for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
   const items = list.slice(0, ICHI_SHOW).map(id => {
     const m = sale ? ICHI_SALE : ICHI_MUL[Math.floor(r() * ICHI_MUL.length)];
-    return { id, price: Math.round(ICHI_PRICE * m / 50) * 50, tag: sale ? 'sale' : m < 1 ? 'down' : m > 1 ? 'up' : '' };
+    return { id, price: Math.round(ichiBase(day) * m / 50) * 50, tag: sale ? 'sale' : m < 1 ? 'down' : m > 1 ? 'up' : '' };
   });
   return { sale, items };
 }

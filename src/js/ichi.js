@@ -14,7 +14,7 @@ const ICHI_SAY = {
   full: ['今夜はここまで。持ちきれないでしょ？'],
   poor: ['あれれ、お財布がちょっと足りないみたい'],
 };
-const ICHI_TAG = { down: 'お買い得', up: 'ちょっと高い' };
+const ICHI_TAG = { down: 'お買い得', up: '高め' };
 const ICHI_FACE = { sale: 'wow', buy: 'wink', back: 'joy', full: 'komari', poor: 'komari' };   // ひとことに合わせた行商人の顔（絵 dwarf-<顔>・ないあいだは dwarf）
 function ichiSay(k) {
   const L = (typeof STORY === 'object' && STORY.ichi && STORY.ichi[k]) || ICHI_SAY[k] || ICHI_SAY.hello;
@@ -39,7 +39,7 @@ function ichiRender() {
   }).join('');
   $('screen').innerHTML = `<section class="ichi fit${bg ? ' hasbg' : ''}">
     <div class="ich-stage" style="--ichbg:url('${bg || ART['bg-shop-out-tall'] || ''}')">
-      <div class="ich-top"><span class="ich-ttl">夜市</span></div>
+      <div class="ich-top"><span class="ich-ttl">夜市</span><span class="ich-wal">お財布 <b>${fmt(S.money)}</b>円</span></div>
       ${st.sale ? `<div class="ich-banner${ART['ichi-banner'] ? ' art' : ''}"${art('ichi-banner')}><b>大安売り</b><small>ぜんぶ半額</small></div>` : ''}
       ${girl ? `<img class="ich-girl" src="${girl}" alt="${esc(name)}">` : ''}
       <p class="ich-say${st.sale ? ' low' : ''}"><b>${esc(name)}</b>${esc(ichiSay(k))}</p>
