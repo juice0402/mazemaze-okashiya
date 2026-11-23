@@ -16,7 +16,7 @@ function goEvening() {
     const b = BUILDS[S.build] ? S.build : 'cookie', cf = (CHEFS[BUILDS[b].chef] || {}).art || 'honoka';
     let ichi = false; try { ichi = S.day > 1 && ichiStock().items.length > 0; } catch (e) { /* 夜市なし */ }
     nightWarm(b, false);
-    return [bgmFetch(ichi ? 'ichi' : bgmNight(b)), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];
+    return [bgmFetch(ichi ? 'ichi' : bgmUrl('raiten') ? 'raiten' : bgmNight(b)), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];   // 夜市のない夜は 来店（幕の前）の曲から（11/23）
   }, () => startNight());
 }
 function goResult() { S.phase = 'result'; save(); render(); imgReady(ART['dn-disc']); }
@@ -47,6 +47,7 @@ function dnSwitch(toNight, prep, go) {
   let ang = toNight ? 0 : 180;
   d.style.transform = `rotate(${ang}deg)`;
   const turn = deg => new Promise(res => {
+    sePlay('kuru');   // くるくるくるん（11/23 しょーくん）
     if (REDUCED || !d.animate) { ang += deg; d.style.transform = `rotate(${ang}deg)`; return setTimeout(res, 300); }
     const a = d.animate([{ transform: `rotate(${ang}deg)` }, { transform: `rotate(${ang + deg}deg)` }], { duration: deg > 180 ? DN_LOOP : DN_SPIN, easing: 'cubic-bezier(.65,0,.3,1)', fill: 'forwards' });
     ang += deg; a.onfinish = () => { d.style.transform = `rotate(${ang}deg)`; res(); };

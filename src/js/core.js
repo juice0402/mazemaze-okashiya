@@ -37,7 +37,7 @@ const artPack2 = () => artPackLoad(typeof ART_PACK2 !== 'undefined' && ART_PACK2
   if (typeof S !== 'undefined' && S && ['morning', 'day', 'result'].includes(S.phase) && typeof render === 'function' && !(typeof talking === 'function' && talking())) render();
 });
 const artPack3 = () => artPackLoad(typeof ART_PACK3 !== 'undefined' && ART_PACK3, 'pk3', () => {   // 夜のショップなら描きなおす（バトル中・会話中はそのまま＝次に描くときに出る）
-  if (typeof S !== 'undefined' && S && S.phase === 'night' && typeof N !== 'undefined' && N && N.stage === 'shop' && !(typeof fighting !== 'undefined' && fighting) && !(typeof busy !== 'undefined' && busy) && !(typeof talking === 'function' && talking()) && typeof render === 'function') render();
+  if (typeof S !== 'undefined' && S && S.phase === 'night' && typeof N !== 'undefined' && N && N.stage === 'shop' && !(typeof fighting !== 'undefined' && fighting) && !(typeof curtainT !== 'undefined' && curtainT) && !(typeof busy !== 'undefined' && busy) && !(typeof talking === 'function' && talking()) && typeof render === 'function') render();
 });
 /* ためしのページ（アーティファクト）は、ui-*・fx-* の絵が1つのファイル art-pack.webp（11/19・1つの版に511ファイルまで・2.9MB）。
    11/23 総デバッグ（しょーくん「ロード時間の短縮」）：起動はこれを待たない。タイトルは ART_FIRST（タイトルの絵と ui 3まい＝まとめの外）だけで出し、

@@ -96,7 +96,10 @@ function nightTalk() {
     N.headN = head.length;
     talk(head, () => setTimeout(() => { if (N.stage !== 'arrive') return; N.stage = 'pick'; save(); renderNight(); }, head.length ? 0 : T(900)));   // 会話のない夜も、お客さんを少し見せてから
   }
-  else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => { N.stage = 'shop'; dealAnim = true; save(); renderNight(); });
+  else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => {   // 「おもてなしだ！」のあと、幕が開いて戦闘の曲と舞台へ（11/23 しょーくん・battle-fx.js の幕）
+    N.stage = 'shop'; dealAnim = true; save(); curtainT = true; renderNight(); bgmSync();
+    curtainOpen(() => { curtainT = false; if (S.phase === 'night' && N.stage === 'shop' && !fighting) renderNight(); });
+  });
   else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); nightEndSnd(); });
 }
 /* 前の形のセーブ（6マス・前のカード）は、その夜をはじめからにする */

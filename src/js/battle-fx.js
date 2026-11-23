@@ -846,6 +846,33 @@ function petitFx(e, run, q) {
   return 370 + (e.k === e.n - 1 ? 520 : 0);   // 次の飴は とちゅうで追いかける・さいごの1こは当たるまで待つ
 }
 
+/* ---------- 幕（11/23 しょーくん「舞台の幕が閉まってるみたいな、汎用性の高い背景隠しを作っておくのはどうだろう。進んだら幕が開いて場面再開の演出にも使える」） ----------
+   舞台（#stage）の背景をかくす幕。シェフとお客さんは幕の前に立つ（幕は z-index 1・額縁とモブはその上）。
+   夜は 来店の会話・ビルドえらび・続きの会話のあいだ閉じていて（curtainOn）、「おもてなしだ！」のあとに開く（night.js の nightTalk → curtainT）。開くあいだはショップを出さない。
+   ほかの場面でも、舞台に curtainHTML() を入れて curtainOpen()、開いている舞台に curtainShut() で閉じられる。
+   絵（stage-curtain-l・-r・-top）がそろえば絵の幕、なければ CSS の仮の幕（style-battle.css のいちばん下） */
+let curtainT = false;   // 幕が開いているところ（renderNight はショップを出さない・幕を閉じたまま描く）
+const CURTAIN_MS = 950;
+const curtainOn = () => !!N && (N.stage === 'arrive' || N.stage === 'pick' || curtainT);
+function curtainHTML() {
+  const a = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]), art = a.every(Boolean);
+  return `<div class="curtain${art ? ' art' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
+}
+function curtainOpen(done) {   // 幕が左右に開いて消える（シャーッ）
+  const c = $('curtain'); if (!c) { if (done) done(); return; }
+  sePlay('maku');
+  requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('open')));
+  setTimeout(() => { c.remove(); if (done) done(); }, REDUCED ? 60 : T(CURTAIN_MS));
+}
+function curtainShut(done, host) {   // 開いている舞台に幕を入れて閉じる（場面のとちゅうで背景をかくしたいとき）
+  host = host || $('stage'); if (!host) { if (done) done(); return; }
+  let c = $('curtain');
+  if (!c) { const g = host.querySelector('.glow'); if (g) g.insertAdjacentHTML('afterend', curtainHTML()); else host.insertAdjacentHTML('afterbegin', curtainHTML()); c = $('curtain'); c.classList.add('open'); }
+  sePlay('maku', { rate: .85 });
+  requestAnimationFrame(() => requestAnimationFrame(() => c.classList.remove('open')));
+  setTimeout(() => { if (done) done(); }, REDUCED ? 60 : T(CURTAIN_MS));
+}
+
 /* ---------- 8. 夜の絵と音を先に読んでおく（11/20 しょーくん「ゲームスタートしてから裏で読んで、夜パート中ストックしとくみたいなの」） ----------
    前は、まぜる・攻撃・★3 のときに はじめて その絵を読んで（ネットから＋絵をほどく）、1回目だけ カクッとなることがあった（ボタンの皮の ui-* だけは起動のあと読んでいた）。
    いまは：タイトルのあと ひまなとき（今のセーブのビルド）・夕方（startNight）・ビルドをえらんだとき（pickBuild）に、その夜に使う絵を

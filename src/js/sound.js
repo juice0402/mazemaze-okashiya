@@ -13,6 +13,7 @@ const BGM_LOOP = {   // 1ループの秒（Lyria は manifest.json の loop.samp
   'yoru-minamo': 4671514 / 44100, 'yoru-minamo-2': 2419195 / 44100,
   'yoru-wakaba': 2419195 / 44100, 'yoru-wakaba-2': 3189724 / 44100,
   ichi: 2540154 / 44100,
+  raiten: 2963517 / 44100,   // 来店（閉じた幕の前）＝夜市でえらばなかった B（11/23 しょーくん「夜市の使わなかったBを使いまわせないかな？」）
 };
 const BGM_VOL = 0.22;   // 11/22 しょーくん「BGMが大きすぎてセリフが聞き取れなかった・今の半分くらい」（前は 0.45）
 const BGM_FADE = 0.6;
@@ -31,12 +32,14 @@ function bgmNight(build) {
 /* 曲えらび：せっていで BGM を消したら ''（止める） */
 function bgmName() {
   if (!S || (S.opt && S.opt.bgm === false)) return '';
-  const ph = S.phase; return ph === 'night' ? (N && N.stage === 'ichi' && bgmUrl('ichi') ? 'ichi' : bgmNight()) : ph === 'morning' ? 'asa' : ph === 'day' ? bgmTake('hiru') : ph === 'result' ? 'matome' : 'title';
+  const ph = S.phase; return ph === 'night' ? (N && N.stage === 'ichi' && bgmUrl('ichi') ? 'ichi' : N && (N.stage === 'arrive' || N.stage === 'pick') && bgmUrl('raiten') ? 'raiten' : bgmNight()) : ph === 'morning' ? 'asa' : ph === 'day' ? bgmTake('hiru') : ph === 'result' ? 'matome' : 'title';
 }
 /* 次に鳴る曲（裏で先に読んでおく・code-rules の C）：朝 → 昼のお店・昼 → 夜 */
 function bgmNext() {
   const ph = S && S.phase, ichi = () => { try { return S.day > 1 && ichiStock().items.length > 0; } catch (e) { return false; } };   // 夜市に寄る夜は 夜市の曲から
-  return ph === 'morning' ? bgmTake('hiru') : ph === 'day' ? (ichi() ? 'ichi' : bgmNight(S.build)) : ph === 'night' && N && N.stage === 'ichi' ? bgmNight() : '';
+  const raiten = b => bgmUrl('raiten') ? 'raiten' : bgmNight(b);   // 来店（幕の前）の曲 → おもてなしだ！のあと 夜の曲（11/23）
+  const st = ph === 'night' && N ? N.stage : '';
+  return ph === 'morning' ? bgmTake('hiru') : ph === 'day' ? (ichi() ? 'ichi' : raiten(S.build)) : st === 'ichi' ? raiten() : st === 'arrive' || st === 'pick' ? bgmNight() : '';
 }
 function bgmUnlock() {
   if (bgm.ctx) { if (bgm.ctx.state === 'suspended' && !document.hidden) bgm.ctx.resume(); return; }

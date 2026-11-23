@@ -876,3 +876,25 @@ body[data-candy="1"]{--chefc:255,140,196}
 /* 自己ベスト（11/22 しょーくん）：ビルドの行に ベスト・夜の結果に こうしん（夜市は 11/22 夜に専用のページへ＝style-ichi.css） */
 .pk-best{color:#a8380a;font-weight:800}
 .end-best{margin:-4px 0 4px;font-family:var(--disp);font-weight:400;font-size:15px;color:#ffe08a;-webkit-text-stroke:3px #4a1a04;paint-order:stroke fill}
+/* 幕（11/23 しょーくん「舞台の幕が閉まってるみたいな、汎用性の高い背景隠し」・battle-fx.js の curtainHTML・curtainOpen・curtainShut）
+   舞台の背景の上・シェフとお客さんのうしろ（z-index 1）。額縁とモブ（.deco 8）は前。閉じているあいだ（.stage.curt）は火の粉・ラウンド・おなかの帯を出さない。
+   絵がそろえば .art（--ctl・--ctr・--ctt）、なければラズベリー色のビロードの仮の幕（CSS）。開くのは transform だけ（軽く描く） */
+.curtain{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;border-radius:inherit}
+.curtain>i{position:absolute;top:0;bottom:0;width:51%;transition:transform .95s cubic-bezier(.62,0,.22,1)}
+.ct-l{left:0;transform-origin:0 50%}
+.ct-r{right:0;transform-origin:100% 50%}
+.curtain:not(.art)>.ct-l,.curtain:not(.art)>.ct-r{background:repeating-linear-gradient(90deg,rgba(40,0,12,.42) 0,rgba(255,170,190,.1) 4.5%,rgba(255,200,215,.16) 6%,rgba(40,0,12,.42) 12%),linear-gradient(#b23054,#8a1838 55%,#5e0c24)}
+.curtain:not(.art)>.ct-l::after,.curtain:not(.art)>.ct-r::after{content:"";position:absolute;left:0;right:0;bottom:0;height:7%;background:repeating-linear-gradient(90deg,#f6d27a 0 3px,#c8902e 3px 6px);box-shadow:0 -2px 0 #8a5a14}
+.ct-l{box-shadow:inset -10px 0 14px -6px rgba(20,0,6,.55)}
+.ct-r{box-shadow:inset 10px 0 14px -6px rgba(20,0,6,.55)}
+.ct-top{left:0;right:0;top:0;width:auto!important;bottom:auto!important;height:17%;z-index:1}
+.curtain:not(.art)>.ct-top{background:radial-gradient(60% 115% at 50% 0,#c23a60 0,#8e1a3c 70%,transparent 71%) 0 0/16.7% 100% repeat-x;filter:drop-shadow(0 3px 2px rgba(20,0,6,.5))}
+.curtain:not(.art)>.ct-top::after{content:"";position:absolute;left:0;right:0;top:0;height:22%;background:linear-gradient(#f6d27a,#c8902e);box-shadow:0 2px 0 #8a5a14}
+.curtain.art>.ct-l{background:var(--ctl) 100% 50%/100% 100% no-repeat}
+.curtain.art>.ct-r{background:var(--ctr) 0 50%/100% 100% no-repeat}
+.curtain.art>.ct-top{background:var(--ctt) 50% 0/100% 100% no-repeat}
+.curtain.open>.ct-l{transform:translateX(-78%) scaleX(.42)}
+.curtain.open>.ct-r{transform:translateX(78%) scaleX(.42)}
+.curtain.open>.ct-top{transform:translateY(-100%);transition-delay:.25s}
+.stage.curt .embers,.stage.curt .aqua,.stage.curt .smoke,.stage.curt .ov-top,.stage.curt .ov-heat,.stage.curt .quota{display:none}
+@media (prefers-reduced-motion:reduce){.curtain>i{transition:none}}
