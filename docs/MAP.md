@@ -45,6 +45,7 @@
 | tools/audit.py | ボタンの点検（11/18）：画面ごとに見えているボタンの面・字と面の色の差（3より小さいと「字が読みにくい」）・高さ・となりとのすき間を出す。UI の絵を取りこんだら毎回 | |
 | tools/shot.py | 見た目の確かめ：index.html をスマホの大きさで開き、場面（title・shop・board・battle・panel・morning・day・result・js:…）を撮って1まいに並べる | |
 | tools/play.py | 夜の自動プレイ点検（11/19）：本物のドラッグとタップで、えらんだビルドの夜を9ラウンド通しで遊び（買う・まぜる・うる・入れかえ・会話・はやおくり連打・バトル中の読みなおし→つづきから）、JS のエラー・止まり・字の undefined／NaN・部品のたまりを集める。`python3 -I tools/play.py . <フォルダ> cookie,kone,taisaku,candy,fruitcake,jam [日] [たね] [はやさ]`（1ビルド2分ほど）。画面の大きさは `W=390 H=674`（ふつうは 390×844・11/21） | |
+| tools/rc_check.py | リリース前の点検（11/23）：`W=390 H=674 python3 -I tools/rc_check.py <出すフォルダ> [opt,reset,reload,curtain|all]`。せってい（タイトル・まとめ）・はじめから・全場面でリロード→つづきから・夜の幕（来店の曲・開くあいだの連打とリロード）。末尾の ISSUES が問題の数（朝の見ていた画面が台所にもどるのは 2 こ出る＝前からの形） | |
 | tools/mash.py | 連打の点検（11/23 総デバッグ）：`W=390 H=674 python3 -I tools/mash.py <出すフォルダ> [title,talk,morning,day,dn,ichi,night,shop,battle,pause,reload|all] [たね]`。本物のマウスで見えているボタンを短い間隔で連打し、JS のエラー・止まり・お金/コイン/日/ラウンドのおかしな値を出す（index.html を作りなおしてから・all は数分） | |
 | tools/load.py | 起動の重さ（11/23）：`python3 -I tools/load.py . <build.mjs --artifact のフォルダ> [Mbps=9] [rtt_ms=60] [index,artifact] [順番の数]`。回線をしぼって（帯域をみんなで分けあう）タイトルまで・絵まで・UI のまとめ（つづきからを押せる）までの秒と、読んだ量を出す | |
 | tools/font_subset.py | フォントを使う字だけに削る（11/23）：`python3 -I tools/font_subset.py <google/fonts の ofl>`（TTF の取り方は先頭の説明・TTF はコミットしない）→ assets/font/web/*.woff2（Zen Maru 500/700・Dela Gothic One・JIS第1水準漢字つき 約1.8MB）と assets/font/chars.txt。build.mjs が @font-face を url() で入れ、src に chars.txt にない字があると警告 | 70行 |

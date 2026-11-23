@@ -214,6 +214,7 @@ function save() {
     if (S.phase === 'title') {   // タイトルでは あそんでいる記録を書きかえない。せってい（BGM・効果音）だけ、いまのセーブに入れる
       const t = localStorage.getItem(KEY), o = t ? JSON.parse(t) : null;
       if (o && o.phase !== 'title') { o.opt = { ...(o.opt || {}), ...S.opt }; localStorage.setItem(KEY, JSON.stringify(o)); }
+      else localStorage.setItem(KEY + '-opt', JSON.stringify(S.opt));   // まだ遊んでいない人のせっていは べつのキーに（はじめるで引きつぐ・11/23 仕上げの点検）
       return;
     }
     localStorage.setItem(KEY, JSON.stringify(S));

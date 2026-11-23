@@ -561,9 +561,9 @@ function mixFx(from, ca, cb, cr, to, done) {
 
 /* 今夜のシェフの立ち絵：バトルは右向きのかまえ。ほのかの表情の絵は左向きなので左右反転して右向きにする（みなもの絵は右向き・正面なのでそのまま・11/19） */
 const HEROES = {
-  honoka: { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true] },
-  minamo: { battle: ['minamo-battle', false], joy: ['minamo-win', false], surprise: ['minamo-bikkuri', false], oops: ['minamo-shonbori', false] },
-  wakaba: { battle: ['wakaba-battle', false], joy: ['wakaba-win', false], surprise: ['wakaba-odoroki', false], oops: ['wakaba-komari', false] },
+  honoka: { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true], stand: ['honoka', true] },
+  minamo: { battle: ['minamo-battle', false], joy: ['minamo-win', false], surprise: ['minamo-bikkuri', false], oops: ['minamo-shonbori', false], stand: ['minamo', true] },
+  wakaba: { battle: ['wakaba-battle', false], joy: ['wakaba-win', false], surprise: ['wakaba-odoroki', false], oops: ['wakaba-komari', false], stand: ['wakaba', true] },   // stand＝ふつうの立ち絵（幕の前の来店のあいだ・11/23 しょーくん「いきなり戦闘の構えをしてるのもおかしい」）。絵は左向きなので左右反転
 };
 const chefArt = () => chefNow().art || 'honoka';
 function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip, n } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka, n: '' }; }
@@ -828,7 +828,7 @@ function renderNight() {
       ${viewerHTML()}`;
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
-  const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
+  const hk = after ? (happy ? 'joy' : 'oops') : N.stage === 'arrive' || N.stage === 'pick' ? 'stand' : 'battle', hp = heroPick(hk);   // 幕の前はふつうの立ち絵 → 幕が開くときに構える
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
     <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting && !curtainT ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}${curtainOn() ? ' curt' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>${curtainOn() ? curtainHTML() : ''}
       ${auraBackHTML()}<i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}

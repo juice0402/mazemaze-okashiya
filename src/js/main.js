@@ -6,6 +6,11 @@ function renderTop() {
   $('dayLabel').textContent = S.phase === 'title' ? '' : `${S.day}日目　${PHASE_NAME[S.phase] || ''}`;
   $('money').textContent = S.phase === 'title' ? '' : fmt(S.money) + '円';
 }
+/* タイトルで見せる せってい：セーブがあればその opt・なければ まだ遊んでいない人のキー（core.js の save） */
+function titleOpt() {
+  const d = newState().opt, sv = load(); if (sv && sv.opt) return { ...d, ...sv.opt };
+  try { return { ...d, ...(JSON.parse(localStorage.getItem(KEY + '-opt') || 'null') || {}) }; } catch (e) { return d; }
+}
 function renderTitle() {
   const saved = load();
   $('screen').innerHTML = lgTitleHTML(saved, resetArm) + '<button class="pill opt-btn" data-act="opt">せってい</button>';   // せっていはタイトルの右上（11/19 しょーくん「タイトルとまとめの画面だけ」）
@@ -46,9 +51,9 @@ function render() {
 }
 
 const ACTS = {
-  start: () => artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }),   // ためしのページは UI の絵のまとめが届いてから（core.js・11/23）
+  start: () => artPackWait(() => { if (S.phase !== 'title') return; const o = S.opt; S = newState(); S.opt = { ...S.opt, ...o }; goPrologue(); }),   // ためしのページは UI の絵のまとめが届いてから（core.js・11/23）・タイトルのせっていを引きつぐ
   continue: () => artPackWait(() => { if (S.phase !== 'title') return; const s = load(); if (s) { S = s; resume(); render(); } }),
-  reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }); },   // せっていの中（11/23）：1回目は たしかめる
+  reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); artPackWait(() => { if (S.phase !== 'title') return; const o = S.opt; S = newState(); S.opt = { ...S.opt, ...o }; goPrologue(); }); },   // せっていの中（11/23）：1回目は たしかめる
   resetNo: () => { resetArm = false; optOpen(); },
   card: el => tapCard(el.dataset.w, +el.dataset.i),
   close: () => closeView(),
@@ -88,7 +93,7 @@ function boot(data) {
   if (!boot.art) { boot.art = 1; return artBlobs(() => boot(data)); }   // 先に UI とタイトルの絵を読む（core.js）
   const s = data && data.S ? sanitize(data.S) : null;
   S = s || newState();
-  if (!s) { S.phase = 'title'; const sv = load(); if (sv && sv.opt) S.opt = { ...S.opt, ...sv.opt }; }   // タイトルの せっていは セーブのオンオフを見せる（11/23）
+  if (!s) { S.phase = 'title'; S.opt = titleOpt(); }   // タイトルの せっていは セーブ（なければ べつのキー）のオンオフを見せる（11/23）
   else resume();
   $('screen').addEventListener('click', e => {
     if (Date.now() - dragEnd < 350) return;   // ドラッグのあとのクリックは無視

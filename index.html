@@ -2348,6 +2348,7 @@ try {
 if (S.phase === 'title') {   // タイトルでは あそんでいる記録を書きかえない。せってい（BGM・効果音）だけ、いまのセーブに入れる
 const t = localStorage.getItem(KEY), o = t ? JSON.parse(t) : null;
 if (o && o.phase !== 'title') { o.opt = { ...(o.opt || {}), ...S.opt }; localStorage.setItem(KEY, JSON.stringify(o)); }
+else localStorage.setItem(KEY + '-opt', JSON.stringify(S.opt));   // まだ遊んでいない人のせっていは べつのキーに（はじめるで引きつぐ・11/23 仕上げの点検）
 return;
 }
 localStorage.setItem(KEY, JSON.stringify(S));
@@ -2922,7 +2923,7 @@ const HEARTS_REGULAR = 3;
 
 /* src/data/feet.js */
 
-const FEET = {"honoka-battle":[0.006,0.42,0.809,0.38,1.0],"honoka-charge":[0.003,0.459,0.809,0.38,0.96],"honoka-atk1":[0.022,0.414,0.809,0.365,1.02],"honoka-atk2":[0.022,0.434,0.809,0.38,1.04],"honoka-atk3":[0.018,0.302,0.809,0.25,1.1],"honoka-special":[0.024,0.457,0.809,0.38,1.1],"honoka-win":[0.004,0.475,0.809,0.38,0.92],"honoka-support":[0.006,0.42,0.809,0.38,1.0],"honoka-heatup":[0.102,0.32,0.809,0.32,1.05],"honoka-heatdown":[0.007,0.42,0.809,0.38,1.0],"honoka-knead":[0.007,0.42,0.809,0.38,1.0],"honoka-field":[0.05,0.365,0.809,0.365,1.0],"honoka-burnt":[0.006,0.425,0.809,0.38,0.96],"honoka-joy":[0.0046,0.468,0.4329,0.267,1.05],"honoka-surprise":[0.0046,0.464,0.4342,0.267,1.05],"honoka-oops":[0.0046,0.465,0.4329,0.267,1.05],"minamo-battle":[0.116,0.479,0.67,0.365,1.18],"minamo-charge":[0.019,0.437,0.67,0.259,1.204],"minamo-atk":[0.069,0.406,0.67,0.31,1.204],"minamo-atk2":[0.167,0.412,0.67,0.332,1.298],"minamo-atk3":[0.137,0.381,0.67,0.313,1.298],"minamo-heatup":[0.02,0.448,0.67,0.238,1.18],"minamo-heatdown":[0.006,0.44,0.67,0.251,1.18],"minamo-special":[0.064,0.36,0.67,0.279,1.357],"minamo-win":[0.006,0.44,0.67,0.251,1.18],"minamo-support":[0.026,0.437,0.67,0.255,1.215],"minamo-shonbori":[0.0079,0.517,0.3967,0.212,1.145],"minamo-bikkuri":[0.0046,0.464,0.3967,0.25,1.133],"wakaba-battle":[0.095,0.467,0.674,0.367,1.2],"wakaba-charge":[0.043,0.457,0.674,0.278,1.296],"wakaba-atk":[0.01,0.415,0.674,0.266,1.224],"wakaba-atk2":[0.077,0.411,0.674,0.331,1.344],"wakaba-atk3":[0.033,0.343,0.674,0.295,1.344],"wakaba-grow":[0.027,0.383,0.674,0.218,1.26],"wakaba-jar":[0.009,0.436,0.674,0.246,1.26],"wakaba-special":[0.049,0.355,0.674,0.279,1.32],"wakaba-win":[0.006,0.453,0.674,0.277,1.26],"wakaba-support":[0.01,0.411,0.674,0.249,1.26],"wakaba-komari":[0.0039,0.409,0.4434,0.246,1.236],"wakaba-odoroki":[0.0039,0.411,0.4434,0.247,1.2]};
+const FEET = {"honoka-battle":[0.006,0.42,0.809,0.38,1.0],"honoka-charge":[0.003,0.459,0.809,0.38,0.96],"honoka-atk1":[0.022,0.414,0.809,0.365,1.02],"honoka-atk2":[0.022,0.434,0.809,0.38,1.04],"honoka-atk3":[0.018,0.302,0.809,0.25,1.1],"honoka-special":[0.024,0.457,0.809,0.38,1.1],"honoka-win":[0.004,0.475,0.809,0.38,0.92],"honoka-support":[0.006,0.42,0.809,0.38,1.0],"honoka-heatup":[0.102,0.32,0.809,0.32,1.05],"honoka-heatdown":[0.007,0.42,0.809,0.38,1.0],"honoka-knead":[0.007,0.42,0.809,0.38,1.0],"honoka-field":[0.05,0.365,0.809,0.365,1.0],"honoka-burnt":[0.006,0.425,0.809,0.38,0.96],"honoka-joy":[0.0046,0.468,0.4329,0.267,1.05],"honoka-surprise":[0.0046,0.464,0.4342,0.267,1.05],"honoka-oops":[0.0046,0.465,0.4329,0.267,1.05],"minamo-battle":[0.116,0.479,0.67,0.365,1.18],"minamo-charge":[0.019,0.437,0.67,0.259,1.204],"minamo-atk":[0.069,0.406,0.67,0.31,1.204],"minamo-atk2":[0.167,0.412,0.67,0.332,1.298],"minamo-atk3":[0.137,0.381,0.67,0.313,1.298],"minamo-heatup":[0.02,0.448,0.67,0.238,1.18],"minamo-heatdown":[0.006,0.44,0.67,0.251,1.18],"minamo-special":[0.064,0.36,0.67,0.279,1.357],"minamo-win":[0.006,0.44,0.67,0.251,1.18],"minamo-support":[0.026,0.437,0.67,0.255,1.215],"minamo-shonbori":[0.0079,0.517,0.3967,0.212,1.145],"minamo-bikkuri":[0.0046,0.464,0.3967,0.25,1.133],"wakaba-battle":[0.095,0.467,0.674,0.367,1.2],"wakaba-charge":[0.043,0.457,0.674,0.278,1.296],"wakaba-atk":[0.01,0.415,0.674,0.266,1.224],"wakaba-atk2":[0.077,0.411,0.674,0.331,1.344],"wakaba-atk3":[0.033,0.343,0.674,0.295,1.344],"wakaba-grow":[0.027,0.383,0.674,0.218,1.26],"wakaba-jar":[0.009,0.436,0.674,0.246,1.26],"wakaba-special":[0.049,0.355,0.674,0.279,1.32],"wakaba-win":[0.006,0.453,0.674,0.277,1.26],"wakaba-support":[0.01,0.411,0.674,0.249,1.26],"wakaba-komari":[0.0039,0.409,0.4434,0.246,1.236],"wakaba-odoroki":[0.0039,0.411,0.4434,0.247,1.2],"honoka":[0.0039,0.464,0.4342,0.267,1.26],"minamo":[0.0046,0.466,0.3967,0.25,1.416],"wakaba":[0.0039,0.409,0.4434,0.246,1.512]};
 
 /* src/data/hiru.js */
 
@@ -5740,9 +5741,9 @@ setTimeout(() => ov.remove(), 950);
 }, HIT + HOLD + LAND);
 }
 const HEROES = {
-honoka: { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true] },
-minamo: { battle: ['minamo-battle', false], joy: ['minamo-win', false], surprise: ['minamo-bikkuri', false], oops: ['minamo-shonbori', false] },
-wakaba: { battle: ['wakaba-battle', false], joy: ['wakaba-win', false], surprise: ['wakaba-odoroki', false], oops: ['wakaba-komari', false] },
+honoka: { battle: ['honoka-battle', false], joy: ['honoka-joy', true], surprise: ['honoka-surprise', true], oops: ['honoka-oops', true], stand: ['honoka', true] },
+minamo: { battle: ['minamo-battle', false], joy: ['minamo-win', false], surprise: ['minamo-bikkuri', false], oops: ['minamo-shonbori', false], stand: ['minamo', true] },
+wakaba: { battle: ['wakaba-battle', false], joy: ['wakaba-win', false], surprise: ['wakaba-odoroki', false], oops: ['wakaba-komari', false], stand: ['wakaba', true] },   // stand＝ふつうの立ち絵（幕の前の来店のあいだ・11/23 しょーくん「いきなり戦闘の構えをしてるのもおかしい」）。絵は左向きなので左右反転
 };
 const chefArt = () => chefNow().art || 'honoka';
 function heroPick(k) { const H = HEROES[chefArt()] || HEROES.honoka, [n, flip] = H[k], a = chefArt(); return ART[n] ? { src: ART[n], flip, n } : { src: ART[a] || ART.honoka || big(CHEF_SPR[0], 8), flip: a === 'honoka' && !!ART.honoka, n: '' }; }
@@ -5968,7 +5969,7 @@ body = `<div class="tiles${N.stage === 'pick' ? ' pk-hide' : ''}" data-chef="${c
 ${viewerHTML()}`;
 }
 const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
-const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);
+const hk = after ? (happy ? 'joy' : 'oops') : N.stage === 'arrive' || N.stage === 'pick' ? 'stand' : 'battle', hp = heroPick(hk);   // 幕の前はふつうの立ち絵 → 幕が開くときに構える
 $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
 <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting && !curtainT ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}${curtainOn() ? ' curt' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>${curtainOn() ? curtainHTML() : ''}
 ${auraBackHTML()}<i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
@@ -8793,6 +8794,10 @@ function renderTop() {
 $('dayLabel').textContent = S.phase === 'title' ? '' : `${S.day}日目　${PHASE_NAME[S.phase] || ''}`;
 $('money').textContent = S.phase === 'title' ? '' : fmt(S.money) + '円';
 }
+function titleOpt() {
+const d = newState().opt, sv = load(); if (sv && sv.opt) return { ...d, ...sv.opt };
+try { return { ...d, ...(JSON.parse(localStorage.getItem(KEY + '-opt') || 'null') || {}) }; } catch (e) { return d; }
+}
 function renderTitle() {
 const saved = load();
 $('screen').innerHTML = lgTitleHTML(saved, resetArm) + '<button class="pill opt-btn" data-act="opt">せってい</button>';   // せっていはタイトルの右上（11/19 しょーくん「タイトルとまとめの画面だけ」）
@@ -8829,9 +8834,9 @@ $('screen').scrollTop = 0;
 bgmSync();   // 昼の曲・夜の曲（sound.js）
 }
 const ACTS = {
-start: () => artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }),   // ためしのページは UI の絵のまとめが届いてから（core.js・11/23）
+start: () => artPackWait(() => { if (S.phase !== 'title') return; const o = S.opt; S = newState(); S.opt = { ...S.opt, ...o }; goPrologue(); }),   // ためしのページは UI の絵のまとめが届いてから（core.js・11/23）・タイトルのせっていを引きつぐ
 continue: () => artPackWait(() => { if (S.phase !== 'title') return; const s = load(); if (s) { S = s; resume(); render(); } }),
-reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }); },   // せっていの中（11/23）：1回目は たしかめる
+reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); artPackWait(() => { if (S.phase !== 'title') return; const o = S.opt; S = newState(); S.opt = { ...S.opt, ...o }; goPrologue(); }); },   // せっていの中（11/23）：1回目は たしかめる
 resetNo: () => { resetArm = false; optOpen(); },
 card: el => tapCard(el.dataset.w, +el.dataset.i),
 close: () => closeView(),
@@ -8870,7 +8875,7 @@ function boot(data) {
 if (!boot.art) { boot.art = 1; return artBlobs(() => boot(data)); }   // 先に UI とタイトルの絵を読む（core.js）
 const s = data && data.S ? sanitize(data.S) : null;
 S = s || newState();
-if (!s) { S.phase = 'title'; const sv = load(); if (sv && sv.opt) S.opt = { ...S.opt, ...sv.opt }; }   // タイトルの せっていは セーブのオンオフを見せる（11/23）
+if (!s) { S.phase = 'title'; S.opt = titleOpt(); }   // タイトルの せっていは セーブ（なければ べつのキー）のオンオフを見せる（11/23）
 else resume();
 $('screen').addEventListener('click', e => {
 if (Date.now() - dragEnd < 350) return;   // ドラッグのあとのクリックは無視

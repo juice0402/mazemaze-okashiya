@@ -34,6 +34,7 @@ REL = {
     'minamo-shonbori': .97, 'minamo-bikkuri': .96,
     'wakaba-charge': 1.08, 'wakaba-atk': 1.02, 'wakaba-atk2': 1.12, 'wakaba-atk3': 1.12, 'wakaba-special': 1.1, 'wakaba-grow': 1.05,
     'wakaba-jar': 1.05, 'wakaba-win': 1.05, 'wakaba-support': 1.05, 'wakaba-komari': 1.03,
+    'honoka': 1.26, 'minamo': 1.2, 'wakaba': 1.26,   # ふつうの立ち絵（顔の大きさを構えの絵に近づけて 2割大きく）（11/23 幕の前・来店のあいだ＝HEROES の stand）
 }
 
 
@@ -68,6 +69,10 @@ for chef, names in POSES.items():
             v[1] = fix.get('fx', v[1]); v[3] = fix.get('sw', v[3])
             v.append(round(CHEF[chef] * REL.get(f'{chef}-{p}', 1), 3))
             out[f'{chef}-{p}'] = v
+for chef in POSES:   # ふつうの立ち絵 <chef>.webp（11/23 しょーくん「幕の前は普通の立ち絵がいい」）
+    f = ROOT / 'assets/art' / f'{chef}.webp'
+    if f.exists():
+        v = measure(f); v.append(round(CHEF[chef] * REL.get(chef, 1), 3)); out[chef] = v
 js = ('/* 自動で作るファイル（python3 -I tools/feet.py）・手で直さない\n'
       '   シェフの戦闘ポーズの足もと：名前 → [fp＝足の下のすき間（絵の高さの割合）, fx＝足もとのまんなか（横の割合）, ca＝横÷たて, sw＝影の横の半分（高さの割合）, sc＝人の大きさをそろえる倍率（CHEF×REL）] */\n'
       'const FEET = ' + json.dumps(out, separators=(',', ':')) + ';\n')

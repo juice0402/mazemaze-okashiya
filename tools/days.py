@@ -91,7 +91,9 @@ with sync_playwright() as p:
         page.wait_for_timeout(500)
     def click(sel):
         el = page.query_selector(sel)
-        if el and el.is_visible(): el.click(force=True); return True
+        try:
+            if el and el.is_visible(): el.click(force=True); return True
+        except Exception: return False   # 押す前に描きなおされた（11/23 32日の通しで夜市のボタン）＝点検の道具の都合
         return False
     def reload(where):
         before = ev('JSON.stringify({ p: S.phase, d: S.day, r: S.night && S.night.round, b: S.night && S.night.board, m: S.money })')
