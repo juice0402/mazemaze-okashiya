@@ -1474,6 +1474,7 @@ font-size:calc(var(--W) * var(--fz) * 2);-webkit-text-stroke:calc(var(--W) * var
 .curtain.art>.ct-l{background:var(--ctl) 100% 50%/100% 100% no-repeat}
 .curtain.art>.ct-r{background:var(--ctr) 0 50%/100% 100% no-repeat}
 .curtain.art>.ct-top{background:var(--ctt) 50% 0/100% 100% no-repeat}
+.curtain.art.ct-wait>.ct-l,.curtain.art.ct-wait>.ct-r{background-color:#8e1a32}
 .curtain.open>.ct-l{transform:translateX(-78%) scaleX(.42)}
 .curtain.open>.ct-r{transform:translateX(78%) scaleX(.42)}
 .curtain.open>.ct-top{transform:translateY(-100%);transition-delay:.25s}
@@ -6816,9 +6817,22 @@ return 370 + (e.k === e.n - 1 ? 520 : 0);   // 次の飴は とちゅうで追�
 let curtainT = false, curtainGo = false;   // curtainT＝幕が開いているところ（renderNight はショップを幕のうしろに描く）・curtainGo＝もう開きはじめた（とちゅうで描きなおしても開いたまま）
 const CURTAIN_MS = 950;
 const curtainOn = () => !!N && (N.stage === 'arrive' || N.stage === 'pick' || curtainT);
+let curtainOK = false, curtainP = null;
+function curtainLoad() {
+if (curtainP) return curtainP;
+const us = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]);
+if (!us.every(Boolean)) return Promise.resolve();
+curtainP = Promise.all(us.map(u => new Promise((res, rej) => {
+const im = new Image(); im.decoding = 'async';
+im.onload = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); im.onerror = rej; im.src = u;
+curtainLoad.keep = (curtainLoad.keep || []).concat(im);   // ほどいた絵を すてられないように持っておく
+}))).then(() => { curtainOK = true; const c = $('curtain'); if (c) c.classList.remove('ct-wait'); }, () => { curtainP = null; });   // 読めなかったら 次にもう一度
+return curtainP;
+}
 function curtainHTML() {
 const a = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]), art = a.every(Boolean);
-return `<div class="curtain${art ? ' art' : ''}${curtainGo ? ' open' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
+if (art && !curtainOK) curtainLoad();
+return `<div class="curtain${art ? ' art' : ''}${art && !curtainOK ? ' ct-wait' : ''}${curtainGo ? ' open' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
 }
 function curtainOpen(done) {   // 幕が左右に開いて消える（シャーッ）
 const c = $('curtain'); if (!c) { if (done) done(); return; }
@@ -6878,6 +6892,7 @@ if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   
 [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).flatMap(o => [].concat(o[chef] || []))].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
 seLoad('bgm', 'jg-manzoku').catch(() => {});
 }
+curtainLoad();   // 幕の絵（来店のときに すぐ出るように・11/23）
 if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
 } catch (e) { /* 先読みは できなくても遊べる */ }
 }
@@ -8426,7 +8441,7 @@ stopDay();
 const b = BUILDS[S.build] ? S.build : 'cookie', cf = (CHEFS[BUILDS[b].chef] || {}).art || 'honoka';
 let ichi = false; try { ichi = S.day > 1 && ichiStock().items.length > 0; } catch (e) { /* 夜市なし */ }
 nightWarm(b, false);
-return [bgmFetch(ichi ? 'ichi' : bgmUrl('raiten') ? 'raiten' : bgmNight(b)), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];   // 夜市のない夜は 来店（幕の前）の曲から（11/23）
+return [bgmFetch(ichi ? 'ichi' : bgmUrl('raiten') ? 'raiten' : bgmNight(b)), curtainLoad(), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];   // 幕の絵も待つ（来店は幕の前・11/23）   // 夜市のない夜は 来店（幕の前）の曲から（11/23）
 }, () => startNight());
 }
 function goResult() { S.phase = 'result'; save(); render(); imgReady(ART['dn-disc']); }

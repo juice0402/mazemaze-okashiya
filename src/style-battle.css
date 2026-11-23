@@ -893,6 +893,7 @@ body[data-candy="1"]{--chefc:255,140,196}
 .curtain.art>.ct-l{background:var(--ctl) 100% 50%/100% 100% no-repeat}
 .curtain.art>.ct-r{background:var(--ctr) 0 50%/100% 100% no-repeat}
 .curtain.art>.ct-top{background:var(--ctt) 50% 0/100% 100% no-repeat}
+.curtain.art.ct-wait>.ct-l,.curtain.art.ct-wait>.ct-r{background-color:#8e1a32}   /* 絵がまだのあいだは幕の色（舞台を見せない・battle-fx.js の curtainLoad） */
 .curtain.open>.ct-l{transform:translateX(-78%) scaleX(.42)}
 .curtain.open>.ct-r{transform:translateX(78%) scaleX(.42)}
 .curtain.open>.ct-top{transform:translateY(-100%);transition-delay:.25s}

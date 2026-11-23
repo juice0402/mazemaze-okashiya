@@ -854,9 +854,24 @@ function petitFx(e, run, q) {
 let curtainT = false, curtainGo = false;   // curtainT＝幕が開いているところ（renderNight はショップを幕のうしろに描く）・curtainGo＝もう開きはじめた（とちゅうで描きなおしても開いたまま）
 const CURTAIN_MS = 950;
 const curtainOn = () => !!N && (N.stage === 'arrive' || N.stage === 'pick' || curtainT);
+/* 幕の絵は先に読んでほどいておく（11/23 しょーくん「幕は少し遅い気がする、特に右側の幕」＝幕が出てから3まいを読みに行っていて、届くまで舞台が見えていた）。
+   読むのは 起動のあとの夜の先読み（nightWarm）と 昼→夜の切りかえ画面（flow.js の goEvening が待つ）。まだのときは 幕の色で うめておく（.ct-wait） */
+let curtainOK = false, curtainP = null;
+function curtainLoad() {
+  if (curtainP) return curtainP;
+  const us = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]);
+  if (!us.every(Boolean)) return Promise.resolve();
+  curtainP = Promise.all(us.map(u => new Promise((res, rej) => {
+    const im = new Image(); im.decoding = 'async';
+    im.onload = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); im.onerror = rej; im.src = u;
+    curtainLoad.keep = (curtainLoad.keep || []).concat(im);   // ほどいた絵を すてられないように持っておく
+  }))).then(() => { curtainOK = true; const c = $('curtain'); if (c) c.classList.remove('ct-wait'); }, () => { curtainP = null; });   // 読めなかったら 次にもう一度
+  return curtainP;
+}
 function curtainHTML() {
   const a = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]), art = a.every(Boolean);
-  return `<div class="curtain${art ? ' art' : ''}${curtainGo ? ' open' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
+  if (art && !curtainOK) curtainLoad();
+  return `<div class="curtain${art ? ' art' : ''}${art && !curtainOK ? ' ct-wait' : ''}${curtainGo ? ' open' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
 }
 function curtainOpen(done) {   // 幕が左右に開いて消える（シャーッ）
   const c = $('curtain'); if (!c) { if (done) done(); return; }
@@ -923,6 +938,7 @@ function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景
       [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).flatMap(o => [].concat(o[chef] || []))].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
       seLoad('bgm', 'jg-manzoku').catch(() => {});
     }
+    curtainLoad();   // 幕の絵（来店のときに すぐ出るように・11/23）
     if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
   } catch (e) { /* 先読みは できなくても遊べる */ }
 }

@@ -16,7 +16,7 @@ function goEvening() {
     const b = BUILDS[S.build] ? S.build : 'cookie', cf = (CHEFS[BUILDS[b].chef] || {}).art || 'honoka';
     let ichi = false; try { ichi = S.day > 1 && ichiStock().items.length > 0; } catch (e) { /* 夜市なし */ }
     nightWarm(b, false);
-    return [bgmFetch(ichi ? 'ichi' : bgmUrl('raiten') ? 'raiten' : bgmNight(b)), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];   // 夜市のない夜は 来店（幕の前）の曲から（11/23）
+    return [bgmFetch(ichi ? 'ichi' : bgmUrl('raiten') ? 'raiten' : bgmNight(b)), curtainLoad(), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];   // 幕の絵も待つ（来店は幕の前・11/23）   // 夜市のない夜は 来店（幕の前）の曲から（11/23）
   }, () => startNight());
 }
 function goResult() { S.phase = 'result'; save(); render(); imgReady(ART['dn-disc']); }
