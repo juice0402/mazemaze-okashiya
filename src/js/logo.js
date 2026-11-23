@@ -120,7 +120,7 @@ function lgTitleHTML(saved, arm) {
   const fore = ART['title-fore'] ? `<div class="tt-fbox" aria-hidden="true"><img class="tt-fore" src="${ART['title-fore']}" alt="" draggable="false">${
     LG_FORE_LT.map(([x, y, s], i) => `<i class="tt-lt lamp" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * .9).toFixed(1)}s"></i>`).join('')}</div>` : '';
   const btn = saved && saved.phase !== 'title'
-    ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button><button class="sub" data-act="reset">${arm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>`
+    ? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button>`   // はじめからは右上の「せってい」の中（11/23 しょーくん「連打して誤タップする人もいるかも」・リーダーが直した）
     : '<button class="big" data-act="start">はじめる</button>';
   return `<section class="title tt${play ? ' tt-play' : ''}">
     <div class="tt-scene" style="--ar:${B.ar};--fx:${B.fx};--fy:${B.fy};--z:${B.z || 1}" aria-hidden="true"><div class="tt-zoom"><img class="tt-bgi" src="${bg}" alt="" draggable="false">${lt}${ray}</div></div>

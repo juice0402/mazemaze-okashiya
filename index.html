@@ -1596,6 +1596,9 @@ button.ich-it .ich-tag.up em{color:#6a2a7a}
 .opt-nm{font-weight:700;font-size:15px}
 .opt-tabs{display:flex;gap:8px}
 .opt-tabs .tab{min-width:64px;padding:9px 12px;font-size:14px}
+.opt-reset{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1.5px dashed rgba(90,52,24,.35)}
+.opt-warn{margin:0;font-size:12.5px;line-height:1.5;color:#8a2a14;text-align:center;word-break:auto-phrase}
+.opt-reset .opt-tabs{justify-content:center}
 .opt-cr{margin-top:4px;padding-top:10px;border-top:1.5px dashed rgba(90,52,24,.35);font-size:10.5px;line-height:1.5;color:#6a4428}
 .opt-cr b{display:block;margin-bottom:2px;font-size:11.5px;color:#5a2410}
 .opt-cr p{margin:0}
@@ -8438,7 +8441,7 @@ const mons = LG_MONS.map(([id, x, b, h, fl, mv, d], i) => { const src = lgArt(['
 const fore = ART['title-fore'] ? `<div class="tt-fbox" aria-hidden="true"><img class="tt-fore" src="${ART['title-fore']}" alt="" draggable="false">${
 LG_FORE_LT.map(([x, y, s], i) => `<i class="tt-lt lamp" style="--x:${x};--y:${y};--s:${s};animation-delay:${(-i * .9).toFixed(1)}s"></i>`).join('')}</div>` : '';
 const btn = saved && saved.phase !== 'title'
-? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button><button class="sub" data-act="reset">${arm ? 'ほんとうに はじめから？（もう一度タップ）' : 'はじめから'}</button>`
+? `<button class="big" data-act="continue">つづきから（${saved.day}日目）</button>`   // はじめからは右上の「せってい」の中（11/23 しょーくん「連打して誤タップする人もいるかも」・リーダーが直した）
 : '<button class="big" data-act="start">はじめる</button>';
 return `<section class="title tt${play ? ' tt-play' : ''}">
 <div class="tt-scene" style="--ar:${B.ar};--fx:${B.fx};--fy:${B.fy};--z:${B.z || 1}" aria-hidden="true"><div class="tt-zoom"><img class="tt-bgi" src="${bg}" alt="" draggable="false">${lt}${ray}</div></div>
@@ -8667,7 +8670,10 @@ $('screen').innerHTML = lgTitleHTML(saved, resetArm) + '<button class="pill opt-
 const OPT_ROWS = [['bgm', 'BGM'], ['se', '効果音・声']];
 function optHTML() {
 const row = ([k, name]) => `<div class="opt-row"><span class="opt-nm">${name}</span><span class="opt-tabs">${[[1, 'オン'], [0, 'オフ']].map(([v, t]) => `<button class="tab${!!v === (S.opt[k] !== false) ? ' on' : ''}" data-act="optSet" data-k="${k}" data-v="${v}">${t}</button>`).join('')}</span></div>`;
-return `<div class="panel opt" data-act="noop"><button class="vclose" data-act="optX" aria-label="とじる">×</button><h3 class="opt-ttl">せってい</h3>${OPT_ROWS.map(row).join('')}
+const sv = S.phase === 'title' && load(), reset = sv && sv.phase !== 'title' ? `<div class="opt-reset">${resetArm
+? `<p class="opt-warn">${sv.day}日目までの記録が消えて、1日目からになります</p><div class="opt-tabs"><button class="tab" data-act="resetNo">やめる</button><button class="tab" data-act="reset">はじめからにする</button></div>`
+: '<div class="opt-row"><span class="opt-nm">データ</span><span class="opt-tabs"><button class="tab" data-act="reset">はじめから</button></span></div>'}</div>` : '';
+return `<div class="panel opt" data-act="noop"><button class="vclose" data-act="optX" aria-label="とじる">×</button><h3 class="opt-ttl">せってい</h3>${OPT_ROWS.map(row).join('')}${reset}
 <div class="opt-cr"><b>クレジット</b><p>楽器の音：FluidR3_GM<span class="nw">（Frank Wen・MIT ライセンス）</span></p><p class="en">効果音："Oculus Audio Pack 01" by Oculus VR, LLC (<span class="url">https://developers.meta.com/vr/downloads/package/oculus-audio-pack-1/</span>), licensed under CC BY 4.0</p></div></div>`;
 }
 function optOpen() {
@@ -8675,7 +8681,7 @@ let v = $('optv');
 if (!v) { v = document.createElement('div'); v.id = 'optv'; v.className = 'optv'; v.dataset.act = 'optX'; $('screen').appendChild(v); }
 v.innerHTML = optHTML();
 }
-function optClose() { const v = $('optv'); if (v) v.remove(); }
+function optClose() { const v = $('optv'); if (v) v.remove(); resetArm = false; }
 function optSet(el) {
 S.opt[el.dataset.k] = el.dataset.v === '1'; save();
 optOpen();
@@ -8695,7 +8701,8 @@ bgmSync();   // 昼の曲・夜の曲（sound.js）
 const ACTS = {
 start: () => { S = newState(); goPrologue(); },
 continue: () => { const s = load(); if (s) { S = s; resume(); render(); } },
-reset: () => { if (!resetArm) { resetArm = true; return renderTitle(); } resetArm = false; S = newState(); goPrologue(); },
+reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); S = newState(); goPrologue(); },   // せっていの中（11/23）：1回目は たしかめる
+resetNo: () => { resetArm = false; optOpen(); },
 card: el => tapCard(el.dataset.w, +el.dataset.i),
 close: () => closeView(),
 kw: el => showKw(el),
