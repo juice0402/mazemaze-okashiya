@@ -35,7 +35,7 @@ function startNight() {
   S.seen['ml:' + id] = S.day;   // この子が来た日（nightMonster が いちばん長く来ていない子をえらぶ・11/22）
   const open = openBuilds();
   S.night = {
-    mon, field: null, heat: START_HEAT, call: false, stage: ichiStock().items.length ? 'ichi' : open.length > 1 ? 'pick' : 'arrive',   // 夜市（11/22 夜・来店の前に寄る・ichi.js）→ えらぶ画面はビルドが2つ以上のとき
+    mon, field: null, heat: START_HEAT, call: false, stage: ichiStock().items.length ? 'ichi' : 'arrive', picked: open.length < 2,   // 夜市（11/22 夜・来店の前に寄る・ichi.js）→ 来店 → えらぶ画面（11/23 しょーくん「モンスターが現れる→ビルド選択」・picked＝えらんだあと）。えらぶ画面はビルドが2つ以上のとき
     round: 1, coins: kaisoGive('coin'), picks: ROUND1_PICKS, rolls: ROUND1_ROLLS, free: kaisoGive('roll'), ichi: [],   // coins・free＝お店の改装（11/22・free は2ラウンド目からの無料の入れかえ）・ichi＝夜市で買った素材（その夜だけ）
     board: Array(SLOTS).fill(null), shop: [], score: 0, met: 0, burnt: 0,
     sel: null, view: false, last: null,
@@ -61,8 +61,7 @@ function ichiPick(id) {
 function ichiGo() {
   if (N.stage !== 'ichi') return;
   ichiSel = null; ichiLine = '';
-  if (openBuilds().length > 1) N.stage = 'pick';
-  else { nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true; }   // 買った素材がショップに出るように、配りなおす
+  nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;   // 来店へ（11/23）。買った素材がショップに出るように、配りなおす
   sePlay('tap'); save(); render();
 }
 function pickBuild(id) { if (N.stage !== 'pick' || !BUILDS[id] || !openBuilds().includes(id)) return; N.build = id; N.pickChef = BUILDS[id].chef; nightPrep(); nightWarm(id, true); save(); pickRender(); }
@@ -80,17 +79,24 @@ function pickPageGo(d) { if (N.stage !== 'pick') return; N.pkPage = Math.max(0, 
 function pickGo() {
   if (N.stage !== 'pick') return;
   if (!N.pickChef) return pickNext();
-  S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; rollShop(); dealAnim = true;
+  S.build = N.build; S.today.belly = nightHP(S.day, N.build); nightPrep(); N.stage = 'arrive'; N.picked = true; rollShop(); dealAnim = true;   // えらんだシェフの ひとことへ（11/23）
   save(); renderNight();
   if (typeof koeMore === 'function') koeMore('pick');   // まかせて！（11/22）
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
 /* 今夜のビルドに合わせた夜のはじめ（11/19 わかば：飴ジャムの夜は場がいつも大きなびん・bin＝びんの中の実・jamN＝この夜に作ったジャムの数） */
 function nightPrep() { N.heat = heatOf().start; N.heatUsed = false; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
-/* 来店とお礼の会話（会話の部品 talk.js・文は story.js）。会話がない日はすぐ次へ */
+/* 来店とお礼の会話（会話の部品 talk.js・文は story.js）。会話がない日はすぐ次へ
+   11/23 しょーくん「モンスターが現れる→ビルド選択」：えらぶ夜は、来店の会話のさいごの1行（「おもてなしだ！」）の前で えらぶ画面へ。
+   えらんだあと、その続き（ほのかなら さいごの1行・仲間なら その子の2行かはじめての夜の会話）。headN＝えらぶ前に読んだ行の数 */
 function nightTalk() {
   if (talking()) return;
-  if (N.stage === 'arrive') talk(STORY.evening(S.today), () => { N.stage = 'shop'; dealAnim = true; save(); renderNight(); });
+  if (N.stage === 'arrive' && N.picked === false) {
+    const head = STORY.eveningBase(S.today).slice(0, -1);
+    N.headN = head.length;
+    talk(head, () => setTimeout(() => { if (N.stage !== 'arrive') return; N.stage = 'pick'; save(); renderNight(); }, head.length ? 0 : T(900)));   // 会話のない夜も、お客さんを少し見せてから
+  }
+  else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => { N.stage = 'shop'; dealAnim = true; save(); renderNight(); });
   else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); nightEndSnd(); });
 }
 /* 前の形のセーブ（6マス・前のカード）は、その夜をはじめからにする */
@@ -406,7 +412,7 @@ function resolveRound() {
   const idx = board.map((c, i) => c ? i : -1).filter(i => i >= 0);
   const first = idx[0], last = idx[idx.length - 1];
   const doneN = () => idx.filter(j => board[j] && cardDef(board[j].cid).grow && board[j].cook >= SIZE_MAX && board[j].ice).length;   // 完成して固まった大作の数（そのときの・11/19 現実の飴細工に合わせた）
-  const extra = Array(SLOTS).fill(0);
+  const extra = Array(SLOTS).fill(0), agSrc = [...Array(SLOTS)].map(() => []);   // agSrc＝もう1回をくれたマス（バトルの画面で、その札を吸いこむ）
   let pend = 1, total = 0, rally = 0, pendEv = [], kone = N.kone || 0, panRally = 0;
   const HM = heartMul();   // 昼のハートで味パワーアップ（11/19 H-029）
   /* みなも②（11/19）：chain＝れんさ（キャンディが続けて発動した数・素材や道具が発動すると0）・candyMul＝いちばんドロップの「キャンディぜんぶ×」 */
@@ -428,6 +434,7 @@ function resolveRound() {
     for (let t = 0; t < times; t++) {
       const c = board[i], d = cardDef(c.cid), fx = fxAt(i), sm = STAR_MUL[d.star];
       const e = { type: 'act', i, cid: c.cid, again: t > 0, dmg: 0, cook: c.cook, out: [] };
+      if (t > 0 && agSrc[i][t - 1] != null) e.againFrom = agSrc[i][t - 1];
       if (d.candy) {   // れんさ+1（つなぎペロキャン：両どなりがキャンディなら さらに+）
         const lk = fx.link && isCandy(i - 1) && isCandy(i + 1) ? fx.link : 0;
         chain += 1 + lk; e.chain = chain; if (lk) e.link = lk;
@@ -534,7 +541,11 @@ function resolveRound() {
         * (fx.jamFin ? 1 + jamFinOf(fx, d.star) * (N.jamN || 0) : 1) : 1;                             // しめのジャム：×(1＋0.5×この夜に作ったジャムの数)（11/19）                                  // キャンディのびん：×(1＋0.25×れんさ)（11/19）                               // しあげのつや：×(1＋0.5×完成した大作の数)（11/19）
       if (fin > 1) { const add = Math.min(DMG_CAP, Math.floor(total * (fin - 1))); dmg += add; total += add; e.fin = [Math.round(fin * 100) / 100, add]; e.out.push({ k: 'fin', to: 'score' }); }
       total = Math.min(DMG_CAP, total);
-      if (fx.again && t === 0 && i + 1 < SLOTS) { extra[i + 1] += fx.again; if (board[i + 1]) e.out.push({ k: 'again', to: [i + 1] }); }
+      if (fx.again && t === 0 && i + 1 < SLOTS) { extra[i + 1] += fx.again; for (let k = 0; k < fx.again; k++) agSrc[i + 1].push(i); if (board[i + 1]) e.out.push({ k: 'again', to: [i + 1] }); }
+      if (fx.againN && t === 0) {   // すみびクッキー：右の3枚が それぞれ もう1回（11/23 しょーくん）
+        const to = []; for (let k = 1; k <= fx.againN && i + k < SLOTS; k++) { extra[i + k]++; agSrc[i + k].push(i); if (board[i + k]) to.push(i + k); }
+        if (to.length) e.out.push({ k: 'again', to });
+      }
       if (fx.call) { call = true; e.call = true; }
       e.dmg = dmg;
       ev.push(e, ...pet);

@@ -336,7 +336,7 @@ function showEvent(e, run, q) {
   if (candyNight()) { if (e.chain != null) setChain(e.chain); else if (e.chainBreak) setChain(0); }   // 右上の れんさ（11/21 夜）
   if (e.chain >= 2) chainPop(e.chain);   // 2れんさから大きく（11/19 しょーくん）
   else if (e.chainBreak >= 2) floatAt(slot, 'れんさ おわり', 'ice');
-  if (e.again) takeBuff(e.i, e.i - 1, 'again');
+  if (e.again) takeBuff(e.i, e.againFrom != null ? e.againFrom : e.i - 1, 'again');
   /* 1. 発動したカードが跳ねる（★1 ぽん・★2 大きく・★3 縦にくるっと1回転してズドン） */
   sePlay('serve');   // おもてなしの発動（11/19 H-034）
   let t = card ? actBounce(card, d.star) : 300;
@@ -410,6 +410,7 @@ function actChips(e) {
   if (e.link) outs.push({ b: `れんさ+${e.link}`, s: 'つなぎ', c: 'gold' });
   if (e.chainUp) outs.push({ b: `れんさ+${e.chainUp}`, s: 'つなげる', c: 'gold' });
   if (fxOn(d, 'again') && !e.again) outs.push({ b: 'もう1回', s: '右どなり', c: 'mint', out: out('again') });
+  if (fxOn(d, 'againN') && !e.again) outs.push({ b: 'もう1回', s: `右${d.fx.againN}枚`, c: 'mint', out: out('again') });
   if (e.call) outs.push({ b: binNight() ? '熟した実' : 'フィールド', s: '次のショップ', c: 'mint' });
   if (e.kone) outs.push({ b: `こね+${e.kone[1] - e.kone[0]}`, s: 'こねた回数', c: 'gold', kone: e.kone[1] });
   return { calc, outs };

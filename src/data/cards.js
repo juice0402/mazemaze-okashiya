@@ -5,7 +5,7 @@
      dmg ダメージ／spd 焼けるはやさ（+1 はやい・−1 おそい）／lead 先頭にあるとダメージ×lead
      sai いちばん最後にあると、焼き加減サイコーの生地1枚につきダメージ×sai（★2は+0.5・★3は+1）／bitter 焦げると★2の焦げ焦げクッキーになる
      nb となりのカードのダメージ+nb／next つぎにダメージを出すカード×next／fin いちばん最後にあると、このラウンドのダメージ合計×fin
-     rally 先頭にあると、このラウンドの攻撃カードぜんぶダメージ+rally／again 右どなりがもう again 回うごく
+     rally 先頭にあると、このラウンドの攻撃カードぜんぶダメージ+rally／again 右どなりがもう again 回うごく／againN 右の againN 枚が それぞれもう1回うごく
      heat 発動すると鉄板の火力が heat 段階かわる／sear 発動すると右どなりの生地の焼き加減+sear／call つぎの仕入れにフィールドが1枚出る
      noburn 焦げない（★3の生地）／stop 置いているあいだ、ほかの生地は焼き加減サイコーで止まる
    ★：★1どうし→★2、★2どうし→★3（STAR_MUL 倍）。★3は完成形でまぜられない */
@@ -42,7 +42,7 @@ const MATS = {
   niji:   { cat: 'mat', name: 'にじいろの水あめ', short: 'にじいろ水あめ', fushigi: true, rare: true, taste: 'あまい', adj: 'にじいろ', noun: 'キャンディ', nr: 1, value: 90, col: '#f6a8d8' },
   minto:  { cat: 'mat', name: 'きらきらミント', short: 'きらきらミント', fushigi: true, rare: true, taste: 'さわやか', adj: 'ミント', noun: 'ゼリー', nr: 6, value: 90, col: '#8fe0a8' },
   /* モブ3体がくれる素材（11/18 H-016 しょーくん「キャラらしく」）。夜のデッキのトカゲ砂糖・ほのおたまご・クラゲの水とはべつの物。alt は素材の絵が届くまでの仮の絵（その子のデフォルメ） */
-  hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 40 } },
+  hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 160 } },   // 11/23 しょーくん「前からの素材も強く」：+40（−8%）→ +160（+13%・新しい4体と同じ）
   karamel: { cat: 'mat', name: 'ひよこのほのおカラメル', short: 'ほのおカラメル', fushigi: true, taste: 'こんがり', adj: 'こんがり', noun: 'サブレ', nr: 2, value: 60, col: '#d9822b', alt: 'mob-hiyoko', fx: { fin: 2 } },
   kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 40, heat: -1 } },
   /* 新しい夜のお客さん4体がくれる素材（11/22・名前はしょーくん OK）。カカオゴーレムのかけら（choco）とはべつの物
@@ -154,7 +154,7 @@ const TOOLS = {
 const BURNT = [null,
   { name: '焦げクッキー', fx: { dmg: 20 } },
   { name: '焦げ焦げクッキー', fx: { dmg: 60 } },
-  { name: 'すみびクッキー', fx: { dmg: 300, stop: 1 } },
+  { name: 'すみびクッキー', fx: { dmg: 300, stop: 1, againN: 3 } },   // 11/23 しょーくん「作るのが難しいから、実は最強でした」「右の3つが2回発動」
 ];
 
 /* カードのフレーバーテキスト（大きなカードの下に出す） */
@@ -180,7 +180,7 @@ const FLAVOR = {
   kakao: 'チョコもぐらが森の土からほり当てたカカオ。いちばん最初にとかすと、みんながほろにが。',
   custard: 'プリンペンギンのおなかから、とろりとすくったカスタード。次の一撃をなめらかに。',
   maccha: 'まっちゃガエルの、ほろにがのお茶っ葉。右の2まいをおいしくして、火をひとつ強める。',
-  popcorn: 'ポップコーンりすのしっぽから はじけた粒。右どなりが、ぽんぽん もう二度。',
+  popcorn: 'ポップコーンりすのしっぽから はじけた粒。右どなりが、ぽんっと もう一度。',
   maki: 'おばけ樹木の枝。くべると、火がひとつ強くなる。',
   hiokoshi: 'サラマンダーの火種。火が一気にふたつ強くなる。',
   mizu: 'しずくクラゲに分けてもらった水。熱すぎたら、これ。',
@@ -462,6 +462,7 @@ function fxList(fx, star = 1) {
   if (fx.next) p.push(`次の主役×${nx(fx.next)}`);
   if (fx.nb) p.push(`右2枚+${f(fx.nb)}`);
   if (fx.again) p.push(`右がもう${fx.again}回`);
+  if (fx.againN) p.push(`右${fx.againN}枚がもう1回`);
   if (fx.koneUp) p.push(`発動：こね+${fx.koneUp}`);
   if (fx.tane2) p.push(`こねるとパン種+${fx.tane2}`);
   if (fx.taneSpawn) p.push(`置くとパン種+${fx.taneSpawn}`);
@@ -535,6 +536,7 @@ function fxLong(fx, star = 1) {
   if (fx.next) p.push(['', `次の主役の 味パワー×${nx(fx.next)}`]);
   if (fx.nb) p.push(['', `右2枚の 味パワー+${f(fx.nb)}`]);
   if (fx.again) p.push(['', `右を もう${fx.again}回発動`]);
+  if (fx.againN) p.push(['', `右の${fx.againN}枚を それぞれ もう1回発動`]);
   if (fx.koneUp) p.push(['', `{こね}た回数+${fx.koneUp}`]);
   if (fx.tane2) p.push(['', `こねると {パン種}+${fx.tane2}こ`]);
   if (fx.taneSpawn) p.push(['', `置くと {パン種}が${fx.taneSpawn}こ`]);

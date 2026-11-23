@@ -4,13 +4,15 @@
    - スマホはさわる前に鳴らせないので、はじめのタップのあとで鳴らしはじめる
    - タイトルとプロローグ＝title・朝＝asa・まとめ＝matome（コードで作った曲・11/19 H-034）
    - 昼のお店＝hiru／hiru-2、夜＝yoru-<シェフ>（-2）（11/21 司令塔・koe-irai の Lyria:lyria-3.5 のループ版・しょーくん「音楽全て完璧すぎ」）。
-     2本ある曲は日ごとに交代（偶数の日が -2）。夜はその夜のシェフの曲（ほのか＝A・みなも＝C・わかば＝B）。わかばの2本めも しょーくんが聞いて OK（11/21） */
+     2本ある曲は日ごとに交代（偶数の日が -2）。夜はその夜のシェフの曲（ほのか＝A・みなも＝C・わかば＝B）。わかばの2本めも しょーくんが聞いて OK（11/21）
+   - 夜市のページ＝ichi（11/23 しょーくん「ベルタのシーンは専用の音楽」→ ランタンの夜市の A・koe-irai の requests/okashi/bgm-ichi.yml。B は koe-irai の kept/） */
 const BGM_LOOP = {   // 1ループの秒（Lyria は manifest.json の loop.samples ÷ 44100）
   title: 28.8, asa: 32.0, matome: 26.6667,
   hiru: 2540164 / 44100, 'hiru-2': 2540165 / 44100,
   'yoru-honoka': 2540159 / 44100, 'yoru-honoka-2': 2822399 / 44100,
   'yoru-minamo': 4671514 / 44100, 'yoru-minamo-2': 2419195 / 44100,
   'yoru-wakaba': 2419195 / 44100, 'yoru-wakaba-2': 3189724 / 44100,
+  ichi: 2540154 / 44100,
 };
 const BGM_VOL = 0.22;   // 11/22 しょーくん「BGMが大きすぎてセリフが聞き取れなかった・今の半分くらい」（前は 0.45）
 const BGM_FADE = 0.6;
@@ -29,11 +31,12 @@ function bgmNight(build) {
 /* 曲えらび：せっていで BGM を消したら ''（止める） */
 function bgmName() {
   if (!S || (S.opt && S.opt.bgm === false)) return '';
-  const ph = S.phase; return ph === 'night' ? bgmNight() : ph === 'morning' ? 'asa' : ph === 'day' ? bgmTake('hiru') : ph === 'result' ? 'matome' : 'title';
+  const ph = S.phase; return ph === 'night' ? (N && N.stage === 'ichi' && bgmUrl('ichi') ? 'ichi' : bgmNight()) : ph === 'morning' ? 'asa' : ph === 'day' ? bgmTake('hiru') : ph === 'result' ? 'matome' : 'title';
 }
 /* 次に鳴る曲（裏で先に読んでおく・code-rules の C）：朝 → 昼のお店・昼 → 夜 */
 function bgmNext() {
-  const ph = S && S.phase; return ph === 'morning' ? bgmTake('hiru') : ph === 'day' ? bgmNight(S.build) : '';
+  const ph = S && S.phase, ichi = () => { try { return S.day > 1 && ichiStock().items.length > 0; } catch (e) { return false; } };   // 夜市に寄る夜は 夜市の曲から
+  return ph === 'morning' ? bgmTake('hiru') : ph === 'day' ? (ichi() ? 'ichi' : bgmNight(S.build)) : ph === 'night' && N && N.stage === 'ichi' ? bgmNight() : '';
 }
 function bgmUnlock() {
   if (bgm.ctx) { if (bgm.ctx.state === 'suspended' && !document.hidden) bgm.ctx.resume(); return; }
