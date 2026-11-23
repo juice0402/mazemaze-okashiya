@@ -98,6 +98,7 @@
 - slowin：koe-irai・sfx:wyzowl/reverse-whooshes/reverse-whoosh-long-strong（Wyzowl SFX Kit・CC0・+6dB）（11/21 夜 1万こえの一撃のスロー）
 - kuru：koe-irai・sfx:wyzowl/bounce-spin-zoom/move-spin（Wyzowl SFX Kit・CC0・+4.6dB）（11/23 しょーくん「切り替え画面のときに、くるくるくるん！みたいなSE」＝昼↔夜の円盤が回るたび・flow.js の dnSwitch）
 - maku：koe-irai・sfx:oculus/cloth/CLOTHMvmt_ClothingMovement_OS_03（Oculus Audio Pack 01・CC BY 4.0＝クレジットずみ・−4.6dB）（11/23 舞台の幕が開く・閉じる＝battle-fx.js の curtainOpen・curtainShut）
+- bell：koe-irai・sfx:wyzowl/tones/tone-ding-high（Wyzowl SFX Kit・CC0・+11.0dB）（11/23 夜のはじめの帯「おもてなし スタート！」のベル＝night-ui.js の startBand。しょーくん「SEでベルの音」→ 仮の A・くらべのページで B notification-success-ding-ding／C sting-bright-short と えらぶ）
 - soldout：koe-irai・sfx:wyzowl/notifications/notification-alert-clear（Wyzowl SFX Kit・CC0）
 - close：koe-irai・sfx:wyzowl/everyday-props/props-shop-bell（Wyzowl SFX Kit・CC0）・高さ 0.85
 - card：koe-irai・sfx:wyzowl/appear-and-vanish/appear-flip-quick（Wyzowl SFX Kit・CC0）

@@ -283,6 +283,18 @@ function battleIntro(q, done) {
   monReact('roar'); decoReact('scare', 600); setTimeout(() => replay($('chef'), 'act'), T(300));
   setTimeout(() => { el.remove(); done(); }, ms);
 }
+/* 夜のはじめの帯（11/23 しょーくん「ごちそうさまの逆で おもてなし スタート！（SEでベルの音）」・毎晩）：幕が開いたら、ななめの帯に「おもてなし／スタート！」とベル → done でカードを配る */
+let startCut = false;
+function startBand(done) {
+  const st = $('stage');
+  if (!st || REDUCED) return done();
+  const ms = T(1500), el = document.createElement('div');
+  startCut = true;
+  el.className = 'bintro fin sb'; el.style.setProperty('--bd', ms + 'ms');
+  el.innerHTML = '<i class="bi-band"></i><p class="bi-s">おもてなし</p><p class="bi-t">スタート！</p>';
+  st.appendChild(el); setTimeout(() => sePlay('bell', { vol: .8 }), T(150));
+  setTimeout(() => { el.remove(); startCut = false; if (S.phase === 'night' && N.stage === 'shop' && !fighting) done(); }, ms);
+}
 /* 3〜4. バトルの1こま。演出にかかる時間（ふつうの速さの ms）を返す
    11/18 16時 しょーくん「せっかくの戦闘シーンが、効果発動の吹き出しで見えない」→ 説明のパネルをやめた（舞台はいつも見える）
    焼き：場のマスの上に火力の札がぽん → 生地のタイルが左から順にジュッ（+火力のぶん・サイコー・焦げ）
@@ -709,7 +721,7 @@ function shopHTML() {
       ? `<button class="pill sub sh-roll" data-act="reroll">入れかえ <small>無料${N.free}</small></button>`
       : `<button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`);   // 11/18「2けたで改行される」→ コインは絵と数字だけ
   const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
-  return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}${curtainT ? ' ctin' : ''}" data-drop data-w="sell" data-i="0">
+  return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}${curtainT || startCut ? ' ctin' : ''}" data-drop data-w="sell" data-i="0">
     <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
     <div class="sh-cards">${list.map((cid, i) => cid
       ? `<button class="shcard${!r1 && N.coins < cardDef(cid).cost ? ' poor' : ''}" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
@@ -828,7 +840,7 @@ function renderNight() {
       ${viewerHTML()}`;
   }
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
-  const hk = after ? (happy ? 'joy' : 'oops') : N.stage === 'arrive' || N.stage === 'pick' ? 'stand' : 'battle', hp = heroPick(hk);   // 幕の前はふつうの立ち絵 → 幕が開くときに構える
+  const hk = after ? (happy ? 'joy' : 'oops') : 'battle', hp = heroPick(hk);   // 幕の前はふつうの立ち絵 → 幕が開くときに構える
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
     <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}${curtainOn() ? ' curt' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>${curtainOn() ? curtainHTML() : ''}
       ${auraBackHTML()}<i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
@@ -846,7 +858,7 @@ function renderNight() {
   /* 来店とお礼の会話（night.js の nightTalk） */
   if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
   if (N.stage === 'shop' && !fighting) shopFit();
-  if (curtainT) return;   // 幕が開くあいだ（battle-fx.js）：ショップは幕のうしろ・ヒントと考え中の声は 開いてから
+  if (curtainT || startCut) return;   // 幕が開くあいだ（battle-fx.js）と スタートの帯のあいだ：ショップのカードは まだ出さない・ヒントと考え中の声は そのあと
   tipSync();   // 夜のヒント（tips.js）
   thinkArm();   // 考えている声
 }
