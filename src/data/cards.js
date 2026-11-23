@@ -44,7 +44,7 @@ const MATS = {
   /* モブ3体がくれる素材（11/18 H-016 しょーくん「キャラらしく」）。夜のデッキのトカゲ砂糖・ほのおたまご・クラゲの水とはべつの物。alt は素材の絵が届くまでの仮の絵（その子のデフォルメ） */
   hoshi:   { cat: 'mat', name: 'こんぺいトカゲのほしくずシュガー', short: 'ほしくずシュガー', fushigi: true, taste: 'ほしぞら', adj: 'ほしぞら', noun: 'キャンディ', nr: 1, value: 60, col: '#ffe9a0', alt: 'mob-tokage', fx: { rally: 160 } },   // 11/23 しょーくん「前からの素材も強く」：+40（−8%）→ +160（+13%・新しい4体と同じ）
   karamel: { cat: 'mat', name: 'ひよこのほのおカラメル', short: 'ほのおカラメル', fushigi: true, taste: 'こんがり', adj: 'こんがり', noun: 'サブレ', nr: 2, value: 60, col: '#d9822b', alt: 'mob-hiyoko', fx: { fin: 2 } },
-  kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 40, heat: -1 } },
+  kanten:  { cat: 'mat', name: 'しずくクラゲの寒天', short: 'しずく寒天', fushigi: true, taste: 'ひんやり', adj: 'ひんやり', noun: 'ゼリー', nr: 6, value: 60, col: '#cdeee4', alt: 'mob-kurage', fx: { nb: 280, heat: -1 } },   // 11/23 しょーくん「前からの素材も強く」：右2枚+40（−13%）→ +280（+220 で +6%・+300 で +17% の間＝約+14%）
   /* 新しい夜のお客さん4体がくれる素材（11/22・名前はしょーくん OK）。カカオゴーレムのかけら（choco）とはべつの物
      数字は 11/22 夜に合わせた（しょーくん「新しい4体のバランス」）：夜市で1まい足した夜の合計の まんなか が、素材なしより 平均 +11〜16%（前は ポップコーン〔もう2回〕+50%・カカオ −8%・まっちゃ −12%）。
      はかり方 `ICHI=kakao TOT=1 HEARTS=10 node tools/bot.mjs 700 all 10`。まっちゃは ほのか（火力）でいちばん効く（寒天の反対） */
