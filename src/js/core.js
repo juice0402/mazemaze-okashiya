@@ -23,7 +23,7 @@ if (location.protocol === 'file:' && window.XMLHttpRequest) {
    起動のときは、どの画面にも出る UI の絵（ui-*）とタイトルの絵（title-*）だけ先に読んでおく（待つのは長くて1.5秒） */
 /* 起動で待つのはタイトルの絵（title-*）とタイトルのボタンの皮（.big＝ui-btn-red・.sub＝ui-btn-wood）だけ（11/19 H-031 しょーくん「描写までの表示を爆速に」）。
    ほかの ui-*（夜の札・カードのふち・紋章など約80まい）は、タイトルが出てから ひまなときに読む（artWarm） */
-const ART_FIRST = /^(title-|ui-btn-(red|wood)$|ui-pill-cream$)/;   // ui-pill-cream＝タイトルの「せってい」（11/23）。この3まいの ui は ためしのページでも まとめに入れない（tools/build.mjs の TITLE_UI）
+const ART_FIRST = /^(title-|ui-btn-(red|wood)$|ui-pill-cream$|ui-strip$)/;   // ui-pill-cream＝タイトルの「せってい」（11/23）・ui-strip＝「よみこみ中…」の札の皮（11/23 夜）。この4まいの ui は ためしのページでも まとめに入れない（tools/build.mjs の TITLE_UI）
 /* ためしのページの まとめファイル（art-pack2＝朝昼の絵・art-pack3＝まぜた先のカードの絵）を読んで、1まいずつ blob の URL にする。
    11/21 夜（しょーくん「軽量化と最適化」）：art-pack2 は起動の絵が出てから（タイトルと同時に読むと起動がおそい）・art-pack3 は夜の先読みのとき */
 function artPackLoad(P, flag, after) {
@@ -50,8 +50,8 @@ const artReady = k => {
   for (const P of [typeof ART_PACK !== 'undefined' && ART_PACK, typeof ART_PACK2 !== 'undefined' && ART_PACK2, typeof ART_PACK3 !== 'undefined' && ART_PACK3]) if (P && P.items[k]) return false;
   return true;
 };
-function artPackWait(fn) {   // まとめが届いたら（読めなくても8秒で）fn。連打しても1回だけ
-  if (!artPackOn() || artBlobs.pkOk) return fn();
+function artPackWait(fn) {   // まとめが届いたら（読めなくても8秒で）fn。連打しても1回だけ。遊ぶ人の index.html は UI の絵（ui-*）がそろうまで（11/23 夜）
+  if (artPackOn() ? artBlobs.pkOk : (!artBlobs.uiP || artBlobs.uiOk)) return fn();
   artPackWait.fn = fn; toast('よみこみ中…', 8000);   // 押したのが分かるように（届いたら消す）
 }
 function artPackDone() {
@@ -63,7 +63,15 @@ function artBlobs(done) {
   const nightBoot = () => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
   const end = () => {
     if (fin) return; fin = true; uiVars();
-    if (!artPackOn()) { done(); artWarm(later); setTimeout(artPack2, 400); setTimeout(nightBoot, 3000); return; }
+    if (!artPackOn()) {   // 遊ぶ人の index.html（絵は1まいずつのファイル）：UI の絵を読んで、そろうまで「つづきから」は待つ（11/23 夜 総デバッグ：つづきから 夜にもどると UI の皮が1〜2秒おくれて出ていた）
+      done(); setTimeout(artPack2, 400);
+      if (typeof seRaw === 'function') for (const n of ['tap', 'wipe']) { const p = seRaw('se', n); if (p) p.catch(() => {}); }   // はじめのタップの音（se.js）
+      const ok = () => { if (artBlobs.uiOk) return; artBlobs.uiOk = 1; const f = artPackWait.fn; artPackWait.fn = null; if (f) { const el = $('toast'); if (el) el.hidden = true; f(); } };
+      const ld = u => new Promise(r => { const im = new Image(); im.onload = im.onerror = () => r(); im.src = u; });   // 読むだけ（ほどくのは出すとき・アプリの起動を重くしない）
+      artBlobs.uiP = Promise.all(later.map(k => ld(ART[k]))); artBlobs.uiP.then(ok); setTimeout(ok, 8000);
+      artBlobs.nb = () => { if (artBlobs.nbOn) return; artBlobs.nbOn = 1; nightBoot(); };   // 夜の絵（約10MB）は 朝の絵と曲のあと＝昼になったら（flow.js の goDay）か 25秒あと
+      setTimeout(artBlobs.nb, 25000); return;
+    }
     setTimeout(() => { try { done(); } catch (e) { console.error(e); } }, 0);   // タイトルを描く（下の まとめの読みはじめのあと・こけても まとめは読む）
     fetch(ART_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
       for (const [k, [o, l, t]] of Object.entries(ART_PACK.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));

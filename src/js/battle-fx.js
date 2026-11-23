@@ -851,7 +851,7 @@ function petitFx(e, run, q) {
    夜は 来店の会話・ビルドえらび・続きの会話のあいだ閉じていて（curtainOn）、「おもてなしだ！」のあとに開く（night.js の nightTalk → curtainT）。開くと もうショップ（11/23 しょーくん・開くあいだ 幕はショップの前）。
    ほかの場面でも、舞台に curtainHTML() を入れて curtainOpen()、開いている舞台に curtainShut() で閉じられる。
    絵（stage-curtain-l・-r・-top）がそろえば絵の幕、なければ CSS の仮の幕（style-battle.css のいちばん下） */
-let curtainT = false, curtainGo = false;   // curtainT＝幕が開いているところ（renderNight はショップを幕のうしろに描く）・curtainGo＝もう開きはじめた（とちゅうで描きなおしても開いたまま）
+let curtainT = false, curtainGo = false, curtainWait = false;   // curtainT＝幕が開いているところ（renderNight はショップを幕のうしろに描く）・curtainGo＝もう開きはじめた（とちゅうで描きなおしても開いたまま）・curtainWait＝開ける前に うしろを読んでいる（会話をもう一度はじめない）
 const CURTAIN_MS = 950;
 const curtainOn = () => !!N && (N.stage === 'arrive' || N.stage === 'pick' || curtainT);
 /* 幕の絵は先に読んでほどいておく（11/23 しょーくん「幕は少し遅い気がする、特に右側の幕」＝幕が出てから3まいを読みに行っていて、届くまで舞台が見えていた）。
@@ -867,6 +867,32 @@ function curtainLoad() {
     curtainLoad.keep = (curtainLoad.keep || []).concat(im);   // ほどいた絵を すてられないように持っておく
   }))).then(() => { curtainOK = true; const c = $('curtain'); if (c) c.classList.remove('ct-wait'); }, () => { curtainP = null; });   // 読めなかったら 次にもう一度
   return curtainP;
+}
+/* 幕を開ける前に、幕のうしろ（夜の背景・シェフの構え・はじめのショップのカード・戦いの曲）がそろうのを待つ（11/23 夜 総デバッグ：みなもの夜は 幕が開いてから背景が約1秒おくれて出て、曲も1.6秒おくれていた）。
+   ms で あきらめて開く。そのあいだは 幕は閉じたまま・来店の曲のまま */
+const curtainBusy = () => curtainT || curtainWait || (typeof startCut !== 'undefined' && startCut);   // 幕とスタートの帯のあいだは ショップをさわれない（11/23 夜）
+function curtainReady(ms) {
+  let h = null; try { h = heroPick('battle'); } catch (e) { /* シェフの絵なし */ }
+  const b = (N && N.build) || S.build || 'cookie';
+  const cards = ((N && N.shop) || []).filter(Boolean).map(c => { try { return hiArt(c); } catch (e) { return null; } });   // はじめに配るショップのカード
+  const ps = [imgReady(NBG()), imgReady(h && h.src), ...cards.map(imgReady), typeof bgmFetch === 'function' && bgmUrl(bgmNight(b)) ? bgmFetch(bgmNight(b)) : null].map(p => Promise.resolve(p).catch(() => {}));
+  return Promise.race([Promise.all(ps), new Promise(r => setTimeout(r, REDUCED ? 0 : ms))]);
+}
+/* つづきから 夜に もどったとき（main.js の ACTS.continue）：夜の絵をほどいておく。ショップなら 幕を閉じたまま 背景とシェフを読んで、そろったら開く
+   （11/23 夜 総デバッグ・しょーくん「進んだら幕が開いて場面再開の演出にも使える」） */
+function nightResume() {
+  if (S.phase !== 'night' || !N) return;
+  nightWarm(N.build || S.build || 'cookie', true);
+  if (N.stage !== 'shop' || fighting || REDUCED || curtainT) return;
+  curtainT = true; renderNight();
+  curtainReady(2500).then(() => {
+    if (S.phase !== 'night' || N.stage !== 'shop' || fighting) { curtainT = false; return; }
+    curtainOpen(() => {
+      curtainT = false; const s = $('stage'); if (s) s.classList.remove('curt');
+      if (S.phase !== 'night' || N.stage !== 'shop' || fighting) return;
+      const ov = document.querySelector('.shopov.ctin'); if (ov) ov.classList.add('go'); tipSync(); thinkArm();
+    });
+  });
 }
 function curtainHTML() {
   const a = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]), art = a.every(Boolean);
@@ -896,25 +922,35 @@ const NWARM = new Map();
 const nwIdle = f => window.requestIdleCallback ? requestIdleCallback(f, { timeout: 900 }) : setTimeout(() => f(null), 120);
 /* dec＝先にほどいておく絵（シェフの戦闘ポーズと夜の背景だけ・夜に入ったときだけ）。ほかは読むだけ（ほどくのは出すとき）。
    11/21 夜（しょーくん「軽量化と最適化」）：起動のときに 100まいぜんぶをほどいていて、メモリと起動の手間が大きかった */
+/* 11/23 夜 総デバッグ：いちどに読むのは6まいまで（前は ひまなたびに4まいずつ 読みに行き、100まいが いっぺんに回線を分けあって、
+   あとから読む 背景やシェフの構えが4秒おくれた）。夜に入ったときの絵（dec あり）は 列の前に */
+const NWQ = []; let nwIn = 0, nwHot = false;
+function nwPump() {
+  while (nwIn < 6 && NWQ.length) {
+    const [u, d] = NWQ.shift(); if (NWARM.has(u)) continue;
+    try {
+      const im = new Image(); im.decoding = 'async'; nwIn++;
+      im.onload = im.onerror = () => { nwIn = Math.max(0, nwIn - 1); nwIdle(nwPump); };
+      im.src = u; NWARM.set(u, im); if (d && im.decode) { im.__dec = 1; im.decode().catch(() => {}); }
+    } catch (e) { /* 読めなくてもよい */ }
+  }
+}
 function nwArt(urls, dec) {
   if (dec) for (const u of dec) { const im = NWARM.get(u); if (im && im.decode && !im.__dec) { im.__dec = 1; im.decode().catch(() => {}); } }
-  const list = [...new Set(urls)].filter(u => u && typeof u === 'string' && !u.startsWith('data:') && !NWARM.has(u));
-  let i = 0;
-  const step = dl => {
-    for (let n = 0; i < list.length && n < 4 && (!dl || dl.didTimeout || dl.timeRemaining() > 5); n++) {
-      const u = list[i++];
-      try { const im = new Image(); im.decoding = 'async'; im.src = u; NWARM.set(u, im); if (dec && dec.has(u) && im.decode) { im.__dec = 1; im.decode().catch(() => {}); } } catch (e) { /* 読めなくてもよい */ }
-    }
-    if (i < list.length) nwIdle(step);
-  };
-  if (list.length) nwIdle(step);
+  const items = [...new Set(urls)].filter(u => u && typeof u === 'string' && !u.startsWith('data:') && !NWARM.has(u)).map(u => [u, !!(dec && dec.has(u))]);
+  if (!items.length) return;
+  if (dec) NWQ.unshift(...items); else NWQ.push(...items);
+  nwIdle(nwPump);
 }
 function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景をほどいておく）。起動のときは読むだけ
-  if (hot && typeof artPack3 === 'function') artPack3();   // まぜた先のカードの絵のまとめ（ためしのページ・11/21 夜）：夜に入ってから読む
   try {
     const B = BUILDS[build] || BUILDS.cookie, C = CHEFS[B.chef] || {}, chef = build === 'candy' ? 'candy' : (C.art || B.chef || 'honoka');   // キャンディの夜は 飴の絵（11/22・ないものは みなもの絵）
     const cf = chef === 'candy' ? 'minamo' : chef;
     const P = cf === 'minamo' ? POSE_MINAMO : cf === 'wakaba' ? POSE_WAKABA : POSE;
+    const crit = [ART['bg-night-' + cf] || ART['bg-night'], ART[((HEROES[cf] || HEROES.honoka).battle || [])[0]]].filter(Boolean);   // 幕のうしろに出る 夜の背景とシェフの構え
+    const aura = (cf === 'honoka' ? ['fire', 'kone'] : cf === 'minamo' ? ['cold', 'candy'] : ['leaf']).flatMap(k => AURA_ART[k] || []).map(k => ART[k]).filter(Boolean);   // シェフのまわりの霧（つづきからで 0.6秒おくれた）
+    const rest = () => { try {
+    if (hot && typeof artPack3 === 'function') artPack3();   // まぜた先のカードの絵のまとめ（ためしのページ・11/21 夜）：夜に入ってから読む
     const keys = Object.values(P).map(v => Array.isArray(v) ? v[0] : v);   // シェフの戦闘ポーズ（いちばん大きい絵）
     for (const k of Object.keys(ART)) {
       if (/^fx-(burst|slash|cutin|wall|crack|shard|numhit|scatter)-/.test(k)) { if (k.includes('-' + chef) || k.includes('-' + cf)) keys.push(k); }
@@ -938,7 +974,14 @@ function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景
       [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).flatMap(o => [].concat(o[chef] || []))].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
       seLoad('bgm', 'jg-manzoku').catch(() => {});
     }
+    } catch (e) { /* 先読みは できなくても遊べる */ } };
     curtainLoad();   // 幕の絵（来店のときに すぐ出るように・11/23）
-    if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build));   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
+    if (!hot) { nwArt(crit); if (typeof bgmWarm === 'function') bgmWarm(bgmNight(build)); rest(); return; }   // その夜のシェフの曲（Lyria・0.6〜1.3MB・11/21）は AudioContext の前でも読んでおく
+    /* 夜に入ったとき（11/23 夜 総デバッグ）：背景とシェフの構え → その夜の曲 → ほかの絵と音 の順に読む（いっしょに読むと 回線を分けあって 背景が4秒・曲が8秒おくれた） */
+    const cap = ms => new Promise(r => setTimeout(r, ms)), song = bgmNight(build);
+    nwHot = true;   // そのあいだ 効果音と声の先読み（se.js の sndWarm）は待つ
+    Promise.race([Promise.all([...crit, ...aura].map(imgReady)), cap(2500)])
+      .then(() => Promise.race([Promise.resolve(typeof bgmFetch === 'function' && bgmUrl(song) ? bgmFetch(song) : null).catch(() => {}), cap(2500)]))
+      .then(() => { nwHot = false; rest(); });
   } catch (e) { /* 先読みは できなくても遊べる */ }
 }

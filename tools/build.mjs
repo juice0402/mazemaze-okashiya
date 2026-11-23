@@ -28,8 +28,8 @@ for (const f of readdirSync(artDir).sort()) {
 // 効果音と掛け声（11/19 H-034 昼のチャット）：assets/se・assets/koe → SE_SRC・KOE_SRC（BGM と同じ形・遊ぶ人は assets/se/・アーティファクトは se/）
 const SND_SRC = sub => { const T = {}; try { for (const f of readdirSync(join(root, 'assets', sub)).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) T[m[1]] = `__${sub.toUpperCase()}DIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets', sub, f))).digest('hex').slice(0, 8); } } catch (e) { /* ない */ } return T; };
 const SE_SRC = SND_SRC('se'), KOE_SRC = SND_SRC('koe');
-const PACK2 = /^(cust-|sweet-|deco-|fc-)/, PACK3 = /^mix/, TITLE_UI = /^ui-(btn-(red|wood)|pill-cream)$/;   // TITLE_UI＝タイトルで待つ ui（core.js の ART_FIRST）。まとめ art-pack に入れず1まいずつ出す（11/23 起動を速く・art_files.mjs も同じ）   // ためしのページで2つめのまとめに入れる絵（11/21 夜 まぜた先の絵 mix・mix3 も）（tools/art_files.mjs も同じ）
-const BIG_BGM = 400000;   // これより大きい曲は、ためしのページでも まとめ（snd-pack.mp3）に入れない（tools/art_files.mjs も同じ数）
+const PACK2 = /^(cust-|sweet-|deco-|fc-)/, PACK3 = /^mix/, TITLE_UI = /^ui-(btn-(red|wood)|pill-cream|strip)$/;   // TITLE_UI＝タイトルで待つ ui（core.js の ART_FIRST）。まとめ art-pack に入れず1まいずつ出す（11/23 起動を速く・art_files.mjs も同じ）   // ためしのページで2つめのまとめに入れる絵（11/21 夜 まぜた先の絵 mix・mix3 も）（tools/art_files.mjs も同じ）
+const BIG_BGM = 200000;   // これより大きい曲は、ためしのページでも まとめ（snd-pack.mp3）に入れない（tools/art_files.mjs も同じ数）。11/23 夜 総デバッグ：400000 → 200000（タイトル・朝・まとめの曲〔約0.2MB〕も まとめを待たずに すぐ読む＝6Mbps のまねで 朝の曲が5.8秒おくれていた）
 const BGM_SRC = {}; try { for (const f of readdirSync(join(root, 'assets/bgm')).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) BGM_SRC[m[1]] = `__BGMDIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets/bgm', f))).digest('hex').slice(0, 8); } } catch (e) { /* 曲がない */ }
 // 小さくする（11/18 軽量化）：遊ぶ人の index.html には、コメントと行の頭の空白を入れない（src はそのまま読みやすく）
 // CSS：/* */ を消して空白をつめる。JS：1行まるごとのコメント（// と /* */）と行の頭の空白だけ消す（文字列やテンプレートの中には書かない決まり）
@@ -39,7 +39,14 @@ const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').
 const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst BGM_SRC = " + JSON.stringify(BGM_SRC) + ";\nconst BGM_BIG = {};\nconst SE_SRC = " + JSON.stringify(SE_SRC) + ";\nconst KOE_SRC = " + JSON.stringify(KOE_SRC) + ";\nconst SND_PACK = __SNDPACK__;\nconst ART_PACK = __ARTPACK__;\nconst ART_PACK2 = __ARTPACK2__;\nconst ART_PACK3 = __ARTPACK3__;\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
 // 本文と見出しのフォント（11/23 Google Fonts をやめて同梱・assets/font/web/*.woff2 を url() で読む。base64 にしない）：Zen Maru Gothic 500/700・Dela Gothic One（tools/font_subset.py で使う字だけに削る）
 const WEBFONT_FILES = [['Zen Maru Gothic', 500, 'zen-maru-500'], ['Zen Maru Gothic', 700, 'zen-maru-700'], ['Dela Gothic One', 400, 'dela-gothic']];
-const webFonts = (base) => WEBFONT_FILES.map(([fam, w, n]) => { let h = ''; try { h = '?v=' + createHash('md5').update(readFileSync(join(root, 'assets/font/web', n + '.woff2'))).digest('hex').slice(0, 8); } catch (e) {} return `@font-face{font-family:"${fam}";font-weight:${w};font-style:normal;font-display:swap;src:url(${base}${n}.woff2${h}) format("woff2")}\n`; }).join('');
+/* 11/23 夜 総デバッグ：字は2つのファイル（tools/font_subset.py）。<名前>.woff2＝いま使う字（unicode-range＝assets/font/chars-core.txt の字だけ）・
+   <名前>-ext.woff2＝JIS第1水準のほかの漢字（unicode-range なしで先に書く＝あとの「いま使う字」が優先・その字が出たときだけ読む）。タイトルの前に読むのは 0.5MB（前は 1.8MB） */
+const fontRange = (() => { try { const cps = [...new Set([...readFileSync(join(root, 'assets/font/chars-core.txt'), 'utf8')].map(c => c.codePointAt(0)).filter(n => n >= 0x20))].sort((a, b) => a - b), out = [];
+  for (let k = 0; k < cps.length;) { let e = k; while (e + 1 < cps.length && cps[e + 1] === cps[e] + 1) e++; out.push(e > k ? `U+${cps[k].toString(16)}-${cps[e].toString(16)}` : `U+${cps[k].toString(16)}`); k = e + 1; }
+  return out.join(','); } catch (e) { return ''; } })();
+const fontHash = n => { try { return '?v=' + createHash('md5').update(readFileSync(join(root, 'assets/font/web', n + '.woff2'))).digest('hex').slice(0, 8); } catch (e) { return null; } };
+const webFonts = (base) => WEBFONT_FILES.map(([fam, w, n]) => { const h = fontHash(n) || '', he = fontHash(n + '-ext'), face = (f, hh, r) => `@font-face{font-family:"${fam}";font-weight:${w};font-style:normal;font-display:swap;src:url(${base}${f}.woff2${hh}) format("woff2")${r ? ';unicode-range:' + r : ''}}\n`;
+  return (he != null && fontRange ? face(n + '-ext', he, '') : '') + face(n, h, he != null ? fontRange : ''); }).join('');
 // src で使っている字が assets/font/chars.txt（削ったフォントの字）にないとき警告（失敗にはしない・足りない字は端末のフォントで出る）
 try {
   const have = new Set(readFileSync(join(root, 'assets/font/chars.txt'), 'utf8')), miss = new Set();

@@ -79,6 +79,9 @@ def to_shop(g, day=5, money=3000):
         elif st == 'pick': g.ev('pickGo(); 0')
         g.settle(400)
     g.settle(1500)
+    for _ in range(30):   # 幕とスタートの帯のあいだは ショップをさわれない（11/23 夜・battle-fx.js の curtainBusy）
+        if not g.ev('typeof curtainBusy === "function" && curtainBusy()'): break
+        g.settle(200)
 
 def sc_title(b):
     g = G(b, 'title'); g.ev("S = newState(); S.day=3; S.phase='morning'; startMorning(); save(); 0"); g.boot()

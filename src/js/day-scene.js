@@ -93,7 +93,7 @@ function dPreload(names) {
 }
 /* 昼の舞台の絵（朝のあいだに）・あしたの朝の絵（夜のあいだに） */
 const D_PRE_DAY = () => ['bg-day', 'bg-day-mado', 'bg-day-mado-glow', 'ui-sign', 'ui-think', 'ui-think-tail', 'ui-bubble', 'ui-bubble-tail', 'ui-jar', ...CUSTOMERS.filter(c => custOpen(c.id)).map(c => 'cust-' + c.id), ...DECO_SPOTS.map(([sp]) => { const d = decoAt(sp); return d && d.art; })];
-const D_PRE_MORNING = () => ['bg-morning', 'bg-zakka', 'ui-ovenslot', 'ui-tile', ...Object.keys(HIRU_MATS).map(m => 'mat-' + m)];
+const D_PRE_MORNING = () => ['bg-morning', 'bg-zakka', 'bg-day', 'ui-ovenslot', 'ui-tile', ...Object.keys(HIRU_MATS).map(m => 'mat-' + m)];
 /* 手前のカウンター（お客さんの胸から下をかくす）：絵があるときは、同じ絵のカウンターの所だけを上に重ねる */
 function dayStageFront() {
   const bg = ART['bg-day'];

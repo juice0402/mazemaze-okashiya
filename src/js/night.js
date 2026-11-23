@@ -90,18 +90,23 @@ function nightPrep() { N.heat = heatOf().start; N.heatUsed = false; N.field = cu
    11/23 しょーくん「モンスターが現れる→ビルド選択」：えらぶ夜は、来店の会話のさいごの1行（「おもてなしだ！」）の前で えらぶ画面へ。
    えらんだあと、その続き（ほのかなら さいごの1行・仲間なら その子の2行かはじめての夜の会話）。headN＝えらぶ前に読んだ行の数 */
 function nightTalk() {
-  if (talking()) return;
+  if (talking() || curtainWait) return;
   if (N.stage === 'arrive' && N.picked === false) {
     const head = STORY.eveningBase(S.today).slice(0, -1);
     N.headN = head.length;
     talk(head, () => setTimeout(() => { if (N.stage !== 'arrive') return; N.stage = 'pick'; save(); renderNight(); }, head.length ? 0 : T(900)));   // 会話のない夜も、お客さんを少し見せてから
   }
   else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => {   // 「おもてなしだ！」のあと、戦闘の曲で幕が開くと もうショップ → 帯「おもてなし スタート！」とベル → カードを配る（11/23 しょーくん「幕が開いたら、一番最初はショップ画面」「ごちそうさまの逆で おもてなし スタート！（SEでベルの音）」・battle-fx.js の幕）
-    N.stage = 'shop'; dealAnim = true; save(); curtainT = true; renderNight(); bgmSync();   // ショップは幕のうしろに描く（カードはまだ出さない .ctin）
-    curtainOpen(() => {
-      curtainT = false; const s = $('stage'); if (s) s.classList.remove('curt');
-      if (S.phase !== 'night' || N.stage !== 'shop' || fighting) return;
-      startBand(() => { const ov = document.querySelector('.shopov.ctin'); if (ov) ov.classList.add('go'); tipSync(); thinkArm(); });   // 描きなおさない（配っているカードが止まらないように）
+    curtainWait = true;
+    curtainReady(2500).then(() => {   // 幕のうしろ（背景・シェフの構え・戦いの曲）がそろってから開く（11/23 夜 総デバッグ・2.5秒で あきらめる）
+      curtainWait = false;
+      if (S.phase !== 'night' || N.stage !== 'arrive') return;
+      N.stage = 'shop'; dealAnim = true; save(); curtainT = true; renderNight(); bgmSync();   // ショップは幕のうしろに描く（カードはまだ出さない .ctin）
+      curtainOpen(() => {
+        curtainT = false; const s = $('stage'); if (s) s.classList.remove('curt');
+        if (S.phase !== 'night' || N.stage !== 'shop' || fighting) return;
+        startBand(() => { const ov = document.querySelector('.shopov.ctin'); if (ov) ov.classList.add('go'); tipSync(); thinkArm(); });   // 描きなおさない（配っているカードが止まらないように）
+      });
     });
   });
   else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); nightEndSnd(); });
@@ -174,7 +179,7 @@ function pay(n, cost) { if (!n) return; if (N.round === 1) N.picks -= n; else N.
 const freeSlot = () => N.board.indexOf(null);
 const BOARD_FULL = '調理台がいっぱい。先にショップへうるか、まぜてから買おう';
 function buy(i, to) {
-  const cid = N.shop[i]; if (!cid || busy || N.stage !== 'shop') return;
+  const cid = N.shop[i]; if (!cid || busy || N.stage !== 'shop' || curtainBusy()) return;
   const d = cardDef(cid), ng = payNg(1, d.cost);
   if (ng) return toast(ng);
   if (d.cat === 'field') {
@@ -232,7 +237,7 @@ function binIn(p) {
 /* うる・もどす（1ラウンド目の★1は「もどす」＝無料の枠がもどる） */
 function sellValue(d) { return d.tane || (N.round === 1 && d.star === 1 && d.cat !== 'burnt') ? 0 : SELL[d.star]; }
 function sellAt(p, at) {   // at＝ドラッグで はなした所（{x,y,w}）。なければ そのカードの場所から（night-ui.js の sellFx）
-  if (busy || N.stage !== 'shop' || !p) return;
+  if (busy || N.stage !== 'shop' || !p || curtainBusy()) return;
   if (p.where === 'field' && fixedField()) return toast('大きなびんは うれない');
   const c = p.where === 'field' ? (N.field ? { cid: 'b:' + N.field } : null) : cardAt(p); if (!c || p.where === 'shop') return;
   const d = cardDef(c.cid), v = sellValue(d), was = N.coins;
@@ -244,7 +249,7 @@ function sellAt(p, at) {   // at＝ドラッグで はなした所（{x,y,w}）�
 }
 function sell() { sellAt(N.sel); }
 function reroll() {
-  if (busy || N.stage !== 'shop') return;
+  if (busy || N.stage !== 'shop' || curtainBusy()) return;
   if (N.round === 1) {   // 1ラウンド目は 無料で2回（rolls）
     if (!(N.rolls > 0)) return toast('無料の入れかえは もうないよ');
     N.rolls--;
@@ -564,7 +569,7 @@ function resolveRound() {
 /* 調理台に置けるカードが、いまショップで買えるか（フィールドは調理台のカードではないので数えない） */
 const canPlace = () => N.shop.some(c => c && cardDef(c).cat !== 'field' && !payNg(1, cardDef(c).cost));
 function omotenashi() {
-  if (busy || N.stage !== 'shop') return;
+  if (busy || N.stage !== 'shop' || curtainBusy()) return;
   if (!N.board.some(Boolean) && canPlace()) return toast('調理台にカードを置いてから おもてなししよう');   // 置けるカードがないとき（コイン0で調理台が空）は、空のままでも進める（11/19 点検：買う→うるをくり返すと先へ進めなくなっていた）
   if (N.round === 1 && N.picks > 0 && N.shop.some(Boolean)) return toast(`あと${N.picks}まい えらべるよ`);
   const res = resolveRound(), q = quota(N.round, S.day);

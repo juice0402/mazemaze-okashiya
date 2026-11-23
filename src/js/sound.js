@@ -48,6 +48,7 @@ function bgmUnlock() {
   bgm.master = bgm.ctx.createGain(); bgm.master.gain.value = BGM_VOL; bgm.master.connect(bgm.ctx.destination);
   if (bgm.ctx.state === 'suspended') bgm.ctx.resume();
   bgmSync();
+  setTimeout(() => { if (typeof sndWarm === 'function') sndWarm(); }, 1200);   // 効果音と声を先に読む（11/23 夜）
 }
 /* ファイルを読む（まだ鳴らさない）。夜の曲は 0.6〜1.3MB あるので、前の場面のうちに読んでおく（battle-fx.js の nightWarm からも） */
 function bgmFetch(name) {
@@ -115,7 +116,7 @@ function sndPackLoad(after) {   // after＝読みおわったら（読めなく�
   fetch(SND_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
     const T = { bgm: BGM_SRC, se: typeof SE_SRC !== 'undefined' ? SE_SRC : {}, koe: typeof KOE_SRC !== 'undefined' ? KOE_SRC : {} };
     for (const [k, [o, l]] of Object.entries(SND_PACK.items)) { const [d, n] = k.split('/'); if (T[d]) T[d][n] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: 'audio/mpeg' })); }
-    bgm.fail = {}; bgm.want = ''; bgmSync();
+    bgm.fail = {}; bgm.want = ''; bgmSync(); if (typeof sndWarm === 'function') sndWarm();
   }).catch(() => {}).finally(() => { if (after) after(); });
 }
 document.addEventListener('pointerdown', bgmUnlock, true);

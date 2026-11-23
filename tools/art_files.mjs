@@ -16,11 +16,11 @@ if (since) {
   if (pageDir) for (const f of ['app.css', 'app.js']) map[f] = { from: resolve(pageDir, f), contentType: f.endsWith('.css') ? 'text/css' : 'text/javascript' };
   for (const l of out.split('\n')) {
     if (/^assets\/font\/web\//.test(l)) continue;   // 同梱フォント（11/23）は遊ぶ人の index.html だけ（ためしのページは Google Fonts・build.mjs）
-    else if (/^assets\/art\/(ui|fx)-[^/]+\.(webp|png)$/.test(l) && !/^assets\/art\/ui-(btn-(red|wood)|pill-cream)\./.test(l) && pageDir) map['art-pack.webp'] = { from: resolve(pageDir, 'art-pack.webp'), contentType: 'image/webp' };
+    else if (/^assets\/art\/(ui|fx)-[^/]+\.(webp|png)$/.test(l) && !/^assets\/art\/ui-(btn-(red|wood)|pill-cream|strip)\./.test(l) && pageDir) map['art-pack.webp'] = { from: resolve(pageDir, 'art-pack.webp'), contentType: 'image/webp' };
     else if (/^assets\/art\/(cust-|sweet-|deco-|fc-)[^/]+\.(webp|png)$/.test(l) && pageDir) map['art-pack2.webp'] = { from: resolve(pageDir, 'art-pack2.webp'), contentType: 'image/webp' };
     else if (/^assets\/art\/mix[^/]+\.(webp|png)$/.test(l) && pageDir) map['art-pack3.webp'] = { from: resolve(pageDir, 'art-pack3.webp'), contentType: 'image/webp' };   // まぜた先の絵は3つめのまとめ（11/21 夜・build.mjs の PACK3）   // 朝昼の絵は2つめのまとめ（11/21・build.mjs の PACK2）   // ui-*・fx-* は1つにまとめた art-pack.webp（11/19）
     else if (/^assets\/art\/[^/]+\.(webp|png)$/.test(l)) map[l.slice(11)] = l.slice(11);
-    else if (/^assets\/bgm\/[^/]+\.mp3$/.test(l) && statSync(join(root, l)).size > 400000) map[l.slice(7)] = { from: join(root, l), contentType: 'audio/mpeg' };   // 大きい曲（Lyria・11/21）は bgm/<名前>.mp3 のまま（build.mjs の BIG_BGM と同じ数）
+    else if (/^assets\/bgm\/[^/]+\.mp3$/.test(l) && statSync(join(root, l)).size > 200000) map[l.slice(7)] = { from: join(root, l), contentType: 'audio/mpeg' };   // 大きい曲（Lyria・11/21）は bgm/<名前>.mp3 のまま（build.mjs の BIG_BGM と同じ数）
     else if (/^assets\/(bgm|se|koe)\/[^/]+\.mp3$/.test(l) && pageDir) map['snd-pack.mp3'] = { from: resolve(pageDir, 'snd-pack.mp3'), contentType: 'audio/mpeg' };   // 曲・効果音・掛け声は1つにまとめた snd-pack.mp3（11/19・アーティファクトは511ファイルまで）
   }
   /* 曲・効果音・声を足した・変えた・消したら、まとめ snd-pack.mp3 も出しなおす（11/21：小さい曲が大きい曲になる・消すと、まとめの中身と app.js の表が変わる） */

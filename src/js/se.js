@@ -40,13 +40,38 @@ function seSrc(dir, name) {
   const base = typeof BGM_SRC !== 'undefined' && BGM_SRC.hiru;
   return base ? base.replace(/bgm\/[^/?]*(\?.*)?$/, `${dir}/${name}.mp3`) : null;
 }
+/* 音を先に読む（11/23 夜 総デバッグ：遊ぶ人の index.html では はじめて鳴らすときに読みに行き 0.2〜2秒おくれていた）。
+   音が使えるようになったら（はじめのタップ・sound.js の bgmUnlock）と 音のまとめが届いたら（sndPackLoad）：効果音ぜんぶ（約30こ）→ ほのかの声。夜なら そのシェフの声も（nightWarm） */
+const SND_FIRST = ['se/tap', 'se/wipe', 'se/door', 'se/maku', 'se/bell', 'se/kuru', 'se/card', 'koe/hono-ei', 'koe/hono-sore', 'koe/hono-yatta', 'koe/hono-yoshi'];   // すぐ鳴る音（タップ・会話・幕・スタートのベル・切りかえ・朝に焼く声）を先に
+function sndWarm() {
+  const ctx = seCtx(); if (!ctx) return;
+  const se = Object.keys(typeof SE_SRC !== 'undefined' ? SE_SRC : {}), koe = Object.keys(typeof KOE_SRC !== 'undefined' ? KOE_SRC : {}).filter(n => n.startsWith('hono-'));
+  const all = [...se.map(n => 'se/' + n), ...koe.map(n => 'koe/' + n)];
+  const L = [...SND_FIRST.filter(k => all.includes(k)), ...all.filter(k => !SND_FIRST.includes(k))].filter(k => !seA.buf[k]).map(k => k.split('/'));
+  const nFirst = L.filter(([d, n]) => SND_FIRST.includes(d + '/' + n)).length;
+  let i = 0; const next = () => {
+    if (i >= L.length) return;
+    if (i >= nFirst && typeof nwHot !== 'undefined' && nwHot) return setTimeout(next, 400);   // 夜に入って 背景と曲を読んでいるあいだは待つ（battle-fx.js の nightWarm）・すぐ鳴る音は待たない
+    const [d, n] = L[i++]; seLoad(d, n).catch(() => {}).finally(next);
+  };
+  for (let k = 0; k < 3; k++) next();   // 3本ずつ（絵の読みこみと回線を取りあいすぎない）
+}
+/* 遊ぶ人の index.html：音はタップのあとでないと ほどけないので、はじめのタップの音だけ 先にファイルを読んでおく（11/23 夜・タイトルの「つづきから」の音が0.6秒おくれた） */
+const seRawP = {};
+function seRaw(dir, name) {
+  const k = dir + '/' + name; if (seRawP[k]) return seRawP[k];
+  const url = seSrc(dir, name); if (!url) return null;
+  seRawP[k] = fetch(url).then(r => { if (!r.ok) throw new Error(url); return r.arrayBuffer(); });
+  seRawP[k].catch(() => { delete seRawP[k]; });
+  return seRawP[k];
+}
 function seLoad(dir, name) {
   const k = dir + '/' + name;
   if (seA.buf[k]) return seA.buf[k];
   const url = seSrc(dir, name), ctx = seCtx();
   if (!url || !ctx) return Promise.reject(new Error('no audio'));
-  seA.buf[k] = fetch(url).then(r => { if (!r.ok) throw new Error(url); return r.arrayBuffer(); })
-    .then(a => new Promise((ok, ng) => ctx.decodeAudioData(a, ok, ng)))
+  seA.buf[k] = (seRawP[k] || fetch(url).then(r => { if (!r.ok) throw new Error(url); return r.arrayBuffer(); }))
+    .then(a => new Promise((ok, ng) => ctx.decodeAudioData(a.slice(0), ok, ng)))
     .catch(e => { delete seA.buf[k]; throw e; });
   return seA.buf[k];
 }

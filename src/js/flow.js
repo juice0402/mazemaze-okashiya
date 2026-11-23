@@ -2,13 +2,13 @@
    はじめだけ プロローグ → 朝 → 昼 → 夕方〜夜（おもてなし）→ 1日のまとめ → 次の日の朝
    画面の切りかえの幕は main.js（ボタンで S.phase が変わると wipe）と talk.js（会話のあとで変わったとき）
    朝と昼の画面は morning.js・day.js（昼のチャット）。夜は night.js ==== */
-function goPrologue() { S.phase = 'prologue'; save(); render(); }
+function goPrologue() { S.phase = 'prologue'; save(); render(); if (typeof dPreload === 'function') dPreload(D_PRE_MORNING()); }   // 朝の絵は プロローグのうちに（11/23 夜）
 /* 朝：きのうの記録を S.yesterday に残して、今日の記録 S.today を作る（H-008） */
 function goMorning() {
   if (!S.today || S.today.day !== S.day) { S.yesterday = S.today; S.today = newDay(S.day); }
   S.phase = 'morning'; startMorning(); save(); render();
 }
-function goDay() { S.phase = 'day'; startDay(); save(); render(); imgReady(ART['dn-disc']); }   // 切りかえの円盤は 昼のうちに読む
+function goDay() { S.phase = 'day'; startDay(); save(); render(); imgReady(ART['dn-disc']); if (artBlobs.nb) setTimeout(artBlobs.nb, 1500); }   // 夜の絵の先読みは 昼のあいだに（遊ぶ人の index.html・11/23 夜）   // 切りかえの円盤は 昼のうちに読む
 /* 昼をおえて夕方へ（昼の画面の「閉店」から）。夜の画面が来店の会話 → おもてなし → お礼の会話 → まとめへ */
 function goEvening() {
   dnSwitch(true, () => {
@@ -16,7 +16,7 @@ function goEvening() {
     const b = BUILDS[S.build] ? S.build : 'cookie', cf = (CHEFS[BUILDS[b].chef] || {}).art || 'honoka';
     let ichi = false; try { ichi = S.day > 1 && ichiStock().items.length > 0; } catch (e) { /* 夜市なし */ }
     nightWarm(b, false);
-    return [bgmFetch(ichi ? 'ichi' : bgmUrl('raiten') ? 'raiten' : bgmNight(b)), curtainLoad(), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];   // 幕の絵も待つ（来店は幕の前・11/23）   // 夜市のない夜は 来店（幕の前）の曲から（11/23）
+    return [bgmFetch(ichi ? 'ichi' : bgmUrl('raiten') ? 'raiten' : bgmNight(b)), curtainLoad(), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter', 'ichi-tag', 'ichi-tag-sale', 'ichi-banner'].map(k => ART[k]) : [ART['bg-night-' + cf] || ART['bg-night'], ART[cf + '-battle']]).map(imgReady)];   // 幕の絵も待つ（来店は幕の前・11/23）   // 夜市のない夜は 来店（幕の前）の曲から（11/23）
   }, () => startNight());
 }
 function goResult() { S.phase = 'result'; save(); render(); imgReady(ART['dn-disc']); }
