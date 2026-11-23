@@ -10,9 +10,54 @@ function goMorning() {
 }
 function goDay() { S.phase = 'day'; startDay(); save(); render(); }
 /* 昼をおえて夕方へ（昼の画面の「閉店」から）。夜の画面が来店の会話 → おもてなし → お礼の会話 → まとめへ */
-function goEvening() { stopDay(); startNight(); }
+function goEvening() {
+  dnSwitch(true, () => {
+    stopDay();
+    const b = BUILDS[S.build] ? S.build : 'cookie', cf = (CHEFS[BUILDS[b].chef] || {}).art || 'honoka';
+    let ichi = false; try { ichi = S.day > 1 && ichiStock().items.length > 0; } catch (e) { /* 夜市なし */ }
+    nightWarm(b, false);
+    return [bgmFetch(ichi ? 'ichi' : bgmNight(b)), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];
+  }, () => startNight());
+}
 function goResult() { S.phase = 'result'; save(); render(); }
-function nextDay() { S.day++; goMorning(); }
+function nextDay() {
+  dnSwitch(false, () => [bgmFetch('asa'), ...['bg-morning', 'bg-zakka'].map(k => imgReady(ART[k]))], () => { S.day++; goMorning(); });
+}
+
+/* ---------- 昼↔夜の切りかえ画面（11/23 しょーくん「お店を閉めて、いきなり夜が始まるのが違和感」「☀️○🌃 がクルッと回って切り替わる」「ロード画面に」「夜→朝は逆」）
+   えらぶ質問で：円盤は描き下ろし（art-irai の dn-disc・届くまでは CSS の仮の円盤）・字は出さない・最低1.5秒（読みこみが長いと回りつづける・6秒まで）・空の色もかわる。
+   toNight＝昼→夜（太陽が上 → 月が上）／false＝夜→朝（月が上 → 太陽が上）。prep()＝先に読むものの列（Promise）・go()＝円盤のうしろで画面を切りかえる ---------- */
+const DN_MIN = 1500, DN_MAX = 6000, DN_SPIN = 1250, DN_LOOP = 1200;   // 半回り（はじめ）・もう1回り（読みこみ待ち）のミリ秒
+let dnOn = false;
+function imgReady(u) {
+  if (!u || typeof u !== 'string') return Promise.resolve();
+  return new Promise(res => { const im = new Image(); im.decoding = 'async'; im.onload = im.onerror = () => res(); im.src = u; if (im.decode) im.decode().then(res, res); });
+}
+function dnSwitch(toNight, prep, go) {
+  if (dnOn) return;
+  dnOn = true;
+  const disc = ART['dn-disc'], el = document.createElement('div');
+  el.className = 'dsw ' + (toNight ? 'to-night' : 'to-day'); el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `<i class="dsw-sky dsw-a"></i><i class="dsw-sky dsw-b"></i><div class="dsw-disc${disc ? ' art' : ''}"${disc ? ` style="background-image:url('${disc}')"` : ''}>${disc ? '' : '<i class="dsw-sun"></i><i class="dsw-moon"></i>'}</div>`;
+  document.body.appendChild(el);
+  const t0 = Date.now(), d = el.querySelector('.dsw-disc');
+  let waits = []; try { waits = (prep && prep()) || []; } catch (e) { /* 読めなくても切りかえる */ }
+  let ready = false;
+  Promise.race([Promise.all(waits.map(p => Promise.resolve(p).catch(() => {}))), new Promise(r => setTimeout(r, DN_MAX))]).then(() => { ready = true; });
+  let ang = toNight ? 0 : 180;
+  d.style.transform = `rotate(${ang}deg)`;
+  const turn = deg => new Promise(res => {
+    if (REDUCED || !d.animate) { ang += deg; d.style.transform = `rotate(${ang}deg)`; return setTimeout(res, 300); }
+    const a = d.animate([{ transform: `rotate(${ang}deg)` }, { transform: `rotate(${ang + deg}deg)` }], { duration: deg > 180 ? DN_LOOP : DN_SPIN, easing: 'cubic-bezier(.65,0,.3,1)', fill: 'forwards' });
+    ang += deg; a.onfinish = () => { d.style.transform = `rotate(${ang}deg)`; res(); };
+  });
+  const finish = () => {
+    try { go(); } catch (e) { console.error(e); }
+    setTimeout(() => { el.classList.add('off'); setTimeout(() => { el.remove(); dnOn = false; }, 380); }, 120);
+  };
+  const loop = () => (ready && Date.now() - t0 >= DN_MIN - 80) ? finish() : turn(360).then(loop);   // 読みこみが長いときは、もう1回り（同じ面が上で止まる）
+  requestAnimationFrame(() => { el.classList.add('on'); setTimeout(() => { el.classList.add('flip'); turn(180).then(loop); }, 280); });
+}
 
 /* ---------- プロローグ（開業）：お店の外の場面に、会話の部品で ---------- */
 function renderPrologue() {

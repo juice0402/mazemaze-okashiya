@@ -908,3 +908,18 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .mixfx.hit .mf-orbit{animation:mforbit 1.1s .2s linear forwards}
 @keyframes mforbit{0%{opacity:0;transform:rotate(var(--oa)) translateX(var(--or)) scale(.4)}20%{opacity:1;transform:rotate(calc(var(--oa) + 60deg)) translateX(var(--or)) scale(1)}100%{opacity:0;transform:rotate(calc(var(--oa) + 300deg)) translateX(calc(var(--or) * 1.1)) scale(.6)}}
 .mixfx.hit.land .mf-orbits,.mixfx.hit.land .mf-star{animation:mfout .2s ease-in forwards}
+
+/* ==== 昼↔夜の切りかえ画面（11/23・flow.js の dnSwitch）：円盤がくるっと回る。空は 夕方 → 夜／夜 → 朝 に色がかわる。動きは transform と opacity だけ ==== */
+.dsw{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;opacity:0;transition:opacity .28s ease-out;pointer-events:auto}
+.dsw.on{opacity:1}
+.dsw.off{opacity:0;transition:opacity .36s ease-in}
+.dsw-sky{position:absolute;inset:0}
+.dsw-b{opacity:0;transition:opacity 1.1s ease-in-out}
+.dsw.flip .dsw-b{opacity:1}
+.dsw.to-night .dsw-a,.dsw.to-day .dsw-b{background:linear-gradient(180deg,#ffd896 0%,#f6a978 55%,#e58466 100%)}
+.dsw.to-night .dsw-b,.dsw.to-day .dsw-a{background:radial-gradient(120% 80% at 50% 0%,#4a2a66 0%,#24163e 55%,#120b22 100%)}
+.dsw-disc{position:relative;width:min(64vw,300px);aspect-ratio:1;border-radius:50%;will-change:transform}
+.dsw-disc:not(.art){background:linear-gradient(180deg,#ffe6a6 0%,#ffc79a 47%,#6a3f8a 53%,#2c1a48 100%);box-shadow:inset 0 0 0 7px #c8923a,inset 0 0 0 10px #8a5a26,0 10px 30px rgba(0,0,0,.35)}
+.dsw-disc.art{background:center/contain no-repeat;filter:drop-shadow(0 10px 18px rgba(0,0,0,.35))}
+.dsw-sun{position:absolute;left:0;right:0;margin-inline:auto;top:11%;width:26%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff8d6 0 35%,#ffd45e 68%,#f3a128 100%);box-shadow:0 0 18px 6px rgba(255,214,110,.7)}
+.dsw-moon{position:absolute;left:0;right:0;margin-inline:auto;bottom:13%;width:22%;aspect-ratio:1;border-radius:50%;box-shadow:inset -12px -8px 0 0 #ffe39a;transform:rotate(180deg)}
