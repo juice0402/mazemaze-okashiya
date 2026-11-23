@@ -37,9 +37,19 @@ const minCss = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '\n'
 const minJs = t => t.replace(/^[ \t]*\/\*(?:(?!\*\/)[\s\S])*\*\/[ \t]*$/gm, '').replace(/^[ \t]*\/\/.*$/gm, '').replace(/^[ \t]+/gm, '').replace(/\n{2,}/g, '\n');
 // TRIAL：ためしのページ（--artifact）だけ true（こね生地などを日にちを待たずに ためせる）。遊ぶ人の index.html は false
 const js = "(() => {\n'use strict';\nconst ART = " + JSON.stringify(ART) + ";\nconst BGM_SRC = " + JSON.stringify(BGM_SRC) + ";\nconst BGM_BIG = {};\nconst SE_SRC = " + JSON.stringify(SE_SRC) + ";\nconst KOE_SRC = " + JSON.stringify(KOE_SRC) + ";\nconst SND_PACK = __SNDPACK__;\nconst ART_PACK = __ARTPACK__;\nconst ART_PACK2 = __ARTPACK2__;\nconst ART_PACK3 = __ARTPACK3__;\nconst TRIAL = __TRIAL__;\n" + ORDER.map(p => `/* ${p} */\n` + minJs(rd(p))).join('\n') + '\n})();';
+// 本文と見出しのフォント（11/23 Google Fonts をやめて同梱・assets/font/web/*.woff2 を url() で読む。base64 にしない）：Zen Maru Gothic 500/700・Dela Gothic One（tools/font_subset.py で使う字だけに削る）
+const WEBFONT_FILES = [['Zen Maru Gothic', 500, 'zen-maru-500'], ['Zen Maru Gothic', 700, 'zen-maru-700'], ['Dela Gothic One', 400, 'dela-gothic']];
+const webFonts = (base) => WEBFONT_FILES.map(([fam, w, n]) => { let h = ''; try { h = '?v=' + createHash('md5').update(readFileSync(join(root, 'assets/font/web', n + '.woff2'))).digest('hex').slice(0, 8); } catch (e) {} return `@font-face{font-family:"${fam}";font-weight:${w};font-style:normal;font-display:swap;src:url(${base}${n}.woff2${h}) format("woff2")}\n`; }).join('');
+// src で使っている字が assets/font/chars.txt（削ったフォントの字）にないとき警告（失敗にはしない・足りない字は端末のフォントで出る）
+try {
+  const have = new Set(readFileSync(join(root, 'assets/font/chars.txt'), 'utf8')), miss = new Set();
+  const walk = d => { for (const e of readdirSync(join(root, d), { withFileTypes: true })) { const q = d + '/' + e.name; if (e.isDirectory()) walk(q); else if (/\.(js|css|html)$/.test(e.name)) for (const c of readFileSync(join(root, q), 'utf8')) if (c.codePointAt(0) > 0x7f && !have.has(c)) miss.add(c); } };
+  walk('src');
+  if (miss.size) console.log(`警告：フォントにない字 ${miss.size}こ（python3 -I tools/font_subset.py <TTF>/ofl をかけてね）：` + [...miss].slice(0, 40).join(''));
+} catch (e) {}
 // 絵の場所：遊ぶ人の index.html は assets/art/・アーティファクトは絵をページと同じ所に出す（files を短くするため・tools/art_files.mjs）
 const fragOf = (trial, dir = 'assets/art/') => rd('src/shell.html')
-  .replace('<!--STYLE-->', () => '<style>\n' + FONTS + minCss(STYLES.map(rd).join('\n')) + '</style>')
+  .replace('<!--STYLE-->', () => '<style>\n' + FONTS + webFonts(dir ? 'assets/font/web/' : '') + minCss(STYLES.map(rd).join('\n')) + '</style>')
   .replace('<!--SCRIPT-->', () => '<script>\n' + js.replace('__TRIAL__', trial).replace('__SNDPACK__', 'null').replace('__ARTPACK__', 'null').replace('__ARTPACK2__', 'null').replace('__ARTPACK3__', 'null').replaceAll('__ARTDIR__', dir).replaceAll('__BGMDIR__', dir ? 'assets/bgm/' : 'bgm/').replaceAll('__SEDIR__', dir ? 'assets/se/' : 'se/').replaceAll('__KOEDIR__', dir ? 'assets/koe/' : 'koe/') + '\n</script>');
 const frag = fragOf('false');
 
@@ -79,7 +89,7 @@ console.log('index.html', page.length, 'art', Object.keys(ART).length);
 const ai = process.argv.indexOf('--artifact');
 if (ai > 0 && process.argv[ai + 1]) {
   const out = process.argv[ai + 1], dir = dirname(out), h8 = s => createHash('md5').update(s).digest('hex').slice(0, 8);
-  const css = FONTS + minCss(STYLES.map(rd).join('\n'));
+  const css = FONTS + webFonts('') + minCss(STYLES.map(rd).join('\n'));
   /* 音は1つのファイル snd-pack.mp3 にまとめる（11/19：アーティファクトは1つの版に511ファイルまで。効果音と声の44こが入らなかった）。
      曲・効果音・声の mp3 をつなげて、どこからどこまでかの表 SND_PACK をわたす（sound.js が切り分けて blob の URL を表に入れる）。遊ぶ人の index.html は今までどおり1こずつ */
   const parts = [], items = {}; let off = 0;
