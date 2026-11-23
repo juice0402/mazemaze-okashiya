@@ -40,9 +40,9 @@ button.ich-it.poor .ich-card{filter:grayscale(.55) brightness(.62) drop-shadow(0
 /* 値札（ichi-tag・値引きは ichi-tag-sale・値上げは字の色）：カードの上 */
 .ich-tag{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;margin-bottom:5px;padding:3px 6px 4px;font-style:normal;line-height:1.1;
   color:#3a2318;background:#e8c48c;border:1.5px solid #6b3418;border-radius:6px;box-shadow:0 2px 0 rgba(0,0,0,.3)}
-.ich-tag.art{width:56px;min-width:0;aspect-ratio:168/234;box-sizing:border-box;padding:16px 2px 4px;background:center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
-.ich-tag.sale.art,.ich-tag.down.art{padding-top:22px}
-button.ich-it .ich-tag b{font-family:var(--disp);font-weight:400;font-size:14px;color:#3a2318}
+.ich-tag.art{width:100%;min-width:0;aspect-ratio:168/234;box-sizing:border-box;padding:24% 3px 6%;background:center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.ich-tag.sale.art,.ich-tag.down.art{padding-top:44%}   /* 値札はカードと同じ幅（11/23 しょーくん「数字が枠ギリギリ・カード幅くらいに」）。上の%は幅に合わせる */
+button.ich-it .ich-tag b{font-family:var(--disp);font-weight:400;font-size:15px;white-space:nowrap;color:#3a2318}
 button.ich-it .ich-tag b small{font-family:var(--font);font-size:9px;font-weight:800;margin-left:1px;color:#5a3418;opacity:1}
 button.ich-it .ich-tag em{font-style:normal;font-size:9px;font-weight:800;color:#3a2318}
 .ich-tag.down:not(.art),.ich-tag.sale:not(.art){background:linear-gradient(90deg,#fff 0 6px,#d8402c 6px 12px) top/12px 5px repeat-x,#f2d6a2;padding-top:7px}
