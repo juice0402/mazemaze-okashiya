@@ -890,7 +890,7 @@ function nightWarm(build, hot) {   // hot＝夜に入った（ポーズと背景
     const hotSet = hot ? new Set([...Object.values(P).map(v => ART[Array.isArray(v) ? v[0] : v]), ART['bg-night-' + cf] || ART['bg-night'], ...(chef === 'candy' ? CANDY_BITS.map(k => ART[k]) : []),
       ...['fx-burst-', 'fx-slash-', 'fx-numhit-', 'fx-scatter-', 'fx-cutin-'].map(k => ART[k + chef] || ART[k + cf]), ...(FLOURISH[chef] || []).map(k => ART[k]), ART[RING[chef]],
       ...(mon ? ['', '-eat', '-happy'].map(x => ART['mon-' + mon.id + x]) : [])].filter(Boolean)) : null;   // 一撃のはじめで ほどく手間（長い処理）が出ないように、シェフの一撃の絵とお客さんの顔も
-    nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
+    nwArt([...keys.filter(artReady).map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
     if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
       ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
       [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).flatMap(o => [].concat(o[chef] || []))].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));

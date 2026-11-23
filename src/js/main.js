@@ -46,9 +46,9 @@ function render() {
 }
 
 const ACTS = {
-  start: () => { S = newState(); goPrologue(); },
-  continue: () => { const s = load(); if (s) { S = s; resume(); render(); } },
-  reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); S = newState(); goPrologue(); },   // せっていの中（11/23）：1回目は たしかめる
+  start: () => artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }),   // ためしのページは UI の絵のまとめが届いてから（core.js・11/23）
+  continue: () => artPackWait(() => { if (S.phase !== 'title') return; const s = load(); if (s) { S = s; resume(); render(); } }),
+  reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }); },   // せっていの中（11/23）：1回目は たしかめる
   resetNo: () => { resetArm = false; optOpen(); },
   card: el => tapCard(el.dataset.w, +el.dataset.i),
   close: () => closeView(),

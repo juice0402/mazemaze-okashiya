@@ -37,6 +37,8 @@ color-scheme:dark;
 }
 html{box-sizing:border-box;height:100%}
 *,*::before,*::after{box-sizing:inherit}
+body{touch-action:manipulation;-webkit-touch-callout:none}
+img{-webkit-user-drag:none}
 body{height:100%;margin:0;color:var(--milk);font-family:var(--font);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;overflow:hidden;background:repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 2px,transparent 2px 64px),linear-gradient(var(--wood-2),var(--wood));background-color:var(--wood)}
 #app{position:relative;height:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:4px 8px}
 #top{flex:none;justify-content:space-between;align-items:center;gap:12px;margin-block:2px 6px;padding:3px 12px;min-height:28px;border-radius:8px;background:linear-gradient(#9a6a45,#7a5236);box-shadow:inset 0 1px 0 rgba(255,230,200,.35),0 2px 0 rgba(0,0,0,.35);display:none}
@@ -2156,7 +2158,7 @@ x.onerror = () => ng(new Error('xhr')); x.send();
 });
 window.fetch = (u, o) => (nf ? nf(u, o).then(r => r.ok ? r : Promise.reject(new Error(r.status))) : Promise.reject(new Error('no fetch'))).catch(() => xhr(u));
 }
-const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
+const ART_FIRST = /^(title-|ui-btn-(red|wood)$|ui-pill-cream$)/;   // ui-pill-cream＝タイトルの「せってい」（11/23）。この3まいの ui は ためしのページでも まとめに入れない（tools/build.mjs の TITLE_UI）
 function artPackLoad(P, flag, after) {
 if (!P || artBlobs[flag]) return; artBlobs[flag] = 1;
 fetch(P.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
@@ -2170,19 +2172,36 @@ if (typeof S !== 'undefined' && S && ['morning', 'day', 'result'].includes(S.pha
 const artPack3 = () => artPackLoad(typeof ART_PACK3 !== 'undefined' && ART_PACK3, 'pk3', () => {   // 夜のショップなら描きなおす（バトル中・会話中はそのまま＝次に描くときに出る）
 if (typeof S !== 'undefined' && S && S.phase === 'night' && typeof N !== 'undefined' && N && N.stage === 'shop' && !(typeof fighting !== 'undefined' && fighting) && !(typeof busy !== 'undefined' && busy) && !(typeof talking === 'function' && talking()) && typeof render === 'function') render();
 });
+const artPackOn = () => typeof ART_PACK !== 'undefined' && !!ART_PACK;
+const artReady = k => {
+const u = ART[k]; if (!u) return false; if (String(u).startsWith('blob:')) return true;
+for (const P of [typeof ART_PACK !== 'undefined' && ART_PACK, typeof ART_PACK2 !== 'undefined' && ART_PACK2, typeof ART_PACK3 !== 'undefined' && ART_PACK3]) if (P && P.items[k]) return false;
+return true;
+};
+function artPackWait(fn) {   // まとめが届いたら（読めなくても8秒で）fn。連打しても1回だけ
+if (!artPackOn() || artBlobs.pkOk) return fn();
+artPackWait.fn = fn;
+}
+function artPackDone() {
+if (artBlobs.pkOk) return; artBlobs.pkOk = 1; uiVars();
+const f = artPackWait.fn; artPackWait.fn = null; if (f) f();
+}
 function artBlobs(done) {
-if (typeof ART_PACK !== 'undefined' && ART_PACK && !artBlobs.pk) {
-artBlobs.pk = 1; let go = false;
-const next = () => { if (go) return; go = true; artBlobs(done); };
+let fin = false, left = 0; const later = [];
+const nightBoot = () => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
+const end = () => {
+if (fin) return; fin = true; uiVars(); done();
+if (!artPackOn()) { artWarm(later); setTimeout(artPack2, 400); setTimeout(nightBoot, 3000); return; }
 fetch(ART_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
 for (const [k, [o, l, t]] of Object.entries(ART_PACK.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
-if (go) uiVars();   // 待ちきれずに始めていたら、あとから皮を入れなおす
-}).catch(() => {}).finally(next);
-setTimeout(next, 6000);   // 読めなくても始める
-return;
-}
-let fin = false, left = 0; const later = [];
-const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); setTimeout(artPack2, 400); setTimeout(() => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); }, 3000); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
+if (artBlobs.pkOk) uiVars(); else artPackDone();   // 待ちきれずに始めていたら、あとから皮を入れなおす
+artWarm(Object.keys(ART_PACK.items).filter(k => k.startsWith('ui-')));
+}).catch(() => artPackDone()).finally(() => {   // 音のまとめ（sound.js）・朝昼のまとめ・夜の先読みは そのあと（「つづきから」を待たせるのは UI のまとめだけ）
+const next = () => { setTimeout(artPack2, 100); setTimeout(nightBoot, 2000); };   // 回線を分けあわないように1つずつ：UI → 音 → 朝昼の絵 → 夜の先読み
+if (typeof sndPackLoad === 'function') sndPackLoad(next); else next();
+});
+setTimeout(artPackDone, 8000);   // 読めなくても始める
+};
 try {
 for (const k of Object.keys(ART)) {
 if (ART_FIRST.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }
@@ -2197,7 +2216,7 @@ if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 1500 }); else
 }
 function uiVars() {
 const st = document.documentElement.style;
-for (const k of Object.keys(ART)) if (k.startsWith('ui-')) st.setProperty('--' + k, `url("${ART[k]}")`);
+for (const k of Object.keys(ART)) if (k.startsWith('ui-') && artReady(k)) st.setProperty('--' + k, `url("${ART[k]}")`);
 }
 function fmt(n) {
 n = Math.floor(n);
@@ -4574,7 +4593,7 @@ const D_PRE = new Map();
 function dPreload(names) {
 const go = () => {
 for (const n of names) {
-const u = n && ART[n]; if (!u || D_PRE.has(u)) continue;
+const u = n && artReady(n) && ART[n]; if (!u || D_PRE.has(u)) continue;   // ためしのページの まとめの絵は届いてから（core.js の artReady・11/23）
 const im = new Image(); im.decoding = 'async'; im.src = u; D_PRE.set(u, im);
 if (im.decode) im.decode().catch(() => {});
 }
@@ -6777,7 +6796,7 @@ const cards = [...(B.doughs || []), ...(C.common || []), ...(B.fields || []).map
 const hotSet = hot ? new Set([...Object.values(P).map(v => ART[Array.isArray(v) ? v[0] : v]), ART['bg-night-' + cf] || ART['bg-night'], ...(chef === 'candy' ? CANDY_BITS.map(k => ART[k]) : []),
 ...['fx-burst-', 'fx-slash-', 'fx-numhit-', 'fx-scatter-', 'fx-cutin-'].map(k => ART[k + chef] || ART[k + cf]), ...(FLOURISH[chef] || []).map(k => ART[k]), ART[RING[chef]],
 ...(mon ? ['', '-eat', '-happy'].map(x => ART['mon-' + mon.id + x]) : [])].filter(Boolean)) : null;   // 一撃のはじめで ほどく手間（長い処理）が出ないように、シェフの一撃の絵とお客さんの顔も
-nwArt([...keys.map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
+nwArt([...keys.filter(artReady).map(k => ART[k]), ...cards.map(cid => { try { return hiArt(cid); } catch (e) { return null; } })], hotSet);
 if (typeof seLoad === 'function' && typeof seCtx === 'function' && seCtx()) {   // 音：はじめのタップのあと（AudioContext があるとき）
 ['star', 'hit', 'mult', 'serve', 'card', 'buy', 'reroll', 'coin', 'manzoku', 'fire', 'burnt'].forEach(n => seLoad('se', n).catch(() => {}));
 [...(KOE_ATK[chef] || []), ...(KOE_END[chef] || []), ...(KOE_THINK[chef] || []), ...Object.values(KOE_MORE).flatMap(o => [].concat(o[chef] || []))].filter(koeHas).forEach(n => seLoad('koe', n).catch(() => {}));
@@ -8596,12 +8615,13 @@ if (bgm.want === name && (bgm.cur === name || bgm.buf[name] === 0)) return;
 bgm.want = name;
 bgmLoad(name, b => bgmStart(name, b));
 }
-if (typeof SND_PACK !== 'undefined' && SND_PACK) {
+function sndPackLoad(after) {   // after＝読みおわったら（読めなくても）
+if (!(typeof SND_PACK !== 'undefined' && SND_PACK) || sndPackLoad.on) return after && after(); sndPackLoad.on = 1;
 fetch(SND_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
 const T = { bgm: BGM_SRC, se: typeof SE_SRC !== 'undefined' ? SE_SRC : {}, koe: typeof KOE_SRC !== 'undefined' ? KOE_SRC : {} };
 for (const [k, [o, l]] of Object.entries(SND_PACK.items)) { const [d, n] = k.split('/'); if (T[d]) T[d][n] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: 'audio/mpeg' })); }
 bgm.fail = {}; bgm.want = ''; bgmSync();
-}).catch(() => {});
+}).catch(() => {}).finally(() => { if (after) after(); });
 }
 document.addEventListener('pointerdown', bgmUnlock, true);
 document.addEventListener('visibilitychange', () => {
@@ -8753,9 +8773,9 @@ $('screen').scrollTop = 0;
 bgmSync();   // 昼の曲・夜の曲（sound.js）
 }
 const ACTS = {
-start: () => { S = newState(); goPrologue(); },
-continue: () => { const s = load(); if (s) { S = s; resume(); render(); } },
-reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); S = newState(); goPrologue(); },   // せっていの中（11/23）：1回目は たしかめる
+start: () => artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }),   // ためしのページは UI の絵のまとめが届いてから（core.js・11/23）
+continue: () => artPackWait(() => { if (S.phase !== 'title') return; const s = load(); if (s) { S = s; resume(); render(); } }),
+reset: () => { if (!resetArm) { resetArm = true; return optOpen(); } resetArm = false; optClose(); artPackWait(() => { if (S.phase !== 'title') return; S = newState(); goPrologue(); }); },   // せっていの中（11/23）：1回目は たしかめる
 resetNo: () => { resetArm = false; optOpen(); },
 card: el => tapCard(el.dataset.w, +el.dataset.i),
 close: () => closeView(),

@@ -28,7 +28,7 @@ for (const f of readdirSync(artDir).sort()) {
 // 効果音と掛け声（11/19 H-034 昼のチャット）：assets/se・assets/koe → SE_SRC・KOE_SRC（BGM と同じ形・遊ぶ人は assets/se/・アーティファクトは se/）
 const SND_SRC = sub => { const T = {}; try { for (const f of readdirSync(join(root, 'assets', sub)).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) T[m[1]] = `__${sub.toUpperCase()}DIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets', sub, f))).digest('hex').slice(0, 8); } } catch (e) { /* ない */ } return T; };
 const SE_SRC = SND_SRC('se'), KOE_SRC = SND_SRC('koe');
-const PACK2 = /^(cust-|sweet-|deco-|fc-)/, PACK3 = /^mix/;   // ためしのページで2つめのまとめに入れる絵（11/21 夜 まぜた先の絵 mix・mix3 も）（tools/art_files.mjs も同じ）
+const PACK2 = /^(cust-|sweet-|deco-|fc-)/, PACK3 = /^mix/, TITLE_UI = /^ui-(btn-(red|wood)|pill-cream)$/;   // TITLE_UI＝タイトルで待つ ui（core.js の ART_FIRST）。まとめ art-pack に入れず1まいずつ出す（11/23 起動を速く・art_files.mjs も同じ）   // ためしのページで2つめのまとめに入れる絵（11/21 夜 まぜた先の絵 mix・mix3 も）（tools/art_files.mjs も同じ）
 const BIG_BGM = 400000;   // これより大きい曲は、ためしのページでも まとめ（snd-pack.mp3）に入れない（tools/art_files.mjs も同じ数）
 const BGM_SRC = {}; try { for (const f of readdirSync(join(root, 'assets/bgm')).sort()) { const m = f.match(/^(.+)\.mp3$/); if (m) BGM_SRC[m[1]] = `__BGMDIR__${f}?v=` + createHash('md5').update(readFileSync(join(root, 'assets/bgm', f))).digest('hex').slice(0, 8); } } catch (e) { /* 曲がない */ }
 // 小さくする（11/18 軽量化）：遊ぶ人の index.html には、コメントと行の頭の空白を入れない（src はそのまま読みやすく）
@@ -90,7 +90,7 @@ if (ai > 0 && process.argv[ai + 1]) {
   const pack = Buffer.concat(parts); writeFileSync(join(dir, 'snd-pack.mp3'), pack);
   /* UI と演出の絵（ui-*・fx-* の116まい）も1つのファイル art-pack.webp にまとめる（11/19：絵がふえて511ファイルをこえた）。core.js の artBlobs が読んで blob の URL にする */
   const aparts = [], aitems = {}; let aoff = 0;
-  for (const k of Object.keys(ART).filter(k => /^(ui-|fx-)/.test(k)).sort()) {
+  for (const k of Object.keys(ART).filter(k => /^(ui-|fx-)/.test(k) && !TITLE_UI.test(k)).sort()) {
     const f = ART[k].replace('__ARTDIR__', '').replace(/\?v=.*$/, ''), b = readFileSync(join(artDir, f));
     aitems[k] = [aoff, b.length, f.endsWith('.png') ? 'image/png' : 'image/webp']; aparts.push(b); aoff += b.length;
   }

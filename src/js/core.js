@@ -23,7 +23,7 @@ if (location.protocol === 'file:' && window.XMLHttpRequest) {
    起動のときは、どの画面にも出る UI の絵（ui-*）とタイトルの絵（title-*）だけ先に読んでおく（待つのは長くて1.5秒） */
 /* 起動で待つのはタイトルの絵（title-*）とタイトルのボタンの皮（.big＝ui-btn-red・.sub＝ui-btn-wood）だけ（11/19 H-031 しょーくん「描写までの表示を爆速に」）。
    ほかの ui-*（夜の札・カードのふち・紋章など約80まい）は、タイトルが出てから ひまなときに読む（artWarm） */
-const ART_FIRST = /^(title-|ui-btn-(red|wood))/;
+const ART_FIRST = /^(title-|ui-btn-(red|wood)$|ui-pill-cream$)/;   // ui-pill-cream＝タイトルの「せってい」（11/23）。この3まいの ui は ためしのページでも まとめに入れない（tools/build.mjs の TITLE_UI）
 /* ためしのページの まとめファイル（art-pack2＝朝昼の絵・art-pack3＝まぜた先のカードの絵）を読んで、1まいずつ blob の URL にする。
    11/21 夜（しょーくん「軽量化と最適化」）：art-pack2 は起動の絵が出てから（タイトルと同時に読むと起動がおそい）・art-pack3 は夜の先読みのとき */
 function artPackLoad(P, flag, after) {
@@ -39,20 +39,41 @@ const artPack2 = () => artPackLoad(typeof ART_PACK2 !== 'undefined' && ART_PACK2
 const artPack3 = () => artPackLoad(typeof ART_PACK3 !== 'undefined' && ART_PACK3, 'pk3', () => {   // 夜のショップなら描きなおす（バトル中・会話中はそのまま＝次に描くときに出る）
   if (typeof S !== 'undefined' && S && S.phase === 'night' && typeof N !== 'undefined' && N && N.stage === 'shop' && !(typeof fighting !== 'undefined' && fighting) && !(typeof busy !== 'undefined' && busy) && !(typeof talking === 'function' && talking()) && typeof render === 'function') render();
 });
+/* ためしのページ（アーティファクト）は、ui-*・fx-* の絵が1つのファイル art-pack.webp（11/19・1つの版に511ファイルまで・2.9MB）。
+   11/23 総デバッグ（しょーくん「ロード時間の短縮」）：起動はこれを待たない。タイトルは ART_FIRST（タイトルの絵と ui 3まい＝まとめの外）だけで出し、
+   まとめと音（snd-pack）はタイトルが出てから読む（回線を取りあわない）。届くまで「つづきから」「はじめから」は待つ（artPackWait・main.js の ACTS） */
+const artPackOn = () => typeof ART_PACK !== 'undefined' && !!ART_PACK;
+/* その絵がもう使えるか：ためしのページで まとめ（art-pack・2・3）の中の絵は、届いて blob の URL になるまで使えない（1まいずつのファイルは出していない＝読みに行くと 404）。
+   先読み（dPreload・nightWarm）と CSS の変数（uiVars）は、使えない絵をとばす（11/23 総デバッグ） */
+const artReady = k => {
+  const u = ART[k]; if (!u) return false; if (String(u).startsWith('blob:')) return true;
+  for (const P of [typeof ART_PACK !== 'undefined' && ART_PACK, typeof ART_PACK2 !== 'undefined' && ART_PACK2, typeof ART_PACK3 !== 'undefined' && ART_PACK3]) if (P && P.items[k]) return false;
+  return true;
+};
+function artPackWait(fn) {   // まとめが届いたら（読めなくても8秒で）fn。連打しても1回だけ
+  if (!artPackOn() || artBlobs.pkOk) return fn();
+  artPackWait.fn = fn;
+}
+function artPackDone() {
+  if (artBlobs.pkOk) return; artBlobs.pkOk = 1; uiVars();
+  const f = artPackWait.fn; artPackWait.fn = null; if (f) f();
+}
 function artBlobs(done) {
-  /* ためしのページ（アーティファクト）は、ui-*・fx-* の絵が1つのファイル art-pack.webp（11/19・1つの版に511ファイルまで）。先に読んで、1まいずつ blob の URL にする */
-  if (typeof ART_PACK !== 'undefined' && ART_PACK && !artBlobs.pk) {
-    artBlobs.pk = 1; let go = false;
-    const next = () => { if (go) return; go = true; artBlobs(done); };
+  let fin = false, left = 0; const later = [];
+  const nightBoot = () => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
+  const end = () => {
+    if (fin) return; fin = true; uiVars(); done();
+    if (!artPackOn()) { artWarm(later); setTimeout(artPack2, 400); setTimeout(nightBoot, 3000); return; }
     fetch(ART_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
       for (const [k, [o, l, t]] of Object.entries(ART_PACK.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
-      if (go) uiVars();   // 待ちきれずに始めていたら、あとから皮を入れなおす
-    }).catch(() => {}).finally(next);
-    setTimeout(next, 6000);   // 読めなくても始める
-    return;
-  }
-  let fin = false, left = 0; const later = [];
-  const end = () => { if (fin) return; fin = true; uiVars(); done(); artWarm(later); setTimeout(artPack2, 400); setTimeout(() => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); }, 3000); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
+      if (artBlobs.pkOk) uiVars(); else artPackDone();   // 待ちきれずに始めていたら、あとから皮を入れなおす
+      artWarm(Object.keys(ART_PACK.items).filter(k => k.startsWith('ui-')));
+    }).catch(() => artPackDone()).finally(() => {   // 音のまとめ（sound.js）・朝昼のまとめ・夜の先読みは そのあと（「つづきから」を待たせるのは UI のまとめだけ）
+      const next = () => { setTimeout(artPack2, 100); setTimeout(nightBoot, 2000); };   // 回線を分けあわないように1つずつ：UI → 音 → 朝昼の絵 → 夜の先読み
+      if (typeof sndPackLoad === 'function') sndPackLoad(next); else next();
+    });
+    setTimeout(artPackDone, 8000);   // 読めなくても始める
+  };
   try {
     for (const k of Object.keys(ART)) {
       if (ART_FIRST.test(k)) { left++; const im = new Image(); im.onload = im.onerror = () => { if (--left <= 0) end(); }; im.src = ART[k]; }
@@ -69,7 +90,7 @@ function artWarm(names) {
 /* UI の絵（ui-* の名前の絵）を CSS の変数 --ui-<名前> に入れる。style.css の「UI の絵」が border-image に使う（昼の画面も同じ変数） */
 function uiVars() {
   const st = document.documentElement.style;
-  for (const k of Object.keys(ART)) if (k.startsWith('ui-')) st.setProperty('--' + k, `url("${ART[k]}")`);
+  for (const k of Object.keys(ART)) if (k.startsWith('ui-') && artReady(k)) st.setProperty('--' + k, `url("${ART[k]}")`);
 }
 
 /* 大きな数字：10万からは「万・億・兆・京」 */

@@ -105,13 +105,15 @@ function bgmSync() {
   bgmLoad(name, b => bgmStart(name, b));
 }
 /* ためしのページ（アーティファクト）は、曲・効果音・声を1つのファイル snd-pack.mp3（mp3 をつなげたもの）にまとめて出す（11/19：1つの版に511ファイルまでで入らなかった・tools/build.mjs）。
-   開いたらすぐ読んで、1つずつ blob の URL にして BGM_SRC・SE_SRC・KOE_SRC に入れる（se.js はその表を見る）。遊ぶ人の index.html は SND_PACK が null */
-if (typeof SND_PACK !== 'undefined' && SND_PACK) {
+   1つずつ blob の URL にして BGM_SRC・SE_SRC・KOE_SRC に入れる（se.js はその表を見る）。遊ぶ人の index.html は SND_PACK が null。
+   11/23 総デバッグ：読みはじめは タイトルの絵が出てから（core.js の artBlobs の end・タイトルの絵と回線を取りあわない）。届いたら bgmSync で鳴りはじめる */
+function sndPackLoad(after) {   // after＝読みおわったら（読めなくても）
+  if (!(typeof SND_PACK !== 'undefined' && SND_PACK) || sndPackLoad.on) return after && after(); sndPackLoad.on = 1;
   fetch(SND_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
     const T = { bgm: BGM_SRC, se: typeof SE_SRC !== 'undefined' ? SE_SRC : {}, koe: typeof KOE_SRC !== 'undefined' ? KOE_SRC : {} };
     for (const [k, [o, l]] of Object.entries(SND_PACK.items)) { const [d, n] = k.split('/'); if (T[d]) T[d][n] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: 'audio/mpeg' })); }
     bgm.fail = {}; bgm.want = ''; bgmSync();
-  }).catch(() => {});
+  }).catch(() => {}).finally(() => { if (after) after(); });
 }
 document.addEventListener('pointerdown', bgmUnlock, true);
 document.addEventListener('visibilitychange', () => {

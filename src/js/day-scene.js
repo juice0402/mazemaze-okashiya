@@ -84,7 +84,7 @@ const D_PRE = new Map();
 function dPreload(names) {
   const go = () => {
     for (const n of names) {
-      const u = n && ART[n]; if (!u || D_PRE.has(u)) continue;
+      const u = n && artReady(n) && ART[n]; if (!u || D_PRE.has(u)) continue;   // ためしのページの まとめの絵は届いてから（core.js の artReady・11/23）
       const im = new Image(); im.decoding = 'async'; im.src = u; D_PRE.set(u, im);
       if (im.decode) im.decode().catch(() => {});
     }
