@@ -15,7 +15,7 @@ if (since) {
   const map = {};
   if (pageDir) for (const f of ['app.css', 'app.js']) map[f] = { from: resolve(pageDir, f), contentType: f.endsWith('.css') ? 'text/css' : 'text/javascript' };
   for (const l of out.split('\n')) {
-    if (/^assets\/font\/web\/[^/]+\.woff2$/.test(l)) map[l.slice(17)] = { from: join(root, l), contentType: 'font/woff2' };   // 同梱フォント（11/23）はページと同じ所に出す（app.css が url(zen-maru-500.woff2) で読む）
+    if (/^assets\/font\/web\/[^/]+\.woff2$/.test(l)) map[l.slice('assets/font/web/'.length)] = { from: join(root, l), contentType: 'font/woff2' };   // 同梱フォント（11/23）はページと同じ所に出す（app.css が url(zen-maru-500.woff2) で読む）
     else if (/^assets\/art\/(ui|fx)-[^/]+\.(webp|png)$/.test(l) && !/^assets\/art\/ui-(btn-(red|wood)|pill-cream)\./.test(l) && pageDir) map['art-pack.webp'] = { from: resolve(pageDir, 'art-pack.webp'), contentType: 'image/webp' };
     else if (/^assets\/art\/(cust-|sweet-|deco-|fc-)[^/]+\.(webp|png)$/.test(l) && pageDir) map['art-pack2.webp'] = { from: resolve(pageDir, 'art-pack2.webp'), contentType: 'image/webp' };
     else if (/^assets\/art\/mix[^/]+\.(webp|png)$/.test(l) && pageDir) map['art-pack3.webp'] = { from: resolve(pageDir, 'art-pack3.webp'), contentType: 'image/webp' };   // まぜた先の絵は3つめのまとめ（11/21 夜・build.mjs の PACK3）   // 朝昼の絵は2つめのまとめ（11/21・build.mjs の PACK2）   // ui-*・fx-* は1つにまとめた art-pack.webp（11/19）
