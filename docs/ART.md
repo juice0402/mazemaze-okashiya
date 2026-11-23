@@ -118,6 +118,7 @@
 | bg-day・bg-morning・bg-shop-out（昼のお店の中・朝のキッチン・お店の外） | A | Codex | 2026-11-18 | art-irai `requests/okashi/bg2.md`（step1〜3）・`prep_art.py bg`（16:9 の横960） | 昼と朝の画面（昼のチャット）・プロローグ（看板の字はコードで重ねる） |
 | bg-shop-out-tall（一番最初の場面＝プロローグの朝の外観・たて長） | A | Codex | 2026-11-22 | art-irai `requests/okashi/bg-shop-out-tall.md`（元の絵 sources/okashi/title-bg-2b.png を朝に）・縦のまま 720×1080（昼の PR #35） | flow.js の renderPrologue（.pr-art.tall・看板は絵の横 50%・縦 38.2%） |
 | ichi-bg（夜市の背景・お店の前の行商人の屋台・たて長） | A | Codex | 2026-11-22 | art-irai `requests/okashi/ichi-bg.md`・横720 | ichi.js の ichiRender（.ich-stage の背景） |
+| dn-disc（昼↔夜の切りかえの円盤・上が昼・下が夜） | A | Codex | 2026-11-23 | art-irai `requests/okashi/dn-disc.md`（PR #337）・prep_art one・slim 済 | flow.js の dnSwitch（180度まわす） |
 | dwarf（夜市の行商人・ドワーフの女の子・ランタンの夜商人・立ち絵） | A | Codex | 2026-11-22 | art-irai `requests/okashi/dwarf.md`（上限1520・big_chara）。表情 dwarf-joy・-wow・-wink・-komari は `dwarf-face.md`（box 131,7,802,1509＝dwarf と同じ四角） | ichi.js の .ich-girl・talk.js の TALKERS.dwarf |
 | ichi-counter・ichi-tag・ichi-tag-sale・ichi-banner（夜市の屋台のカウンター・値札・お買い得の値札・大安売りの旗） | A | Codex | 2026-11-22 | art-irai `requests/okashi/ichi-ui.md`（parts で4つ・値札はひもの上を少し切って横168） | ichi.js |
 | bg-day-mado・bg-day-mado-glow（昼のお店の3つの窓のガラスだけの型・窓のまわりの光） | A（bg-day から切り抜いた型。決まりでは切り抜いただけも A）・glow はその型をぼかしたもの | ぽぽち【okashi-hiru】が tools/mado.py で bg-day から作った（新しく AI で描いた絵ではない） | 2026-11-18 | bg-day・`tools/mado.py` | 昼の外の明るさ（day-scene.js の .ds-mado・.ds-glow・style-hiru.css の .dstage の --p・H-021） |

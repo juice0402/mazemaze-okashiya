@@ -8,7 +8,7 @@ function goMorning() {
   if (!S.today || S.today.day !== S.day) { S.yesterday = S.today; S.today = newDay(S.day); }
   S.phase = 'morning'; startMorning(); save(); render();
 }
-function goDay() { S.phase = 'day'; startDay(); save(); render(); }
+function goDay() { S.phase = 'day'; startDay(); save(); render(); imgReady(ART['dn-disc']); }   // 切りかえの円盤は 昼のうちに読む
 /* 昼をおえて夕方へ（昼の画面の「閉店」から）。夜の画面が来店の会話 → おもてなし → お礼の会話 → まとめへ */
 function goEvening() {
   dnSwitch(true, () => {
@@ -19,7 +19,7 @@ function goEvening() {
     return [bgmFetch(ichi ? 'ichi' : bgmNight(b)), ...(ichi ? ['ichi-bg', 'dwarf', 'ichi-counter'] : ['bg-night-' + cf, cf + '-battle']).map(k => imgReady(ART[k]))];
   }, () => startNight());
 }
-function goResult() { S.phase = 'result'; save(); render(); }
+function goResult() { S.phase = 'result'; save(); render(); imgReady(ART['dn-disc']); }
 function nextDay() {
   dnSwitch(false, () => [bgmFetch('asa'), ...['bg-morning', 'bg-zakka'].map(k => imgReady(ART[k]))], () => { S.day++; goMorning(); });
 }
