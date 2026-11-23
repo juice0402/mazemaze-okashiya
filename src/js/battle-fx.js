@@ -848,21 +848,21 @@ function petitFx(e, run, q) {
 
 /* ---------- 幕（11/23 しょーくん「舞台の幕が閉まってるみたいな、汎用性の高い背景隠しを作っておくのはどうだろう。進んだら幕が開いて場面再開の演出にも使える」） ----------
    舞台（#stage）の背景をかくす幕。シェフとお客さんは幕の前に立つ（幕は z-index 1・額縁とモブはその上）。
-   夜は 来店の会話・ビルドえらび・続きの会話のあいだ閉じていて（curtainOn）、「おもてなしだ！」のあとに開く（night.js の nightTalk → curtainT）。開くあいだはショップを出さない。
+   夜は 来店の会話・ビルドえらび・続きの会話のあいだ閉じていて（curtainOn）、「おもてなしだ！」のあとに開く（night.js の nightTalk → curtainT）。開くと もうショップ（11/23 しょーくん・開くあいだ 幕はショップの前）。
    ほかの場面でも、舞台に curtainHTML() を入れて curtainOpen()、開いている舞台に curtainShut() で閉じられる。
    絵（stage-curtain-l・-r・-top）がそろえば絵の幕、なければ CSS の仮の幕（style-battle.css のいちばん下） */
-let curtainT = false;   // 幕が開いているところ（renderNight はショップを出さない・幕を閉じたまま描く）
+let curtainT = false, curtainGo = false;   // curtainT＝幕が開いているところ（renderNight はショップを幕のうしろに描く）・curtainGo＝もう開きはじめた（とちゅうで描きなおしても開いたまま）
 const CURTAIN_MS = 950;
 const curtainOn = () => !!N && (N.stage === 'arrive' || N.stage === 'pick' || curtainT);
 function curtainHTML() {
   const a = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]), art = a.every(Boolean);
-  return `<div class="curtain${art ? ' art' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
+  return `<div class="curtain${art ? ' art' : ''}${curtainGo ? ' open' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
 }
 function curtainOpen(done) {   // 幕が左右に開いて消える（シャーッ）
   const c = $('curtain'); if (!c) { if (done) done(); return; }
   sePlay('maku');
-  requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('open')));
-  setTimeout(() => { c.remove(); if (done) done(); }, REDUCED ? 60 : T(CURTAIN_MS));
+  requestAnimationFrame(() => requestAnimationFrame(() => { curtainGo = true; ($('curtain') || c).classList.add('open'); }));
+  setTimeout(() => { const x = $('curtain'); if (x) x.remove(); curtainGo = false; if (done) done(); }, REDUCED ? 60 : T(CURTAIN_MS));
 }
 function curtainShut(done, host) {   // 開いている舞台に幕を入れて閉じる（場面のとちゅうで背景をかくしたいとき）
   host = host || $('stage'); if (!host) { if (done) done(); return; }

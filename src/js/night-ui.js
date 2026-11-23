@@ -709,7 +709,7 @@ function shopHTML() {
       ? `<button class="pill sub sh-roll" data-act="reroll">入れかえ <small>無料${N.free}</small></button>`
       : `<button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`);   // 11/18「2けたで改行される」→ コインは絵と数字だけ
   const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
-  return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
+  return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}${curtainT ? ' ctin' : ''}" data-drop data-w="sell" data-i="0">
     <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
     <div class="sh-cards">${list.map((cid, i) => cid
       ? `<button class="shcard${!r1 && N.coins < cardDef(cid).cost ? ' poor' : ''}" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
@@ -830,14 +830,14 @@ function renderNight() {
   const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
   const hk = after ? (happy ? 'joy' : 'oops') : N.stage === 'arrive' || N.stage === 'pick' ? 'stand' : 'battle', hp = heroPick(hk);   // 幕の前はふつうの立ち絵 → 幕が開くときに構える
   $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
-    <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting && !curtainT ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}${curtainOn() ? ' curt' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>${curtainOn() ? curtainHTML() : ''}
+    <div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}${curtainOn() ? ' curt' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>${curtainOn() ? curtainHTML() : ''}
       ${auraBackHTML()}<i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
       <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
       ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
       <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
       <div class="ov-heat${heatOf().off || heatOf().none ? ' only' : ''}">${heatOf().off || heatOf().none ? '' : `<span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>`}${koneBadge()}${chainBadge()}${jamBadge()}</div>
       ${quotaHTML(q, lastRun)}
-      ${N.stage === 'shop' && !fighting && !curtainT ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
+      ${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
     ${body}</section>`;
   setHeat(N.heat);
   for (const c of N.board) if (c) delete c.born;
@@ -845,8 +845,8 @@ function renderNight() {
   if (resultAnim && N.stage === 'roundEnd') { resultAnim = false; const r = document.querySelector('.r-num'); if (r) countUp(r, 0, N.last.total, T(700)); }
   /* 来店とお礼の会話（night.js の nightTalk） */
   if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
-  if (curtainT) return;   // 幕が開くあいだ（battle-fx.js）：ショップ・ヒント・考え中の声は 開いてから
   if (N.stage === 'shop' && !fighting) shopFit();
+  if (curtainT) return;   // 幕が開くあいだ（battle-fx.js）：ショップは幕のうしろ・ヒントと考え中の声は 開いてから
   tipSync();   // 夜のヒント（tips.js）
   thinkArm();   // 考えている声
 }

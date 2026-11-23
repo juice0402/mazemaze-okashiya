@@ -898,3 +898,10 @@ body[data-candy="1"]{--chefc:255,140,196}
 .curtain.open>.ct-top{transform:translateY(-100%);transition-delay:.25s}
 .stage.curt .embers,.stage.curt .aqua,.stage.curt .smoke,.stage.curt .ov-top,.stage.curt .ov-heat,.stage.curt .quota{display:none}
 @media (prefers-reduced-motion:reduce){.curtain>i{transition:none}}
+/* 幕が開くと もうショップ（11/23 しょーくん「幕が開いたら、一番最初はショップ画面」）：開くあいだ 幕はショップの前（額縁とモブはさらに前）。
+   ショップは下りてこない・カードは 幕が開くのに合わせて配る（.ctin）。幕の前のシェフとお客さんは「おもてなしだ！」のあと すっと消える（.ct-bye） */
+.stage.curt.st-shop .curtain{z-index:7}
+.stage.curt.st-shop .shopov{z-index:6}
+.shopov.ctin,.shopov.deal.ctin{animation:none}
+.shopov.deal.ctin .shcard{animation-delay:calc(.42s + var(--k,0) * 90ms)}
+.stage.ct-bye :is(#chef,#mon,.chef-sh,.mon-sh,.ca-back,.ca-front){opacity:0;transition:opacity .2s}

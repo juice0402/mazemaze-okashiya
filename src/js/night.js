@@ -89,16 +89,23 @@ function nightPrep() { N.heat = heatOf().start; N.heatUsed = false; N.field = cu
 /* 来店とお礼の会話（会話の部品 talk.js・文は story.js）。会話がない日はすぐ次へ
    11/23 しょーくん「モンスターが現れる→ビルド選択」：えらぶ夜は、来店の会話のさいごの1行（「おもてなしだ！」）の前で えらぶ画面へ。
    えらんだあと、その続き（ほのかなら さいごの1行・仲間なら その子の2行かはじめての夜の会話）。headN＝えらぶ前に読んだ行の数 */
+let arriveOut = false;   // 「おもてなしだ！」のあと、幕の前のシェフとお客さんが消えるところ（そのあいだ会話をもう一度はじめない）
 function nightTalk() {
-  if (talking()) return;
+  if (talking() || arriveOut) return;
   if (N.stage === 'arrive' && N.picked === false) {
     const head = STORY.eveningBase(S.today).slice(0, -1);
     N.headN = head.length;
     talk(head, () => setTimeout(() => { if (N.stage !== 'arrive') return; N.stage = 'pick'; save(); renderNight(); }, head.length ? 0 : T(900)));   // 会話のない夜も、お客さんを少し見せてから
   }
-  else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => {   // 「おもてなしだ！」のあと、幕が開いて戦闘の曲と舞台へ（11/23 しょーくん・battle-fx.js の幕）
-    N.stage = 'shop'; dealAnim = true; save(); curtainT = true; renderNight(); bgmSync();
-    curtainOpen(() => { curtainT = false; if (S.phase === 'night' && N.stage === 'shop' && !fighting) renderNight(); });
+  else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => {   // 「おもてなしだ！」のあと、戦闘の曲で幕が開くと もうショップ（11/23 しょーくん「幕が開いたら、一番最初はショップ画面」・battle-fx.js の幕）
+    const st = $('stage'); if (st) st.classList.add('ct-bye');   // 幕の前のシェフとお客さんは すっと消える（シェフの構えは おもてなし！のあと）
+    arriveOut = true;
+    setTimeout(() => {
+      arriveOut = false;
+      if (S.phase !== 'night' || N.stage !== 'arrive') return;
+      N.stage = 'shop'; dealAnim = true; save(); curtainT = true; renderNight(); bgmSync();   // ショップは幕のうしろに描いて、カードは開くのに合わせて配る
+      curtainOpen(() => { curtainT = false; const s = $('stage'); if (s) s.classList.remove('curt'); if (S.phase === 'night' && N.stage === 'shop' && !fighting) { tipSync(); thinkArm(); } });   // 描きなおさない（配っているカードが止まらないように）
+    }, REDUCED ? 0 : T(200));
   });
   else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); nightEndSnd(); });
 }

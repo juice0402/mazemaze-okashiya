@@ -1479,6 +1479,11 @@ font-size:calc(var(--W) * var(--fz) * 2);-webkit-text-stroke:calc(var(--W) * var
 .curtain.open>.ct-top{transform:translateY(-100%);transition-delay:.25s}
 .stage.curt .embers,.stage.curt .aqua,.stage.curt .smoke,.stage.curt .ov-top,.stage.curt .ov-heat,.stage.curt .quota{display:none}
 @media (prefers-reduced-motion:reduce){.curtain>i{transition:none}}
+.stage.curt.st-shop .curtain{z-index:7}
+.stage.curt.st-shop .shopov{z-index:6}
+.shopov.ctin,.shopov.deal.ctin{animation:none}
+.shopov.deal.ctin .shcard{animation-delay:calc(.42s + var(--k,0) * 90ms)}
+.stage.ct-bye :is(#chef,#mon,.chef-sh,.mon-sh,.ca-back,.ca-front){opacity:0;transition:opacity .2s}
 .ichi{position:relative;display:flex;flex-direction:column}
 .ich-stage{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:14px;border:3px solid #3a2318;box-shadow:0 4px 0 rgba(0,0,0,.35);
 background:#1c1230 var(--ichbg) center 35%/cover no-repeat}
@@ -4731,16 +4736,23 @@ if (typeof koeMore === 'function') koeMore('pick');   // まかせて！（11/22
 }
 const curBuild = () => BUILDS[(N && N.build) || 'cookie'];
 function nightPrep() { N.heat = heatOf().start; N.heatUsed = false; N.field = curBuild().bin || null; N.bin = []; N.jamN = 0; N.fert = false; N.basket = 0; }
+let arriveOut = false;   // 「おもてなしだ！」のあと、幕の前のシェフとお客さんが消えるところ（そのあいだ会話をもう一度はじめない）
 function nightTalk() {
-if (talking()) return;
+if (talking() || arriveOut) return;
 if (N.stage === 'arrive' && N.picked === false) {
 const head = STORY.eveningBase(S.today).slice(0, -1);
 N.headN = head.length;
 talk(head, () => setTimeout(() => { if (N.stage !== 'arrive') return; N.stage = 'pick'; save(); renderNight(); }, head.length ? 0 : T(900)));   // 会話のない夜も、お客さんを少し見せてから
 }
-else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => {   // 「おもてなしだ！」のあと、幕が開いて戦闘の曲と舞台へ（11/23 しょーくん・battle-fx.js の幕）
-N.stage = 'shop'; dealAnim = true; save(); curtainT = true; renderNight(); bgmSync();
-curtainOpen(() => { curtainT = false; if (S.phase === 'night' && N.stage === 'shop' && !fighting) renderNight(); });
+else if (N.stage === 'arrive') talk(STORY.evening(S.today).slice(N.headN || 0), () => {   // 「おもてなしだ！」のあと、戦闘の曲で幕が開くと もうショップ（11/23 しょーくん「幕が開いたら、一番最初はショップ画面」・battle-fx.js の幕）
+const st = $('stage'); if (st) st.classList.add('ct-bye');   // 幕の前のシェフとお客さんは すっと消える（シェフの構えは おもてなし！のあと）
+arriveOut = true;
+setTimeout(() => {
+arriveOut = false;
+if (S.phase !== 'night' || N.stage !== 'arrive') return;
+N.stage = 'shop'; dealAnim = true; save(); curtainT = true; renderNight(); bgmSync();   // ショップは幕のうしろに描いて、カードは開くのに合わせて配る
+curtainOpen(() => { curtainT = false; const s = $('stage'); if (s) s.classList.remove('curt'); if (S.phase === 'night' && N.stage === 'shop' && !fighting) { tipSync(); thinkArm(); } });   // 描きなおさない（配っているカードが止まらないように）
+}, REDUCED ? 0 : T(200));
 });
 else if (N.stage === 'thanks') talk(STORY.thanks(S.today), () => { N.stage = 'end'; save(); renderNight(); nightEndSnd(); });
 }
@@ -5865,7 +5877,7 @@ const head = r1 ? `<span class="sh-ttl sh-rd sh-free">無料 <b>${N.picks}</b>�
 ? `<button class="pill sub sh-roll" data-act="reroll">入れかえ <small>無料${N.free}</small></button>`
 : `<button class="pill sub sh-roll" data-act="reroll" ${N.coins < REROLL ? 'disabled' : ''}>入れかえ <small><i class="cn"></i>${REROLL}</small></button>`);   // 11/18「2けたで改行される」→ コインは絵と数字だけ
 const deal = dealAnim && !REDUCED; dealAnim = false;   // 新しいラウンドだけ、ショップが下りてカードが配られる
-return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}" data-drop data-w="sell" data-i="0">
+return `<div class="shopov${list.length > 3 ? ' many' : ''}${list.length > 3 && N.round > 1 ? ' paid' : ''}${deal ? ' deal' : ''}${curtainT ? ' ctin' : ''}" data-drop data-w="sell" data-i="0">
 <div class="sh-top"><span class="sh-l"><span class="sh-ttl sh-rd">ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span>${koneBadge()}${jamBadge()}</span><span class="sh-r">${head}</span></div>
 <div class="sh-cards">${list.map((cid, i) => cid
 ? `<button class="shcard${!r1 && N.coins < cardDef(cid).cost ? ' poor' : ''}" style="--k:${i}" data-act="card" data-drag data-drop data-w="shop" data-i="${i}">${cardMini(cid, { tall: list.length > 3 ? 38 : 31 })}${r1 ? '' : `<span class="sh-price${N.coins < cardDef(cid).cost ? ' ng' : ''}"><i></i>${cardDef(cid).cost}</span>`}${mixesWithBoard(cid) ? '<i class="mixmark">まぜ</i>' : ''}</button>`
@@ -5971,21 +5983,21 @@ ${viewerHTML()}`;
 const q = quota(Math.min(N.round, ROUNDS), S.day), lastRun = N.stage === 'roundEnd' ? N.last.total : 0;
 const hk = after ? (happy ? 'joy' : 'oops') : N.stage === 'arrive' || N.stage === 'pick' ? 'stand' : 'battle', hp = heroPick(hk);   // 幕の前はふつうの立ち絵 → 幕が開くときに構える
 $('screen').innerHTML = `<section class="night fit${busy ? ' busy' : ''}" data-chef="${chefArt()}">
-<div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting && !curtainT ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}${curtainOn() ? ' curt' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>${curtainOn() ? curtainHTML() : ''}
+<div class="stage${NBG() ? ' hasbg' : ''}${N.stage === 'shop' && !fighting ? ' st-shop' : ''}${N.stage === 'pick' ? ' st-pick' : ''}${curtainOn() ? ' curt' : ''}" id="stage" data-z="0" style="${NBG() ? `--bgimg:url('${NBG()}');` : ''}${heroVars(hp.n, hp.flip)}">${NBG() ? '' : '<i class="st-lamp"></i><i class="st-win"></i><i class="st-shelf"></i><i class="st-floor"></i>'}<i class="glow"></i>${curtainOn() ? curtainHTML() : ''}
 ${auraBackHTML()}<i class="chef-sh"></i>${heroImg(hk)}${auraFrontHTML()}
 <img class="mon${monIsArt(mon.id) ? ' hi' : ''}${N.stage === 'end' ? ' flee' : ''}" id="mon" data-mid="${mon.id}" data-idle="${monIdle(mon.id)}" src="${((after && happy) || (N.stage === 'roundEnd' && N.last && N.last.ok)) && ART[`mon-${mon.id}-happy`] || ((after && !happy) || (N.stage === 'roundEnd' && N.last && !N.last.tier)) && ART[`mon-${mon.id}-sad`] || monURL(mon.id)}" alt="${esc(mon.name)}">${monIsArt(mon.id) ? '<i class="mon-sh"></i>' : ''}
 ${chefArt() === 'minamo' ? aquaHTML() : embersHTML()}<i class="smoke" id="smoke"></i>${decoHTML(after ? (happy ? 'win' : 'battle') : (N.stage === 'shop' || N.stage === 'arrive' || N.stage === 'pick') && !fighting ? 'shop' : 'battle')}<div id="floats"></div>
 <div class="ov-top"><span>ラウンド <b>${Math.min(N.round, ROUNDS)}</b>/${ROUNDS}</span></div>
 <div class="ov-heat${heatOf().off || heatOf().none ? ' only' : ''}">${heatOf().off || heatOf().none ? '' : `<span class="heat-label" id="heatLabel"></span><div class="heat-bar" id="heatBar">${heatCells()}</div>`}${koneBadge()}${chainBadge()}${jamBadge()}</div>
 ${quotaHTML(q, lastRun)}
-${N.stage === 'shop' && !fighting && !curtainT ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
+${N.stage === 'shop' && !fighting ? shopHTML() : ''}${N.stage === 'pick' ? pickHTML() : ''}</div>
 ${body}</section>`;
 setHeat(N.heat);
 for (const c of N.board) if (c) delete c.born;
 if (resultAnim && N.stage === 'roundEnd') { resultAnim = false; const r = document.querySelector('.r-num'); if (r) countUp(r, 0, N.last.total, T(700)); }
 if ((N.stage === 'arrive' || N.stage === 'thanks') && !talking()) setTimeout(nightTalk, N.stage === 'thanks' ? 700 : 300);
-if (curtainT) return;   // 幕が開くあいだ（battle-fx.js）：ショップ・ヒント・考え中の声は 開いてから
 if (N.stage === 'shop' && !fighting) shopFit();
+if (curtainT) return;   // 幕が開くあいだ（battle-fx.js）：ショップは幕のうしろ・ヒントと考え中の声は 開いてから
 tipSync();   // 夜のヒント（tips.js）
 thinkArm();   // 考えている声
 }
@@ -6790,18 +6802,18 @@ el.style.setProperty('--pr', (e.k * 47 % 360) + 'deg');
 arcFly(el, { x: side * .3, y: -a.h * .2 }, { x: b.x - a.x, y: b.y - a.y }, ms, 70 + e.k * 12, .5, .9, () => { el.remove(); land(); });
 return 370 + (e.k === e.n - 1 ? 520 : 0);   // 次の飴は とちゅうで追いかける・さいごの1こは当たるまで待つ
 }
-let curtainT = false;   // 幕が開いているところ（renderNight はショップを出さない・幕を閉じたまま描く）
+let curtainT = false, curtainGo = false;   // curtainT＝幕が開いているところ（renderNight はショップを幕のうしろに描く）・curtainGo＝もう開きはじめた（とちゅうで描きなおしても開いたまま）
 const CURTAIN_MS = 950;
 const curtainOn = () => !!N && (N.stage === 'arrive' || N.stage === 'pick' || curtainT);
 function curtainHTML() {
 const a = ['l', 'r', 'top'].map(k => ART['stage-curtain-' + k]), art = a.every(Boolean);
-return `<div class="curtain${art ? ' art' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
+return `<div class="curtain${art ? ' art' : ''}${curtainGo ? ' open' : ''}" id="curtain" aria-hidden="true"${art ? ` style="--ctl:url('${a[0]}');--ctr:url('${a[1]}');--ctt:url('${a[2]}')"` : ''}><i class="ct-l"></i><i class="ct-r"></i><i class="ct-top"></i></div>`;
 }
 function curtainOpen(done) {   // 幕が左右に開いて消える（シャーッ）
 const c = $('curtain'); if (!c) { if (done) done(); return; }
 sePlay('maku');
-requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('open')));
-setTimeout(() => { c.remove(); if (done) done(); }, REDUCED ? 60 : T(CURTAIN_MS));
+requestAnimationFrame(() => requestAnimationFrame(() => { curtainGo = true; ($('curtain') || c).classList.add('open'); }));
+setTimeout(() => { const x = $('curtain'); if (x) x.remove(); curtainGo = false; if (done) done(); }, REDUCED ? 60 : T(CURTAIN_MS));
 }
 function curtainShut(done, host) {   // 開いている舞台に幕を入れて閉じる（場面のとちゅうで背景をかくしたいとき）
 host = host || $('stage'); if (!host) { if (done) done(); return; }
