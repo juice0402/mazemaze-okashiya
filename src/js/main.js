@@ -88,7 +88,8 @@ function boot(data) {
   if (!boot.art) { boot.art = 1; return artBlobs(() => boot(data)); }   // 先に UI とタイトルの絵を読む（core.js）
   const s = data && data.S ? sanitize(data.S) : null;
   S = s || newState();
-  if (!s) S.phase = 'title'; else resume();
+  if (!s) { S.phase = 'title'; const sv = load(); if (sv && sv.opt) S.opt = { ...S.opt, ...sv.opt }; }   // タイトルの せっていは セーブのオンオフを見せる（11/23）
+  else resume();
   $('screen').addEventListener('click', e => {
     if (Date.now() - dragEnd < 350) return;   // ドラッグのあとのクリックは無視
     const el = e.target.closest('[data-act]');

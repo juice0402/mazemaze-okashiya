@@ -52,18 +52,19 @@ const artReady = k => {
 };
 function artPackWait(fn) {   // まとめが届いたら（読めなくても8秒で）fn。連打しても1回だけ
   if (!artPackOn() || artBlobs.pkOk) return fn();
-  artPackWait.fn = fn;
+  artPackWait.fn = fn; toast('よみこみ中…', 8000);   // 押したのが分かるように（届いたら消す）
 }
 function artPackDone() {
   if (artBlobs.pkOk) return; artBlobs.pkOk = 1; uiVars();
-  const f = artPackWait.fn; artPackWait.fn = null; if (f) f();
+  const f = artPackWait.fn; artPackWait.fn = null; if (f) { const el = $('toast'); if (el) el.hidden = true; f(); }
 }
 function artBlobs(done) {
   let fin = false, left = 0; const later = [];
   const nightBoot = () => { if (typeof nightWarm === 'function') nightWarm((typeof S !== 'undefined' && S && S.build) || 'cookie'); };   // 夜の絵も、タイトルのあと ひまなときに先読み（11/20）
   const end = () => {
-    if (fin) return; fin = true; uiVars(); done();
-    if (!artPackOn()) { artWarm(later); setTimeout(artPack2, 400); setTimeout(nightBoot, 3000); return; }
+    if (fin) return; fin = true; uiVars();
+    if (!artPackOn()) { done(); artWarm(later); setTimeout(artPack2, 400); setTimeout(nightBoot, 3000); return; }
+    setTimeout(() => { try { done(); } catch (e) { console.error(e); } }, 0);   // タイトルを描く（下の まとめの読みはじめのあと・こけても まとめは読む）
     fetch(ART_PACK.url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(a => {
       for (const [k, [o, l, t]] of Object.entries(ART_PACK.items)) ART[k] = URL.createObjectURL(new Blob([a.slice(o, o + l)], { type: t }));
       if (artBlobs.pkOk) uiVars(); else artPackDone();   // 待ちきれずに始めていたら、あとから皮を入れなおす
@@ -203,11 +204,20 @@ function fromV4(o) {
   n.phase = 'morning'; n.today = newDay(n.day);
   return n;
 }
+/* タイトルの形（phase 'title'）のセーブは、ないのと同じ（11/23 総デバッグ：前はタイトルの「せってい」でオンオフすると、
+   タイトルの空の状態がセーブの上に書かれて、つづきからを押してもタイトルにもどり・はじめからも出なくなった） */
 function load() {
-  try { const t = localStorage.getItem(KEY); return t ? sanitize(JSON.parse(t)) : null; } catch (e) { return null; }
+  try { const t = localStorage.getItem(KEY), o = t ? JSON.parse(t) : null; return o && o.phase !== 'title' ? sanitize(o) : null; } catch (e) { return null; }
 }
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* 保存できない環境ではそのまま遊ぶ */ }
+  try {
+    if (S.phase === 'title') {   // タイトルでは あそんでいる記録を書きかえない。せってい（BGM・効果音）だけ、いまのセーブに入れる
+      const t = localStorage.getItem(KEY), o = t ? JSON.parse(t) : null;
+      if (o && o.phase !== 'title') { o.opt = { ...(o.opt || {}), ...S.opt }; localStorage.setItem(KEY, JSON.stringify(o)); }
+      return;
+    }
+    localStorage.setItem(KEY, JSON.stringify(S));
+  } catch (e) { /* 保存できない環境ではそのまま遊ぶ */ }
 }
 
 /* ---------- お知らせ ---------- */
