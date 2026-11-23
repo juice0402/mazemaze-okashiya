@@ -89,7 +89,10 @@ console.log('index.html', page.length, 'art', Object.keys(ART).length);
 const ai = process.argv.indexOf('--artifact');
 if (ai > 0 && process.argv[ai + 1]) {
   const out = process.argv[ai + 1], dir = dirname(out), h8 = s => createHash('md5').update(s).digest('hex').slice(0, 8);
-  const css = FONTS + webFonts('') + minCss(STYLES.map(rd).join('\n'));
+  /* ためしのページ（claude.ai のアーティファクト）は、ページの外のフォントのファイルを CSP で読めないことがある（字は Google Fonts かページに埋めこむ形だけ）。
+     だから同梱フォント（webFonts）は遊ぶ人の index.html だけ。ためしのページは前のまま Google Fonts で同じ字を出す（11/23） */
+  const GF = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@500;700&display=swap">\n';
+  const css = FONTS + minCss(STYLES.map(rd).join('\n'));
   /* 音は1つのファイル snd-pack.mp3 にまとめる（11/19：アーティファクトは1つの版に511ファイルまで。効果音と声の44こが入らなかった）。
      曲・効果音・声の mp3 をつなげて、どこからどこまでかの表 SND_PACK をわたす（sound.js が切り分けて blob の URL を表に入れる）。遊ぶ人の index.html は今までどおり1こずつ */
   const parts = [], items = {}; let off = 0;
@@ -121,6 +124,6 @@ if (ai > 0 && process.argv[ai + 1]) {
   const cpack = Buffer.concat(cparts); writeFileSync(join(dir, 'art-pack3.webp'), cpack);
   const aj = js.replace(/const (BGM_SRC|SE_SRC|KOE_SRC) = \{[^\n]*\};/g, 'const $1 = {};').replace('const BGM_BIG = {};', () => 'const BGM_BIG = ' + JSON.stringify(bigBgm) + ';').replace('__SNDPACK__', () => JSON.stringify({ url: 'snd-pack.mp3?v=' + h8(pack), items })).replace('__ARTPACK__', () => JSON.stringify({ url: 'art-pack.webp?v=' + h8(apack), items: aitems })).replace('__ARTPACK2__', () => JSON.stringify({ url: 'art-pack2.webp?v=' + h8(bpack), items: bitems })).replace('__ARTPACK3__', () => JSON.stringify({ url: 'art-pack3.webp?v=' + h8(cpack), items: citems })).replace('__TRIAL__', 'true').replaceAll('__ARTDIR__', '').replaceAll('__BGMDIR__', 'bgm/').replaceAll('__SEDIR__', 'se/').replaceAll('__KOEDIR__', 'koe/').replace(/\.(webp|png|mp3)\?v=[0-9a-f]{8}"/g, '.$1"');
   writeFileSync(join(dir, 'app.css'), css); writeFileSync(join(dir, 'app.js'), aj);
-  const af = rd('src/shell.html').replace('<!--STYLE-->', `<link rel="stylesheet" href="app.css?v=${h8(css)}">`).replace('<!--SCRIPT-->', `<script src="app.js?v=${h8(aj)}"></script>`);
+  const af = rd('src/shell.html').replace('<!--STYLE-->', `${GF}<link rel="stylesheet" href="app.css?v=${h8(css)}">`).replace('<!--SCRIPT-->', `<script src="app.js?v=${h8(aj)}"></script>`);
   writeFileSync(out, af); console.log('artifact', af.length, 'app.js', aj.length, 'app.css', css.length);
 }
