@@ -734,7 +734,7 @@ button.tab.on:disabled::before{filter:grayscale(.85) brightness(.95)}
 .pc-star i{display:inline-block;width:1.1em;height:1.04em;margin:0 -.1em;vertical-align:top;background:var(--ui-star) center/contain no-repeat}
 /* おもてなしのはじめの帯（ui-band・640×135）：左右の折り返しはそのまま、まんなかだけ横にのびる。ななめはコードで回す */
 /* 帯の布（上の84%）のまんなかが舞台のまんなか */
-.bi-band{left:-17%;right:-17%;top:calc(50% - 49px);height:116px;background:none;box-shadow:none;border:solid transparent;border-width:0 103px;border-image:var(--ui-band) 0 120 fill/0 103px stretch;transform:rotate(-5deg) scaleY(0)}
+.bi-band{left:-17%;right:-17%;top:calc(50% - 49px);height:116px;background:var(--ui-band) center/100% 100% no-repeat;box-shadow:none;border:0;transform:rotate(-5deg) scaleY(0)}   /* 11/24 しょーくん：border-image（9分割）だと iPad で 動いているあいだ 帯が出なかった（帯の点検ページの A・B）→ ふつうの背景の絵（C・しょーくん「Cが理想の動き」） */
 @keyframes biband{0%{transform:rotate(-5deg) scaleY(0)}14%{transform:rotate(-5deg) scaleY(1.12)}22%,82%{transform:rotate(-5deg) scaleY(1)}100%{transform:rotate(-5deg) scaleY(0)}}
 @keyframes bitext{0%,10%{opacity:0;transform:translateX(70px) rotate(-5deg) skewX(-12deg)}26%,80%{opacity:1;transform:rotate(-5deg)}100%{opacity:0;transform:translateX(-90px) rotate(-5deg) skewX(-12deg)}}
 .bi-r,.bi-q{-webkit-text-stroke:3px #4a1c08;paint-order:stroke fill;text-shadow:none}
